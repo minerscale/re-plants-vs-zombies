@@ -1,0 +1,17 @@
+---
+BasedOnStyle: LLVM
+ColumnLimit: 120
+AccessModifierOffset: -4
+AlignAfterOpenBracket: BlockIndent
+AlignArrayOfStructures: Left
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+IndentWidth: 4
+LineEnding: LF
+NamespaceIndentation: Inner
+TabWidth: 4
+BraceWrapping:
+  AfterControlStatement: MultiLine
