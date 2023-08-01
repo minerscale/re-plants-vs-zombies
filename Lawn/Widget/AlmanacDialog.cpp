@@ -319,7 +319,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) {
             _S("{KEYWORD}{WAIT_TIME}:{STAT}{WAIT_TIME_LENGTH}"), _S("{WAIT_TIME_LENGTH}"),
             aPlantDef.mRefreshTime == 750    ? _S("[WAIT_TIME_SHORT]")
             : aPlantDef.mRefreshTime == 3000 ? _S("[WAIT_TIME_LONG]")
-                                             : _S("[WAIT_TIME_VERT_LONG]")
+                                             : _S("[WAIT_TIME_VERY_LONG]") // @Patoke: fix typo XD
         );
         aRechargeStr = TodReplaceString(aRechargeStr, _S("{WAIT_TIME}"), _S("[WAIT_TIME]"));
         TodDrawStringWrapped(

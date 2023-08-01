@@ -1988,6 +1988,7 @@ void ZenGarden::OpenStore() {
 }
 
 // 0x5222D0
+//  GOTY @Patoke: 0x52CC50
 void ZenGarden::SetupForZenTutorial() {
     mBoard->mMenuButton->SetLabel(_S("[CONTINUE_BUTTON]"));
     mBoard->mStoreButton->mDisabled = true;

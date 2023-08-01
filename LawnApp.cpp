@@ -459,6 +459,7 @@ void LawnApp::KillGameSelector() {
 }
 
 // 0x44FA20
+//  GOTY @Patoke: 0x452CB0
 void LawnApp::ShowAwardScreen(AwardType theAwardType) {
     mGameScene = GameScenes::SCENE_AWARD;
     mAwardScreen = new AwardScreen(this, theAwardType);
@@ -517,6 +518,7 @@ void LawnApp::KillChallengeScreen() {
 }
 
 // 0x44FD40
+//  GOTY @Patoke: 0x452FD0
 StoreScreen *LawnApp::ShowStoreScreen() {
     // FinishModelessDialogs();
     TOD_ASSERT(!GetDialog((int)Dialogs::DIALOG_STORE));
@@ -595,6 +597,7 @@ void LawnApp::DoConfirmBackToMain() {
 }
 
 // 0x4500D0
+//  GOTY @Patoke: 0x453360
 void LawnApp::DoNewOptions(bool theFromGameSelector) {
     // FinishModelessDialogs();
 
@@ -605,6 +608,7 @@ void LawnApp::DoNewOptions(bool theFromGameSelector) {
 }
 
 // 0x450180
+//  GOTY @Patoke: 0x453410
 AlmanacDialog *LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZombieType) {
     PerfTimer mTimer;
     mTimer.Start();
@@ -652,6 +656,7 @@ void LawnApp::DoPauseDialog() {
 }
 
 // 0x4504B0
+//  GOTY @Patoke: 0x4538A0
 int LawnApp::LawnMessageBox(
     int theDialogId, const SexyChar *theHeaderName, const SexyChar *theLinesName, const SexyChar *theButton1Name,
     const SexyChar *theButton2Name, int theButtonMode
@@ -704,6 +709,7 @@ Dialog *LawnApp::DoDialogDelay(
 }
 
 // 0x450880
+//  GOTY @Patoke: 0x453C60
 void LawnApp::DoUserDialog() {
     KillDialog(Dialogs::DIALOG_USERDIALOG);
 
@@ -1542,6 +1548,7 @@ bool LawnApp::OpenURL(const std::string &theURL, bool shutdownOnOpen) {
 }
 
 // 0x453040
+//  GOTY @Patoke: 0x4564F0
 void LawnApp::ConfirmQuit() {
     SexyString aBody = TodStringTranslate(_S("[QUIT_MESSAGE]"));
     SexyString aHeader = TodStringTranslate(_S("[QUIT_HEADER]"));
