@@ -469,6 +469,7 @@ float TodAnimateCurveFloat(
 }
 
 // 0x511C40
+//  GOTY @Patoke: 0x51BEA0
 int TodAnimateCurve(
     int theTimeStart, int theTimeEnd, int theTimeAge, int thePositionStart, int thePositionEnd, TodCurves theCurve
 ) {
@@ -842,6 +843,7 @@ void TodDrawImageCelScaledF(
 }
 
 // 0x512950
+//  GOTY @Patoke: 0x51CC90
 void TodDrawImageScaledF(Graphics *g, Image *theImage, float thePosX, float thePosY, float theScaleX, float theScaleY) {
     if (theScaleX == 1.0f && theScaleY == 1.0f) {
         g->DrawImageF(theImage, thePosX, thePosY);

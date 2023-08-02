@@ -120,6 +120,7 @@ void AlmanacDialog::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x401A30
+//  GOTY @Patoke: 0x402C50
 void AlmanacDialog::SetupPlant() {
     ClearPlantsAndZombies();
 
@@ -140,6 +141,7 @@ void AlmanacDialog::SetupPlant() {
 }
 
 // 0x401B70
+//  GOTY @Patoke: 0x402D90
 void AlmanacDialog::SetupZombie() {
     ClearPlantsAndZombies();
 
@@ -329,6 +331,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) {
 }
 
 // 0x402C00
+//  GOTY @Patoke: 0x403DE0
 void AlmanacDialog::DrawZombies(Graphics *g) {
     g->DrawImage(Sexy::IMAGE_ALMANAC_ZOMBIEBACK, 0, 0);
     TodDrawString(
@@ -454,7 +457,13 @@ void AlmanacDialog::DrawZombies(Graphics *g) {
             }
         }
     }
-    TodDrawStringWrapped(g, aDescription, Rect(484, 377, 258, 170), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), aAlign);
+    // todo @Patoke: fix stuff that have another formatter after them, ex: "{KEYWORD}Weakness:{STAT} fume-shroom{METAL}
+    // and magnet-shroom{KEYWORD}" (magnet-shroom will show with the {KEYWORD} colors)
+    // @Patoke: added extra check for the zamboni zombie
+    TodDrawStringWrapped(
+        g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 377 : 372, 258, 170),
+        Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), aAlign
+    );
 }
 
 // 0x403810
@@ -515,6 +524,7 @@ bool AlmanacDialog::ZombieHasSilhouette(ZombieType theZombieType) {
 }
 
 // 0x403A10
+//  GOTY @Patoke: 0x404C50
 bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType) {
     // 试玩模式下，仅展示潜水僵尸及其之前出现的僵尸
     if (mApp->IsTrialStageLocked() && theZombieType > ZombieType::ZOMBIE_SNORKEL) return false;
@@ -541,6 +551,7 @@ bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType) {
 }
 
 // 0x403B30
+//  GOTY @Patoke: 0x404D50
 bool AlmanacDialog::ZombieHasDescription(ZombieType theZombieType) {
     int aLevel = mApp->mPlayerInfo->GetLevel();
     int aStart = GetZombieDefinition(theZombieType).mStartingLevel;
@@ -570,11 +581,13 @@ void AlmanacDialog::GetZombiePosition(ZombieType theZombieType, int &x, int &y) 
 }
 
 // 0x403BB0
+//  GOTY @Patoke: 0x404DD0
 ZombieType AlmanacDialog::ZombieHitTest(int x, int y) {
     if (mMouseVisible && mOpenPage == AlmanacPage::ALMANAC_PAGE_ZOMBIES) {
         for (int i = 0; i < NUM_ALMANAC_ZOMBIES; i++) {
             ZombieType aZombieType = GetZombieType(i);
-            if (aZombieType != ZombieType::ZOMBIE_INVALID) {
+            // @Patoke: added IsShown check
+            if (aZombieType != ZombieType::ZOMBIE_INVALID && ZombieIsShown(aZombieType)) {
                 int aZombieX, aZombieY;
                 GetZombiePosition(aZombieType, aZombieX, aZombieY);
                 if (Rect(aZombieX, aZombieY, 76, 76).Contains(x, y)) return aZombieType;
@@ -593,6 +606,7 @@ void AlmanacDialog::MouseUp(int x, int y, int theClickCount) {
 }
 
 // 0x403D00
+//  GOTY @Patoke: 0x404F10
 void AlmanacDialog::MouseDown(int x, int y, int theClickCount) {
     if (mPlantButton->IsMouseOver() || mCloseButton->IsMouseOver() || mIndexButton->IsMouseOver())
         mApp->PlaySample(Sexy::SOUND_TAP);

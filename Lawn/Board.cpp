@@ -245,6 +245,7 @@ bool Board::AreEnemyZombiesOnScreen() {
 }
 
 // 0x408B60
+//  GOTY @Patoke: 0x40B4A0
 int Board::CountZombiesOnScreen() {
     int aCount = 0;
     Zombie *aZombie = nullptr;
@@ -2886,7 +2887,8 @@ void Board::UpdateToolTip() {
     } else if (aUseSeedType == SeedType::SEED_ZOMBIE_IMP) {
         mToolTip->SetLabel(_S("[IMP]"));
     } else {
-        mToolTip->SetLabel(GetPlantDefinition(aUseSeedType).mPlantName);
+        // @Patoke: wrong function call
+        mToolTip->SetLabel(Plant::GetNameString(aUseSeedType));
     }
 
     int aPlantCost = GetCurrentPlantCost(aSeedPacket->mPacketType, aSeedPacket->mImitaterType);

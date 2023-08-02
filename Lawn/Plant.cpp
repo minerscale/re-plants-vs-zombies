@@ -135,6 +135,7 @@ PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES] = {
 Plant::Plant() {}
 
 // 0x45DB60
+//  GOTY @Patoke: 0x461483
 void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType) {
     mPlantCol = theGridX;
     mRow = theGridY;
@@ -4095,6 +4096,7 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType) {
 }
 
 // 0x467C00
+//  GOTY @Patoke: 0x46B6C0
 SexyString Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
     SexyString aName = StrFormat(_S("[%s]"), aPlantDef.mPlantName);

@@ -7,23 +7,21 @@
 int gTodStringFormatCount;              //[0x69DE4C]
 TodStringListFormat *gTodStringFormats; //[0x69DA34]
 
-int gLawnStringFormatCount = 12;
-TodStringListFormat gLawnStringFormats[14] = {
-  //  0x6A5010
+const int gLawnStringFormatCount = 12;
+TodStringListFormat gLawnStringFormats[12] = {
+  //  0x6A5010 // GOTY @Patoke: 0x7248EC
     {"NORMAL",         nullptr, Color(40,  50,  90,  255), 0,   0U},
-      {"FLAVOR",         nullptr, Color(143, 67,  27,  255), 0,   1U},
+    {"FLAVOR",         nullptr, Color(143, 67,  27,  255), 0,   1U},
     {"KEYWORD",        nullptr, Color(143, 67,  27,  255), 0,   0U},
-      {"NOCTURNAL",      nullptr, Color(136, 50,  170, 255), 0,   0U},
+    {"NOCTURNAL",      nullptr, Color(136, 50,  170, 255), 0,   0U},
     {"AQUATIC",        nullptr, Color(11,  161, 219, 255), 0,   0U},
-      {"STAT",           nullptr, Color(204, 36,  29,  255), 0,   0U},
+    {"STAT",           nullptr, Color(204, 36,  29,  255), 0,   0U},
     {"METAL",          nullptr, Color(204, 36,  29,  255), 0,   2U},
-      {"KEYMETAL",       nullptr, Color(143, 67,  27,  255), 0,   2U},
+    {"KEYMETAL",       nullptr, Color(143, 67,  27,  255), 0,   2U},
     {"SHORTLINE",      nullptr, Color(0,   0,   0,   0),   -9,  0U},
-      {"EXTRASHORTLINE", nullptr, Color(0,   0,   0,   0),   -14, 0U},
+    {"EXTRASHORTLINE", nullptr, Color(0,   0,   0,   0),   -14, 0U},
     {"CREDITS1",       nullptr, Color(0,   0,   0,   0),   3,   0U},
-      {"CREDITS2",       nullptr, Color(0,   0,   0,   0),   2,   0U},
-    {"NORMAL",         nullptr, Color(40,  50,  90,  255), 0,   0U},
-      {"KEYWORD",        nullptr, Color(143, 67,  27,  255), 0,   0U}
+    {"CREDITS2",       nullptr, Color(0,   0,   0,   0),   2,   0U}  // @Patoke: wrong size (2 duplicates)
 };
 
 TodStringListFormat::TodStringListFormat() {
@@ -190,6 +188,7 @@ bool TodStringListExists(const SexyString &theString) {
 }
 
 // 0x5197B0
+//  GOTY @Patoke: 0x523E20
 void TodWriteStringSetFormat(const char *theFormat, TodStringListFormat &theCurrentFormat) {
     for (int i = 0; i < gTodStringFormatCount; i++) {
         const TodStringListFormat &aFormat = gTodStringFormats[i];
@@ -291,6 +290,7 @@ int TodWriteWordWrappedHelper(
 }
 
 // 0x519B50
+//  GOTY @Patoke: 0x5241C0
 int TodDrawStringWrappedHelper(
     Graphics *g, const SexyString &theText, const Rect &theRect, Font *theFont, const Color &theColor,
     DrawStringJustification theJustification, bool drawString
@@ -317,12 +317,12 @@ int TodDrawStringWrappedHelper(
         aCurChar = theText[aCurPos];
         if (aCurChar == '{') // 如果当前字符是特殊格式控制字符的起始标志（即“{”）
         {
-            const char *aFmtStart = theText.c_str() + aCurPos;
+            const char *aFmtStart = aCurPos + theText.c_str();
             const char *aFormat = aFmtStart + 1;
             const char *aFmtEnd = strchr(aFormat, '}');
             if (aFmtEnd != nullptr) // 如果存在与“{”对应的“}”，即存在完整的控制字符
             {
-                aCurPos += aFmtEnd - aFmtStart + 1; // aCurPos 移至“}”的下一个字符处
+                aCurPos += aFmtEnd - aFormat; // aCurPos 移至“}”的下一个字符处
                 int aOldAscentOffset = theFont->GetAscent() - theFont->GetAscentPadding();
                 Color aExistingColor = aCurrentFormat.mNewColor;  // 备份当前格式的颜色
                 TodWriteStringSetFormat(aFormat, aCurrentFormat); // 根据当前控制字符设置新的格式
@@ -410,6 +410,7 @@ int TodDrawStringWrappedHelper(
 }
 
 // 0x51A040
+//  GOTY @Patoke: 0x5246A0
 void TodDrawStringWrapped(
     Graphics *g, const SexyString &theText, const Rect &theRect, Font *theFont, const Color &theColor,
     DrawStringJustification theJustification

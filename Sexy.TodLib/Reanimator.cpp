@@ -479,6 +479,7 @@ void BlendTransform(
 }
 
 // 0x471F90
+//  GOTY @Patoke: 0x476580
 void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent) {
     ReanimatorFrameTime aFrameTime;
     GetFrameTime(&aFrameTime);
@@ -1116,6 +1117,7 @@ void Reanimation::ShowOnlyTrack(const char *theTrackName) {
 }
 
 // 0x4739E0
+//  GOTY @Patoke: 0x478120
 void Reanimation::AssignRenderGroupToTrack(const char *theTrackName, int theRenderGroup) {
     for (int i = 0; i < mDefinition->mTrackCount; i++)
         if (stricmp(mDefinition->mTracks[i].mName, theTrackName) == 0) {
@@ -1155,8 +1157,8 @@ bool Reanimation::ShouldTriggerTimedEvent(float theEventTime) {
     else // 若动画正好完成一次循环而重新进入下一次循环，则可触发的范围为 [0, mAnimTime] ∪ [mLastFrameTime, 1]
         return theEventTime >= mLastFrameTime || theEventTime < mAnimTime;
 }
-
 // 0x473BF0
+//  GOTY @Patoke: 0x478310
 void Reanimation::PlayReanim(
     const char *theTrackName, ReanimLoopType theLoopType, int theBlendTime, float theAnimRate
 ) {

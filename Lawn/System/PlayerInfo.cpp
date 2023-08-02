@@ -88,6 +88,7 @@ void PlayerInfo::LoadDetails() {
 }
 
 // 0x4695F0
+//  GOTY @Patoke: 0x46D750
 void PlayerInfo::SaveDetails() {
     DataWriter aWriter;
     aWriter.OpenMemory();

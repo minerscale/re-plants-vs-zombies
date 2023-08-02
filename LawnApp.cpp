@@ -47,11 +47,11 @@
 #include "SexyAppFramework/Dialog.h"
 #include "SexyAppFramework/resource.h"
 
-bool gIsPartnerBuild = false;
-bool gSlowMo = false;        // 0x6A9EAA
-bool gFastMo = false;        // 0x6A9EAB
-LawnApp *gLawnApp = nullptr; // 0x6A9EC0
-int gSlowMoCounter = 0;      // 0x6A9EC4
+bool gIsPartnerBuild = false; // GOTY @Patoke: 0x729659
+bool gSlowMo = false;         // 0x6A9EAA
+bool gFastMo = false;         // 0x6A9EAB
+LawnApp *gLawnApp = nullptr;  // 0x6A9EC0
+int gSlowMoCounter = 0;       // 0x6A9EC4
 
 // 0x44E8A0
 bool LawnGetCloseRequest() {
@@ -345,6 +345,7 @@ void LawnApp::WriteToRegistry() {
 void LawnApp::ReadFromRegistry() { SexyApp::ReadFromRegistry(); }
 
 // 0x44F540
+//  GOTY @Patoke: 0x452800
 bool LawnApp::WriteCurrentUserConfig() {
     if (mPlayerInfo) mPlayerInfo->SaveDetails();
 
@@ -740,6 +741,7 @@ void LawnApp::FinishUserDialog(bool isYes) {
 }
 
 // 0x450A10
+//  GOTY @Patoke: 0x453DE0
 void LawnApp::DoCreateUserDialog() {
     KillDialog(Dialogs::DIALOG_CREATEUSER);
 
@@ -1678,6 +1680,7 @@ void LawnApp::CenterDialog(Dialog *theDialog, int theWidth, int theHeight) {
 }
 
 // 0x453630
+//  GOTY @Patoke: 0x456B00
 void LawnApp::PlayFoley(FoleyType theFoleyType) {
     if (!mMuteSoundsForCutscene) {
         mSoundSystem->PlayFoley(theFoleyType);
@@ -1772,6 +1775,7 @@ bool LawnApp::IsIZombieLevel() {
 bool LawnApp::IsShovelLevel() { return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SHOVEL; }
 
 // 0x453840
+//  GOTY @Patoke: 0x456D10
 bool LawnApp::IsWallnutBowlingLevel() {
     if (mBoard == nullptr) return false;
 
