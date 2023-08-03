@@ -797,12 +797,14 @@ void LawnApp::FinishCreateUserDialog(bool isYes) {
 }
 
 // 0x450E20
+//  GOTY @Patoke: 0x4541F0
 void LawnApp::DoConfirmDeleteUserDialog(const SexyString &theName) {
     KillDialog(Dialogs::DIALOG_CONFIRMDELETEUSER);
     DoDialog(
         Dialogs::DIALOG_CONFIRMDELETEUSER, true, _S("Are You Sure" /*"[ARE_YOU_SURE]"*/),
         // StrFormat(TodStringTranslate(_S("[DELETE_USER_WARNING]")).c_str(), StringToSexyStringFast(theName))
-        StrFormat(_S("This will permanently remove '%s' from the player roster!") /**/, theName), _S(""),
+        // @Patoke: didn't access this as 'const char*'
+        StrFormat(_S("This will permanently remove '%s' from the player roster!") /**/, theName.c_str()), _S(""),
         Dialog::BUTTONS_YES_NO
     );
 }
@@ -938,6 +940,7 @@ void LawnApp::FinishCheatDialog(bool isYes) {
 
 void LawnApp::FinishTimesUpDialog() { KillDialog(Dialogs::DIALOG_TIMESUP); }
 
+// GOTY @Patoke: 0x5282E0
 void LawnApp::DoConfirmSellDialog(const SexyString &theMessage) {
     Dialog *aConfirmDialog =
         DoDialog(Dialogs::DIALOG_ZEN_SELL, true, _S("[ZEN_SELL_HEADER]"), theMessage, _S(""), Dialog::BUTTONS_YES_NO);
@@ -1081,11 +1084,12 @@ void LawnApp::Init() {
     mSawYeti = false;
 
     SexyApp::Init();
-#ifdef _DEBUG
+    // @Patoke: horrible debug checks, breaks the whole exe in release mode
+    // #ifdef _DEBUG
     TodAssertInitForApp();
     gBetaSubmitFunc = BetaSubmitFunc;
     TodLog("session id: %u", mSessionID);
-#endif
+    // #endif
 
     if (!mResourceManager->ParseResourcesFile("properties\\resources.xml")) {
         ShowResourceError(true);
