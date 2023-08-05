@@ -428,6 +428,7 @@ void LawnApp::NewGame() {
 }
 
 // 0x44F8E0
+//  GOTY @Patoke: 0x452B80
 void LawnApp::ShowGameSelector() {
     KillBoard();
     // UpdateRegisterInfo();
@@ -846,6 +847,7 @@ void LawnApp::FinishConfirmDeleteUserDialog(bool isYes) {
 }
 
 // 0x451180
+//  GOTY @Patoke: 0x454560
 void LawnApp::DoRenameUserDialog(const SexyString &theName) {
     KillDialog(Dialogs::DIALOG_RENAMEUSER);
 
@@ -1511,6 +1513,7 @@ void LawnApp::FastLoad(GameMode theGameMode) {
 void LawnApp::LoadingThreadCompleted() {}
 
 // 0x452CB0
+//  GOTY @Patoke: 0x456150
 void LawnApp::LoadingCompleted() {
     mWidgetManager->RemoveWidget(mTitleScreen);
     SafeDeleteWidget(mTitleScreen);
@@ -1570,6 +1573,7 @@ void LawnApp::PreDisplayHook() { SexyApp::PreDisplayHook(); }
 void LawnApp::ButtonPress(int theId) {}
 
 // 0x4531E0
+//  GOTY @Patoke: 0x456690
 void LawnApp::ButtonDepress(int theId) {
     if (theId % 10000 >= 2000 &&
         theId % 10000 < 3000) // 按钮编号 theId ∈ [2000, 3000) 时，表示按下 theId - 2000 编号的对话中的“是”按钮
