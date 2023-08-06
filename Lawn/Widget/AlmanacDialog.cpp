@@ -461,7 +461,7 @@ void AlmanacDialog::DrawZombies(Graphics *g) {
     // and magnet-shroom{KEYWORD}" (magnet-shroom will show with the {KEYWORD} colors)
     // @Patoke: added extra check for the zamboni zombie
     TodDrawStringWrapped(
-        g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 377 : 372, 258, 170),
+        g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 372 : 377, 258, 170),
         Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), aAlign
     );
 }

@@ -765,21 +765,25 @@ bool StoreScreen::CanAffordItem(StoreItem theStoreItem) {
 }
 
 // 0x48C740
+//  GOTY @Patoke: 0x497340
 void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
     mApp->SetCursor(CURSOR_POINTER);
     mBubbleCountDown = 0;
     mApp->CrazyDaveStopTalking();
     if (!CanAffordItem(theStoreItem)) {
+        // @Patoke: fix relocs
         Dialog *aDialog = mApp->DoDialog(
-            DIALOG_NOT_ENOUGH_MONEY, true, _S("[NOT_ENOUGH_MONEY]"), _S("[CANNOT_AFFORD_ITEM]"),
-            _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER
+            DIALOG_NOT_ENOUGH_MONEY, true, _S("Not enough money"),
+            _S("You can't afford this item yet. Earn more coins by killing zombies!"), _S("[DIALOG_BUTTON_OK]"),
+            BUTTONS_FOOTER
         );
         mWaitForDialog = true;
         aDialog->WaitForResult(true);
         mWaitForDialog = false;
     } else {
         LawnDialog *aComfirmDialog = (LawnDialog *)mApp->DoDialog(
-            DIALOG_STORE_PURCHASE, true, _S("买下这个物品？"), _S("你真的要买下这个物品吗？"), _S(""), BUTTONS_YES_NO
+            DIALOG_STORE_PURCHASE, true, _S("Buy this item?"), _S("Are you sure you want to buy this item?"), _S(""),
+            BUTTONS_YES_NO
         );
         aComfirmDialog->mLawnYesButton->SetLabel(_S("[DIALOG_BUTTON_YES]"));
         aComfirmDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
@@ -793,10 +797,11 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
             if (theStoreItem == STORE_ITEM_PACKET_UPGRADE) {
                 ++mApp->mPlayerInfo->mPurchases[theStoreItem];
                 SexyString aDialogLines = StrFormat(
-                    _S("你现在可以在每个关卡中选用%d个种子了！"), 6 + mApp->mPlayerInfo->mPurchases[theStoreItem]
+                    _S("Now you can choose to take %d seeds with you per level!"),
+                    6 + mApp->mPlayerInfo->mPurchases[theStoreItem]
                 );
                 Dialog *aDialog = mApp->DoDialog(
-                    DIALOG_UPGRADED, true, _S("[MORE_SLOTS]"), aDialogLines, _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER
+                    DIALOG_UPGRADED, true, _S("More slots!"), aDialogLines, _S("[DIALOG_BUTTON_OK]"), BUTTONS_FOOTER
                 );
 
                 mWaitForDialog = true;

@@ -364,6 +364,7 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 }
 
 // 0x471BC0
+//  GOTY @Patoke: 0x4761C0
 void Reanimation::Update() {
     if (mFrameCount == 0 || mDead) return;
 
@@ -985,6 +986,7 @@ Image *Reanimation::GetImageOverride(const char *theTrackName) {
 }
 
 // 0x473490
+//  GOTY @Patoke: 0x477BB0
 void Reanimation::SetImageOverride(const char *theTrackName, Image *theImage) {
     GetTrackInstanceByName(theTrackName)->mImageOverride = theImage;
 }

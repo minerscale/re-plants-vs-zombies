@@ -783,7 +783,8 @@ void SeedChooserScreen::ShowToolTip() {
                     if (TestBit(aRecFlags, NOT_RECOMMENDED_NOCTURNAL)) {
                         mToolTip->SetWarningText(_S("[NOCTURNAL_WARNING]"));
                     } else {
-                        mToolTip->SetWarningText(_S("[NOT_RECOMMEND_FOR_LEVEL]"));
+                        // @Patoke: fix local name
+                        mToolTip->SetWarningText(_S("[NOT_RECOMMENDED_FOR_LEVEL]"));
                     }
                 } else {
                     mToolTip->SetWarningText(_S(""));

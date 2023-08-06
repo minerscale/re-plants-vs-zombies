@@ -235,6 +235,7 @@ LawnStoneButton *MakeButton(int theId, ButtonListener *theListener, const SexySt
 }
 
 // 0x4486C0
+//  GOTY @Patoke: 0x44B2B0
 NewLawnButton::NewLawnButton(Image *theComponentImage, int theId, ButtonListener *theListener)
     : DialogButton(theComponentImage, theId, theListener) {
     mHiliteFont = nullptr;
@@ -252,6 +253,7 @@ NewLawnButton::~NewLawnButton() {
 }
 
 // 0x448790
+//  GOTY @Patoke: 0x44B383
 void NewLawnButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
@@ -306,6 +308,7 @@ void NewLawnButton::Draw(Graphics *g) {
 }
 
 // 0x448B70
+//  GOTY @Patoke: 0x44B7C0
 bool NewLawnButton::IsPointVisible(int x, int y) {
     if (!mUsePolygonShape) return DialogButton::IsPointVisible(x, y);
 
