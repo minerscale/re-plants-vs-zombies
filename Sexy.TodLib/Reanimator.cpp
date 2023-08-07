@@ -884,6 +884,7 @@ AttachEffect *Reanimation::AttachParticleToTrack(
 }
 
 // 0x473110
+//  GOTY @Patoke: 0x477810
 void Reanimation::GetAttachmentOverlayMatrix(int theTrackIndex, SexyTransform2D &theOverlayMatrix) {
     ReanimatorTransform aTransform;
     GetCurrentTransform(theTrackIndex, &aTransform); // 取得含混合、不含覆写的自然变换

@@ -337,3 +337,8 @@ NewLawnButton *MakeNewButton(
 
     return aButton;
 }
+
+void NewLawnButton::SetOffset(int theX, int theY) {
+    this->mButtonOffsetX = theX;
+    this->mButtonOffsetY = theY;
+}

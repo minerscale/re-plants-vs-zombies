@@ -153,6 +153,7 @@ GameSelector::GameSelector(LawnApp *theApp) {
     mOptionsButton->Resize(
         0, 0, Sexy::IMAGE_SELECTORSCREEN_OPTIONS1->mWidth, Sexy::IMAGE_SELECTORSCREEN_OPTIONS1->mHeight + 23
     );
+    mOptionsButton->mClip = false; // @Patoke: not in original but fixes stuff
     mOptionsButton->mBtnNoDraw = true;
     mOptionsButton->mMouseVisible = false;
     mOptionsButton->mButtonOffsetY = 15;
@@ -162,6 +163,7 @@ GameSelector::GameSelector(LawnApp *theApp) {
         Sexy::IMAGE_SELECTORSCREEN_HELP2, Sexy::IMAGE_SELECTORSCREEN_HELP2
     );
     mHelpButton->Resize(0, 0, Sexy::IMAGE_SELECTORSCREEN_HELP1->mWidth, Sexy::IMAGE_SELECTORSCREEN_HELP1->mHeight + 33);
+    mHelpButton->mClip = false; // @Patoke: not in original but fixes stuff
     mHelpButton->mBtnNoDraw = true;
     mHelpButton->mMouseVisible = false;
     mHelpButton->mButtonOffsetY = 30;
@@ -173,6 +175,7 @@ GameSelector::GameSelector(LawnApp *theApp) {
     mQuitButton->Resize(
         0, 0, Sexy::IMAGE_SELECTORSCREEN_QUIT1->mWidth + 10, Sexy::IMAGE_SELECTORSCREEN_QUIT1->mHeight + 10
     );
+    mQuitButton->mClip = false; // @Patoke: not in original but fixes stuff
     mQuitButton->mBtnNoDraw = true;
     mQuitButton->mMouseVisible = false;
     mQuitButton->mButtonOffsetX = 5;
@@ -194,6 +197,7 @@ GameSelector::GameSelector(LawnApp *theApp) {
         Sexy::IMAGE_SELECTORSCREEN_STOREHIGHLIGHT, Sexy::IMAGE_SELECTORSCREEN_STOREHIGHLIGHT
     );
     mStoreButton->Resize(405, 484, Sexy::IMAGE_SELECTORSCREEN_STORE->mWidth, Sexy::IMAGE_SELECTORSCREEN_STORE->mHeight);
+    mStoreButton->mClip = false; // @Patoke: not in original but fixes stuff
     mStoreButton->mMouseVisible = false;
 
     mAlmanacButton = MakeNewButton(
@@ -203,6 +207,7 @@ GameSelector::GameSelector(LawnApp *theApp) {
     mAlmanacButton->Resize(
         327, 428, Sexy::IMAGE_SELECTORSCREEN_ALMANAC->mWidth, Sexy::IMAGE_SELECTORSCREEN_ALMANAC->mHeight
     );
+    mAlmanacButton->mClip = false; // @Patoke: not in original but fixes stuff
     mAlmanacButton->mMouseVisible = false;
 
     mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_TITLE_CRAZY_DAVE_MAIN_THEME);
@@ -481,7 +486,8 @@ void GameSelector::Draw(Graphics *g) {
         aSelectorReanim->GetAttachmentOverlayMatrix(aSignIdx, aOverlayMatrix);
         float aStringWidth = Sexy::FONT_BRIANNETOD16->StringWidth(aWelcomeStr);
         SexyTransform2D aOffsetMatrix;
-        aOffsetMatrix.Translate(170.5f - (int)(aStringWidth * 0.5f), 102.5f);
+        // @Patoke: add position so it moves when sliding to position
+        aOffsetMatrix.Translate(170.5f - (int)(aStringWidth * 0.5f) + mX, 102.5f + mY);
         TodDrawStringMatrix(
             g, Sexy::FONT_BRIANNETOD16, aOverlayMatrix * aOffsetMatrix, aWelcomeStr, Color(255, 245, 200)
         );
@@ -636,22 +642,29 @@ void GameSelector::Update() {
         Move(aNewX, aNewY);
 
         // @Patoke: not from the original binaries but fixes bugs
-        mOverlayWidget->mY = aNewY;
+        mOverlayWidget->Move(aNewX, aNewY);
         mAchievementsWidget->mY = aNewY + mApp->mHeight - 1;
-        mAdventureButton->mButtonOffsetY = aNewY;
-        mMinigameButton->mButtonOffsetY = aNewY;
-        mPuzzleButton->mButtonOffsetY = aNewY;
-        mOptionsButton->mButtonOffsetY = aNewY + 15;
-        mQuitButton->mButtonOffsetY = aNewY + 5;
-        mHelpButton->mButtonOffsetY = aNewY + 30;
-        mStoreButton->mButtonOffsetY = aNewY;
-        mAlmanacButton->mButtonOffsetY = aNewY;
-        mZenGardenButton->mButtonOffsetY = aNewY;
-        mSurvivalButton->mButtonOffsetY = aNewY;
-        mChangeUserButton->mButtonOffsetY = aNewY;
-        mZombatarButton->mButtonOffsetY = aNewY;
-        mAchievementsButton->mButtonOffsetY = aNewY;
-        mQuickPlayButton->mButtonOffsetY = aNewY;
+        mAdventureButton->SetOffset(aNewX, aNewY);
+        mMinigameButton->SetOffset(aNewX, aNewY);
+        mPuzzleButton->SetOffset(aNewX, aNewY);
+        mOptionsButton->SetOffset(aNewX, aNewY + 15);
+        mQuitButton->SetOffset(aNewX, aNewY + 5);
+        mHelpButton->SetOffset(aNewX, aNewY + 30);
+        mStoreButton->SetOffset(aNewX, aNewY);
+        mAlmanacButton->SetOffset(aNewX, aNewY);
+        mZenGardenButton->SetOffset(aNewX, aNewY);
+        mSurvivalButton->SetOffset(aNewX, aNewY);
+        mChangeUserButton->SetOffset(aNewX, aNewY);
+        mZombatarButton->SetOffset(aNewX, aNewY);
+        mAchievementsButton->SetOffset(aNewX, aNewY);
+        mQuickPlayButton->SetOffset(aNewX, aNewY);
+
+        // @Patoke: make sure these are drawn even outside of bounds (force redraw)
+        mAchievementsButton->MarkDirty();
+        mOptionsButton->MarkDirty();
+        mHelpButton->MarkDirty();
+        mQuitButton->MarkDirty();
+        mStoreButton->MarkDirty();
 
         mSlideCounter--;
     }
@@ -1142,17 +1155,17 @@ void GameSelector::ButtonDepress(int theId) {
         if (ShouldDoZenTuturialBeforeAdventure()) mApp->mZenGarden->SetupForZenTutorial();
         break;
     case GameSelector::GameSelector_Zombatar:
-        // if (mApp->mPlayerInfo->mHasOpenedZombatar??)
-        //	this->sub_450170();
+        // if (mApp->mPlayerInfo->mAckZombatarTOS)
+        //	GameSelector::ShowZombatarScreen();
         // else
-        //	mApp->sub_4534C0();
+        //	LawnApp::ShowZombatarTOS();
         break;
     case GameSelector::GameSelector_AchievementsBack: // @Patoke: seems to be unused
         // SlideTo(0, 0);
         break;
     case GameSelector::GameSelector_Achievements: ShowAchievementsScreen(); break;
     case GameSelector::GameSelector_QuickPlay:
-        // this->sub_4501C0();
+        // GameSelector::ShowQuickPlayScreen();
         break;
     }
 }
