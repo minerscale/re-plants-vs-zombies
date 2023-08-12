@@ -1131,7 +1131,7 @@ void GameSelector::ButtonDepress(int theId) {
     case GameSelector::GameSelector_Quit: mApp->ConfirmQuit(); break;
     case GameSelector::GameSelector_Help:
         mApp->KillGameSelector();
-        mApp->ShowAwardScreen(AwardType::AWARD_HELP_ZOMBIENOTE);
+        mApp->ShowAwardScreen(AwardType::AWARD_HELP_ZOMBIENOTE, false);
         break;
     case GameSelector::GameSelector_Options:    mApp->DoNewOptions(true); break;
     case GameSelector::GameSelector_ChangeUser: mApp->DoUserDialog(); break;

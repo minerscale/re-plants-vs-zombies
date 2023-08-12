@@ -275,7 +275,7 @@ void NewOptionsDialog::ButtonDepress(int theId) {
         if (mFromGameSelector) {
             mApp->KillNewOptionsDialog();
             mApp->KillGameSelector();
-            mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE);
+            mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE, false);
         } else if (mApp->mBoard && mApp->mBoard->NeedSaveGame()) {
             mApp->DoConfirmBackToMain();
         } else if (mApp->mBoard && mApp->mBoard->mCutScene && mApp->mBoard->mCutScene->IsSurvivalRepick()) {

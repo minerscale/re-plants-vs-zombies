@@ -11,17 +11,53 @@
 #include "../System/Music.h"
 #include "../System/PlayerInfo.h"
 #include "../ZenGarden.h"
+#include "AchievementsScreen.h"
 #include "AlmanacDialog.h"
 #include "GameButton.h"
 #include "StoreScreen.h"
 
 // 0x405780
-AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType) {
+//  GOTY @Patoke: 0x4063E0
+AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowingAchievements) {
     mApp = theApp;
     mClip = false;
     mFadeInCounter = 180;
     mAwardType = theAwardType;
+    mShowingAchievements = theShowingAchievements;
     TodLoadResources("DelayLoad_AwardScreen");
+
+    // @Patoke: implemented
+    if (!theShowingAchievements) {
+        mShowingAchievements = false;
+    } else {
+        TodLoadResources("DelayLoad_ChallengeScreen");
+
+        for (int i = 0; i < MAX_ACHIEVEMENTS; i++) {
+            if (mApp->mPlayerInfo->mEarnedAchievements[i] && !mApp->mPlayerInfo->mShownAchievements[i]) {
+                mApp->mPlayerInfo->mShownAchievements[i] = true;
+
+                AchievementScreenItem aAchievementItem{};
+                aAchievementItem.mId = i;
+                aAchievementItem.mStartAnimTime = 100 * mAchievementItems.size() + 150;
+                aAchievementItem.mEndAnimTime = aAchievementItem.mStartAnimTime + 100;
+                aAchievementItem.mStartY = 750;
+                aAchievementItem.mY = aAchievementItem.mStartY;
+                mAchievementItems.push_back(aAchievementItem);
+            }
+        }
+
+        if (!mAchievementItems.empty()) {
+            // int aDestY = 284 - ((76 * mAchievementItems.size()) >> 1);
+            int aDestY = 284 - ((76 * mAchievementItems.size()) / 2);
+
+            for (int j = 0; j < mAchievementItems.size(); j++) {
+                mAchievementItems[j].mDestY = aDestY;
+                aDestY += 76;
+            }
+        }
+
+        mApp->WriteCurrentUserConfig();
+    }
 
     int aLevel = mApp->mPlayerInfo->GetLevel();
     if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
@@ -68,6 +104,22 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType) {
     mStartButton->Resize(324, 500, 156, 42);
     mStartButton->mTextOffsetY = -1;
 
+    // @Patoke: implemented
+    mContinueButton = new GameButton(AwardScreen::AwardScreen_Start);
+    mContinueButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON;
+    mContinueButton->mOverImage = nullptr;
+    mContinueButton->mDownImage = nullptr;
+    mContinueButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
+    mContinueButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
+    mContinueButton->SetFont(Sexy::FONT_DWARVENTODCRAFT15);
+    mContinueButton->mColors[ButtonWidget::COLOR_LABEL] = Color(213, 159, 43);
+    mContinueButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = Color(213, 159, 43);
+    mContinueButton->Resize(324, 515, 156, 42);
+    mContinueButton->mParentWidget = this;
+    mContinueButton->mTextOffsetY = -1;
+    mContinueButton->mBtnNoDraw = true;
+    mContinueButton->mDisabled = true;
+
     mMenuButton = new GameButton(AwardScreen::AwardScreen_Menu);
     mMenuButton->SetLabel("[AWARD_MAIN_MENU_BUTTON]");
     mMenuButton->mButtonImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON2;
@@ -108,7 +160,9 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType) {
         mStartButton->SetLabel("[MAIN_MENU_BUTTON]");
         mMenuButton->mBtnNoDraw = true;
         mMenuButton->mDisabled = true;
-    } else if (aLevel == 1) {
+    } else if (mApp->HasFinishedAdventure()) // @Patoke: change case
+    {
+        ReportAchievement::GiveAchievement(mApp, HomeSecurity, false);
         mStartButton->SetLabel("[CONTINUE_BUTTON]");
         mMenuButton->mBtnNoDraw = true;
         mMenuButton->mDisabled = true;
@@ -120,6 +174,17 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType) {
         !mApp->mPlayerInfo->mHasSeenUpsell) {
         mMenuButton->mBtnNoDraw = true;
         mMenuButton->mDisabled = true;
+    }
+
+    // @Patoke: implemented
+    if (mShowingAchievements) {
+        mShowStartButtonAfterAchievements = !mStartButton->mBtnNoDraw;
+        mShowMenuButtonAfterAchievements = !mMenuButton->mBtnNoDraw;
+        mStartButton->mBtnNoDraw = true;
+        mStartButton->mDisabled = true;
+        mMenuButton->mBtnNoDraw = true;
+        mMenuButton->mDisabled = true;
+        mContinueButton->SetLabel("[CONTINUE_BUTTON]");
     }
 
     if (IsPaperNote()) {
@@ -176,7 +241,9 @@ void AwardScreen::Draw(Graphics *g) {
     g->SetLinearBlend(true);
 
     int aLevel = mApp->mPlayerInfo->GetLevel();
-    if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
+    if (mShowingAchievements) // @Patoke: add call
+        DrawAchievements(g);
+    else if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
         g->SetColor(Color(125, 200, 255, 255));
         g->SetColorizeImages(true);
         g->DrawImage(Sexy::IMAGE_BACKGROUND6BOSS, -900, -400, 2800, 1200);
@@ -189,7 +256,8 @@ void AwardScreen::Draw(Graphics *g) {
         g->DrawImage(Sexy::IMAGE_BACKGROUND1, -700, -300, 2800, 1200);
         g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE, 80, 80);
         g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE_HELP, 131, 132);
-    } else {
+    } else if (mAwardType != AWARD_ACHIEVEMENTONLY) // @Patoke: add check
+    {
         if (!mApp->IsAdventureMode()) {
             if (mApp->EarnedGoldTrophy()) {
                 DrawBottom(g, _S("[BEAT_GAME_MESSAGE1]"), _S("[GOLD_SUNFLOWER_TROPHY]"), _S("[BEAT_GAME_MESSAGE2]"));
@@ -275,7 +343,6 @@ void AwardScreen::Draw(Graphics *g) {
             DrawAwardSeed(g);
         }
     }
-    DrawAchievements(g);
 
     mStartButton->Draw(g);
     mMenuButton->Draw(g);
@@ -286,8 +353,29 @@ void AwardScreen::Draw(Graphics *g) {
 }
 
 // 0x4076A0
+//  GOTY @Patoke: 0x408FE0
 void AwardScreen::Update() {
     Widget::Update();
+    // @Patoke: implemented
+    if (mShowingAchievements) {
+        mAchievementAnimTime++;
+
+        for (int i = 0; i < mAchievementItems.size(); i++) {
+            if (mAchievementAnimTime >= mAchievementItems[i].mStartAnimTime) {
+                mAchievementItems[i].mY = TodAnimateCurve(
+                    mAchievementItems[i].mStartAnimTime, mAchievementItems[i].mEndAnimTime, mAchievementAnimTime,
+                    mAchievementItems[i].mStartY, mAchievementItems[i].mDestY, CURVE_EASE_IN_OUT
+                );
+            }
+
+            if (mAchievementItems[mAchievementItems.size() - 1].mY ==
+                mAchievementItems[mAchievementItems.size() - 1].mDestY) {
+                mContinueButton->mBtnNoDraw = false;
+                mContinueButton->mDisabled = false;
+            }
+        }
+    }
+
     if (mApp->GetDialogCount() > 0) return;
     mStartButton->Update();
     mMenuButton->Update();
@@ -302,6 +390,7 @@ void AwardScreen::KeyChar(char theChar) {
 }
 
 // 0x407780
+//  GOTY @Patoke: 0x409530
 void AwardScreen::StartButtonPressed() {
     if (mApp->GetDialog(DIALOG_STORE)) return;
 
@@ -325,7 +414,7 @@ void AwardScreen::StartButtonPressed() {
         if (aLevel == 1) {
             mApp->KillAwardScreen();
             if (mApp->HasFinishedAdventure()) {
-                mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE);
+                mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);
             } else {
                 mApp->PreNewGame(GAMEMODE_ADVENTURE, false);
             }
@@ -379,9 +468,12 @@ void AwardScreen::MouseDown(int x, int y, int theClickCount) {
 }
 
 // 0x407A70
+//  GOTY @Patoke: 0x409840
 void AwardScreen::MouseUp(int x, int y, int theClickCount) {
     if (theClickCount == 1) {
         if (mStartButton->IsMouseOver()) StartButtonPressed();
+        if (mContinueButton->IsMouseOver()) // @Patoke: add call
+            AchievementsContinuePressed();
         if (mMenuButton->IsMouseOver()) {
             mApp->KillAwardScreen();
             mApp->ShowGameSelector();
@@ -392,14 +484,58 @@ void AwardScreen::MouseUp(int x, int y, int theClickCount) {
 // @Patoke: implement functions
 // GOTY @Patoke: 0x407C20
 void AwardScreen::DrawAchievements(Graphics *g) {
-    // g->SetColorizeImages(true);
-    // Rect aTextWrap = Rect(0, 0, 0, 77);
-    // g->SetColor(Color(255, 255, 255));
-    // g->FillRect(0, 0, mWidth, mHeight);
-    // g->SetColorizeImages(false);
+    g->SetColorizeImages(true);
+    Rect aTextWrap = Rect(0, 0, 0, 77);
+    g->SetColor(Color(255, 255, 255));
+    g->FillRect(0, 0, mWidth, mHeight);
+    g->SetColorizeImages(false);
 
-    // g->DrawImage(IMAGE_CHALLENGE_BACKGROUND, 0, 0);
-    //
-    // TodDrawString(g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220),
-    // DS_ALIGN_CENTER);
+    g->DrawImage(IMAGE_CHALLENGE_BACKGROUND, 0, 0);
+
+    TodDrawString(
+        g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER
+    );
+
+    for (int i = 0; i < mAchievementItems.size(); i++) {
+        std::string aAchievementName = gAchievementList[mAchievementItems[i].mId].name;
+        std::string aAchievementDesc = gAchievementList[mAchievementItems[i].mId].description;
+        aAchievementName.append(" Earned!");
+
+        Rect aSrcRect = Rect(70 * (mAchievementItems[i].mId % 7), 70 * (mAchievementItems[i].mId / 7), 70, 70);
+        Rect aDestRect = Rect(70, 70, 70, 70);
+        Rect aTextRect = Rect(300, mAchievementItems[i].mY + 20, 300, 60);
+
+        g->DrawImage(IMAGE_ACHEESEMENTS_ICONS, aDestRect, aSrcRect);
+
+        TodDrawString(
+            g, aAchievementName, BOARD_WIDTH / 2, mAchievementItems[i].mY + 25, FONT_DWARVENTODCRAFT15,
+            Color(224, 187, 98), DS_ALIGN_CENTER
+        );
+        TodDrawStringWrapped(
+            g, aAchievementName, aTextRect, FONT_DWARVENTODCRAFT12, Color(255, 255, 255),
+            DS_ALIGN_CENTER_VERTICAL_MIDDLE
+        );
+    }
+}
+
+// GOTY @Patoke: 0x409400
+void AwardScreen::AchievementsContinuePressed() {
+    // @Patoke: implemented
+    if (mAwardType == AWARD_ACHIEVEMENTONLY) {
+        mApp->KillAwardScreen();
+        mApp->PreNewGame(GAMEMODE_ADVENTURE, false);
+    } else {
+        mStartButton->mBtnNoDraw = !mShowStartButtonAfterAchievements;
+        mStartButton->mDisabled = !mShowStartButtonAfterAchievements;
+        mMenuButton->mBtnNoDraw = !mShowMenuButtonAfterAchievements;
+        mMenuButton->mDisabled = !mShowMenuButtonAfterAchievements;
+        mContinueButton->mDisabled = true;
+        mContinueButton->mBtnNoDraw = true;
+        mShowingAchievements = false;
+        int level = mApp->mPlayerInfo->GetLevel();
+        if (level == 1 && mApp->HasFinishedAdventure()) {
+            mApp->KillAwardScreen();
+            mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);
+        }
+    }
 }
