@@ -25,6 +25,7 @@
 #include "System/Music.h"
 #include "System/PlayerInfo.h"
 #include "ToolTipWidget.h"
+#include "Widget/AchievementsScreen.h"
 #include "Widget/GameButton.h"
 #include "Widget/StoreScreen.h"
 #include "ZenGarden.h"
@@ -3103,6 +3104,7 @@ void Challenge::ScaryPotterFillColumnWithPlant(
 }
 
 // 0x428540
+//  GOTY @Patoke: 0x42AFA0
 void Challenge::ScaryPotterPlacePot(
     ScaryPotType theScaryPotType, ZombieType theZombieType, SeedType theSeedType, int theCount,
     TodWeightedGridArray *theGridArray, int theGridArrayCount
@@ -3129,6 +3131,7 @@ void Challenge::ScaryPotterPlacePot(
 }
 
 // 0x428620
+//  GOTY @Patoke: 0x42B040
 void Challenge::ScaryPotterChangePotType(GridItemState thePotType, int theCount) {
     TodWeightedArray aPotArray[MAX_SCARY_POTS];
     int aPotCount = 0;
@@ -3156,6 +3159,7 @@ void Challenge::ScaryPotterChangePotType(GridItemState thePotType, int theCount)
 }
 
 // 0x4286F0
+//  GOTY @Patoke: 0x42B0E0
 void Challenge::ScaryPotterPopulate() {
     int aGridArrayCount = 0;
     TodWeightedGridArray aGridArray[MAX_SCARY_POTS];
@@ -3359,6 +3363,9 @@ void Challenge::ScaryPotterPopulate() {
                 SCARYPOT_ZOMBIE, ZOMBIE_GARGANTUAR, SEED_NONE, 1 + aNumExtraGargantuars, aGridArray, aGridArrayCount
             );
             ScaryPotterChangePotType(GRIDITEM_STATE_SCARY_POT_LEAF, 2);
+
+            if (mSurvivalStage == 15) ReportAchievement::GiveAchievement(mApp, ChinaShop, true);
+
             break;
         }
         default: TOD_ASSERT(); break;
@@ -3525,6 +3532,7 @@ void Challenge::ScaryPotterJackExplode(int thePosX, int thePosY) {
 }
 
 // 0x429E50
+//  GOTY @Patoke: 0x42C9F0
 void Challenge::PuzzleNextStageClear() {
     mApp->PlaySample(Sexy::SOUND_HUGE_WAVE);
     mBoard->mNextSurvivalStageCounter = 0;
@@ -3670,6 +3678,7 @@ void Challenge::IZombieSetupPlant(Plant *thePlant) {
 }
 
 // 0x42A660
+//  GOTY @Patoke: 0x42D250
 void Challenge::IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, int theGridY) {
     if (mBoard->CanPlantAt(theGridX, theGridY, theSeedType) == PLANTING_OK) {
         IZombieSetupPlant(mBoard->NewPlant(theGridX, theGridY, theSeedType));
@@ -3677,6 +3686,7 @@ void Challenge::IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, in
 }
 
 // 0x42A6C0
+//  GOTY @Patoke: 0x42D2B0
 void Challenge::IZombiePlacePlants(SeedType theSeedType, int theCount, int theGridY) {
     // 关卡中植物（或限制红线）的列数
     int aColumns = 6;
@@ -3728,6 +3738,7 @@ void Challenge::IZombiePlacePlants(SeedType theSeedType, int theCount, int theGr
 }
 
 // 0x42A890
+//  GOTY @Patoke: 0x42D440
 void Challenge::IZombieInitLevel() {
     mChallengeScore = 0;
     for (int aRow = 0; aRow < I_ZOMBIE_WINNING_SCORE; aRow++) {
@@ -3851,6 +3862,8 @@ void Challenge::IZombieInitLevel() {
         IZombiePlacePlants(SEED_MAGNETSHROOM, 1, 4);
         break;
     case GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS: {
+        if (mSurvivalStage == 10) ReportAchievement::GiveAchievement(mApp, BetterOffDead, true);
+
         int aFormationHit = RandRangeInt(0, 4);
 
         int aPuffshroomCount =
@@ -4510,6 +4523,7 @@ void Challenge::TreeOfWisdomInit() {
 }
 
 // 0x42D1F0
+//  GOTY @Patoke: 0x42FF00
 void Challenge::TreeOfWisdomGrow() {
     mApp->mPlayerInfo->mChallengeRecords[mApp->GetCurrentChallengeIndex()]++;
     int aTreeSize = TreeOfWisdomGetSize();
@@ -4523,6 +4537,8 @@ void Challenge::TreeOfWisdomGrow() {
     } else {
         mChallengeState = STATECHALLENGE_NORMAL;
     }
+
+    if (aTreeSize == 100) ReportAchievement::GiveAchievement(mApp, ToweringWisdom, true);
 }
 
 // 0x42D360

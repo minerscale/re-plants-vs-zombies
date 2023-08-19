@@ -381,6 +381,7 @@ void LawnApp::MakeNewBoard() {
 }
 
 // 0x44F6B0
+//  GOTY @Patoke: 0x452970
 void LawnApp::StartPlaying() {
     KillSeedChooserScreen();
     mBoard->StartLevel();
@@ -1200,6 +1201,7 @@ void LawnApp::HandleCmdLineParam(const std::string &theParamName, const std::str
 }
 
 // 0x452310
+//  GOTY @Patoke: 0x41E420
 bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
     bool aUnlockedNewChallenge = false;
 
@@ -1256,6 +1258,9 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
             }
         }
     }
+
+    int aNumTrophies = GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
+    if (aNumTrophies == 20) ReportAchievement::GiveAchievement(this, BeyondTheGrave, false);
 
     WriteCurrentUserConfig();
 

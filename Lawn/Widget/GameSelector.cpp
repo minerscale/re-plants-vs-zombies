@@ -921,6 +921,7 @@ void GameSelector::KeyDown(KeyCode theKey) {
     if (mApp->mMustacheCheck->Check(theKey) || mApp->mMoustacheCheck->Check(theKey)) {
         mApp->PlayFoley(FoleyType::FOLEY_POLEVAULT);
         mApp->mMustacheMode = !mApp->mMustacheMode;
+        ReportAchievement::GiveAchievement(mApp, MustacheMode, false);
         return;
     }
     if (mApp->mSuperMowerCheck->Check(theKey) || mApp->mSuperMowerCheck2->Check(theKey)) {
@@ -993,6 +994,11 @@ void GameSelector::KeyChar(char theChar) {
         SyncProfile(true);
 
         mApp->EraseFile(GetSavedGameName(GameMode::GAMEMODE_ADVENTURE, mApp->mPlayerInfo->mId));
+    }
+
+    if (theChar == 'k') {
+        for (auto &achievement : mApp->mPlayerInfo->mEarnedAchievements)
+            achievement = false;
     }
 
     if (mApp->mDebugKeysEnabled) {
