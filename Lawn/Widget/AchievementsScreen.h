@@ -10,26 +10,26 @@ class LawnApp;
 using namespace Sexy;
 
 enum AchievementId {
-    HomeSecurity, //
-    NovelPeasPrize,
+    HomeSecurity,     //
+    NovelPeasPrize,   //
     BetterOffDead,    //
     ChinaShop,        //
     Spudow,           //
     Explodonator,     //
     Morticulturalist, //
-    DontPea,
-    RollSomeHeads, //
-    Grounded,
-    Zombologist,  //
-    PennyPincher, //
-    SunnyDays,    //
-    PopcornParty, //
-    GoodMorning,
-    NoFungusAmongUs,
-    BeyondTheGrave, //
-    Immortal,       //
-    ToweringWisdom, //
-    MustacheMode,   //
+    DontPea,          //
+    RollSomeHeads,    //
+    Grounded,         //
+    Zombologist,      //
+    PennyPincher,     //
+    SunnyDays,        //
+    PopcornParty,     //
+    GoodMorning,      //
+    NoFungusAmongUs,  //
+    BeyondTheGrave,   //
+    Immortal,         //
+    ToweringWisdom,   //
+    MustacheMode,     //
     MAX_ACHIEVEMENTS
 };
 
@@ -66,6 +66,7 @@ public:
 class ReportAchievement {
 public:
     static void GiveAchievement(LawnApp *theApp, int theAchievement, bool theForceGive);
+    static void AchievementInitForPlayer(LawnApp *theApp);
 };
 
 #endif

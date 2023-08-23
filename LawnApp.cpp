@@ -1212,12 +1212,27 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
             if (mPlayerInfo->mFinishedAdventure == 1) {
                 mPlayerInfo->mNeedsMessageOnGameSelector = 1;
             }
+            ReportAchievement::GiveAchievement(this, HomeSecurity, false); // @Patoke: add achievement
         } else {
             mPlayerInfo->SetLevel(mBoard->mLevel + 1); // 存档进入下一关
         }
 
         if (!HasFinishedAdventure() && mBoard->mLevel == 34) {
             mPlayerInfo->mNeedsMagicTacoReward = 1;
+        }
+
+        // @Patoke: implemented
+        if (mBoard->StageIsDayWithPool() && !mBoard->mPeaShooterUsed) {
+            ReportAchievement::GiveAchievement(this, DontPea, false);
+        }
+        if (mBoard->StageHasRoof() && !mBoard->HasConveyorBeltSeedBank() && !mBoard->mCatapultPlantsUsed) {
+            ReportAchievement::GiveAchievement(this, Grounded, false);
+        }
+        if (mBoard->StageIsNight() && !mBoard->mMushroomsUsed) {
+            ReportAchievement::GiveAchievement(this, NoFungusAmongUs, false);
+        }
+        if (mBoard->StageIsDayWithoutPool() && mBoard->mMushroomAndCoffeeBeansOnly) {
+            ReportAchievement::GiveAchievement(this, GoodMorning, false);
         }
     } else if (IsSurvivalMode()) {
         if (mBoard->IsFinalSurvivalStage()) {
@@ -1257,10 +1272,11 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
                 mPlayerInfo->mHasNewMiniGame = 1;
             }
         }
-    }
 
-    int aNumTrophies = GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
-    if (aNumTrophies == 20) ReportAchievement::GiveAchievement(this, BeyondTheGrave, false);
+        // @Patoke: implemented
+        int aNumTrophies = GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
+        if (aNumTrophies == 20) ReportAchievement::GiveAchievement(this, BeyondTheGrave, false);
+    }
 
     WriteCurrentUserConfig();
 
@@ -1945,6 +1961,7 @@ int LawnApp::GetSeedsAvailable() {
 }
 
 // 0x453B20
+//  GOTY @Patoke: 0x456FE0
 bool LawnApp::HasSeedType(SeedType theSeedType) {
     if (IsTrialStageLocked() && theSeedType >= SeedType::SEED_JALAPENO) return false;
 
@@ -2705,6 +2722,7 @@ int LawnApp::TrophiesNeedForGoldSunflower() {
 }
 
 // 0x455C50
+//  GOTY @Patoke: 0x459190
 bool LawnApp::EarnedGoldTrophy() { return HasFinishedAdventure() && TrophiesNeedForGoldSunflower() <= 0; }
 
 void LawnApp::FinishZenGardenToturial() {

@@ -443,6 +443,7 @@ void GameSelector::SyncProfile(bool theShowLoading) {
     SyncButtons();
     AlmanacInitForPlayer();
     BoardInitForPlayer();
+    ReportAchievement::AchievementInitForPlayer(mApp); // @Patoke: add call
 }
 
 // 0x44A650

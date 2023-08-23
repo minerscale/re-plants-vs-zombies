@@ -122,6 +122,10 @@ Board::Board(LawnApp *theApp) {
     mGravesCleared = 0;
     mPlantsEaten = 0;
     mPlantsShoveled = 0;
+    mPeaShooterUsed = false;            // @Patoke: added construct
+    mCatapultPlantsUsed = false;        // @Patoke: added construct
+    mMushroomAndCoffeeBeansOnly = true; // @Patoke: added construct
+    mMushroomsUsed = false;             // @Patoke: added construct
     mLevelCoinsCollected = 0;
     mCoinsCollected = 0;
     mDiamondsCollected = 0;
@@ -1750,6 +1754,7 @@ void Board::DoPlantingEffects(int theGridX, int theGridY, Plant *thePlant) {
 }
 
 // 0x40D120
+//  GOTY @Patoke: 0x40FA10
 Plant *Board::AddPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType) {
     Plant *aPlant = NewPlant(theGridX, theGridY, theSeedType, theImitaterType);
     DoPlantingEffects(theGridX, theGridY, aPlant);
@@ -1758,6 +1763,25 @@ Plant *Board::AddPlant(int theGridX, int theGridY, SeedType theSeedType, SeedTyp
     int aSunPlantsCount = CountPlantByType(SeedType::SEED_SUNSHROOM) + CountPlantByType(SeedType::SEED_SUNFLOWER);
     if (aSunPlantsCount > mMaxSunPlants) {
         mMaxSunPlants = aSunPlantsCount; // mMaxSunPlants = max(aSunPlantsCount, mMaxSunPlants);
+    }
+
+    // @Patoke: implemented
+    if (theSeedType == SeedType::SEED_PEASHOOTER || theSeedType == SeedType::SEED_SNOWPEA ||
+        theSeedType == SeedType::SEED_REPEATER || theSeedType == SeedType::SEED_THREEPEATER ||
+        theSeedType == SeedType::SEED_SPLITPEA || theSeedType == SeedType::SEED_GATLINGPEA) {
+        mPeaShooterUsed = true;
+    }
+    if (theSeedType == SeedType::SEED_CABBAGEPULT || theSeedType == SeedType::SEED_KERNELPULT ||
+        theSeedType == SeedType::SEED_MELONPULT || theSeedType == SeedType::SEED_WINTERMELON) {
+        mCatapultPlantsUsed = true;
+    }
+
+    bool aIsFungi = Plant::IsFungus(theSeedType);
+    if (!Plant::IsFlying(theSeedType) && !aIsFungi) {
+        mMushroomAndCoffeeBeansOnly = false;
+    }
+    if (aIsFungi) {
+        mMushroomsUsed = true;
     }
 
     return aPlant;
@@ -2995,6 +3019,7 @@ void Board::MouseDownCobcannonFire(int x, int y, int theClickCount) {
 }
 
 // 0x40FD30
+//  GOTY @Patoke: 0x4126F0
 void Board::MouseDownWithPlant(int x, int y, int theClickCount) {
     // ÓÒ»÷Êó±ê£º·ÅÏÂ¿¨ÅÆ
     if (theClickCount < 0) {
@@ -7240,6 +7265,7 @@ void Board::ProcessDeleteQueue() {
 }
 
 // 0x41BE50
+//  GOTY @Patoke: 0x41EC10
 bool Board::HasConveyorBeltSeedBank() {
     return mApp->IsFinalBossLevel() || mApp->IsMiniBossLevel() || mApp->IsShovelLevel() ||
            mApp->IsWallnutBowlingLevel() || mApp->IsLittleTroubleLevel() || mApp->IsStormyNightLevel() ||
@@ -7353,6 +7379,12 @@ bool Board::StageHasFog() {
     return !mApp->IsStormyNightLevel() && mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_INVISIGHOUL &&
            mBackground == BackgroundType::BACKGROUND_4_FOG;
 }
+
+// GOTY @Patoke: inlined 0x41E669
+bool Board::StageIsDayWithoutPool() { return mBackground == BackgroundType::BACKGROUND_1_DAY; }
+
+// GOTY @Patoke: inlined 0x41E5E6
+bool Board::StageIsDayWithPool() { return mBackground == BackgroundType::BACKGROUND_3_POOL; }
 
 // 0x41C1C0
 int Board::LeftFogColumn() {

@@ -96,6 +96,7 @@ void GameButton::SetFont(Font *theFont) {
 bool GameButton::IsButtonDown() { return mIsDown && mIsOver && !mDisabled && !mBtnNoDraw; }
 
 // 0x447EC0
+//  GOTY @Patoke: 0x44AAC0
 void GameButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
@@ -172,6 +173,7 @@ void GameButton::Resize(int theX, int theY, int theWidth, int theHeight) {
 bool GameButton::IsMouseOver() { return mIsOver && !mDisabled && !mBtnNoDraw; }
 
 // 0x448330
+//  GOTY @Patoke: 0x44AF50
 void GameButton::Update() {
     WidgetManager *aManager = mApp->mWidgetManager;
     int aMouseX = aManager->mLastMouseX, aMouseY = aManager->mLastMouseY;
