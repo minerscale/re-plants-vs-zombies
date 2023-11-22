@@ -27,8 +27,8 @@ FModMusicInterface::~FModMusicInterface() { FreeFModDLL(); }
 FSOUND_SAMPLE *FModMusicInterface::LoadFMODSample(const std::string &theFileName) {
     std::string aFilename = theFileName;
 
-    int aLastDotPos = aFilename.rfind('.');
-    int aLastSlashPos = max((int)aFilename.rfind('\\'), (int)aFilename.rfind('/'));
+    // int aLastDotPos = aFilename.rfind('.'); // unused
+    int aLastSlashPos = std::max((int)aFilename.rfind('\\'), (int)aFilename.rfind('/'));
     if (aLastSlashPos < 0) aLastSlashPos = 0;
 
     std::string aCachedName = GetAppDataFolder() + "cached\\" + GetFileName(theFileName, true) + ".wav";

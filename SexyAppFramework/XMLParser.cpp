@@ -1,5 +1,5 @@
 #include "XMLParser.h"
-#include "..\PakLib\PakInterface.h"
+#include "../PakLib/PakInterface.h"
 #include "Debug.h"
 
 using namespace Sexy;
@@ -241,7 +241,7 @@ bool XMLParser::OpenFile(const std::string &theFileName) {
             p_ungetc(aChar2, mFile);
             p_ungetc(aChar1, mFile);
         }
-        if (mGetCharFunc = &XMLParser::GetAsciiChar) {
+        if ((mGetCharFunc = &XMLParser::GetAsciiChar)) {
             if (aFileLen >= 3) // UTF-8?
             {
                 int aChar1 = p_fgetc(mFile);

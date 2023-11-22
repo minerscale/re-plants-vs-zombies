@@ -159,7 +159,7 @@ void ZenGarden::PlantSetLaunchCounter(Plant *thePlant) {
 }
 
 // 0x51D3A0
-Plant *ZenGarden::PlacePottedPlant(int thePottedPlantIndex) {
+Plant *ZenGarden::PlacePottedPlant(intptr_t thePottedPlantIndex) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePottedPlantIndex);
     SeedType aSeedType = aPottedPlant->mSeedType;
     if (aPottedPlant->mPlantAge == PottedPlantAge::PLANTAGE_SPROUT) {
@@ -222,7 +222,7 @@ void ZenGarden::RemovePottedPlant(Plant *thePlant) {
     }
 }
 
-PottedPlant *ZenGarden::PottedPlantFromIndex(int thePottedPlantIndex) {
+PottedPlant *ZenGarden::PottedPlantFromIndex(intptr_t thePottedPlantIndex) {
     TOD_ASSERT(thePottedPlantIndex >= 0 && thePottedPlantIndex < mApp->mPlayerInfo->mNumPottedPlants);
     return &mApp->mPlayerInfo->mPottedPlant[thePottedPlantIndex];
 }
@@ -317,7 +317,7 @@ void ZenGarden::AddPottedPlant(PottedPlant *thePottedPlant) {
     PottedPlant *aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPottedPlantIndex];
     *aPottedPlant = *thePottedPlant;
     aPottedPlant->mWhichZenGarden = GardenType::GARDEN_MAIN;
-    aPottedPlant->mLastWateredTime = 0i64;
+    aPottedPlant->mLastWateredTime = 0;
     FindOpenZenGardenSpot(aPottedPlant->mX, aPottedPlant->mY);
     mApp->mPlayerInfo->mNumPottedPlants++;
 
@@ -364,6 +364,8 @@ int ZenGarden::GetPlantSellPrice(Plant *thePlant) {
         return 800;
     }
     TOD_ASSERT();
+
+    __builtin_unreachable();
 }
 
 // 0x51DA00
@@ -758,7 +760,7 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
                 aStinky->mPosX + 40.0f, aStinky->mPosY + 40.0f, aStinky->mRenderOrder + 1,
                 ParticleEffect::PARTICLE_PRESENT_PICKUP
             );
-            mApp->mPlayerInfo->mLastStinkyChocolateTime = _time32(nullptr);
+            mApp->mPlayerInfo->mLastStinkyChocolateTime = _time64(nullptr);
             mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE]--;
 
             mApp->PlayFoley(FoleyType::FOLEY_WAKEUP);
@@ -947,7 +949,7 @@ void ZenGarden::MovePlant(Plant *thePlant, int theGridX, int theGridY) {
     int aPosY = mBoard->GridToPixelY(theGridX, theGridY);
     TOD_ASSERT(mBoard->GetTopPlantAt(theGridX, theGridY, PlantPriority::TOPPLANT_ANY) == nullptr);
 
-    bool aIsSleeping = thePlant->mIsAsleep;
+    // bool aIsSleeping = thePlant->mIsAsleep; // unused
     thePlant->SetSleeping(false);
     Plant *aTopPlantAtGrid =
         mBoard->GetTopPlantAt(thePlant->mPlantCol, thePlant->mRow, PlantPriority::TOPPLANT_ONLY_UNDER_PLANT);
@@ -1062,7 +1064,7 @@ void ZenGarden::AddStinky() {
 
     if (!mApp->mPlayerInfo->mHasSeenStinky) {
         mApp->mPlayerInfo->mHasSeenStinky = 1;
-        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = _time32(nullptr);
+        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = _time64(nullptr);
     }
 
     GridItem *aStinky = mBoard->mGridItems.DataArrayAlloc();
@@ -1272,7 +1274,7 @@ void ZenGarden::ResetStinkyTimers() {
 void ZenGarden::StinkyUpdate(GridItem *theStinky) {
     Reanimation *aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
 
-    __time32_t aNow = _time32(nullptr);
+    __time64_t aNow = _time64(nullptr);
     if (mApp->mPlayerInfo->mLastStinkyChocolateTime > aNow ||
         mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] > aNow) {
         ResetStinkyTimers();
@@ -1595,7 +1597,8 @@ void ZenGarden::MouseDownWithFullWheelBarrow(int x, int y) {
     aPottedPlant->mWhichZenGarden = mGardenType;
     aPottedPlant->mX = aGridX;
     aPottedPlant->mY = aGridY;
-    int aPottedPlantIndex = ((int)aPottedPlant - (int)mApp->mPlayerInfo->mPottedPlant) / (int)sizeof(PottedPlant);
+    intptr_t aPottedPlantIndex =
+        ((intptr_t)aPottedPlant - (intptr_t)mApp->mPlayerInfo->mPottedPlant) / (intptr_t)sizeof(PottedPlant);
     Plant *aPlant = PlacePottedPlant(aPottedPlantIndex);
     mBoard->DoPlantingEffects(aPottedPlant->mX, aPottedPlant->mY, aPlant);
 }
@@ -1879,10 +1882,10 @@ void ZenGarden::PlantUpdateProduction(Plant *thePlant) {
 }
 
 void ZenGarden::ResetPlantTimers(PottedPlant *thePottedPlant) {
-    thePottedPlant->mLastWateredTime = 0i64;
-    thePottedPlant->mLastNeedFulfilledTime = 0i64;
-    thePottedPlant->mLastFertilizedTime = 0i64;
-    thePottedPlant->mLastChocolateTime = 0i64;
+    thePottedPlant->mLastWateredTime = 0;
+    thePottedPlant->mLastNeedFulfilledTime = 0;
+    thePottedPlant->mLastFertilizedTime = 0;
+    thePottedPlant->mLastChocolateTime = 0;
 }
 
 // 0x521E70
@@ -1927,12 +1930,14 @@ void ZenGarden::DrawPlantOverlay(Graphics *g, Plant *thePlant) {
     case PottedPlantNeed::PLANTNEED_PHONOGRAPH: g->DrawImageCel(IMAGE_ZEN_NEED_ICONS, 60, 7, 2, 0); break;
 
     case PottedPlantNeed::PLANTNEED_WATER: g->DrawImage(IMAGE_WATERDROP, 67, 9); break;
+
+    case PottedPlantNeed::PLANTNEED_NONE: break;
     }
 }
 
 // 0x521FE0
 void ZenGarden::WakeStinky() {
-    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = _time32(nullptr);
+    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = _time64(nullptr);
     mApp->PlaySample(SOUND_TAP);
     mBoard->ClearAdvice(AdviceType::ADVICE_STINKY_SLEEPING);
     gLawnApp->mPlayerInfo->mHasWokenStinky = TRUE;
@@ -1940,7 +1945,7 @@ void ZenGarden::WakeStinky() {
 
 // 0x522090
 bool ZenGarden::IsStinkyHighOnChocolate() {
-    return _time32(nullptr) - mApp->mPlayerInfo->mLastStinkyChocolateTime < 3600;
+    return _time64(nullptr) - mApp->mPlayerInfo->mLastStinkyChocolateTime < 3600;
 }
 
 bool ZenGarden::PlantHighOnChocolate(PottedPlant *thePottedPlant) {
@@ -1957,7 +1962,7 @@ bool ZenGarden::ShouldStinkyBeAwake() {
     if (IsStinkyHighOnChocolate()) {
         return true;
     }
-    return _time32(nullptr) - mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] < 180;
+    return _time64(nullptr) - mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] < 180;
 }
 
 // 0x522110
@@ -2012,7 +2017,7 @@ SeedType ZenGarden::PickRandomSeedType() {
             aSeedCount++;
         }
     }
-    return (SeedType)TodPickFromArray((int *)aSeedList, aSeedCount);
+    return (SeedType)TodPickFromArray((intptr_t *)aSeedList, aSeedCount);
 }
 
 // 0x5223F0

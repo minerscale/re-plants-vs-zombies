@@ -430,6 +430,7 @@ void DrawSeedPacket(
     case SeedType::SEED_SLOT_MACHINE_DIAMOND:
     case SeedType::SEED_ZOMBIQUARIUM_SNORKLE:
     case SeedType::SEED_ZOMBIQUARIUM_TROPHY:      aDrawSeedInMiddle = false; break;
+    default:                                      break;
     }
     if (((LawnApp *)gSexyAppBase)->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME) {
         if (aSeedType == SeedType::SEED_WALLNUT || aSeedType == SeedType::SEED_SUNFLOWER ||
@@ -475,7 +476,7 @@ void DrawSeedPacket(
             aCostStr = StrFormat(_S("%d"), Plant::GetCost(theSeedType, theImitaterType));
         }
 
-        Font *aTextFont = Sexy::FONT_PICO129;
+        _Font *aTextFont = Sexy::FONT_PICO129;
         int aTextOffsetX = 32 - aTextFont->StringWidth(aCostStr);
         int aTextOffsetY = aTextFont->GetAscent() + 54;
         if (g->mScaleX == 1.0f && g->mScaleY == 1.0f) {

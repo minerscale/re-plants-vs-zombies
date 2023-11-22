@@ -1,15 +1,15 @@
 #define XMD_H
 
 #include "ImageLib.h"
-#include "..\PakLib\PakInterface.h"
-#include "png\png.h"
+#include "../PakLib/PakInterface.h"
+#include "png/png.h"
 #include <math.h>
 #include <tchar.h>
 #include <windows.h>
 
 extern "C" {
-#include "jpeg\jerror.h"
-#include "jpeg\jpeglib.h"
+#include "jpeg/jerror.h"
+#include "jpeg/jpeglib.h"
 }
 
 // #include "jpeg2000/jasper.h"
@@ -49,7 +49,7 @@ static void png_pak_read_data(png_structp png_ptr, png_bytep data, png_size_t le
 Image *GetPNGImage(const std::string &theFileName) {
     png_structp png_ptr;
     png_infop info_ptr;
-    unsigned int sig_read = 0;
+    // unsigned int sig_read = 0;
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type;
     PFILE *fp;
@@ -195,9 +195,9 @@ Image *GetGIFImage(const std::string &theFileName) {
 
     int opacity, status;
 
-    register int i;
+    int i;
 
-    register unsigned char *p;
+    unsigned char *p;
 
     unsigned char background, // 背景色在全局颜色列表中的索引（背景色：图像中没有被指定颜色的像素会被背景色填充）
         c,
@@ -220,6 +220,7 @@ Image *GetGIFImage(const std::string &theFileName) {
     Determine if this is a GIF file.
     */
     status = p_fread(magick, sizeof(char), 6, fp); // 读取文件头（包含文件签名与版本号，共 6 字节）
+    (void)status;                                  // unused
 
     // 文件头的 ASCII 值为“GIF87a”或”GIF89a”，其中前三位为 GIF 签名，后三位为不同年份的版本号
     if (((strncmp((char *)magick, "GIF87", 5) != 0) && (strncmp((char *)magick, "GIF89", 5) != 0))) return NULL;
@@ -279,6 +280,7 @@ Image *GetGIFImage(const std::string &theFileName) {
 
                 dispose = header[0] >> 2;
                 delay = (header[2] << 8) | header[1];
+                (void)delay; // Unused
                 if ((header[0] & 0x01) == 1) opacity = header[3];
                 break;
             }
@@ -367,7 +369,9 @@ Image *GetGIFImage(const std::string &theFileName) {
 
         delay = 0;
         dispose = 0;
+        (void)dispose; // unused
         iterations = 1;
+        (void)iterations; // unused
         /*if (image_info->ping)
         {
         f (opacity >= 0)
@@ -408,6 +412,8 @@ Image *GetGIFImage(const std::string &theFileName) {
             colormap = new unsigned char[3 * colors];
 
             int pos = p_ftell(fp);
+            (void)pos; // unused
+
             p_fread(colormap, sizeof(char), 3 * colors, fp);
 
             p = colormap;
@@ -452,9 +458,9 @@ Image *GetGIFImage(const std::string &theFileName) {
         int available, bits, code, clear, code_mask, code_size, count, end_of_information, in_code, offset, old_code,
             pass, y;
 
-        register int x;
+        int x;
 
-        register unsigned int datum;
+        unsigned int datum;
 
         short *prefix;
 
@@ -497,7 +503,7 @@ Image *GetGIFImage(const std::string &theFileName) {
 
         unsigned long *aBits = new unsigned long[width * height];
 
-        register unsigned char *c = NULL;
+        unsigned char *c = NULL;
 
         for (y = 0; y < (int)height; y++) {
             // q=SetImagePixels(image,0,offset,width,1);
@@ -518,6 +524,7 @@ Image *GetGIFImage(const std::string &theFileName) {
                             Read a new data block.
                             */
                             int pos = p_ftell(fp);
+                            (void)pos; // unused
 
                             count = ReadBlobBlock(fp, (char *)packet);
                             if (count <= 0) break;
@@ -640,7 +647,7 @@ Image *GetGIFImage(const std::string &theFileName) {
         delete prefix;
         delete packet;
 
-        delete colortable;
+        delete[] colortable;
 
         // if (y < image->rows)
         // failed = true;
@@ -897,6 +904,7 @@ bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     fwrite(&aHeader, sizeof(aHeader), 1, aFile);
     DWORD *aRow = theImage->mBits + (theImage->mHeight - 1) * theImage->mWidth;
     int aRowSize = theImage->mWidth * 4;
+    (void)aRowSize; // Unused
     for (int i = 0; i < theImage->mHeight; i++, aRow -= theImage->mWidth)
         fwrite(aRow, 4, theImage->mWidth, aFile);
 
@@ -1239,7 +1247,7 @@ Image* GetJPEG2000Image(const std::string& theFileName)
 }
 #else
 
-#include "j2k-codec\j2k-codec.h"
+#include "j2k-codec/j2k-codec.h"
 
 HMODULE gJ2KCodec = NULL;
 std::string gJ2KCodecKey = "Your registration here";
@@ -1378,7 +1386,7 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
     if (!gAutoLoadAlpha) lookForAlphaImage = false;
 
     int aLastDotPos = theFilename.rfind('.');
-    int aLastSlashPos = max((int)theFilename.rfind('\\'), (int)theFilename.rfind('/'));
+    int aLastSlashPos = std::max((int)theFilename.rfind('\\'), (int)theFilename.rfind('/'));
 
     std::string anExt;
     std::string aFilename;

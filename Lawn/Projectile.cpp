@@ -770,7 +770,7 @@ void Projectile::Update() {
 void Projectile::Draw(Graphics *g) {
     const ProjectileDefinition &aProjectileDef = GetProjectileDef();
 
-    Image *aImage;
+    Image *aImage = nullptr;
     float aScale = 1.0f;
     if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
         aImage = IMAGE_REANIM_COBCANNON_COB;
@@ -896,6 +896,7 @@ void Projectile::DrawShadow(Graphics *g) {
         break;
 
     case ProjectileType::PROJECTILE_FIREBALL: aScale = 1.4f; break;
+    default:                                  break;
     }
 
     if (mMotionType == ProjectileMotion::MOTION_LOBBED) {

@@ -8,7 +8,7 @@ namespace Sexy {
 class ImageFont;
 class SexyAppBase;
 
-class SysFont : public Font {
+class SysFont : public _Font {
 public:
     HFONT mHFont;
     SexyAppBase *mApp;
@@ -38,7 +38,7 @@ public:
         Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, const Rect &theClipRect
     );
 
-    virtual Font *Duplicate();
+    virtual _Font *Duplicate();
 };
 
 } // namespace Sexy

@@ -30,11 +30,7 @@
     DO8(buf, 8);
 
 /* ========================================================================= */
-uLong ZEXPORT adler32(adler, buf, len)
-uLong adler;
-const Bytef *buf;
-uInt len;
-{
+uLong ZEXPORT adler32(uLong adler, const Bytef *buf, uInt len) {
     unsigned long s1 = adler & 0xffff;
     unsigned long s2 = (adler >> 16) & 0xffff;
     int k;

@@ -8,7 +8,7 @@
 using namespace Sexy;
 
 Slider::Slider(Image *theTrackImage, Image *theThumbImage, int theId, SliderListener *theListener)
-    : mTrackImage(theTrackImage), mThumbImage(theThumbImage), mId(theId), mListener(theListener), mVal(0.0) {
+    : mListener(theListener), mVal(0.0), mId(theId), mTrackImage(theTrackImage), mThumbImage(theThumbImage) {
     mDragging = false;
     mHorizontal = true;
     mRelX = mRelY = 0;

@@ -50,9 +50,7 @@ struct internal_state {
     inflate_blocks_statef *blocks; /* current inflate_blocks state */
 };
 
-int ZEXPORT inflateReset(z)
-z_streamp z;
-{
+int ZEXPORT inflateReset(z_streamp z) {
     if (z == Z_NULL || z->state == Z_NULL) return Z_STREAM_ERROR;
     z->total_in = z->total_out = 0;
     z->msg = Z_NULL;
@@ -62,9 +60,7 @@ z_streamp z;
     return Z_OK;
 }
 
-int ZEXPORT inflateEnd(z)
-z_streamp z;
-{
+int ZEXPORT inflateEnd(z_streamp z) {
     if (z == Z_NULL || z->state == Z_NULL || z->zfree == Z_NULL) return Z_STREAM_ERROR;
     if (z->state->blocks != Z_NULL) inflate_blocks_free(z->state->blocks, z);
     ZFREE(z, z->state);
@@ -73,12 +69,7 @@ z_streamp z;
     return Z_OK;
 }
 
-int ZEXPORT inflateInit2_(z, w, version, stream_size)
-z_streamp z;
-int w;
-const char *version;
-int stream_size;
-{
+int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_size) {
     if (version == Z_NULL || version[0] != ZLIB_VERSION[0] || stream_size != sizeof(z_stream)) return Z_VERSION_ERROR;
 
     /* initialize state */
@@ -119,11 +110,9 @@ int stream_size;
     return Z_OK;
 }
 
-int ZEXPORT inflateInit_(z, version, stream_size)
-z_streamp z;
-const char *version;
-int stream_size;
-{ return inflateInit2_(z, DEF_WBITS, version, stream_size); }
+int ZEXPORT inflateInit_(z_streamp z, const char *version, int stream_size) {
+    return inflateInit2_(z, DEF_WBITS, version, stream_size);
+}
 
 #define NEEDBYTE                                                                                                       \
     {                                                                                                                  \
@@ -132,10 +121,7 @@ int stream_size;
     }
 #define NEXTBYTE (z->avail_in--, z->total_in++, *z->next_in++)
 
-int ZEXPORT inflate(z, f)
-z_streamp z;
-int f;
-{
+int ZEXPORT inflate(z_streamp z, int f) {
     int r;
     uInt b;
 
@@ -246,11 +232,7 @@ int f;
 #endif
 }
 
-int ZEXPORT inflateSetDictionary(z, dictionary, dictLength)
-z_streamp z;
-const Bytef *dictionary;
-uInt dictLength;
-{
+int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef *dictionary, uInt dictLength) {
     uInt length = dictLength;
 
     if (z == Z_NULL || z->state == Z_NULL || z->state->mode != DICT0) return Z_STREAM_ERROR;
@@ -267,9 +249,7 @@ uInt dictLength;
     return Z_OK;
 }
 
-int ZEXPORT inflateSync(z)
-z_streamp z;
-{
+int ZEXPORT inflateSync(z_streamp z) {
     uInt n;     /* number of bytes to look at */
     Bytef *p;   /* pointer to bytes */
     uInt m;     /* number of marker bytes found in a row */
@@ -318,9 +298,7 @@ z_streamp z;
  * decompressing, PPP checks that at the end of input packet, inflate is
  * waiting for these length bytes.
  */
-int ZEXPORT inflateSyncPoint(z)
-z_streamp z;
-{
+int ZEXPORT inflateSyncPoint(z_streamp z) {
     if (z == Z_NULL || z->state == Z_NULL || z->state->blocks == Z_NULL) return Z_STREAM_ERROR;
     return inflate_blocks_sync_point(z->state->blocks);
 }

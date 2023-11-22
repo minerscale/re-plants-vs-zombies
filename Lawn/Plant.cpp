@@ -461,6 +461,7 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
         }
         break;
     case SeedType::SEED_TANGLEKELP: TOD_ASSERT(aBodyReanim); aBodyReanim->SetTruncateDisappearingFrames();
+    default:                        break;
     }
 
     if ((mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME) &&
@@ -1705,6 +1706,8 @@ bool Plant::DrawMagnetItemsOnTop() {
 
         return false;
     }
+
+    return false;
 }
 
 // 0x461D90
@@ -2925,6 +2928,7 @@ float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale) 
     case SeedType::SEED_POTATOMINE:     aScaleOffsetFix -= 4.0f; break;
     case SeedType::SEED_LILYPAD:        aScaleOffsetFix -= 16.0f; break;
     case SeedType::SEED_INSTANT_COFFEE: aScaleOffsetFix -= 20.0f; break;
+    default:                            break;
     }
 
     return aHeightOffset + (theFlowerPotScale * aScaleOffsetFix - aScaleOffsetFix);
@@ -3492,7 +3496,8 @@ void Plant::BlowAwayFliers(int theX, int theRow) {
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
         if (!aZombie->IsDeadOrDying()) {
-            Rect aZombieRect = aZombie->GetZombieRect();
+            // Verified as a pure function, safe to remove
+            // Rect aZombieRect = aZombie->GetZombieRect();
             if (aZombie->IsFlying()) {
                 aZombie->mBlowingAway = true;
             }
@@ -3612,6 +3617,7 @@ void Plant::DoSpecial() {
 
         break;
     }
+    default: break;
     }
 }
 

@@ -219,6 +219,6 @@ std::string Sexy::GetDirectXErrorString(HRESULT theResult) {
     }
 
     char aBuf[50];
-    sprintf(aBuf, "%x", theResult);
+    sprintf(aBuf, "%lx", theResult);
     return aBuf;
 }

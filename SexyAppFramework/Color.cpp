@@ -8,8 +8,8 @@ Color Color::White(255, 255, 255);
 Color::Color() : mRed(0), mGreen(0), mBlue(0), mAlpha(255) {}
 
 Color::Color(int theColor)
-    : mAlpha((theColor >> 24) & 0xFF), mRed((theColor >> 16) & 0xFF), mGreen((theColor >> 8) & 0xFF),
-      mBlue((theColor) & 0xFF) {
+    : mRed((theColor >> 16) & 0xFF), mGreen((theColor >> 8) & 0xFF), mBlue((theColor) & 0xFF),
+      mAlpha((theColor >> 24) & 0xFF) {
     if (mAlpha == 0) mAlpha = 0xff;
 }
 

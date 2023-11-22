@@ -3,40 +3,40 @@
 
 using namespace Sexy;
 
-Font::Font() {
+_Font::_Font() {
     mAscent = 0;
-    mHeight = 0;
     mAscentPadding = 0;
+    mHeight = 0;
     mLineSpacingOffset = 0;
 }
 
-Font::Font(const Font &theFont)
-    : mAscent(theFont.mAscent), mHeight(theFont.mHeight), mAscentPadding(theFont.mAscentPadding),
+_Font::_Font(const _Font &theFont)
+    : mAscent(theFont.mAscent), mAscentPadding(theFont.mAscentPadding), mHeight(theFont.mHeight),
       mLineSpacingOffset(theFont.mLineSpacingOffset) {}
 
-Font::~Font() {}
+_Font::~_Font() {}
 
-int Font::GetAscent() { return mAscent; }
+int _Font::GetAscent() { return mAscent; }
 
-int Font::GetAscentPadding() { return mAscentPadding; }
+int _Font::GetAscentPadding() { return mAscentPadding; }
 
-int Font::GetDescent() { return mHeight - mAscent; }
+int _Font::GetDescent() { return mHeight - mAscent; }
 
-int Font::GetHeight() { return mHeight; }
+int _Font::GetHeight() { return mHeight; }
 
-int Font::GetLineSpacingOffset() { return mLineSpacingOffset; }
+int _Font::GetLineSpacingOffset() { return mLineSpacingOffset; }
 
-int Font::GetLineSpacing() { return mHeight + mLineSpacingOffset; }
+int _Font::GetLineSpacing() { return mHeight + mLineSpacingOffset; }
 
-int Font::StringWidth(const SexyString &theString) { return 0; }
+int _Font::StringWidth(const SexyString &theString) { return 0; }
 
-int Font::CharWidth(SexyChar theChar) {
+int _Font::CharWidth(SexyChar theChar) {
     SexyString aString(1, theChar);
     return StringWidth(aString);
 }
 
-int Font::CharWidthKern(SexyChar theChar, SexyChar thePrevChar) { return CharWidth(theChar); }
+int _Font::CharWidthKern(SexyChar theChar, SexyChar thePrevChar) { return CharWidth(theChar); }
 
-void Font::DrawString(
+void _Font::DrawString(
     Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, const Rect &theClipRect
 ) {}

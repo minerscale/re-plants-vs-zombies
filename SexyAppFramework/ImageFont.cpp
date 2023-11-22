@@ -1,5 +1,5 @@
 #include "ImageFont.h"
-#include "..\SexyAppFramework\AutoCrit.h"
+#include "../SexyAppFramework/AutoCrit.h"
 #include "Graphics.h"
 #include "Image.h"
 #include "MemoryImage.h"
@@ -84,13 +84,13 @@ FontLayer::FontLayer(FontData *theFontData) {
 
 FontLayer::FontLayer(const FontLayer &theFontLayer)
     : mFontData(theFontLayer.mFontData), mRequiredTags(theFontLayer.mRequiredTags),
-      mExcludedTags(theFontLayer.mExcludedTags), mImage(theFontLayer.mImage), mDrawMode(theFontLayer.mDrawMode),
-      mOffset(theFontLayer.mOffset), mSpacing(theFontLayer.mSpacing), mMinPointSize(theFontLayer.mMinPointSize),
-      mMaxPointSize(theFontLayer.mMaxPointSize), mPointSize(theFontLayer.mPointSize), mAscent(theFontLayer.mAscent),
-      mAscentPadding(theFontLayer.mAscentPadding), mHeight(theFontLayer.mHeight),
-      mDefaultHeight(theFontLayer.mDefaultHeight), mColorMult(theFontLayer.mColorMult),
-      mColorAdd(theFontLayer.mColorAdd), mLineSpacingOffset(theFontLayer.mLineSpacingOffset),
-      mBaseOrder(theFontLayer.mBaseOrder), mCharDataMap(theFontLayer.mCharDataMap) {
+      mExcludedTags(theFontLayer.mExcludedTags), mCharDataMap(theFontLayer.mCharDataMap),
+      mColorMult(theFontLayer.mColorMult), mColorAdd(theFontLayer.mColorAdd), mImage(theFontLayer.mImage),
+      mDrawMode(theFontLayer.mDrawMode), mOffset(theFontLayer.mOffset), mSpacing(theFontLayer.mSpacing),
+      mMinPointSize(theFontLayer.mMinPointSize), mMaxPointSize(theFontLayer.mMaxPointSize),
+      mPointSize(theFontLayer.mPointSize), mAscent(theFontLayer.mAscent), mAscentPadding(theFontLayer.mAscentPadding),
+      mHeight(theFontLayer.mHeight), mDefaultHeight(theFontLayer.mDefaultHeight),
+      mLineSpacingOffset(theFontLayer.mLineSpacingOffset), mBaseOrder(theFontLayer.mBaseOrder) {
     // ulong i;
     //
     // for (i = 0; i < 256; i++)
@@ -703,7 +703,7 @@ bool FontData::LoadLegacy(Image *theFontImage, const std::string &theFontDescFil
 
     mSourceFile = theFontDescFileName;
 
-    int aSpaceWidth = 0;
+    // int aSpaceWidth = 0; // unused
     // fscanf(aStream,"%d%d",&aFontLayer->mCharData[' '].mWidth,&aFontLayer->mAscent);
     fscanf(aStream, "%d%d", &aFontLayer->GetCharData(' ')->mWidth, &aFontLayer->mAscent);
 
@@ -793,16 +793,19 @@ ImageFont::ImageFont(Image *theFontImage) {
     mFontData->mFontLayerList.push_back(FontLayer(mFontData));
     FontLayer *aFontLayer = &mFontData->mFontLayerList.back();
 
-    mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
+    // mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
+    // Weird stray .first
+    (void)mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
+
     aFontLayer->mImage = (MemoryImage *)theFontImage;
     aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
     aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 }
 
 ImageFont::ImageFont(const ImageFont &theImageFont)
-    : Font(theImageFont), mScale(theImageFont.mScale), mFontData(theImageFont.mFontData),
-      mPointSize(theImageFont.mPointSize), mTagVector(theImageFont.mTagVector),
-      mActiveListValid(theImageFont.mActiveListValid), mForceScaledImagesWhite(theImageFont.mForceScaledImagesWhite) {
+    : _Font(theImageFont), mFontData(theImageFont.mFontData), mPointSize(theImageFont.mPointSize),
+      mTagVector(theImageFont.mTagVector), mActiveListValid(theImageFont.mActiveListValid), mScale(theImageFont.mScale),
+      mForceScaledImagesWhite(theImageFont.mForceScaledImagesWhite) {
     mFontData->Ref();
 
     if (mActiveListValid) mActiveLayerList = theImageFont.mActiveLayerList;
@@ -822,7 +825,7 @@ ImageFont::ImageFont(Image *theFontImage, const std::string &theFontDescFileName
 ImageFont::~ImageFont() { mFontData->DeRef(); }
 
 /*ImageFont::ImageFont(const ImageFont& theImageFont, Image* theImage) :
-    Font(theImageFont),
+    _Font(theImageFont),
     mImage(theImage)
 {
     for (int i = 0; i < 256; i++)
@@ -898,7 +901,7 @@ void ImageFont::GenerateActiveFontLayers() {
                     }
 
                     // Resize font elements
-                    int aCharNum;
+                    int aCharNum = 0;
 
                     MemoryImage *aMemoryImage = new MemoryImage(mFontData->mApp);
 
@@ -922,6 +925,7 @@ void ImageFont::GenerateActiveFontLayers() {
                     // }
                     for (auto anItr = aFontLayer->mCharDataMap.begin(); anItr != aFontLayer->mCharDataMap.end();
                          anItr++) {
+                        aCharNum++;
                         Rect *anOrigRect = &anItr->second.mImageRect;
 
                         Rect aScaledRect(
@@ -965,8 +969,11 @@ void ImageFont::GenerateActiveFontLayers() {
                         int aCount = aMemoryImage->mWidth * aMemoryImage->mHeight;
                         ulong *aBits = aMemoryImage->GetBits();
 
-                        for (int i = 0; i < aCount; i++)
-                            *(aBits++) = *aBits | 0x00FFFFFF;
+                        for (int i = 0; i < aCount; i++) {
+                            // *(aBits++) = *aBits | 0x00FFFFFF; ambiguous
+                            *(aBits) = *aBits | 0x00FFFFFF;
+                            aBits++;
+                        }
                     }
 
                     aMemoryImage->Palletize();
@@ -1091,7 +1098,7 @@ void ImageFont::DrawStringEx(
         gRenderTail[aPoolIdx] = NULL;
     }
 
-    int aXPos = theX;
+    // int aXPos = theX; // unused
 
     if (theDrawnAreas != NULL) theDrawnAreas->clear();
 
@@ -1182,22 +1189,26 @@ void ImageFont::DrawStringEx(
             }
 
             Color aColor;
-            aColor.mRed =
-                min((theColor.mRed * anActiveFontLayer->mBaseFontLayer->mColorMult.mRed / 255) +
-                        anActiveFontLayer->mBaseFontLayer->mColorAdd.mRed,
-                    255);
-            aColor.mGreen =
-                min((theColor.mGreen * anActiveFontLayer->mBaseFontLayer->mColorMult.mGreen / 255) +
-                        anActiveFontLayer->mBaseFontLayer->mColorAdd.mGreen,
-                    255);
-            aColor.mBlue =
-                min((theColor.mBlue * anActiveFontLayer->mBaseFontLayer->mColorMult.mBlue / 255) +
-                        anActiveFontLayer->mBaseFontLayer->mColorAdd.mBlue,
-                    255);
-            aColor.mAlpha =
-                min((theColor.mAlpha * anActiveFontLayer->mBaseFontLayer->mColorMult.mAlpha / 255) +
-                        anActiveFontLayer->mBaseFontLayer->mColorAdd.mAlpha,
-                    255);
+            aColor.mRed = std::min(
+                (theColor.mRed * anActiveFontLayer->mBaseFontLayer->mColorMult.mRed / 255) +
+                    anActiveFontLayer->mBaseFontLayer->mColorAdd.mRed,
+                255
+            );
+            aColor.mGreen = std::min(
+                (theColor.mGreen * anActiveFontLayer->mBaseFontLayer->mColorMult.mGreen / 255) +
+                    anActiveFontLayer->mBaseFontLayer->mColorAdd.mGreen,
+                255
+            );
+            aColor.mBlue = std::min(
+                (theColor.mBlue * anActiveFontLayer->mBaseFontLayer->mColorMult.mBlue / 255) +
+                    anActiveFontLayer->mBaseFontLayer->mColorAdd.mBlue,
+                255
+            );
+            aColor.mAlpha = std::min(
+                (theColor.mAlpha * anActiveFontLayer->mBaseFontLayer->mColorMult.mAlpha / 255) +
+                    anActiveFontLayer->mBaseFontLayer->mColorAdd.mAlpha,
+                255
+            );
 
             // int anOrder = anActiveFontLayer->mBaseFontLayer->mBaseOrder +
             // anActiveFontLayer->mBaseFontLayer->mCharData[(uchar) aChar].mOrder;
@@ -1223,7 +1234,7 @@ void ImageFont::DrawStringEx(
             aRenderCommand->mMode = anActiveFontLayer->mBaseFontLayer->mDrawMode;
             aRenderCommand->mNext = NULL;
 
-            int anOrderIdx = min(max(anOrder + 128, 0), 255);
+            int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
 
             if (gRenderTail[anOrderIdx] == NULL) {
                 gRenderTail[anOrderIdx] = aRenderCommand;
@@ -1343,7 +1354,7 @@ void ImageFont::DrawString(
     DrawStringEx(g, theX, theY, theString, theColor, &theClipRect, NULL, NULL);
 }
 
-Font *ImageFont::Duplicate() { return new ImageFont(*this); }
+_Font *ImageFont::Duplicate() { return new ImageFont(*this); }
 
 void ImageFont::SetPointSize(int thePointSize) {
     mPointSize = thePointSize;

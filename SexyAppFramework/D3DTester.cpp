@@ -101,8 +101,8 @@ void D3DTestImage::CopyToTexture8888(LPDIRECTDRAWSURFACE7 theTexture, int offx, 
         theTexture->Lock(NULL, &aDesc, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT | DDLOCK_WRITEONLY, NULL), "Lock Texture"
     );
 
-    int aWidth = min(texWidth, (GetWidth() - offx));
-    int aHeight = min(texHeight, (GetHeight() - offy));
+    int aWidth = std::min(texWidth, (GetWidth() - offx));
+    int aHeight = std::min(texHeight, (GetHeight() - offy));
 
     if (aWidth < texWidth || aHeight < texHeight) memset(aDesc.lpSurface, 0, aDesc.lPitch * aDesc.dwHeight);
 
@@ -134,8 +134,8 @@ void D3DTestImage::CopyToTexture4444(LPDIRECTDRAWSURFACE7 theTexture, int offx, 
         theTexture->Lock(NULL, &aDesc, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT | DDLOCK_WRITEONLY, NULL), "Lock Texture"
     );
 
-    int aWidth = min(texWidth, (GetWidth() - offx));
-    int aHeight = min(texHeight, (GetHeight() - offy));
+    int aWidth = std::min(texWidth, (GetWidth() - offx));
+    int aHeight = std::min(texHeight, (GetHeight() - offy));
 
     if (aWidth < texWidth || aHeight < texHeight) memset(aDesc.lpSurface, 0, aDesc.lPitch * aDesc.dwHeight);
 
@@ -176,10 +176,10 @@ void D3DTestImage::DrawPieceToDevice(
     y -= 0.5f;
 
     D3DTLVERTEX aVertex[4] = {
-        {x,            y,             0, 1, theColor, 0, 0,    0   },
-        {x,            y + texHeight, 0, 1, theColor, 0, 0,    maxV},
-        {x + texWidth, y,             0, 1, theColor, 0, maxU, 0   },
-        {x + texWidth, y + texHeight, 0, 1, theColor, 0, maxU, maxV}
+        {{x},            {y},             {0}, {1}, {theColor}, {0}, {0},    {0}   },
+        {{x},            {y + texHeight}, {0}, {1}, {theColor}, {0}, {0},    {maxV}},
+        {{x + texWidth}, {y},             {0}, {1}, {theColor}, {0}, {maxU}, {0}   },
+        {{x + texWidth}, {y + texHeight}, {0}, {1}, {theColor}, {0}, {maxU}, {maxV}}
     };
 
     D3DTester::CheckDXError(theDevice->SetTexture(0, theTexture), "SetTexture theTexture");
@@ -197,8 +197,8 @@ void D3DTestImage::DrawToDevice(
     int aWidth = GetWidth();
     int aHeight = GetHeight();
 
-    int aTexWidth = min(64, gD3DTestTextureWidth);
-    int aTexHeight = min(64, gD3DTestTextureHeight);
+    int aTexWidth = std::min(64, gD3DTestTextureWidth);
+    int aTexHeight = std::min(64, gD3DTestTextureHeight);
 
     for (int j = 0; j < aHeight; j += aTexHeight) {
         for (int i = 0; i < aWidth; i += aTexWidth) {
@@ -249,14 +249,15 @@ int D3DTestImage::CheckUniformBands(int testWidth, int testHeight, int xoff, int
     int aNumMistakes = 0;
     const DWORD *aRow = GetBits() + yoff * GetWidth() + xoff;
     DWORD aLastPixel = *aRow;
-    bool isUniform = true;
+    // bool isUniform = true; // unused
     for (int i = 0; i < testHeight; i++) {
         const DWORD *aSrc = aRow;
         for (int j = 0; j < testWidth; j++) {
             DWORD aPixel = *aSrc++;
-            if (aLastPixel != aPixel) isUniform = false;
+            if (aLastPixel != aPixel)
+                // isUniform = false; // unused
 
-            if (ColorDistance(aPixel, (j & 1) ? 0xFFFFFF : 0x000000) > COLOR_TOLERANCE) aNumMistakes++;
+                if (ColorDistance(aPixel, (j & 1) ? 0xFFFFFF : 0x000000) > COLOR_TOLERANCE) aNumMistakes++;
         }
 
         aRow += GetWidth();
@@ -317,35 +318,37 @@ template <class PixelType> static void D3DTestPixelConvert(D3DTestImage &theImag
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static void D3DTestPixelConvert24(D3DTestImage &theImage, DDSURFACEDESC2 &theDesc) {
+/*
+[[maybe_unused]]
+static void D3DTestPixelConvert24(D3DTestImage &theImage, DDSURFACEDESC2 &theDesc)
+{
     int rMask = theDesc.ddpfPixelFormat.dwRBitMask;
     int gMask = theDesc.ddpfPixelFormat.dwGBitMask;
     int bMask = theDesc.ddpfPixelFormat.dwBBitMask;
 
-    int redShift = 23 - D3DTestHighBit(rMask);
-    int greenShift = 15 - D3DTestHighBit(gMask);
-    int blueShift = 7 - D3DTestHighBit(bMask);
+    int redShift = 23-D3DTestHighBit(rMask);
+    int greenShift = 15-D3DTestHighBit(gMask);
+    int blueShift = 7-D3DTestHighBit(bMask);
 
-    char *srcRow = (char *)theDesc.lpSurface;
+    char *srcRow = (char*)theDesc.lpSurface;
     DWORD *dstRow = theImage.GetBits();
-    for (int j = 0; j < theImage.GetHeight(); j++) {
+    for(int j=0; j<theImage.GetHeight(); j++)
+    {
         char *src = srcRow;
         DWORD *dst = dstRow;
-        for (int i = 0; i < theImage.GetWidth(); i++) {
+        for(int i=0; i<theImage.GetWidth(); i++)
+        {
 
-            DWORD aPixel = *((DWORD *)src) & 0xFFFFFF;
+            DWORD aPixel = *((DWORD*)src)&0xFFFFFF;
             src += 3;
 
             int r = aPixel & rMask;
             int g = aPixel & gMask;
             int b = aPixel & bMask;
 
-            if (redShift > 0) r <<= redShift;
-            else r >>= -redShift;
-            if (greenShift > 0) g <<= greenShift;
-            else g >>= -greenShift;
-            if (blueShift > 0) b <<= blueShift;
-            else b >>= -blueShift;
+            if(redShift>0) r<<=redShift; else r>>=-redShift;
+            if(greenShift>0) g<<=greenShift; else g>>=-greenShift;
+            if(blueShift>0) b<<=blueShift; else b>>=-blueShift;
             *dst++ = 0xFF000000 | r | g | b;
         }
 
@@ -353,6 +356,7 @@ static void D3DTestPixelConvert24(D3DTestImage &theImage, DDSURFACEDESC2 &theDes
         dstRow += theImage.GetWidth();
     }
 }
+*/
 
 #define SafeSetRenderState(x, y) CheckDXError(mD3DDevice7->SetRenderState(x, y), #x ", " #y)
 
@@ -548,14 +552,15 @@ bool D3DTester::Init(HWND theHWND, LPDIRECTDRAW7 theDDraw) {
     if (mCheckRegistry) {
         std::string aKey = RemoveTrailingSlash("SOFTWARE\\" + gSexyAppBase->mRegKey) + "\\Test3D";
         RegCreateKeyExA(
-            HKEY_CURRENT_USER, aKey.c_str(), 0, "", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &mRegKey, NULL
+            HKEY_CURRENT_USER, aKey.c_str(), 0, (char *)"", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &mRegKey,
+            NULL
         );
     }
 
     try {
 
         if (theDDraw == NULL) {
-            extern HMODULE gDDrawDLL;
+            // extern HMODULE gDDrawDLL;
 
             typedef HRESULT(WINAPI * DirectDrawCreateExFunc)(
                 GUID FAR * lpGUID, LPVOID * lplpDD, REFIID iid, IUnknown FAR * pUnkOuter

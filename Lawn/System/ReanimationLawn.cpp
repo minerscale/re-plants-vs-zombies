@@ -102,7 +102,7 @@ void ReanimatorCache::GetPlantImageSize(
 
 // 0x46F330
 MemoryImage *ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType) {
-    MemoryImage *aImage;
+    MemoryImage *aImage = nullptr;
 
     switch (theMowerType) {
     case LawnMowerType::LAWNMOWER_LAWN: {

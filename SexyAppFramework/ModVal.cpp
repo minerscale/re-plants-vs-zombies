@@ -91,7 +91,10 @@ static bool FindModValsInMemoryHelper(const char *theMem, DWORD theLength) {
         int aCounter, aLineNum;
         std::string aFileName = aPtr + 10; // skip SEXYMODVAL
         if (ParseModValString(aFileName, &aCounter, &aLineNum)) {
-            if (aLineNum == 4105) _asm nop;
+            /* What the fuck is this?
+            if (aLineNum==4105)
+                _asm nop;
+            */
 
             FileMod &aFileMod = aMap[aFileName];
             aFileMod.mMap[aCounter] = ModPointer(aPtr - 5, aLineNum);
@@ -111,7 +114,9 @@ static void FindModValsInMemory() {
     DWORD aMemLength = 0;
 
     int aFound = 0;
+    (void)aFound;
     int aTotal = 0;
+    (void)aTotal;
     memset(&mbi, 0, sizeof(MEMORY_BASIC_INFORMATION));
     for (; VirtualQuery(pvAddress, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) == sizeof(MEMORY_BASIC_INFORMATION);
          pvAddress = ((BYTE *)mbi.BaseAddress) + mbi.RegionSize) {
@@ -368,6 +373,7 @@ bool Sexy::ReparseModValues() {
 
         int aLineNum = 1;
         int aModNum = 0;
+        (void)aModNum;
         ModStorageMap::iterator aModMapItr = aModMap.begin();
 
         std::fstream aStream(aFileName.c_str(), std::ios::in);

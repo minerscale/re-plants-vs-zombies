@@ -200,8 +200,9 @@ void SyncParticleEmitter(
         theParticleEmitter->mParticleSystem = theParticleSystem;
         theParticleEmitter->mEmitterDef = &theParticleSystem->mParticleDef->mEmitterDefs[aEmitterDefIndex];
     } else {
-        aEmitterDefIndex = ((int)theParticleEmitter->mEmitterDef - (int)theParticleSystem->mParticleDef->mEmitterDefs) /
-                           sizeof(TodEmitterDefinition);
+        aEmitterDefIndex =
+            ((intptr_t)theParticleEmitter->mEmitterDef - (intptr_t)theParticleSystem->mParticleDef->mEmitterDefs) /
+            sizeof(TodEmitterDefinition);
         theContext.SyncInt(aEmitterDefIndex);
     }
 
@@ -281,12 +282,14 @@ template <typename T> inline static void SyncDataArray(SaveGameContext &theConte
     theContext.SyncUint(theDataArray.mFreeListHead);
     theContext.SyncUint(theDataArray.mMaxUsedCount);
     theContext.SyncUint(theDataArray.mSize);
-    theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(DataArray<T>::DataArrayItem));
+    theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(theDataArray.mBlock));
 }
 
 // 0x4819D0
 void SyncBoard(SaveGameContext &theContext, Board *theBoard) {
-    theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offsetof(Board, mPaused));
+    // TODO test if gives sane results
+    size_t offset = size_t(&theBoard->mPaused) - size_t(theBoard);
+    theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offset);
 
     SyncDataArray(theContext, theBoard->mZombies);                                               // 0x482190
     SyncDataArray(theContext, theBoard->mPlants);                                                // 0x482280

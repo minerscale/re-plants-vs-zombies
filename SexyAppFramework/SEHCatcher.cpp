@@ -50,36 +50,36 @@ struct {
     DWORD dwExceptionCode;
     char *szMessage;
 } gMsgTable[] = {
-    {STATUS_SEGMENT_NOTIFICATION,     "Segment Notification"    },
-    {STATUS_BREAKPOINT,               "Breakpoint"              },
-    {STATUS_SINGLE_STEP,              "Single step"             },
-    {STATUS_WAIT_0,                   "Wait 0"                  },
-    {STATUS_ABANDONED_WAIT_0,         "Abandoned Wait 0"        },
-    {STATUS_USER_APC,                 "User APC"                },
-    {STATUS_TIMEOUT,                  "Timeout"                 },
-    {STATUS_PENDING,                  "Pending"                 },
-    {STATUS_GUARD_PAGE_VIOLATION,     "Guard Page Violation"    },
-    {STATUS_DATATYPE_MISALIGNMENT,    "Data Type Misalignment"  },
-    {STATUS_ACCESS_VIOLATION,         "Access Violation"        },
-    {STATUS_IN_PAGE_ERROR,            "In Page Error"           },
-    {STATUS_NO_MEMORY,                "No Memory"               },
-    {STATUS_ILLEGAL_INSTRUCTION,      "Illegal Instruction"     },
-    {STATUS_NONCONTINUABLE_EXCEPTION, "Noncontinuable Exception"},
-    {STATUS_INVALID_DISPOSITION,      "Invalid Disposition"     },
-    {STATUS_ARRAY_BOUNDS_EXCEEDED,    "Array Bounds Exceeded"   },
-    {STATUS_FLOAT_DENORMAL_OPERAND,   "Float Denormal Operand"  },
-    {STATUS_FLOAT_DIVIDE_BY_ZERO,     "Divide by Zero"          },
-    {STATUS_FLOAT_INEXACT_RESULT,     "Float Inexact Result"    },
-    {STATUS_FLOAT_INVALID_OPERATION,  "Float Invalid Operation" },
-    {STATUS_FLOAT_OVERFLOW,           "Float Overflow"          },
-    {STATUS_FLOAT_STACK_CHECK,        "Float Stack Check"       },
-    {STATUS_FLOAT_UNDERFLOW,          "Float Underflow"         },
-    {STATUS_INTEGER_DIVIDE_BY_ZERO,   "Integer Divide by Zero"  },
-    {STATUS_INTEGER_OVERFLOW,         "Integer Overflow"        },
-    {STATUS_PRIVILEGED_INSTRUCTION,   "Privileged Instruction"  },
-    {STATUS_STACK_OVERFLOW,           "Stack Overflow"          },
-    {STATUS_CONTROL_C_EXIT,           "Ctrl+C Exit"             },
-    {0xFFFFFFFF,                      ""                        }
+    {STATUS_SEGMENT_NOTIFICATION,     (char *)"Segment Notification"    },
+    {STATUS_BREAKPOINT,               (char *)"Breakpoint"              },
+    {STATUS_SINGLE_STEP,              (char *)"Single step"             },
+    {STATUS_WAIT_0,                   (char *)"Wait 0"                  },
+    {STATUS_ABANDONED_WAIT_0,         (char *)"Abandoned Wait 0"        },
+    {STATUS_USER_APC,                 (char *)"User APC"                },
+    {STATUS_TIMEOUT,                  (char *)"Timeout"                 },
+    {STATUS_PENDING,                  (char *)"Pending"                 },
+    {STATUS_GUARD_PAGE_VIOLATION,     (char *)"Guard Page Violation"    },
+    {STATUS_DATATYPE_MISALIGNMENT,    (char *)"Data Type Misalignment"  },
+    {STATUS_ACCESS_VIOLATION,         (char *)"Access Violation"        },
+    {STATUS_IN_PAGE_ERROR,            (char *)"In Page Error"           },
+    {STATUS_NO_MEMORY,                (char *)"No Memory"               },
+    {STATUS_ILLEGAL_INSTRUCTION,      (char *)"Illegal Instruction"     },
+    {STATUS_NONCONTINUABLE_EXCEPTION, (char *)"Noncontinuable Exception"},
+    {STATUS_INVALID_DISPOSITION,      (char *)"Invalid Disposition"     },
+    {STATUS_ARRAY_BOUNDS_EXCEEDED,    (char *)"Array Bounds Exceeded"   },
+    {STATUS_FLOAT_DENORMAL_OPERAND,   (char *)"Float Denormal Operand"  },
+    {STATUS_FLOAT_DIVIDE_BY_ZERO,     (char *)"Divide by Zero"          },
+    {STATUS_FLOAT_INEXACT_RESULT,     (char *)"Float Inexact Result"    },
+    {STATUS_FLOAT_INVALID_OPERATION,  (char *)"Float Invalid Operation" },
+    {STATUS_FLOAT_OVERFLOW,           (char *)"Float Overflow"          },
+    {STATUS_FLOAT_STACK_CHECK,        (char *)"Float Stack Check"       },
+    {STATUS_FLOAT_UNDERFLOW,          (char *)"Float Underflow"         },
+    {STATUS_INTEGER_DIVIDE_BY_ZERO,   (char *)"Integer Divide by Zero"  },
+    {STATUS_INTEGER_OVERFLOW,         (char *)"Integer Overflow"        },
+    {STATUS_PRIVILEGED_INSTRUCTION,   (char *)"Privileged Instruction"  },
+    {STATUS_STACK_OVERFLOW,           (char *)"Stack Overflow"          },
+    {STATUS_CONTROL_C_EXIT,           (char *)"Ctrl+C Exit"             },
+    {0xFFFFFFFF,                      (char *)""                        }
 };
 
 SEHCatcher::SEHCatcher() { mPreviousFilter = SetUnhandledExceptionFilter(UnhandledExceptionFilter); }
@@ -129,6 +129,7 @@ bool SEHCatcher::LoadImageHelp() {
     // Get image filename of the main executable
     char filepath[MAX_PATH], *lastdir, *pPath;
     DWORD filepathlen = GetModuleFileNameA(NULL, filepath, sizeof(filepath));
+    (void)filepathlen;
 
     lastdir = strrchr(filepath, '/');
     if (lastdir == NULL) lastdir = strrchr(filepath, '\\');
@@ -166,7 +167,7 @@ static bool StrToLongHex(const std::string &aString, DWORD *theValue) {
 }
 
 void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump) {
-    DWORD aTick = GetTickCount();
+    // DWORD aTick = GetTickCount(); // unused
     WIN32_FIND_DATAA aFindData;
     HANDLE aFindHandle = FindFirstFileA("*.map", &aFindData);
     if (aFindHandle == INVALID_HANDLE_VALUE) return;
@@ -210,7 +211,7 @@ void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump) {
             int aSegmentPos = aString.rfind(')');
             if (aSegmentPos == -1) aSegmentPos = aString.length();
 
-            int aPreLen = strlen("Line numbers for ");
+            // int aPreLen = strlen("Line numbers for "); // unused
 
             int aStartPos = aString.find('(');
 
@@ -296,7 +297,7 @@ void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump) {
         }
     }
 
-    //	MessageBox(NULL,StrFormat("%d",GetTickCount()-aTick).c_str(),"Time",MB_OK);
+    //  MessageBox(NULL,StrFormat("%d",GetTickCount()-aTick).c_str(),"Time",MB_OK);
 }
 
 void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP) {
@@ -319,12 +320,12 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP) {
 
     if (szName != NULL) {
         sprintf(
-            aBuffer, "Exception: %s (code 0x%x) at address %08X in thread %X\r\n", szName,
+            aBuffer, "Exception: %s (code 0x%lx) at address %p in thread %lX\r\n", szName,
             lpEP->ExceptionRecord->ExceptionCode, lpEP->ExceptionRecord->ExceptionAddress, GetCurrentThreadId()
         );
     } else {
         sprintf(
-            aBuffer, "Unknown exception: (code 0x%x) at address %08X in thread %X\r\n",
+            aBuffer, "Unknown exception: (code 0x%lx) at address %p in thread %lX\r\n",
             lpEP->ExceptionRecord->ExceptionCode, lpEP->ExceptionRecord->ExceptionAddress, GetCurrentThreadId()
         );
     }
@@ -336,7 +337,7 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP) {
     DWORD section, offset;
     GetLogicalAddress(lpEP->ExceptionRecord->ExceptionAddress, aBuffer, sizeof(aBuffer), section, offset);
     aDebugDump += "Module: " + GetFilename(aBuffer) + "\r\n";
-    sprintf(aBuffer, "Logical Address: %04X:%08X\r\n", section, offset);
+    sprintf(aBuffer, "Logical Address: %04lX:%08lX\r\n", section, offset);
     aDebugDump += aBuffer;
 
     aDebugDump += "\r\n";
@@ -352,15 +353,22 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP) {
     aDebugDump += aWalkString;
 
     aDebugDump += "\r\n";
+
     sprintf(
-        aBuffer, ("EAX:%08X EBX:%08X ECX:%08X EDX:%08X ESI:%08X EDI:%08X\r\n"), lpEP->ContextRecord->Eax,
-        lpEP->ContextRecord->Ebx, lpEP->ContextRecord->Ecx, lpEP->ContextRecord->Edx, lpEP->ContextRecord->Esi,
-        lpEP->ContextRecord->Edi
+        aBuffer, ("RAX:%016llX RBX:%016llX RCX:%016llX RDX:%016llX RSI:%016llX RDI:%016llX\r\n"),
+        lpEP->ContextRecord->Rax, lpEP->ContextRecord->Rbx, lpEP->ContextRecord->Rcx, lpEP->ContextRecord->Rdx,
+        lpEP->ContextRecord->Rsi, lpEP->ContextRecord->Rdi
     );
     aDebugDump += aBuffer;
     sprintf(
-        aBuffer, "EIP:%08X ESP:%08X  EBP:%08X\r\n", lpEP->ContextRecord->Eip, lpEP->ContextRecord->Esp,
-        lpEP->ContextRecord->Ebp
+        aBuffer, ("R8:%016llX R9:%016llX R10:%016llX R11:%016llX R12:%016llX R13:%016llX R14:%016llX R15:%016llX\r\n"),
+        lpEP->ContextRecord->R8, lpEP->ContextRecord->R9, lpEP->ContextRecord->R10, lpEP->ContextRecord->R11,
+        lpEP->ContextRecord->R12, lpEP->ContextRecord->R13, lpEP->ContextRecord->R14, lpEP->ContextRecord->R15
+    );
+    aDebugDump += aBuffer;
+    sprintf(
+        aBuffer, "RIP:%016llX RSP:%016llX  RBP:%016llX\r\n", lpEP->ContextRecord->Rip, lpEP->ContextRecord->Rsp,
+        lpEP->ContextRecord->Rbp
     );
     aDebugDump += aBuffer;
     sprintf(
@@ -369,7 +377,7 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP) {
         lpEP->ContextRecord->SegGs
     );
     aDebugDump += aBuffer;
-    sprintf(aBuffer, "Flags:%08X\r\n", lpEP->ContextRecord->EFlags);
+    sprintf(aBuffer, "Flags:%08lX\r\n", lpEP->ContextRecord->EFlags);
     aDebugDump += aBuffer;
 
     aDebugDump += "\r\n";
@@ -426,10 +434,10 @@ std::string SEHCatcher::IntelWalk(PCONTEXT theContext, int theSkipCount) {
     std::string aDebugDump;
     char aBuffer[2048];
 
-    DWORD pc = theContext->Eip;
-    PDWORD pFrame, pPrevFrame;
+    intptr_t pc = theContext->Rip;
+    intptr_t *pFrame, *pPrevFrame;
 
-    pFrame = (PDWORD)theContext->Ebp;
+    pFrame = (intptr_t *)theContext->Rbp;
 
     for (;;) {
         char szModule[MAX_PATH] = "";
@@ -437,17 +445,17 @@ std::string SEHCatcher::IntelWalk(PCONTEXT theContext, int theSkipCount) {
 
         GetLogicalAddress((PVOID)pc, szModule, sizeof(szModule), section, offset);
 
-        sprintf(aBuffer, "%08X  %08X  %04X:%08X %s\r\n", pc, pFrame, section, offset, GetFilename(szModule).c_str());
+        sprintf(aBuffer, "%016llX  %p  %04lX:%08lX %s\r\n", pc, pFrame, section, offset, GetFilename(szModule).c_str());
         aDebugDump += aBuffer;
 
         pc = pFrame[1];
 
         pPrevFrame = pFrame;
 
-        pFrame = (PDWORD)pFrame[0]; // proceed to next higher frame on stack
+        pFrame = (intptr_t *)(pFrame[0]); // proceed to next higher frame on stack
 
-        if ((DWORD)pFrame & 3) // Frame pointer must be aligned on a
-            break;             // DWORD boundary.  Bail if not so.
+        if ((intptr_t)pFrame & 3) // Frame pointer must be aligned on a
+            break;                // DWORD boundary.  Bail if not so.
 
         if (pFrame <= pPrevFrame) break;
 
@@ -467,14 +475,15 @@ std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount) {
 
     // Initialize the STACKFRAME structure for the first call.  This is only
     // necessary for Intel CPUs, and isn't mentioned in the documentation.
-    sf.AddrPC.Offset = theContext->Eip;
+    sf.AddrPC.Offset = theContext->Rip;
     sf.AddrPC.Mode = AddrModeFlat;
-    sf.AddrStack.Offset = theContext->Esp;
+    sf.AddrStack.Offset = theContext->Rsp;
     sf.AddrStack.Mode = AddrModeFlat;
-    sf.AddrFrame.Offset = theContext->Ebp;
+    sf.AddrFrame.Offset = theContext->Rbp;
     sf.AddrFrame.Mode = AddrModeFlat;
 
     int aLevelCount = 0;
+    (void)aLevelCount; // Unused
 
     for (;;) {
         if (!mStackWalk(
@@ -482,7 +491,7 @@ std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount) {
                 mSymFunctionTableAccess, mSymGetModuleBase, 0
             )) {
             DWORD lastErr = GetLastError();
-            sprintf(aBuffer, "StackWalk failed (error %d)\r\n", lastErr);
+            sprintf(aBuffer, "StackWalk failed (error %ld)\r\n", lastErr);
             aDebugDump += aBuffer;
             break;
         }
@@ -511,7 +520,9 @@ std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount) {
                     UNDNAME_NO_RETURN_UDT_MODEL | UNDNAME_NO_THROW_SIGNATURES | UNDNAME_NO_SPECIAL_SYMS
             );
 
-            sprintf(aBuffer, "%08X %08X %hs+%X\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, aUDName, symDisplacement);
+            sprintf(
+                aBuffer, "%016llX %016llX %s+%lX\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, aUDName, symDisplacement
+            );
         } else // No symbol found.  Print out the logical address instead.
         {
             char szModule[MAX_PATH];
@@ -519,13 +530,16 @@ std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount) {
 
             GetLogicalAddress((PVOID)sf.AddrPC.Offset, szModule, sizeof(szModule), section, offset);
             sprintf(
-                aBuffer, "%08X %08X %04X:%08X %s\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, section, offset,
+                aBuffer, "%016llX %016llX %08lX:%08lX %s\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, section, offset,
                 GetFilename(szModule).c_str()
             );
         }
         aDebugDump += aBuffer;
 
-        sprintf(aBuffer, "Params: %08X %08X %08X %08X\r\n", sf.Params[0], sf.Params[1], sf.Params[2], sf.Params[3]);
+        sprintf(
+            aBuffer, "Params: %016llX %016llX %016llX %016llX\r\n", sf.Params[0], sf.Params[1], sf.Params[2],
+            sf.Params[3]
+        );
         aDebugDump += aBuffer;
         aDebugDump += "\r\n";
 
@@ -540,7 +554,7 @@ bool SEHCatcher::GetLogicalAddress(void *addr, char *szModule, DWORD len, DWORD 
 
     if (!VirtualQuery(addr, &mbi, sizeof(mbi))) return false;
 
-    DWORD hMod = (DWORD)mbi.AllocationBase;
+    intptr_t hMod = (intptr_t)mbi.AllocationBase;
 
     if (!GetModuleFileNameA((HMODULE)hMod, szModule, len)) return false;
 
@@ -552,13 +566,13 @@ bool SEHCatcher::GetLogicalAddress(void *addr, char *szModule, DWORD len, DWORD 
 
     PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(pNtHdr);
 
-    DWORD rva = (DWORD)addr - hMod; // RVA is offset from module load address
+    intptr_t rva = (intptr_t)addr - hMod; // RVA is offset from module load address
 
     // Iterate through the section table, looking for the one that encompasses
     // the linear address.
     for (unsigned i = 0; i < pNtHdr->FileHeader.NumberOfSections; i++, pSection++) {
         DWORD sectionStart = pSection->VirtualAddress;
-        DWORD sectionEnd = sectionStart + max(pSection->SizeOfRawData, pSection->Misc.VirtualSize);
+        DWORD sectionEnd = sectionStart + std::max(pSection->SizeOfRawData, pSection->Misc.VirtualSize);
 
         // Is the address in this section???
         if ((rva >= sectionStart) && (rva <= sectionEnd)) {
@@ -575,7 +589,7 @@ bool SEHCatcher::GetLogicalAddress(void *addr, char *szModule, DWORD len, DWORD 
 }
 
 std::string SEHCatcher::GetFilename(const std::string &thePath) {
-    int aLastSlash = max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
+    int aLastSlash = std::max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
 
     if (aLastSlash >= 0) {
         return thePath.substr(aLastSlash + 1);
@@ -653,6 +667,7 @@ static void CreateProgressWindow() {
     DWORD aWindowStyle = WS_CLIPCHILDREN | WS_POPUP | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
     BOOL worked = AdjustWindowRect(&aRect, aWindowStyle, FALSE);
+    (void)worked; // unused, naughty naughty
 
     HWND aHWnd = CreateWindowA(
         "SEHProgressWindow", "Submitting Report", aWindowStyle, 64, 64, aRect.right - aRect.left,
@@ -756,7 +771,7 @@ void SEHCatcher::SubmitReportThread(void *theArg) {
         /*"--" + aSeperator + "\r\n"
         "Content-Disposition: form-data; name=\"username\"\r\n" +
         "\r\n" +
-        mApp->mUserName + "\r\n" +	*/
+        mApp->mUserName + "\r\n" +  */
 
         "--" + aSeperator +
         "\r\n"
@@ -851,6 +866,7 @@ void SEHCatcher::ShowSubmitInfoDialog() {
     DWORD aWindowStyle = WS_CLIPCHILDREN | WS_POPUP | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
     BOOL worked = AdjustWindowRect(&aRect, aWindowStyle, FALSE);
+    (void)worked; // unused, naughty naughty
 
     HWND aHWnd = CreateWindowA(
         "SubmitInfoWindow", "Error Details", aWindowStyle, 64 + 16, 64 + 16, aRect.right - aRect.left,
@@ -885,6 +901,7 @@ void SEHCatcher::ShowSubmitInfoDialog() {
         aFontHeight, 0, 0, 0, FW_NORMAL, 0, 0, false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
         DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Courier New"
     );
+    (void)aCourierNewFont; // Unused, TODO work out if can be removed
     if (!gUseDefaultFonts) SendMessage(mEditWindow, WM_SETFONT, (WPARAM)mDialogFont, 0);
     SetFocus(mEditWindow);
 
@@ -959,6 +976,7 @@ void SEHCatcher::ShowErrorDialog(const std::string &theErrorTitle, const std::st
     DWORD aWindowStyle = WS_CLIPCHILDREN | WS_POPUP | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 
     BOOL worked = AdjustWindowRect(&aRect, aWindowStyle, FALSE);
+    (void)worked; // unused, naughty naughty
 
     HWND aHWnd = CreateWindowW(
         L"SEHWindow", L"Fatal Error!", aWindowStyle, 64, 64, aRect.right - aRect.left, aRect.bottom - aRect.top, NULL,
@@ -1060,12 +1078,12 @@ std::string SEHCatcher::GetSysInfo() {
     else aDebugDump += "9x ";
 
     char aVersionStr[20];
-    sprintf(aVersionStr, "%d.%d", aVersionInfo.dwMajorVersion, aVersionInfo.dwMinorVersion);
+    sprintf(aVersionStr, "%ld.%ld", aVersionInfo.dwMajorVersion, aVersionInfo.dwMinorVersion);
     aDebugDump += aVersionStr;
     aDebugDump += " ";
     aDebugDump += aVersionInfo.szCSDVersion;
     aDebugDump += " ";
-    sprintf(aVersionStr, "%d", aVersionInfo.dwBuildNumber);
+    sprintf(aVersionStr, "%ld", aVersionInfo.dwBuildNumber);
     aDebugDump += "Build ";
     aDebugDump += aVersionStr;
     aDebugDump += "\r\n";

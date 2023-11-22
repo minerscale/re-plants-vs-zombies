@@ -5,7 +5,8 @@
 
 namespace Sexy {
 
-typedef enum KeyCode {
+// Don't need typedef
+/*typedef*/ enum KeyCode {
     KEYCODE_UNKNOWN = 0x00,
     KEYCODE_LBUTTON = 0x01,
     KEYCODE_RBUTTON = 0x02,

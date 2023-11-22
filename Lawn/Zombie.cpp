@@ -725,6 +725,10 @@ void Zombie::ZombieInitialize(
         mVariant = false;
         break;
     }
+    case ZombieType::ZOMBIE_CACHED_POLEVAULTER_WITH_POLE:
+    case ZombieType::NUM_ZOMBIE_TYPES:
+    case ZombieType::NUM_CACHED_ZOMBIE_TYPES:
+    case ZombieType::ZOMBIE_INVALID:                      break;
     }
 
     if (IsOnBoard() && mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
@@ -2387,7 +2391,7 @@ void Zombie::SummonBackupDancers() {
 
     for (int i = 0; i < NUM_BACKUP_DANCERS; i++) {
         if (mBoard->ZombieTryToGet(mFollowerZombieID[i]) == nullptr) {
-            int aRow, aPosX;
+            int aRow = 0, aPosX = 0;
             switch (i) {
             case 0:
                 aRow = mRow - 1;
@@ -2485,6 +2489,7 @@ void Zombie::UpdateZombieBackupDancer() {
             mZombiePhase = aDancerPhase;
             PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 10, 18.0f);
             break;
+        default: break;
         }
     }
 }
@@ -2553,6 +2558,7 @@ void Zombie::UpdateZombieDancer() {
                 mZombiePhase = aDancerPhase;
                 PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 10, 18.0f);
                 break;
+            default: break;
             }
         }
 
@@ -2644,7 +2650,7 @@ bool Zombie::ZombiquariumFindClosestBrain() {
 void Zombie::UpdateZombiquarium() {
     if (IsDeadOrDying()) return;
 
-    float &num2 = mVelX;
+    // float& num2 = mVelX; // unused
     Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
     if (mZombiePhase == ZombiePhase::PHASE_ZOMBIQUARIUM_BITE) {
         if (aBodyReanim->mLoopCount > 0) {
@@ -2999,7 +3005,8 @@ void Zombie::DropHead(unsigned int theDamageFlags) {
     if (mBoard->mPinataMode && mZombiePhase != ZombiePhase::PHASE_ZOMBIE_MOWERED) {
         TodParticleSystem *aPinataParticle =
             mApp->AddTodParticle(aPosX, aPosY, aRenderOrder, ParticleEffect::PARTICLE_ZOMBIE_PINATA);
-        OverrideParticleScale(aParticle);
+        (void)aPinataParticle;            // Unused
+        OverrideParticleScale(aParticle); // Weird, TODO: test the Pinata Mode
     }
 
     mApp->PlayFoley(FoleyType::FOLEY_LIMBS_POP);
@@ -3176,6 +3183,7 @@ void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags) {
             case ZombieType::ZOMBIE_DOLPHIN_RIDER:
             case ZombieType::ZOMBIE_POGO:
             case ZombieType::ZOMBIE_LADDER:          aParticle->OverrideImage(nullptr, IMAGE_REANIM_ZOMBIE_OUTERARM_HAND); break;
+            default:                                 break;
             }
         }
     }
@@ -4537,7 +4545,7 @@ void Zombie::DrawBungeeTarget(Graphics *g) {
 
     if (mZombiePhase == ZombiePhase::PHASE_BUNGEE_HIT_OUCHY || mZombiePhase == ZombiePhase::PHASE_BUNGEE_RISING) return;
 
-    if (mRelatedZombieID != ReanimationID::REANIMATIONID_NULL) return;
+    if (mRelatedZombieID != ZombieID::ZOMBIEID_NULL) return;
 
     ZombieDrawPosition aDrawPos;
     GetDrawPos(aDrawPos);
@@ -4875,6 +4883,7 @@ void Zombie::GetDrawPos(ZombieDrawPosition &theDrawPos) {
     case ZombieType::ZOMBIE_GARGANTUAR:
     case ZombieType::ZOMBIE_REDEYE_GARGANTUAR: theDrawPos.mImageOffsetY -= 8.0f; break;
     case ZombieType::ZOMBIE_BOBSLED:           theDrawPos.mImageOffsetY -= 12.0f; break;
+    default:                                   break;
     }
 
     if (mZombiePhase == ZombiePhase::PHASE_RISING_FROM_GRAVE) {
@@ -4883,7 +4892,7 @@ void Zombie::GetDrawPos(ZombieDrawPosition &theDrawPos) {
         if (mInPool) {
             theDrawPos.mClipHeight = theDrawPos.mBodyY;
         } else {
-            float aHeightLimit = min(mPhaseCounter, 40.0f);
+            float aHeightLimit = min(mPhaseCounter, 40);
             theDrawPos.mClipHeight = theDrawPos.mBodyY + aHeightLimit;
         }
 
@@ -5056,6 +5065,7 @@ void Zombie::DrawIceTrap(Graphics *g, const ZombieDrawPosition &theDrawPos, bool
         aOffsetX -= 9.0f;
         aOffsetY += 27.0f;
         break;
+    default: break;
     }
 
     TodDrawImageScaledF(g, theFront ? IMAGE_ICETRAP : IMAGE_ICETRAP2, aOffsetX, aOffsetY, aScale, aScale);
@@ -5097,6 +5107,7 @@ void Zombie::DrawButter(Graphics *g, const ZombieDrawPosition &theDrawPos) {
         aOffsetX -= 24.0f;
         aOffsetY -= 39.0f;
         break;
+    default: break;
     }
 
     TodDrawImageScaledF(g, IMAGE_REANIM_CORNPULT_BUTTER_SPLAT, aOffsetX, aOffsetY, aScale, aScale);
@@ -7524,6 +7535,7 @@ bool Zombie::SetupDrawZombieWon(Graphics *g) {
     case BackgroundType::BACKGROUND_4_FOG:   g->ClipRect(-172 - mX, -mY, BOARD_WIDTH, BOARD_HEIGHT); break;
     case BackgroundType::BACKGROUND_5_ROOF:
     case BackgroundType::BACKGROUND_6_BOSS:  g->ClipRect(-220 - mX, -mY, BOARD_WIDTH, 187); break;
+    default:                                 break;
     }
 
     return true;
@@ -7700,6 +7712,8 @@ int Zombie::GetBobsledPosition() {
     }
 
     TOD_ASSERT();
+
+    __builtin_unreachable();
 }
 
 bool Zombie::IsBobsledTeamWithSled() { return GetBobsledPosition() != -1; }
@@ -7899,7 +7913,7 @@ void Zombie::BossSpawnContact() {
             aZombieTypeCount--;
         }
 
-        aZombieType = (ZombieType)TodPickFromArray((int *)gBossZombieList, aZombieTypeCount);
+        aZombieType = (ZombieType)TodPickFromArray((intptr_t *)gBossZombieList, aZombieTypeCount);
     }
 
     Zombie *aZombie = mBoard->AddZombieInRow(aZombieType, mTargetRow, 0);
@@ -7913,7 +7927,7 @@ void Zombie::BossStompAttack() {
     mBossStompCounter = RandRangeInt(5500, 6500);
 
     int aRowsCount = 0;
-    int aRowArray[4];
+    intptr_t aRowArray[4];
     for (int i = 0; i < 4; i++) {
         if (BossCanStompRow(i)) {
             aRowArray[aRowsCount] = i;
@@ -8567,7 +8581,7 @@ void Zombie::EnableFuture(bool theEnableFuture) {
     if (aBodyReanim == nullptr || aBodyReanim->mReanimationType != ReanimationType::REANIM_ZOMBIE) return;
 
     if (theEnableFuture) {
-        Image *aImage;
+        Image *aImage = nullptr;
         switch ((unsigned int)mBoard->ZombieGetID(this) % 4) {
         case 0:  aImage = IMAGE_REANIM_ZOMBIE_HEAD_SUNGLASSES1; break;
         case 1:  aImage = IMAGE_REANIM_ZOMBIE_HEAD_SUNGLASSES2; break;

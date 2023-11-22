@@ -486,8 +486,11 @@ void WidgetContainer::SysColorChanged() {}
 void WidgetContainer::SysColorChangedAll() {
     SysColorChanged();
 
+    /* unused
     static int aDepthCount = 0;
-    if (mWidgets.size() > 0) aDepthCount++;
+    if (mWidgets.size() > 0)
+        aDepthCount++;
+    */
 
     WidgetList::iterator anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {

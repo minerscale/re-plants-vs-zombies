@@ -121,6 +121,8 @@ void Attachment::SetPosition(const SexyVector2 &thePosition) {
             }
             break;
         }
+
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -158,6 +160,8 @@ void Attachment::OverrideColor(const Color &theColor) {
             }
             break;
         }
+        case EffectType::EFFECT_TRAIL:
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -210,6 +214,8 @@ void Attachment::PropogateColor(
             }
             break;
         }
+        case EffectType::EFFECT_TRAIL:
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -247,6 +253,8 @@ void Attachment::OverrideScale(float theScale) {
             }
             break;
         }
+        case EffectType::EFFECT_TRAIL:
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -310,6 +318,7 @@ void Attachment::SetMatrix(const SexyTransform2D &theMatrix) {
             }
             break;
         }
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -361,6 +370,8 @@ void Attachment::Draw(Graphics *g, bool theParentHidden) {
             }
             break;
         }
+
+        case EffectType::EFFECT_OTHER: break;
         }
     }
 }
@@ -411,6 +422,8 @@ void Attachment::Detach() {
             }
             break;
         }
+
+        case EffectType::EFFECT_OTHER: break;
         }
 
         aAttachEffect->mEffectID = 0U;
@@ -463,6 +476,8 @@ void Attachment::AttachmentDie() {
             }
             break;
         }
+
+        case EffectType::EFFECT_OTHER: break;
         }
 
         aAttachEffect->mEffectID = 0U;
@@ -672,6 +687,8 @@ Reanimation *FindReanimAttachment(AttachmentID &theAttachmentID) {
             }
         }
     }
+
+    return nullptr;
 }
 
 // 0x405500

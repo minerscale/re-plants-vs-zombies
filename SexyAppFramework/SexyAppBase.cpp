@@ -3,8 +3,8 @@
 // #define SEXY_MEMTRACE
 
 #include "SexyAppBase.h"
+#include "../ImageLib/ImageLib.h"
 #include "../PakLib/PakInterface.h"
-#include "..\ImageLib\ImageLib.h"
 #include "AutoCrit.h"
 #include "BassMusicInterface.h"
 #include "D3DInterface.h"
@@ -117,7 +117,7 @@ void *GetSHGetFolderPath(const char *theDLL, HMODULE *theMod) {
     }
 
     *theMod = aMod;
-    return aFunc;
+    return (void *)aFunc;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -391,7 +391,6 @@ SexyAppBase::~SexyAppBase() {
         if (writeToRegistry) RegistryWriteBoolean("Is3D", mDDInterface->mIs3D);
     }
 
-    extern bool gD3DInterfacePreDrawError;
     if (!showedMsgBox && gD3DInterfacePreDrawError && !IsScreenSaver()) {
         int aResult = MessageBox(
             NULL,
@@ -423,7 +422,7 @@ SexyAppBase::~SexyAppBase() {
     if (mInvisHWnd != NULL) {
         HWND aWindow = mInvisHWnd;
         mInvisHWnd = NULL;
-        SetWindowLong(aWindow, GWL_USERDATA, NULL);
+        SetWindowLong(aWindow, GWLP_USERDATA, 0);
         DestroyWindow(aWindow);
     }
 
@@ -448,7 +447,7 @@ SexyAppBase::~SexyAppBase() {
         HWND aWindow = mHWnd;
         mHWnd = NULL;
 
-        SetWindowLong(aWindow, GWL_USERDATA, NULL);
+        SetWindowLong(aWindow, GWLP_USERDATA, 0);
 
         /*char aStr[256];
         sprintf(aStr, "HWND: %d\r\n", aWindow);
@@ -944,7 +943,7 @@ bool SexyAppBase::OpenURL(const std::string &theURL, bool shutdownOnOpen) {
         mOpeningURL = theURL;
         mOpeningURLTime = GetTickCount();
 
-        if ((int)ShellExecuteA(NULL, "open", theURL.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32) {
+        if ((intptr_t)ShellExecuteA(NULL, "open", theURL.c_str(), NULL, NULL, SW_SHOWNORMAL) > 32) {
             return true;
         } else {
             URLOpenFailed(theURL);
@@ -981,16 +980,16 @@ std::string SexyAppBase::GetProductVersion(const std::string &thePath) {
         aGetFileVersionInfoFunc((char *)thePath.c_str(), 0, aSize, aVersionBuffer);
         char *aBuffer;
         if (aVerQueryValueFunc(
-                aVersionBuffer, "\\StringFileInfo\\040904B0\\ProductVersion", (void **)&aBuffer, &aSize
+                aVersionBuffer, (char *)"\\StringFileInfo\\040904B0\\ProductVersion", (void **)&aBuffer, &aSize
             )) {
             aProductVersion = aBuffer;
         } else if (aVerQueryValueFunc(
-                       aVersionBuffer, "\\StringFileInfo\\040904E4\\ProductVersion", (void **)&aBuffer, &aSize
+                       aVersionBuffer, (char *)"\\StringFileInfo\\040904E4\\ProductVersion", (void **)&aBuffer, &aSize
                    )) {
             aProductVersion = aBuffer;
         }
 
-        delete aVersionBuffer;
+        delete[] aVersionBuffer;
     }
 
     return aProductVersion;
@@ -1224,6 +1223,7 @@ void SexyAppBase::DumpProgramInfo() {
             case PixelFormat_A4R4G4B4: aTextureFormatName = "A4R4G4B4"; break;
             case PixelFormat_R5G6B5:   aTextureFormatName = "R5G6B5"; break;
             case PixelFormat_Palette8: aTextureFormatName = "Palette8"; break;
+            case PixelFormat_Unknown:  break;
             }
         }
 
@@ -1353,7 +1353,7 @@ double SexyAppBase::GetLoadingThreadProgress() {
     if (mLoaded) return 1.0;
     if (!mLoadingThreadStarted) return 0.0;
     if (mNumLoadingThreadTasks == 0) return 0.0;
-    return min(mCompletedLoadingThreadTasks / (double)mNumLoadingThreadTasks, 1.0);
+    return std::min(mCompletedLoadingThreadTasks / (double)mNumLoadingThreadTasks, 1.0);
 }
 
 bool SexyAppBase::RegistryWrite(
@@ -1390,8 +1390,8 @@ bool SexyAppBase::RegistryWrite(
     if (aResult != ERROR_SUCCESS) {
         ulong aDisp;
         aResult = RegCreateKeyExA(
-            HKEY_CURRENT_USER, aKeyName.c_str(), 0, "Key", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &aGameKey,
-            &aDisp
+            HKEY_CURRENT_USER, aKeyName.c_str(), 0, (char *)"Key", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL,
+            &aGameKey, &aDisp
         );
     }
 
@@ -1693,7 +1693,6 @@ bool SexyAppBase::RegistryReadBoolean(const std::string &theKey, bool *theValue)
 
 bool SexyAppBase::RegistryReadData(const std::string &theKey, uchar *theValue, ulong *theLength) {
     ulong aType;
-    ulong aLen = *theLength;
     if (!RegistryRead(theKey, &aType, (uchar *)theValue, theLength)) return false;
 
     if (aType != REG_BINARY) return false;
@@ -1900,7 +1899,7 @@ std::string SexyAppBase::GetGameSEHInfo() {
     sprintf(aTimeStr, "%02d:%02d:%02d", (aSecLoaded / 60 / 60), (aSecLoaded / 60) % 60, aSecLoaded % 60);
 
     char aThreadIdStr[16];
-    sprintf(aThreadIdStr, "%X", mPrimaryThreadId);
+    sprintf(aThreadIdStr, "%lX", mPrimaryThreadId);
 
     std::string anInfoString = "Product: " + mProdName + "\r\n" + "Version: " + mProductVersion + "\r\n";
 
@@ -2040,7 +2039,7 @@ void SexyAppBase::Redraw(Rect *theClipRect) {
 
     static DWORD aRetryTick = 0;
     if (!mDDInterface->Redraw(theClipRect)) {
-        extern bool gD3DInterfacePreDrawError;
+        // extern bool gD3DInterfacePreDrawError;
         gD3DInterfacePreDrawError = false; // this predraw error happens naturally when ddraw is failing
         if (!gIsFailing) {
             // gDebugStream << GetTickCount() << " Redraw failed!" << std::endl;
@@ -2375,7 +2374,7 @@ bool SexyAppBase::DrawDirtyStuff() {
         if ((mLoadingThreadStarted) && (!mLoadingThreadCompleted)) {
             int aTotalTime = aEndTime - aStartTime;
 
-            mNextDrawTick += 35 + max(aTotalTime, 15);
+            mNextDrawTick += 35 + std::max(aTotalTime, 15);
 
             if ((int)(aEndTime - mNextDrawTick) >= 0) mNextDrawTick = aEndTime;
 
@@ -2404,7 +2403,7 @@ void SexyAppBase::LogScreenSaverError(const std::string &theError) {
 
     FILE *aFile = fopen("ScrError.txt", aFlag);
     if (aFile != NULL) {
-        fprintf(aFile, "%s %s %u\n", theError.c_str(), _strtime(aBuf), GetTickCount());
+        fprintf(aFile, "%s %s %lu\n", theError.c_str(), _strtime(aBuf), GetTickCount());
         fclose(aFile);
     }
 }
@@ -2536,7 +2535,7 @@ static INT_PTR CALLBACK MarkerListDialogProc(HWND hwnd, UINT msg, WPARAM wParam,
         SIZE aSize;
 
         hDCListBox = GetDC(aListBox);
-        hFontNew = (HFONT)SendMessage(aListBox, WM_GETFONT, NULL, NULL);
+        hFontNew = (HFONT)SendMessage(aListBox, WM_GETFONT, 0, 0);
         hFontOld = (HFONT)SelectObject(hDCListBox, hFontNew);
         GetTextMetrics(hDCListBox, (LPTEXTMETRIC)&tm);
         GetClientRect(hwnd, &aRect);
@@ -2552,7 +2551,7 @@ static INT_PTR CALLBACK MarkerListDialogProc(HWND hwnd, UINT msg, WPARAM wParam,
 
             SexyString aStr = StrFormat(_S("%s (%02d:%02d:%02d)"), anItr->first.c_str(), anHours, aMinutes, aSeconds);
             GetTextExtentPoint32(hDCListBox, aStr.c_str(), aStr.length(), &aSize);
-            dwExtent = max(aSize.cx + tm.tmAveCharWidth, (int)dwExtent);
+            dwExtent = std::max(aSize.cx + tm.tmAveCharWidth, (LONG)dwExtent);
             SendMessage(aListBox, LB_SETHORIZONTALEXTENT, dwExtent, 0);
             LRESULT anIndex = SendMessage(aListBox, LB_ADDSTRING, 0, (LPARAM)aStr.c_str());
             SendMessage(aListBox, LB_SETITEMDATA, anIndex, anItr->second);
@@ -2589,11 +2588,11 @@ static INT_PTR CALLBACK MarkerListDialogProc(HWND hwnd, UINT msg, WPARAM wParam,
 static LPWORD lpdwAlign(LPWORD lpIn) {
     ULONG ul;
 
-    ul = (ULONG)lpIn;
+    ul = (ULONG)(intptr_t)lpIn;
     ul += 3;
     ul >>= 2;
     ul <<= 2;
-    return (LPWORD)ul;
+    return (LPWORD)(intptr_t)ul;
 }
 
 static int ListDemoMarkers() {
@@ -3001,7 +3000,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
         if (ScreenSaverWindowProc(hWnd, uMsg, wParam, lParam, aResult)) return aResult;
     }
 
-    SexyAppBase *aSexyApp = (SexyAppBase *)GetWindowLong(hWnd, GWL_USERDATA);
+    SexyAppBase *aSexyApp = (SexyAppBase *)(intptr_t)GetWindowLong(hWnd, GWLP_USERDATA);
     switch (uMsg) {
         //  TODO: switch to killfocus/setfocus?
         //	case WM_KILLFOCUS:
@@ -3243,7 +3242,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
     case WM_DESTROY: {
         char aStr[256];
-        sprintf(aStr, "DESTROYED HWND: %d\r\n", hWnd);
+        sprintf(aStr, "DESTROYED HWND: %p\r\n", hWnd);
         OutputDebugStringA(aStr);
     } break;
     case WM_SETCURSOR:
@@ -3768,7 +3767,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage) {
                 break;
             }
 
-            int aBufferSize = mDemoBuffer.GetDataLen();
+            // int aBufferSize = mDemoBuffer.GetDataLen(); // Why?
         }
 
         if (!mPlayingDemoBuffer) {
@@ -4006,7 +4005,7 @@ void SexyAppBase::MakeWindow() {
     // OutputDebugString("MAKING WINDOW\r\n");
 
     if (mHWnd != NULL) {
-        SetWindowLong(mHWnd, GWL_USERDATA, NULL);
+        SetWindowLong(mHWnd, GWLP_USERDATA, 0);
         HWND anOldWindow = mHWnd;
         mHWnd = NULL;
         DestroyWindow(anOldWindow);
@@ -4024,13 +4023,14 @@ void SexyAppBase::MakeWindow() {
         aRect.bottom = mHeight;
 
         BOOL worked = AdjustWindowRect(&aRect, aWindowStyle, FALSE);
+        (void)worked; // Unused. Naughty not checking if it worked
 
         int aWidth = aRect.right - aRect.left;
         int aHeight = aRect.bottom - aRect.top;
 
         // Get the work area of the desktop to allow us to center
         RECT aDesktopRect;
-        ::SystemParametersInfo(SPI_GETWORKAREA, NULL, &aDesktopRect, NULL);
+        ::SystemParametersInfo(SPI_GETWORKAREA, 0, &aDesktopRect, 0);
 
         int aPlaceX = 64;
         int aPlaceY = 64;
@@ -4091,7 +4091,7 @@ void SexyAppBase::MakeWindow() {
     sprintf(aStr, "HWND: %d\r\n", mHWnd);
     OutputDebugString(aStr);*/
 
-    SetWindowLong(mHWnd, GWL_USERDATA, (LONG)this);
+    SetWindowLong(mHWnd, GWLP_USERDATA, (intptr_t)this);
 
     if (mDDInterface == NULL) {
         mDDInterface = new DDInterface(this);
@@ -4203,7 +4203,7 @@ void SexyAppBase::LoadingThreadProcStub(void *theArg) {
     aSexyApp->LoadingThreadProc();
 
     char aStr[256];
-    sprintf(aStr, "Resource Loading Time: %d\r\n", (GetTickCount() - aSexyApp->mTimeLoaded));
+    sprintf(aStr, "Resource Loading Time: %ld\r\n", (GetTickCount() - aSexyApp->mTimeLoaded));
     OutputDebugStringA(aStr);
 
     aSexyApp->mLoadingThreadCompleted = true;
@@ -4412,9 +4412,9 @@ void SexyAppBase::UpdateFTimeAcc() {
     if (mLastTimeCheck != 0) {
         int aDeltaTime = aCurTime - mLastTimeCheck;
 
-        mUpdateFTimeAcc = min(mUpdateFTimeAcc + aDeltaTime, 200.0);
+        mUpdateFTimeAcc = std::min(mUpdateFTimeAcc + aDeltaTime, 200.0);
 
-        if (mRelaxUpdateBacklogCount > 0) mRelaxUpdateBacklogCount = max(mRelaxUpdateBacklogCount - aDeltaTime, 0);
+        if (mRelaxUpdateBacklogCount > 0) mRelaxUpdateBacklogCount = std::max(mRelaxUpdateBacklogCount - aDeltaTime, 0);
     }
 
     mLastTimeCheck = aCurTime;
@@ -4516,7 +4516,7 @@ bool SexyAppBase::Process(bool allowSleep) {
     if ((!mPaused) && (mUpdateMultiplier > 0)) {
         ulong aStartTime = timeGetTime();
 
-        ulong aCurTime = aStartTime;
+        // ulong aCurTime = aStartTime; // Unused
         int aCumSleepTime = 0;
 
         // When we are VSynching, only calculate this FTimeAcc right after drawing
@@ -4597,7 +4597,7 @@ bool SexyAppBase::Process(bool allowSleep) {
             //  fractional component that gets truncated, and it's better to take off
             //  too much to keep our timing tending toward occuring right after
             //  redraws
-            if (isVSynched) mUpdateFTimeAcc = max(mUpdateFTimeAcc - aFrameFTime - 0.2f, 0.0);
+            if (isVSynched) mUpdateFTimeAcc = std::max(mUpdateFTimeAcc - aFrameFTime - 0.2f, 0.0);
             else mUpdateFTimeAcc -= aFrameFTime;
 
             if (mRelaxUpdateBacklogCount > 0) mUpdateFTimeAcc = 0;
@@ -4633,7 +4633,7 @@ bool SexyAppBase::Process(bool allowSleep) {
 
             ulong anEndTime = timeGetTime();
             int anElapsedTime = (anEndTime - aStartTime) - aCumSleepTime;
-            int aLoadingYieldSleepTime = min(250, (anElapsedTime * 2) - aCumSleepTime);
+            int aLoadingYieldSleepTime = std::min(250, (anElapsedTime * 2) - aCumSleepTime);
 
             if (aLoadingYieldSleepTime >= 0) {
                 if (!allowSleep) return false;
@@ -4772,8 +4772,8 @@ void SexyAppBase::Start() {
 
     timeBeginPeriod(1);
 
-    int aCount = 0;
-    int aSleepCount = 0;
+    // int aCount = 0; // unused
+    // int aSleepCount = 0; // unused
 
     DWORD aStartTime = timeGetTime();
 
@@ -4982,7 +4982,7 @@ void SexyAppBase::ParseCmdLine(const std::string &theCmdLine) {
     std::string aCurParamName;
     std::string aCurParamValue;
 
-    int aSpacePos = 0;
+    // int aSpacePos = 0; // Unused
     bool inQuote = false;
     bool onValue = false;
 
@@ -5127,7 +5127,9 @@ void SexyAppBase::Init() {
         HMODULE aMod;
         SHGetFolderPathFunc aFunc = (SHGetFolderPathFunc)GetSHGetFolderPath("shell32.dll", &aMod);
         if (aFunc == NULL || aMod == NULL)
-            SHGetFolderPathFunc aFunc = (SHGetFolderPathFunc)GetSHGetFolderPath("shfolder.dll", &aMod);
+            // SHGetFolderPathFunc is shadowed!
+            // SHGetFolderPathFunc aFunc = (SHGetFolderPathFunc)GetSHGetFolderPath("shfolder.dll", &aMod);
+            aFunc = (SHGetFolderPathFunc)GetSHGetFolderPath("shfolder.dll", &aMod);
 
         if (aMod != NULL) {
             char aPath[MAX_PATH];
@@ -5211,7 +5213,7 @@ void SexyAppBase::Init() {
         mInvisHWnd = CreateWindowExA(
             0, "InvisWindow", SexyStringToStringFast(mTitle).c_str(), 0, 0, 0, 0, 0, NULL, NULL, gHInstance, 0
         );
-        SetWindowLong(mInvisHWnd, GWL_USERDATA, (LONG)this);
+        SetWindowLong(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
     } else {
         mIsWideWindow = sizeof(SexyChar) == sizeof(wchar_t);
 
@@ -5243,7 +5245,7 @@ void SexyAppBase::Init() {
         DBG_ASSERTE(success);
 
         mInvisHWnd = CreateWindowEx(0, _S("InvisWindow"), mTitle.c_str(), 0, 0, 0, 0, 0, NULL, NULL, gHInstance, 0);
-        SetWindowLong(mInvisHWnd, GWL_USERDATA, (LONG)this);
+        SetWindowLong(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
     }
 
     mHandCursor =
@@ -5654,8 +5656,8 @@ void SexyAppBase::RotateImageHue(Sexy::MemoryImage *theImage, int theDelta) {
         int g = (aPixel >> 8) & 0xff;
         int b = aPixel & 0xff;
 
-        int maxval = max(r, max(g, b));
-        int minval = min(r, min(g, b));
+        int maxval = std::max(r, std::max(g, b));
+        int minval = std::min(r, std::min(g, b));
         int h = 0;
         int s = 0;
         int l = (minval + maxval) / 2;
@@ -5789,8 +5791,8 @@ ulong SexyAppBase::HSLToRGB(int h, int s, int l) {
 }
 
 ulong SexyAppBase::RGBToHSL(int r, int g, int b) {
-    int maxval = max(r, max(g, b));
-    int minval = min(r, min(g, b));
+    int maxval = std::max(r, std::max(g, b));
+    int minval = std::min(r, std::min(g, b));
     int hue = 0;
     int saturation = 0;
     int luminosity = (minval + maxval) / 2;

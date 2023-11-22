@@ -73,6 +73,11 @@
         tb = ((tb + (256 - alpha) * db) / finalAlpha) & 0x0000FF;
 
         *pix = ((finalAlpha - 1) << 24) | tr | tg | tb;
-    } else _asm nop;
+    }
+    // Not sure  of use case
+    /*
+    else
+        _asm nop;
+    */
 }
 #endif

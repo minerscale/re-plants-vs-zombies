@@ -67,7 +67,7 @@ void DataReader::ReadBytes(void *theMem, unsigned long theNumBytes) {
 }
 
 void DataReader::Rewind(unsigned long theNumBytes) {
-    theNumBytes = min(theNumBytes, mDataPos);
+    theNumBytes = std::min(theNumBytes, mDataPos);
     mDataPos -= theNumBytes;
     mData -= theNumBytes;
 }

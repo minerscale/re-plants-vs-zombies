@@ -188,6 +188,8 @@ bool StoreScreen::IsItemSoldOut(StoreItem theStoreItem) {
         return mApp->mZenGarden->IsZenGardenFull(true) ||
                aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000();
     else return aPlayer->mPurchases[theStoreItem];
+
+    __builtin_unreachable();
 }
 
 // 0x48AAD0
@@ -818,7 +820,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
             } else if (theStoreItem == STORE_ITEM_RAKE) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 3;
             } else if (theStoreItem == STORE_ITEM_STINKY_THE_SNAIL) {
-                mApp->mPlayerInfo->mPurchases[theStoreItem] = _time32(nullptr);
+                mApp->mPlayerInfo->mPurchases[theStoreItem] = _time64(nullptr);
             } else if (theStoreItem == STORE_ITEM_FERTILIZER || theStoreItem == STORE_ITEM_BUG_SPRAY) {
                 if (mApp->mPlayerInfo->mPurchases[theStoreItem] < PURCHASE_COUNT_OFFSET) {
                     mApp->mPlayerInfo->mPurchases[theStoreItem] = PURCHASE_COUNT_OFFSET;

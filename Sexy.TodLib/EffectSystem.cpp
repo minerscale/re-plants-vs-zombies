@@ -405,7 +405,7 @@ void TodTriangleGroup::AddTriangle(
 
     bool aNoClipping = false;
     TriVertex aVertBuffer[2][3];
-    register TriVertex(*aTriRef)[3] = aVertBuffer;
+    TriVertex(*aTriRef)[3] = aVertBuffer;
     if (mTriangleCount + 2 <= MAX_TRIANGLES) {
         if ((theClipRect.mX == 0 && theClipRect.mY == 0 && theClipRect.mWidth == BOARD_WIDTH &&
              theClipRect.mHeight == BOARD_HEIGHT && gSexyAppBase->Is3DAccelerated()) ||

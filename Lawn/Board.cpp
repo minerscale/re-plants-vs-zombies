@@ -117,7 +117,7 @@ Board::Board(LawnApp *theApp) {
     mIntervalDrawTime = 0;
     mIntervalDrawCountStart = 0;
     mPreloadTime = 0;
-    mGameID = _time32(nullptr);
+    mGameID = _time64(nullptr);
     mMinFPS = 1000.0f;
     mGravesCleared = 0;
     mPlantsEaten = 0;
@@ -377,9 +377,12 @@ GridItem *Board::GetScaryPotAt(int theGridX, int theGridY) {
     return GetGridItemAt(GridItemType::GRIDITEM_SCARY_POT, theGridX, theGridY);
 }
 
-GridItem *Board::GetSquirrelAt(int theGridX, int theGridY) {
+/*
+GridItem* Board::GetSquirrelAt(int theGridX, int theGridY)
+{
     return GetGridItemAt(GridItemType::GRIDITEM_SQUIRREL, theGridX, theGridY);
 }
+*/
 
 GridItem *Board::GetZenToolAt(int theGridX, int theGridY) {
     return GetGridItemAt(GridItemType::GRIDITEM_ZEN_TOOL, theGridX, theGridY);
@@ -444,7 +447,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand &theLevelRNG) {
 
     // 这里姑且加一个原版没有的、对于本列能否生成墓碑的判断
     // 如果没有这个判断，当本列不存在足够多的格子可以放置墓碑时，游戏会卡死
-    GridItem *aGridItem = nullptr;
+    // GridItem* aGridItem = nullptr;
     // bool aAllowGraveStone[MAX_GRID_SIZE_Y] = { false };
     int aGridAllowGraveStonesCount = 0;
     for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
@@ -467,6 +470,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand &theLevelRNG) {
         //  故这里仍然采用如下的原版的写法，仅在上面对 theCount 进行修正
         if (CanAddGraveStoneAt(theGridX, aGridY)) {
             GridItem *aGraveStone = AddAGraveStone(theGridX, aGridY);
+            (void)aGraveStone; // unused
             ++i;
         }
     }
@@ -1898,6 +1902,7 @@ Plant *Board::GetTopPlantAt(int theGridX, int theGridY, PlantPriority thePriorit
     case PlantPriority::TOPPLANT_ONLY_UNDER_PLANT:     return aPlantOnLawn.mUnderPlant;
     default:                                           TOD_ASSERT();
     }
+    __builtin_unreachable();
 }
 
 // 0x40D3A0
@@ -3141,6 +3146,7 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount) {
                     AdviceType::ADVICE_PLANT_ONLY_ON_KERNELPULT
                 );
                 break;
+            default: break;
             }
         } else if (aReason == PlantingReason::PLANTING_NOT_ON_ART) {
             SexyString aSeedName =
@@ -3986,7 +3992,7 @@ void Board::PickSpecialGraveStone() {
     }
 
     if (aPickCount > 0) {
-        ((GridItem *)TodPickFromArray((int *)aPicks, aPickCount))->mGridItemState =
+        ((GridItem *)TodPickFromArray((intptr_t *)aPicks, aPickCount))->mGridItemState =
             GridItemState::GRIDITEM_STATE_GRAVESTONE_SPECIAL;
     }
 }
@@ -4774,6 +4780,8 @@ void Board::SetTutorialState(TutorialState theTutorialState) {
         mCutScene->mCutsceneTime = 1500;
         mCutScene->mCrazyDaveDialogStart = 2410;
         break;
+
+    default: break;
     }
 
     mTutorialState = theTutorialState;
@@ -5087,16 +5095,19 @@ void Board::AddBossRenderItem(RenderItem *theRenderList, int &theCurRenderItem, 
     }
 }
 
-static inline void AddGameObjectRenderItem(
-    RenderItem *theRenderList, int &theCurRenderItem, RenderObjectType theRenderObjectType, GameObject *theGameObject
-) {
+/*
+[[maybe_unused]]
+static inline void AddGameObjectRenderItem(RenderItem* theRenderList, int& theCurRenderItem, RenderObjectType
+theRenderObjectType, GameObject* theGameObject)
+{
     TOD_ASSERT(theCurRenderItem < MAX_RENDER_ITEMS);
-    RenderItem &aRenderItem = theRenderList[theCurRenderItem];
+    RenderItem& aRenderItem = theRenderList[theCurRenderItem];
     aRenderItem.mRenderObjectType = theRenderObjectType;
     aRenderItem.mZPos = theGameObject->mRenderOrder;
     aRenderItem.mGameObject = theGameObject;
     theCurRenderItem++;
 }
+*/
 
 static inline void AddGameObjectRenderItemCursorPreview(
     RenderItem *theRenderList, int &theCurRenderItem, RenderObjectType theRenderObjectType, GameObject *theGameObject
@@ -5696,7 +5707,7 @@ void Board::DrawLevel(Graphics *g) {
             if (aFlags > 0) {
                 SexyString aFlagStr = mApp->Pluralize(aFlags, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
                 SexyString aCompletedStr = TodReplaceString(_S("[FLAGS_COMPLETED]"), _S("{FLAGS}"), aFlagStr);
-                aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr), aCompletedStr);
+                aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr).c_str(), aCompletedStr.c_str());
             }
         } else if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode)) {
             int aStreak = mChallenge->mSurvivalStage;
@@ -5705,7 +5716,7 @@ void Board::DrawLevel(Graphics *g) {
             }
             if (aStreak > 0) {
                 SexyString aStreakStr = TodReplaceNumberString(_S("[ENDLESS_STREAK]"), _S("{STREAK}"), aStreak);
-                aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr), aStreakStr);
+                aLevelStr = StrFormat(_S("%s - %s"), TodStringTranslate(aLevelStr).c_str(), aStreakStr.c_str());
             }
         }
     }
@@ -5998,10 +6009,13 @@ void Board::DrawDebugText(Graphics *g) {
                 HMUSIC aMusicHandle1 = mApp->mMusic->GetBassMusicHandle(mApp->mMusic->mCurMusicFileMain);
                 HMUSIC aMusicHandle2 = mApp->mMusic->GetBassMusicHandle(mApp->mMusic->mCurMusicFileHihats);
                 HMUSIC aMusicHandle3 = mApp->mMusic->GetBassMusicHandle(mApp->mMusic->mCurMusicFileDrums);
-                int bpm1 = gBass->BASS_MusicGetAttribute(aMusicHandle1, BASS_MUSIC_ATTRIB_BPM);
-                int bpm2 = gBass->BASS_MusicGetAttribute(aMusicHandle2, BASS_MUSIC_ATTRIB_BPM);
-                int bpm3 = gBass->BASS_MusicGetAttribute(aMusicHandle3, BASS_MUSIC_ATTRIB_BPM);
-                aText += StrFormat(_S("bpm1 %d bmp2 %d bpm3 %d\n"), bpm1, bpm2, bpm3);
+                float bpm1;
+                float bpm2;
+                float bpm3;
+                gBass->BASS_ChannelGetAttribute(aMusicHandle1, BASS_ATTRIB_MUSIC_BPM, &bpm1);
+                gBass->BASS_ChannelGetAttribute(aMusicHandle2, BASS_ATTRIB_MUSIC_BPM, &bpm2);
+                gBass->BASS_ChannelGetAttribute(aMusicHandle3, BASS_ATTRIB_MUSIC_BPM, &bpm3);
+                aText += StrFormat(_S("bpm1 %f bmp2 %f bpm3 %f\n"), bpm1, bpm2, bpm3);
             } else if (mApp->mMusic->mCurMusicTune == MusicTune::MUSIC_TUNE_NIGHT_MOONGRAINS) {
                 int aPackedOrderDrums = mApp->mMusic->GetMusicOrder(mApp->mMusic->mCurMusicFileDrums);
                 aText += StrFormat(
@@ -7394,6 +7408,8 @@ int Board::LeftFogColumn() {
     if (mLevel >= 32 && mLevel <= 36) return 5;
     if (mLevel >= 37 && mLevel <= 40) return 4;
     TOD_ASSERT();
+
+    __builtin_unreachable();
 }
 
 // 0x41C210
@@ -8064,6 +8080,8 @@ int Board::GetNumWavesPerSurvivalStage() {
     }
 
     TOD_ASSERT();
+
+    __builtin_unreachable();
 }
 
 // 0x41DA50
@@ -8134,6 +8152,8 @@ bool Board::CanUseGameObject(GameObjectType theGameObject) {
     }
 
     TOD_ASSERT();
+
+    __builtin_unreachable();
 }
 
 void Board::ShakeBoard(int theShakeAmountX, int theShakeAmountY) {

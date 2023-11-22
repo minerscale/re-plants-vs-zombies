@@ -16,7 +16,7 @@ static int gInitialListWidgetColors[][3] = {
     {255, 255, 255}
 };
 
-ListWidget::ListWidget(int theId, Font *theFont, ListListener *theListListener) {
+ListWidget::ListWidget(int theId, _Font *theFont, ListListener *theListListener) {
     mJustify = JUSTIFY_LEFT;
     mHiliteIdx = -1;
     mSelectIdx = -1;
@@ -109,8 +109,8 @@ void ListWidget::Sort(bool ascending) {
         aListWidget = aListWidget->mChild;
     }
 
-    delete aMap;
-    delete aKeys;
+    delete[] aMap;
+    delete[] aKeys;
 }
 
 SexyString ListWidget::GetStringAt(int theIdx) { return mLines[theIdx]; }

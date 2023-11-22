@@ -194,27 +194,16 @@ struct static_tree_desc_s {
     zmemzero((Bytef *)s->head, (unsigned)(s->hash_size - 1) * sizeof(*s->head));
 
 /* ========================================================================= */
-int ZEXPORT deflateInit_(strm, level, version, stream_size)
-z_streamp strm;
-int level;
-const char *version;
-int stream_size;
-{
+int ZEXPORT deflateInit_(z_streamp strm, int level, const char *version, int stream_size) {
     return deflateInit2_(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, version, stream_size);
     /* To do: ignore strm->next_in if we use it as window */
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy, version, stream_size)
-z_streamp strm;
-int level;
-int method;
-int windowBits;
-int memLevel;
-int strategy;
-const char *version;
-int stream_size;
-{
+int ZEXPORT deflateInit2_(
+    z_streamp strm, int level, int method, int windowBits, int memLevel, int strategy, const char *version,
+    int stream_size
+) {
     deflate_state *s;
     int noheader = 0;
     static const char *my_version = ZLIB_VERSION;
@@ -290,11 +279,7 @@ int stream_size;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateSetDictionary(strm, dictionary, dictLength)
-z_streamp strm;
-const Bytef *dictionary;
-uInt dictLength;
-{
+int ZEXPORT deflateSetDictionary(z_streamp strm, const Bytef *dictionary, uInt dictLength) {
     deflate_state *s;
     uInt length = dictLength;
     uInt n;
@@ -331,9 +316,7 @@ uInt dictLength;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateReset(strm)
-z_streamp strm;
-{
+int ZEXPORT deflateReset(z_streamp strm) {
     deflate_state *s;
 
     if (strm == Z_NULL || strm->state == Z_NULL || strm->zalloc == Z_NULL || strm->zfree == Z_NULL)
@@ -361,11 +344,7 @@ z_streamp strm;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateParams(strm, level, strategy)
-z_streamp strm;
-int level;
-int strategy;
-{
+int ZEXPORT deflateParams(z_streamp strm, int level, int strategy) {
     deflate_state *s;
     compress_func func;
     int err = Z_OK;
@@ -401,9 +380,7 @@ int strategy;
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
  */
-local void putShortMSB(s, b) deflate_state *s;
-uInt b;
-{
+local void putShortMSB(deflate_state *s, uInt b) {
     put_byte(s, (Byte)(b >> 8));
     put_byte(s, (Byte)(b & 0xff));
 }
@@ -414,8 +391,7 @@ uInt b;
  * to avoid allocating a large strm->next_out buffer and copying into it.
  * (See also read_buf()).
  */
-local void flush_pending(strm) z_streamp strm;
-{
+local void flush_pending(z_streamp strm) {
     unsigned len = strm->state->pending;
 
     if (len > strm->avail_out) len = strm->avail_out;
@@ -433,10 +409,7 @@ local void flush_pending(strm) z_streamp strm;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflate(strm, flush)
-z_streamp strm;
-int flush;
-{
+int ZEXPORT deflate(z_streamp strm, int flush) {
     int old_flush; /* value of flush param for previous deflate call */
     deflate_state *s;
 
@@ -563,9 +536,7 @@ int flush;
 }
 
 /* ========================================================================= */
-int ZEXPORT deflateEnd(strm)
-z_streamp strm;
-{
+int ZEXPORT deflateEnd(z_streamp strm) {
     int status;
 
     if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
@@ -592,10 +563,7 @@ z_streamp strm;
  * To simplify the source, this is not supported for 16-bit MSDOS (which
  * doesn't have enough memory anyway to duplicate compression states).
  */
-int ZEXPORT deflateCopy(dest, source)
-z_streamp dest;
-z_streamp source;
-{
+int ZEXPORT deflateCopy(z_streamp dest, z_streamp source) {
 #ifdef MAXSEG_64K
     return Z_STREAM_ERROR;
 #else
@@ -652,11 +620,7 @@ z_streamp source;
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-local int read_buf(strm, buf, size)
-z_streamp strm;
-Bytef *buf;
-unsigned size;
-{
+local int read_buf(z_streamp strm, Bytef *buf, unsigned size) {
     unsigned len = strm->avail_in;
 
     if (len > size) len = size;
@@ -677,8 +641,7 @@ unsigned size;
 /* ===========================================================================
  * Initialize the "longest match" routines for a new zlib stream
  */
-local void lm_init(s) deflate_state *s;
-{
+local void lm_init(deflate_state *s) {
     s->window_size = (ulg)2L * s->w_size;
 
     CLEAR_HASH(s);
@@ -715,10 +678,7 @@ local void lm_init(s) deflate_state *s;
  * match.S. The code will be functionally equivalent.
  */
 #ifndef FASTEST
-local uInt longest_match(s, cur_match)
-deflate_state *s;
-IPos cur_match; /* current match */
-{
+local uInt longest_match(deflate_state *s, IPos cur_match) {
     unsigned chain_length = s->max_chain_length;    /* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                          /* matched string */
@@ -848,10 +808,7 @@ IPos cur_match; /* current match */
 /* ---------------------------------------------------------------------------
  * Optimized version for level == 1 only
  */
-local uInt longest_match(s, cur_match)
-deflate_state *s;
-IPos cur_match; /* current match */
-{
+local uInt longest_match(deflate_state *s, IPos cur_match) {
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                          /* matched string */
     register int len;                               /* length of current match */
@@ -904,10 +861,7 @@ IPos cur_match; /* current match */
 /* ===========================================================================
  * Check that the match at match_start is indeed a match.
  */
-local void check_match(s, start, match, length) deflate_state *s;
-IPos start, match;
-int length;
-{
+local void check_match(deflate_state *s, IPos start, IPos match, int length) {
     /* check that the match is indeed a match */
     if (zmemcmp(s->window + match, s->window + start, length) != EQUAL) {
         fprintf(stderr, " start %u, match %u, length %d\n", start, match, length);
@@ -937,8 +891,7 @@ int length;
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-local void fill_window(s) deflate_state *s;
-{
+local void fill_window(deflate_state *s) {
     register unsigned n, m;
     register Posf *p;
     unsigned more; /* Amount of free space at the end of the window. */
@@ -1057,10 +1010,7 @@ local void fill_window(s) deflate_state *s;
  * NOTE: this function should be optimized to avoid extra copying from
  * window to pending_buf.
  */
-local block_state deflate_stored(s, flush)
-deflate_state *s;
-int flush;
-{
+local block_state deflate_stored(deflate_state *s, int flush) {
     /* Stored blocks are limited to 0xffff bytes, pending_buf is limited
      * to pending_buf_size, and each stored block has a 5 byte header:
      */
@@ -1114,10 +1064,7 @@ int flush;
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-local block_state deflate_fast(s, flush)
-deflate_state *s;
-int flush;
-{
+local block_state deflate_fast(deflate_state *s, int flush) {
     IPos hash_head = NIL; /* head of the hash chain */
     int bflush;           /* set if current block must be flushed */
 
@@ -1208,10 +1155,7 @@ int flush;
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-local block_state deflate_slow(s, flush)
-deflate_state *s;
-int flush;
-{
+local block_state deflate_slow(deflate_state *s, int flush) {
     IPos hash_head = NIL; /* head of hash chain */
     int bflush;           /* set if current block must be flushed */
 

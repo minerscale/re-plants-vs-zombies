@@ -3,6 +3,7 @@
 
 #define MAX_GLOBAL_ALLOCATORS 128
 
+#include "TodCommon.h"
 #include "TodDebug.h"
 
 struct TodAllocator {
@@ -64,10 +65,10 @@ public:
 
         TodListNode<T> *aNode = (TodListNode<T> *)mpAllocator->Calloc(sizeof(TodListNode<T>));
         if (aNode) aNode->mValue = theHead;
-        aNode->mNext = mHead;            // ĞÂ½ÚµãµÄÏÂÒ»¸ö½ÚµãÖ¸ÏòÔ­½Úµã
-        aNode->mPrev = nullptr;          // ĞÂ½Úµã×÷ÎªÍ·²¿£¬²»´æÔÚÉÏÒ»¸ö½Úµã
-        if (mHead) mHead->mPrev = aNode; // ÒÑ´æÔÚÍ·²¿½ÚµãÊ±£¬ÁîÔ­Í·²¿½ÚµãµÄÉÏÒ»¸ö½ÚµãÖ¸Ïò¸ÃĞÂ½Úµã
-        else mTail = aNode;              // ²»´æÔÚÍ·²¿½ÚµãÊ±£¬Î²²¿½ÚµãÒ²Îª¸ÃĞÂ½Úµã
+        aNode->mNext = mHead;            // æ–°èŠ‚ç‚¹çš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹æŒ‡å‘åŸèŠ‚ç‚¹
+        aNode->mPrev = nullptr;          // æ–°èŠ‚ç‚¹ä½œä¸ºå¤´éƒ¨ï¼Œä¸å­˜åœ¨ä¸Šä¸€ä¸ªèŠ‚ç‚¹
+        if (mHead) mHead->mPrev = aNode; // å·²å­˜åœ¨å¤´éƒ¨èŠ‚ç‚¹æ—¶ï¼Œä»¤åŸå¤´éƒ¨èŠ‚ç‚¹çš„ä¸Šä¸€ä¸ªèŠ‚ç‚¹æŒ‡å‘è¯¥æ–°èŠ‚ç‚¹
+        else mTail = aNode;              // ä¸å­˜åœ¨å¤´éƒ¨èŠ‚ç‚¹æ—¶ï¼Œå°¾éƒ¨èŠ‚ç‚¹ä¹Ÿä¸ºè¯¥æ–°èŠ‚ç‚¹
         mSize++;
         mHead = aNode;
     }

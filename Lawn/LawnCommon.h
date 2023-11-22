@@ -1,8 +1,8 @@
 #ifndef __LAWN_COMMON_H__
 #define __LAWN_COMMON_H__
 
-#include "../../SexyAppFramework/EditWidget.h"
 #include "../ConstEnums.h"
+#include "../SexyAppFramework/EditWidget.h"
 #include "../SexyAppFramework/Graphics.h"
 
 using namespace Sexy;

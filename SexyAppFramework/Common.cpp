@@ -30,7 +30,7 @@ bool Sexy::CheckFor98Mill() {
     static bool is98Mill = false;
 
     if (needOsCheck) {
-        bool invalid = false;
+        // bool invalid = false; // unused
         OSVERSIONINFOEXA osvi;
         ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
 
@@ -52,7 +52,7 @@ bool Sexy::CheckForVista() {
     static bool isVista = false;
 
     if (needOsCheck) {
-        bool invalid = false;
+        // bool invalid = false; // unused
         OSVERSIONINFOEXA osvi;
         ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
 
@@ -83,7 +83,7 @@ void Sexy::SetAppDataFolder(const std::string &thePath) {
 }
 
 std::string Sexy::URLEncode(const std::string &theString) {
-    char *aHexChars = "0123456789ABCDEF";
+    char *aHexChars = (char *)"0123456789ABCDEF";
 
     std::string aString;
 
@@ -622,7 +622,7 @@ void Sexy::MkDir(const std::string &theDir) {
 }
 
 std::string Sexy::GetFileName(const std::string &thePath, bool noExtension) {
-    int aLastSlash = max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
+    int aLastSlash = std::max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
 
     if (noExtension) {
         int aLastDot = (int)thePath.rfind('.');
@@ -634,7 +634,7 @@ std::string Sexy::GetFileName(const std::string &thePath, bool noExtension) {
 }
 
 std::string Sexy::GetFileDir(const std::string &thePath, bool withSlash) {
-    int aLastSlash = max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
+    int aLastSlash = std::max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
 
     if (aLastSlash == -1) return "";
     else {
@@ -835,8 +835,9 @@ std::string Sexy::Evaluate(const std::string &theString, const DefinesMap &theDe
 std::string Sexy::XMLDecodeString(const std::string &theString) {
     std::string aNewString;
 
-    int aUTF8Len = 0;
-    int aUTF8CurVal = 0;
+    // unused
+    // int aUTF8Len = 0;
+    // int aUTF8CurVal = 0;
 
     for (ulong i = 0; i < theString.length(); i++) {
         char c = theString[i];
@@ -867,8 +868,9 @@ std::string Sexy::XMLDecodeString(const std::string &theString) {
 std::wstring Sexy::XMLDecodeString(const std::wstring &theString) {
     std::wstring aNewString;
 
-    int aUTF8Len = 0;
-    int aUTF8CurVal = 0;
+    // unused
+    // int aUTF8Len = 0;
+    // int aUTF8CurVal = 0;
 
     for (ulong i = 0; i < theString.length(); i++) {
         wchar_t c = theString[i];
@@ -1052,7 +1054,7 @@ std::wstring Sexy::UTF8StringToWString(const std::string theString) {
 
 void Sexy::SMemR(void *&_Src, void *_Dst, size_t _Size) {
     memcpy(_Dst, _Src, _Size);
-    _Src = (void *)((unsigned int)_Src + _Size);
+    _Src = (void *)((uintptr_t)_Src + _Size);
 }
 
 void Sexy::SMemRStr(void *&_Src, std::string &theString) {
@@ -1064,7 +1066,7 @@ void Sexy::SMemRStr(void *&_Src, std::string &theString) {
 
 void Sexy::SMemW(void *&_Dst, const void *_Src, size_t _Size) {
     memcpy(_Dst, _Src, _Size);
-    _Dst = (void *)((unsigned int)_Dst + _Size);
+    _Dst = (void *)((uintptr_t)_Dst + _Size);
 }
 
 void Sexy::SMemWStr(void *&_Dst, const std::string &theString) {

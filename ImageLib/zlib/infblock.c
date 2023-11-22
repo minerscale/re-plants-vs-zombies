@@ -67,10 +67,7 @@ local const uInt border[] = {/* Order of the bit length code lengths */
       the two sets of lengths.
  */
 
-void inflate_blocks_reset(s, z, c) inflate_blocks_statef *s;
-z_streamp z;
-uLongf *c;
-{
+void inflate_blocks_reset(inflate_blocks_statef *s, z_streamp z, uLongf *c) {
     if (c != Z_NULL) *c = s->check;
     if (s->mode == BTREE || s->mode == DTREE) ZFREE(z, s->sub.trees.blens);
     if (s->mode == CODES) inflate_codes_free(s->sub.decode.codes, z);
@@ -82,11 +79,7 @@ uLongf *c;
     Tracev((stderr, "inflate:   blocks reset\n"));
 }
 
-inflate_blocks_statef *inflate_blocks_new(z, c, w)
-z_streamp z;
-check_func c;
-uInt w;
-{
+inflate_blocks_statef *inflate_blocks_new(z_streamp z, check_func c, uInt w) {
     inflate_blocks_statef *s;
 
     if ((s = (inflate_blocks_statef *)ZALLOC(z, 1, sizeof(struct inflate_blocks_state))) == Z_NULL) return s;
@@ -107,11 +100,7 @@ uInt w;
     return s;
 }
 
-int inflate_blocks(s, z, r)
-inflate_blocks_statef *s;
-z_streamp z;
-int r;
-{
+int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r) {
     uInt t;   /* temporary storage */
     uLong b;  /* bit buffer */
     uInt k;   /* bits in bit buffer */
@@ -321,10 +310,7 @@ int r;
     }
 }
 
-int inflate_blocks_free(s, z)
-inflate_blocks_statef *s;
-z_streamp z;
-{
+int inflate_blocks_free(inflate_blocks_statef *s, z_streamp z) {
     inflate_blocks_reset(s, z, Z_NULL);
     ZFREE(z, s->window);
     ZFREE(z, s->hufts);
@@ -333,10 +319,7 @@ z_streamp z;
     return Z_OK;
 }
 
-void inflate_set_dictionary(s, d, n) inflate_blocks_statef *s;
-const Bytef *d;
-uInt n;
-{
+void inflate_set_dictionary(inflate_blocks_statef *s, const Bytef *d, uInt n) {
     zmemcpy(s->window, d, n);
     s->read = s->write = s->window + n;
 }
@@ -345,6 +328,4 @@ uInt n;
  * by Z_SYNC_FLUSH or Z_FULL_FLUSH.
  * IN assertion: s != Z_NULL
  */
-int inflate_blocks_sync_point(s)
-inflate_blocks_statef *s;
-{ return s->mode == LENS; }
+int inflate_blocks_sync_point(inflate_blocks_statef *s) { return s->mode == LENS; }

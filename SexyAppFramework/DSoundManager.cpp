@@ -1,8 +1,9 @@
 #include "DSoundManager.h"
-#include "..\PakLib\PakInterface.h"
+#include "../PakLib/PakInterface.h"
 #include "DSoundInstance.h"
+#include "Debug.h"
 #include "FModLoader.h"
-#include "debug.h"
+#include "SexyAppBase.h"
 #include <fcntl.h>
 #include <io.h>
 #include <math.h>
@@ -40,7 +41,7 @@ DSoundManager::DSoundManager(HWND theHWnd, bool haveFMod) {
     mMasterVolume = 1.0;
 
     if (theHWnd != NULL) {
-        extern HMODULE gDSoundDLL;
+        // extern HMODULE gDSoundDLL;
         typedef HRESULT(WINAPI * DirectSoundCreateFunc)(LPCGUID lpcGuid, LPDIRECTSOUND * ppDS, LPUNKNOWN pUnkOuter);
         DirectSoundCreateFunc aDirectSoundCreateFunc =
             (DirectSoundCreateFunc)GetProcAddress(gDSoundDLL, "DirectSoundCreate");
@@ -162,18 +163,18 @@ bool DSoundManager::LoadWAVSound(unsigned int theSfxID, const std::string &theFi
 
     fp = p_fopen(theFilename.c_str(), "rb");
 
-    if (fp <= 0) return false;
+    if (fp == NULL) return false;
 
     char aChunkType[5];
     aChunkType[4] = '\0';
     ulong aChunkSize;
 
     p_fread(aChunkType, 1, 4, fp);
-    if (!strcmp(aChunkType, "RIFF") == 0) return false;
+    if ((!strcmp(aChunkType, "RIFF")) == 0) return false;
     p_fread(&aChunkSize, 4, 1, fp);
 
     p_fread(aChunkType, 1, 4, fp);
-    if (!strcmp(aChunkType, "WAVE") == 0) return false;
+    if ((!strcmp(aChunkType, "WAVE")) == 0) return false;
 
     ushort aBitCount = 16;
     ushort aChannelCount = 1;
@@ -265,7 +266,7 @@ bool DSoundManager::LoadWAVSound(unsigned int theSfxID, const std::string &theFi
             for (int i = 0; i < aDataSize; i++)
                 ((uchar *)lpvPtr)[i] ^= anXor;
 
-            if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, NULL) != DS_OK) return false;
+            if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, 0) != DS_OK) return false;
 
             if (aReadSize != aDataSize) return false;
 
@@ -382,7 +383,7 @@ bool DSoundManager::LoadFModSound(unsigned int theSfxID, const std::string &theF
         if (gFMod->FSOUND_Sample_Lock(aSample, 0, aLenBytes, &aPtr1, &aPtr2, &aLen1, &aLen2)) {
             memcpy(lpvPtr, aPtr1, aLen1);
 
-            mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, NULL);
+            mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, 0);
             gFMod->FSOUND_Sample_Unlock(aSample, aPtr1, aPtr2, aLen1, aLen2);
         }
     } else {
@@ -485,12 +486,12 @@ bool DSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &theFil
 
     fp = p_fopen(theFilename.c_str(), "rb");
 
-    if (fp <= 0) return false;
+    if (fp == NULL) return false;
 
     char aHeaderId[5];
     aHeaderId[4] = '\0';
     p_fread(aHeaderId, 1, 4, fp);
-    if (!strcmp(aHeaderId, ".snd") == 0) return false;
+    if ((!strcmp(aHeaderId, ".snd")) == 0) return false;
 
     ulong aHeaderSize;
     p_fread(&aHeaderSize, 4, 1, fp);
@@ -608,7 +609,7 @@ bool DSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &theFil
 
     delete[] aSrcBuffer;
 
-    if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, NULL) != DS_OK) return false;
+    if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, 0) != DS_OK) return false;
 
     if (aReadSize != aDataSize) return false;
 
@@ -740,8 +741,8 @@ bool DSoundManager::WriteWAV(unsigned int theSfxID, const std::string &theFilena
     FILE *fp;
     fp = fopen(theFilename.c_str(), "wb");
 
-    if (fp <= 0) {
-        mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, NULL);
+    if (fp == NULL) {
+        mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, 0);
         return false;
     }
 
@@ -808,7 +809,7 @@ bool DSoundManager::WriteWAV(unsigned int theSfxID, const std::string &theFilena
     for (DWORD i = 0; i < dwBytes; i++)
         ((uchar *)lpvPtr)[i] ^= anXor;
 
-    if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, NULL) != DS_OK) return false;
+    if (mSourceSounds[theSfxID]->Unlock(lpvPtr, dwBytes, NULL, 0) != DS_OK) return false;
 
     return true;
 }

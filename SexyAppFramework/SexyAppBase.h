@@ -11,6 +11,12 @@
 #include "Rect.h"
 #include "SharedImage.h"
 
+extern HMODULE gDDrawDLL;
+extern HMODULE gDSoundDLL;
+extern HMODULE gVersionDLL;
+
+extern bool gD3DInterfacePreDrawError;
+
 namespace ImageLib {
 class Image;
 };

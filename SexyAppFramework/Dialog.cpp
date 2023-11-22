@@ -111,18 +111,18 @@ void Dialog::SetColor(int theIdx, const Color &theColor) {
     }
 }
 
-void Dialog::SetButtonFont(Font *theFont) {
+void Dialog::SetButtonFont(_Font *theFont) {
     if (mYesButton != NULL) mYesButton->SetFont(theFont);
 
     if (mNoButton != NULL) mNoButton->SetFont(theFont);
 }
 
-void Dialog::SetHeaderFont(Font *theFont) {
+void Dialog::SetHeaderFont(_Font *theFont) {
     delete mHeaderFont;
     mHeaderFont = theFont->Duplicate();
 }
 
-void Dialog::SetLinesFont(Font *theFont) {
+void Dialog::SetLinesFont(_Font *theFont) {
     delete mLinesFont;
     mLinesFont = theFont->Duplicate();
 }

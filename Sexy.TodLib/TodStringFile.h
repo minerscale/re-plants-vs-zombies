@@ -10,7 +10,7 @@ enum TodStringFormatFlag { TOD_FORMAT_IGNORE_NEWLINES, TOD_FORMAT_HIDE_UNTIL_MAG
 class TodStringListFormat {
 public:
     const char *mFormatName;
-    Font **mNewFont;
+    _Font **mNewFont;
     Color mNewColor;
     int mLineSpacingOffset;
     unsigned int mFormatFlags;
@@ -18,7 +18,7 @@ public:
 public:
     TodStringListFormat();
     TodStringListFormat(
-        const char *theFormatName, Font **theFont, const Color &theColor, int theLineSpacingOffset,
+        const char *theFormatName, _Font **theFont, const Color &theColor, int theLineSpacingOffset,
         unsigned int theFormatFlags
     );
 };
@@ -50,11 +50,11 @@ int TodWriteString(
     DrawStringJustification theJustification, bool drawString, int theOffset, int theLength, int theMaxChars
 );
 int TodDrawStringWrappedHelper(
-    Graphics *g, const SexyString &theText, const Rect &theRect, Font *theFont, const Color &theColor,
+    Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification, bool drawString
 );
 /*inline*/ void TodDrawStringWrapped(
-    Graphics *g, const SexyString &theText, const Rect &theRect, Font *theFont, const Color &theColor,
+    Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification
 );
 
