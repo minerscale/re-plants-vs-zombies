@@ -40,8 +40,10 @@ BASS_INSTANCE::BASS_INSTANCE(const char *dllName) {
         exit(0);
     }
 
-    *((uintptr_t *)&BASS_SetConfig) = (uintptr_t)GetProcAddress(mModule, "BASS_SetConfig");
-    *((uintptr_t *)&BASS_GetConfig) = (uintptr_t)GetProcAddress(mModule, "BASS_GetConfig");
+    //*((uintptr_t*) &BASS_SetConfig) = (uintptr_t) GetProcAddress(mModule, "BASS_SetConfig");
+    //*((uintptr_t*) &BASS_GetConfig) = (uintptr_t) GetProcAddress(mModule, "BASS_GetConfig");
+    GETPROC(BASS_SetConfig);
+    GETPROC(BASS_GetConfig);
 
     GETPROC(BASS_GetVolume);
     GETPROC(BASS_GetInfo);
@@ -89,25 +91,35 @@ BASS_INSTANCE::BASS_INSTANCE(const char *dllName) {
 
     GETPROC(BASS_ErrorGetCode);
 
+    GETPROC(BASS_PluginLoad);
+    GETPROC(BASS_ChannelGetLength);
+
+    // The following are only supported in 2.2 and higher
+    //*((uintptr_t*) &BASS_PluginLoad) = (uintptr_t) GetProcAddress(mModule, "BASS_PluginLoad");
+    //*((uintptr_t*) &BASS_ChannelGetLength) = (uintptr_t) GetProcAddress(mModule, "BASS_ChannelGetLength");
+
+    /*
     mVersion2 = BASS_SetConfig != NULL;
-    if (mVersion2) {
+    if (mVersion2)
+    {
         // Version 2 has different BASS_Init params
-        *((uintptr_t *)&BASS_Init2) = (uintptr_t)BASS_Init;
+        *((uintptr_t*) &BASS_Init2) = (uintptr_t) BASS_Init;
         BASS_Init = NULL;
 
-        *((uintptr_t *)&BASS_MusicLoad2) = (uintptr_t)BASS_MusicLoad;
+        *((uintptr_t*) &BASS_MusicLoad2) = (uintptr_t) BASS_MusicLoad;
         BASS_MusicLoad = NULL;
 
-        // The following are only supported in 2.2 and higher
-        *((uintptr_t *)&BASS_PluginLoad) = (uintptr_t)GetProcAddress(mModule, "BASS_PluginLoad");
-        *((uintptr_t *)&BASS_ChannelGetLength) = (uintptr_t)GetProcAddress(mModule, "BASS_ChannelGetLength");
+
 
         // 2.1 and higher only
-        *((uintptr_t *)&BASS_ChannelPreBuf) = (uintptr_t)GetProcAddress(mModule, "BASS_ChannelPreBuf");
-    } else {
+        *((uintptr_t*) &BASS_ChannelPreBuf) = (uintptr_t) GetProcAddress(mModule, "BASS_ChannelPreBuf");
+    }
+    else
+    {
         BASS_PluginLoad = NULL;
         BASS_ChannelPreBuf = NULL;
     }
+    */
 
 #undef GETPROC
 }

@@ -565,15 +565,15 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
     } else if (stricmp(aCmd.c_str(), "LayerSetCharOffsets") == 0) {
         if (theParams.mElementVector.size() == 4) {
             FontLayer *aLayer;
-            StringVector aCharsVector;
-            ListDataElement aRectList;
+            StringVector aCharsVector = StringVector();
+            ListDataElement aRectList = ListDataElement();
 
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) &&
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToList(theParams.mElementVector[3], &aRectList))) {
                 if (aCharsVector.size() == aRectList.mElementVector.size()) {
                     for (ulong i = 0; i < aCharsVector.size(); i++) {
-                        IntVector aRectElement;
+                        IntVector aRectElement = IntVector();
                         std::wstring aWString = UTF8StringToWString(aCharsVector[i]);
 
                         if ((aWString.length() == 1) && (DataToIntVector(aRectList.mElementVector[i], &aRectElement)) &&
@@ -581,7 +581,11 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                             // aLayer->mCharData[(uchar) aCharsVector[i][0]].mOffset = Point(aRectElement[0],
                             // aRectElement[1]);
                             aLayer->GetCharData(aWString[0])->mOffset = Point(aRectElement[0], aRectElement[1]);
-                        } else invalidParamFormat = true;
+                        } else {
+                            Error("Fucking Fuck");
+                            return false;
+                            invalidParamFormat = true;
+                        }
                     }
                 } else sizeMismatch = true;
             } else invalidParamFormat = true;

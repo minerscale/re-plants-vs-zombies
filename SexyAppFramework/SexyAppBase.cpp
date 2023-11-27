@@ -1656,6 +1656,7 @@ bool SexyAppBase::RegistryReadKey(
     }
 }
 
+// aStr isn't initialised lmao
 bool SexyAppBase::RegistryReadString(const std::string &theKey, std::string *theString) {
     char aStr[1024];
 
@@ -5156,7 +5157,9 @@ void SexyAppBase::Init() {
     // Change directory
     if (!ChangeDirHook(mChangeDirTo.c_str())) chdir(mChangeDirTo.c_str());
 
+    /*
     gPakInterface->AddPakFile("main.pak");
+    */
 
     // Create a message we can use to talk to ourselves inter-process
     mNotifyGameMessage = RegisterWindowMessage((_S("Notify") + StringToSexyString(mProdName)).c_str());

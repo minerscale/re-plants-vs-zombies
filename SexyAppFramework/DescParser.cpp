@@ -138,7 +138,7 @@ bool DescParser::DataToInt(DataElement *theSource, int *theInt) {
 bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStringVector) {
     theStringVector->clear();
 
-    ListDataElement aStaticValues;
+    ListDataElement aStaticValues = ListDataElement();
     ListDataElement *aValues;
 
     if (theSource->mIsList) {
@@ -193,7 +193,7 @@ bool DescParser::DataToList(DataElement *theSource, ListDataElement *theValues) 
 bool DescParser::DataToIntVector(DataElement *theSource, IntVector *theIntVector) {
     theIntVector->clear();
 
-    StringVector aStringVector;
+    StringVector aStringVector = StringVector();
     if (!DataToStringVector(theSource, &aStringVector)) return false;
 
     for (ulong i = 0; i < aStringVector.size(); i++) {
@@ -324,9 +324,9 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
     bool hasErrors = false;
 
     // Apparently VC6 doesn't have a clear() function for basic_strings
-    // mError.clear();
-    mError.erase();
-    mError.erase(mError.begin());
+    mError.clear();
+    // mError.erase();
+    // mError.erase(mError.begin());
 
     PFILE *aStream = p_fopen(theFileName.c_str(), "r");
     if (aStream == NULL) return false;
