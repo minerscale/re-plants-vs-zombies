@@ -328,7 +328,9 @@ void LawnMower::SquishMower() {
 Rect LawnMower::GetLawnMowerAttackRect() { return Rect(mPosX, mPosY, 50, 80); }
 
 // 0x458F60
-void LawnMower::EnableSuperMower(bool theEnable) {
+void LawnMower::EnableSuperMower(bool theEnable) // Is theEnable being unused a bug?
+{
+    (void)theEnable;
     if (mMowerType == LawnMowerType::LAWNMOWER_LAWN) {
         mApp->ReanimationGet(mReanimID)->SetFramesForLayer("anim_tricked");
     }

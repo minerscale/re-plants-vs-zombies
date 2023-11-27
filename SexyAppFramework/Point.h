@@ -13,7 +13,13 @@ public:
 public:
     TPoint(_T theX, _T theY) : mX(theX), mY(theY) {}
 
-    TPoint(const TPoint<_T> &theTPoint) : mX(theTPoint.mX), mY(theTPoint.mY) {}
+    /*
+    TPoint(const TPoint<_T>& theTPoint) :
+        mX(theTPoint.mX),
+        mY(theTPoint.mY)
+    {
+    }
+    */
 
     TPoint() : mX(0), mY(0) {}
 

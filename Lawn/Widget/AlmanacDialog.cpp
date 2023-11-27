@@ -27,7 +27,7 @@ AlmanacDialog::AlmanacDialog(LawnApp *theApp)
     mPlant = nullptr;
     mDrawStandardBack = false;
     TodLoadResources("DelayLoad_Almanac");
-    for (int i = 0; i < LENGTH(mZombiePerfTest); i++)
+    for (size_t i = 0; i < LENGTH(mZombiePerfTest); i++)
         mZombiePerfTest[i] = nullptr;
     LawnDialog::Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -601,6 +601,9 @@ ZombieType AlmanacDialog::ZombieHitTest(int x, int y) {
 
 // 0x403C60
 void AlmanacDialog::MouseUp(int x, int y, int theClickCount) {
+    (void)x;
+    (void)y;
+    (void)theClickCount;
     if (mPlantButton->IsMouseOver()) SetPage(ALMANAC_PAGE_PLANTS);
     else if (mZombieButton->IsMouseOver()) SetPage(ALMANAC_PAGE_ZOMBIES);
     else if (mCloseButton->IsMouseOver()) mApp->KillAlmanacDialog();
@@ -610,6 +613,7 @@ void AlmanacDialog::MouseUp(int x, int y, int theClickCount) {
 // 0x403D00
 //  GOTY @Patoke: 0x404F10
 void AlmanacDialog::MouseDown(int x, int y, int theClickCount) {
+    (void)theClickCount;
     if (mPlantButton->IsMouseOver() || mCloseButton->IsMouseOver() || mIndexButton->IsMouseOver())
         mApp->PlaySample(Sexy::SOUND_TAP);
     if (mZombieButton->IsMouseOver()) mApp->PlaySample(Sexy::SOUND_GRAVEBUTTON);

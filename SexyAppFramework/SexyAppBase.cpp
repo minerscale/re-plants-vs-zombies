@@ -928,9 +928,13 @@ void SexyAppBase::GotFocus() {}
 
 void SexyAppBase::LostFocus() {}
 
-void SexyAppBase::URLOpenFailed(const std::string &theURL) { mIsOpeningURL = false; }
+void SexyAppBase::URLOpenFailed(const std::string &theURL) {
+    (void)theURL;
+    mIsOpeningURL = false;
+}
 
 void SexyAppBase::URLOpenSucceeded(const std::string &theURL) {
+    (void)theURL;
     mIsOpeningURL = false;
 
     if (mShutdownOnURLOpen) Shutdown();
@@ -1915,7 +1919,7 @@ std::string SexyAppBase::GetGameSEHInfo() {
     return anInfoString;
 }
 
-void SexyAppBase::GetSEHWebParams(DefinesMap *theDefinesMap) {}
+void SexyAppBase::GetSEHWebParams(DefinesMap *) {}
 
 void SexyAppBase::ShutdownHook() {}
 
@@ -2524,6 +2528,7 @@ BOOL CALLBACK EnumCloseThing(HWND hwnd, LPARAM lParam) {
 }
 
 static INT_PTR CALLBACK MarkerListDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    (void)lParam;
     switch (msg) {
     case WM_INITDIALOG: {
         HWND aListBox = GetDlgItem(hwnd, 100);
@@ -2656,6 +2661,7 @@ static int ListDemoMarkers() {
 }
 
 static INT_PTR CALLBACK JumpToTimeDialogProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    (void)lParam;
     switch (msg) {
     case WM_INITDIALOG: {
         HWND anEdit = GetDlgItem(hwnd, 100);
@@ -3081,7 +3087,10 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
                 if (wParam == VK_MENU) aSexyApp->mAltDown = keyDown;
             }
 
-            if ((keyDown) && (aSexyApp->DebugKeyDownAsync(wParam, aSexyApp->mCtrlDown, aSexyApp->mAltDown))) return 0;
+            /*
+            if ((keyDown) && (aSexyApp->DebugKeyDownAsync(wParam, aSexyApp->mCtrlDown, aSexyApp->mAltDown)))
+                return 0;
+            */
 
             if (aSexyApp->mPlayingDemoBuffer) {
                 if (uMsg == WM_CHAR) {
@@ -3271,7 +3280,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     if ((aSexyApp != NULL) && (uMsg == aSexyApp->mNotifyGameMessage) && (hWnd == aSexyApp->mHWnd)) {
         // Oh, we are trying to open another instance of ourselves.
         // Bring up the original window instead
-        aSexyApp->HandleNotifyGameMessage(wParam, lParam);
+        aSexyApp->HandleNotifyGameMessage(wParam);
         return 0;
     }
 
@@ -3279,7 +3288,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     else return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }
 
-void SexyAppBase::HandleNotifyGameMessage(int theType, int theParam) {
+void SexyAppBase::HandleNotifyGameMessage(int theType) {
     if (theType == 0) // bring to front message
     {
         WINDOWPLACEMENT aWindowPlacement;
@@ -3613,7 +3622,12 @@ bool SexyAppBase::DebugKeyDown(int theKey) {
     return false;
 }
 
-bool SexyAppBase::DebugKeyDownAsync(int theKey, bool ctrlDown, bool altDown) { return false; }
+/*
+bool SexyAppBase::DebugKeyDownAsync(int theKey, bool ctrlDown, bool altDown)
+{
+    return false;
+}
+*/
 
 void SexyAppBase::CloseRequestAsync() {}
 
@@ -4309,7 +4323,7 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force) {
     }
 
     if (mSoundManager != NULL) {
-        mSoundManager->SetCooperativeWindow(mHWnd, mIsWindowed);
+        mSoundManager->SetCooperativeWindow(mHWnd);
     }
 
     mLastTime = timeGetTime();
@@ -4817,10 +4831,14 @@ void SexyAppBase::Start() {
     WriteToRegistry();
 }
 
-bool SexyAppBase::CheckSignature(const Buffer &theBuffer, const std::string &theFileName) {
+/*
+bool SexyAppBase::CheckSignature(const Buffer& theBuffer, const std::string& theFileName)
+{
+    (void)theBuffer;(void)theFileName;
     // Add your own signature checking code here
     return false;
 }
+*/
 
 bool SexyAppBase::LoadProperties(const std::string &theFileName, bool required, bool checkSig) {
     Buffer aBuffer;
@@ -4835,13 +4853,13 @@ bool SexyAppBase::LoadProperties(const std::string &theFileName, bool required, 
         }
     }
     if (checkSig) {
-        if (!CheckSignature(aBuffer, theFileName)) {
-            Popup(
-                GetString("PROPERTIES_SIG_FAILED", _S("Signature check failed on ")) +
-                StringToSexyString(theFileName + "'")
-            );
-            return false;
-        }
+        // if (!CheckSignature(aBuffer, theFileName))
+        //{
+        Popup(
+            GetString("PROPERTIES_SIG_FAILED", _S("Signature check failed on ")) + StringToSexyString(theFileName + "'")
+        );
+        return false;
+        //}
     }
 
     PropertiesParser aPropertiesParser(this);
@@ -4987,7 +5005,7 @@ void SexyAppBase::ParseCmdLine(const std::string &theCmdLine) {
     bool inQuote = false;
     bool onValue = false;
 
-    for (int i = 0; i < (int)theCmdLine.length(); i++) {
+    for (size_t i = 0; i < theCmdLine.length(); i++) {
         char c = theCmdLine[i];
         bool atEnd = false;
 
@@ -5091,11 +5109,14 @@ void SexyAppBase::PreDDInterfaceInitHook() {}
 
 void SexyAppBase::PostDDInterfaceInitHook() {}
 
-bool SexyAppBase::ChangeDirHook(const char *theIntendedPath) { return false; }
+bool SexyAppBase::ChangeDirHook(const char *theIntendedPath) {
+    (void)theIntendedPath;
+    return false;
+}
 
-MusicInterface *SexyAppBase::CreateMusicInterface(HWND theWindow) {
+MusicInterface *SexyAppBase::CreateMusicInterface() {
     if (mNoSoundNeeded) return new MusicInterface;
-    else if (mWantFMod) return new FModMusicInterface(mInvisHWnd);
+    else if (mWantFMod) return new FModMusicInterface();
     else return new BassMusicInterface(mInvisHWnd);
 }
 
@@ -5281,7 +5302,7 @@ void SexyAppBase::Init() {
         EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 
         // Switch resolutions
-        if (dm.dmPelsWidth != mWidth || dm.dmPelsHeight != mHeight ||
+        if (dm.dmPelsWidth != (unsigned int)mWidth || dm.dmPelsHeight != (unsigned int)mHeight ||
             (dm.dmBitsPerPel != 16 && dm.dmBitsPerPel != 32)) {
             dm.dmPelsWidth = mWidth;
             dm.dmPelsHeight = mHeight;
@@ -5319,7 +5340,7 @@ void SexyAppBase::Init() {
 
     SetSfxVolume(mSfxVolume);
 
-    mMusicInterface = CreateMusicInterface(mInvisHWnd);
+    mMusicInterface = CreateMusicInterface();
 
     SetMusicVolume(mMusicVolume);
 

@@ -163,6 +163,7 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 
 // GOTY @Patoke: 0x4017F0
 void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
+    (void)theClickCount;
     if (aBackButtonRect.Contains(x, y)) mApp->PlaySample(SOUND_GRAVEBUTTON);
 
     if (mMoreRockRect.Contains(x, y)) mApp->PlaySample(SOUND_GRAVEBUTTON);
@@ -170,6 +171,7 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 
 // GOTY @Patoke: 0x401890
 void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
+    (void)theClickCount;
     Point aPos = Point(x, y);
     if (aBackButtonRect.Contains(aPos)) {
         mApp->mGameSelector->SlideTo(0, 0);

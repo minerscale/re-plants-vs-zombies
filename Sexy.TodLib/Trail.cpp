@@ -266,6 +266,7 @@ Trail *TrailHolder::AllocTrail(int theRenderOrder, TrailType theTrailType) {
 }
 
 Trail *TrailHolder::AllocTrailFromDef(int theRenderOrder, TrailDefinition *theDefinition) {
+    (void)theRenderOrder;
     if (mTrails.mSize == mTrails.mMaxSize) return nullptr;
 
     Trail *aTrail = mTrails.DataArrayAlloc();

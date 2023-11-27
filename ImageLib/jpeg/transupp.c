@@ -700,6 +700,7 @@ GLOBAL(jvirt_barray_ptr *)
 jtransform_adjust_parameters(
     j_decompress_ptr srcinfo, j_compress_ptr dstinfo, jvirt_barray_ptr *src_coef_arrays, jpeg_transform_info *info
 ) {
+    (void)srcinfo;
     /* If force-to-grayscale is requested, adjust destination parameters */
     if (info->force_grayscale) {
         /* We use jpeg_set_colorspace to make sure subsidiary settings get fixed
@@ -823,6 +824,7 @@ jcopy_markers_setup(j_decompress_ptr srcinfo, JCOPY_OPTION option) {
 
 GLOBAL(void)
 jcopy_markers_execute(j_decompress_ptr srcinfo, j_compress_ptr dstinfo, JCOPY_OPTION option) {
+    (void)option;
     jpeg_saved_marker_ptr marker;
 
     /* In the current implementation, we don't actually need to examine the

@@ -54,7 +54,11 @@ void Widget::WidgetRemovedHelper() {
 
 void Widget::OrderInManagerChanged() {}
 
-bool Widget::IsPointVisible(int x, int y) { return true; }
+bool Widget::IsPointVisible(int x, int y) {
+    (void)x;
+    (void)y;
+    return true;
+}
 
 void Widget::SetVisible(bool isVisible) {
     if (mVisible == isVisible) return;
@@ -67,12 +71,14 @@ void Widget::SetVisible(bool isVisible) {
     if (mWidgetManager != NULL) mWidgetManager->RehupMouse();
 }
 
-void Widget::Draw(Graphics *g) // Already translated
-{}
+// Already translated
+void Widget::Draw(Graphics *) {}
+void Widget::DrawOverlay(Graphics *) {}
 
-void Widget::DrawOverlay(Graphics *g) {}
-
-void Widget::DrawOverlay(Graphics *g, int thePriority) { DrawOverlay(g); }
+void Widget::DrawOverlay(Graphics *g, int thePriority) {
+    (void)thePriority;
+    DrawOverlay(g);
+}
 
 void Widget::SetColors(int theColors[][3], int theNumColors) {
     mColors.clear();
@@ -153,9 +159,7 @@ void Widget::LostFocus() { mHasFocus = false; }
 
 void Widget::Update() { WidgetContainer::Update(); }
 
-void Widget::UpdateF(float theFrac) {}
-
-void Widget::KeyChar(SexyChar theChar) {}
+void Widget::KeyChar(SexyChar) {}
 
 void Widget::KeyDown(KeyCode theKey) {
     if (theKey == KEYCODE_TAB) {
@@ -167,7 +171,7 @@ void Widget::KeyDown(KeyCode theKey) {
     }
 }
 
-void Widget::KeyUp(KeyCode theKey) {}
+void Widget::KeyUp(KeyCode) {}
 
 void Widget::ShowFinger(bool on) {
     if (mWidgetManager == NULL) return;
@@ -185,7 +189,14 @@ void Widget::MouseEnter() {}
 
 void Widget::MouseLeave() {}
 
-void Widget::MouseMove(int x, int y) {}
+/*
+void Widget::MouseMove(int x, int y)
+{
+}
+*/
+
+void Widget::MouseMove(int, int) {}
+void Widget::MouseDrag(int, int) {}
 
 void Widget::MouseDown(int x, int y, int theClickCount) {
     if (theClickCount == 3) MouseDown(x, y, 2, 1);
@@ -193,9 +204,8 @@ void Widget::MouseDown(int x, int y, int theClickCount) {
     else MouseDown(x, y, 1, -theClickCount);
 }
 
-void Widget::MouseDown(int x, int y, int theBtnNum, int theClickCount) {}
-
-void Widget::MouseUp(int x, int y) {}
+void Widget::MouseDown(int, int, int, int) {}
+void Widget::MouseUp(int, int) {}
 
 void Widget::MouseUp(int x, int y, int theLastDownButtonId) {
     MouseUp(x, y);
@@ -205,11 +215,15 @@ void Widget::MouseUp(int x, int y, int theLastDownButtonId) {
     else MouseUp(x, y, 1, -theLastDownButtonId);
 }
 
-void Widget::MouseUp(int x, int y, int theBtnNum, int theClickCount) {}
+void Widget::MouseUp(int, int, int, int) {}
 
-void Widget::MouseDrag(int x, int y) {}
+/*
+void Widget::MouseDrag(int x, int y)
+{
+}
+*/
 
-void Widget::MouseWheel(int theDelta) {}
+void Widget::MouseWheel(int) {}
 
 //////// Helper functions
 

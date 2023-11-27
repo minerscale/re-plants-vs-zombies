@@ -71,7 +71,7 @@ public:
 
     virtual bool PolyFill3D(
         const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode,
-        int tx, int ty, bool convex
+        int tx, int ty
     );
 
     virtual void FillRect(const Rect &theRect, const Color &theColor, int theDrawMode);

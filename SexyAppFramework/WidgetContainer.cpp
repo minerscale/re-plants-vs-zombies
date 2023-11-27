@@ -1,4 +1,5 @@
 #include "WidgetContainer.h"
+#include "Common.h"
 #include "Debug.h"
 #include "Widget.h"
 #include "WidgetManager.h"
@@ -282,7 +283,7 @@ void WidgetContainer::RemovedFromManager(WidgetManager *theWidgetManager) {
     for (WidgetList::iterator anItr = mWidgets.begin(); anItr != mWidgets.end(); ++anItr) {
         Widget *aWidget = *anItr;
 
-        theWidgetManager->DisableWidget(aWidget);
+        // theWidgetManager->DisableWidget(aWidget);
         aWidget->RemovedFromManager(theWidgetManager);
         aWidget->mWidgetManager = NULL;
     }
@@ -397,7 +398,7 @@ void WidgetContainer::UpdateAll(ModalFlags *theFlags) {
     if (aWidgetManager == NULL) return;
 
     if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE) {
-        if (mLastWMUpdateCount != mWidgetManager->mUpdateCnt) {
+        if (mLastWMUpdateCount != (ulong)mWidgetManager->mUpdateCnt) {
             mLastWMUpdateCount = mWidgetManager->mUpdateCnt;
             Update();
         }
@@ -419,15 +420,22 @@ void WidgetContainer::UpdateAll(ModalFlags *theFlags) {
     mUpdateIteratorModified = true; // prevent incrementing iterator off the end of the list
 }
 
-void WidgetContainer::UpdateF(float theFrac) {}
+/*
+void WidgetContainer::UpdateF(float theFrac)
+{
+}
+*/
 
 void WidgetContainer::UpdateFAll(ModalFlags *theFlags, float theFrac) {
     AutoModalFlags anAutoModalFlags(theFlags, mWidgetFlagsMod);
 
     // Can update?
-    if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE) {
+    /*
+    if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE)
+    {
         UpdateF(theFrac);
     }
+    */
 
     mUpdateIterator = mWidgets.begin();
     while (mUpdateIterator != mWidgets.end()) {
@@ -444,7 +452,7 @@ void WidgetContainer::UpdateFAll(ModalFlags *theFlags, float theFrac) {
     mUpdateIteratorModified = true; // prevent incrementing iterator off the end of the list
 }
 
-void WidgetContainer::Draw(Graphics *g) {}
+void WidgetContainer::Draw(Graphics *) {}
 
 void WidgetContainer::DrawAll(ModalFlags *theFlags, Graphics *g) {
     if (mPriority > mWidgetManager->mMinDeferredOverlayPriority) mWidgetManager->FlushDeferredOverlayWidgets(mPriority);
@@ -501,6 +509,5 @@ void WidgetContainer::SysColorChangedAll() {
     }
 }
 
-void WidgetContainer::DisableWidget(Widget *theWidget) {}
-
-void WidgetContainer::SetFocus(Widget *theWidget) {}
+void WidgetContainer::DisableWidget(Widget *) {}
+void WidgetContainer::SetFocus(Widget *) {}

@@ -62,6 +62,7 @@ void Sexy::funcname(
     SWHelper::SWVertex *pVerts, void *pFrameBuffer, const unsigned int bytepitch,
     const SWHelper::SWTextureInfo *textureInfo, SWHelper::SWDiffuse &globalDiffuse
 ) {
+    (void)globalDiffuse;
     const int pitch = bytepitch / sizeof(PTYPE);
     const int tex_pitch = textureInfo->pitch;
     (void)tex_pitch;

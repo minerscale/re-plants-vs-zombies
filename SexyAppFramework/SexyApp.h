@@ -46,7 +46,7 @@ public:
     virtual void WriteToRegistry();
     virtual void ReadFromRegistry();
 
-    virtual bool CheckSignature(const Buffer &theBuffer, const std::string &theFileName);
+    //	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
 
     virtual bool ShouldCheckForUpdate();
     virtual void UpdateCheckQueried();
@@ -57,7 +57,7 @@ public:
     SexyApp();
     virtual ~SexyApp();
 
-    bool Validate(const std::string &theUserName, const std::string &theRegCode);
+    //	bool					Validate(const std::string& theUserName, const std::string& theRegCode);
 
     virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
     virtual bool OpenRegisterPage();

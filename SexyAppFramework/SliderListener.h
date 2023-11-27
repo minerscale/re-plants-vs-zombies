@@ -5,7 +5,7 @@ namespace Sexy {
 
 class SliderListener {
 public:
-    virtual void SliderVal(int theId, double theVal){};
+    virtual void SliderVal(int theId, double theVal) = 0;
 };
 
 } // namespace Sexy

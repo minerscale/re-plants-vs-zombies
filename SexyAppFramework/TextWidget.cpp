@@ -267,7 +267,7 @@ void TextWidget::Draw(Graphics *g) {
     aClipG.SetFont(mFont);
 
     int aFirstLine = (int)mPosition;
-    int aLastLine = min((int)mPhysicalLines.size() - 1, (int)mPosition + (int)mPageSize + 1);
+    int aLastLine = std::min((int)mPhysicalLines.size() - 1, (int)mPosition + (int)mPageSize + 1);
 
     for (int i = aFirstLine; i <= aLastLine; i++) {
         int aYPos = 4 + (int)((i - (int)mPosition) * mFont->GetHeight()) + mFont->GetAscent();
@@ -280,6 +280,7 @@ void TextWidget::Draw(Graphics *g) {
 }
 
 void TextWidget::ScrollPosition(int theId, double thePosition) {
+    (void)theId;
     mPosition = thePosition;
     MarkDirty();
 }
@@ -342,8 +343,11 @@ SexyString TextWidget::GetSelection() {
     return aSelString;
 }
 
-void TextWidget::KeyDown(KeyCode theKey) {
-    /*if (theKey == 3)
+void TextWidget::KeyDown(KeyCode) {}
+/*
+void TextWidget::KeyDown(KeyCode theKey)
+{
+    if (theKey == 3)
     {
         // Control-C
         mWidgetManager.mApplet.CopyToClipboard(GetSelection());
@@ -355,5 +359,6 @@ void TextWidget::KeyDown(KeyCode theKey) {
             mWidgetManager.SetFocus(mEditWidget);
             mEditWidget.KeyDown(theKey, shiftDown, controlDown);
         }
-    }*/
+    }
 }
+*/

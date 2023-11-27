@@ -65,6 +65,7 @@ void funcname(
     SWHelper::SWVertex *pVerts, void *pFrameBuffer, const unsigned int bytepitch,
     const SWHelper::SWTextureInfo *textureInfo, SWHelper::SWDiffuse &globalDiffuse
 ) {
+    (void)globalDiffuse;
 #if !defined(NAME_ADDITIVE)
     if (gTodTriangleDrawAdditive) {
 #if (TRI0 == 1 || TRI0 == 2) && (defined(TEX_ALPHA) || defined(MOD_ARGB) || defined(GLOBAL_ARGB))

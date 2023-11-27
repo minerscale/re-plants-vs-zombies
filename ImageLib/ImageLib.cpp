@@ -969,7 +969,7 @@ METHODDEF(void) skip_input_data(j_decompress_ptr cinfo, long num_bytes) {
     }
 }
 
-METHODDEF(void) term_source(j_decompress_ptr cinfo) { /* no work necessary here */ }
+METHODDEF(void) term_source(j_decompress_ptr /* cinfo */) { /* no work necessary here */ }
 
 void jpeg_pak_src(j_decompress_ptr cinfo, PFILE *infile) {
     pak_src_ptr src;
@@ -1267,7 +1267,7 @@ int __stdcall Pak_seek(void *data_source, int offset) { return p_fseek((PFILE *)
 
 int __stdcall Pak_read(void *ptr, int size, void *data_source) { return p_fread(ptr, 1, size, (PFILE *)data_source); }
 
-void __stdcall Pak_close(void *data_source) {}
+void __stdcall Pak_close(void * /* data_source */) {}
 
 Image *GetJPEG2000Image(const std::string &theFileName) {
     if (gJ2KCodec != NULL) {

@@ -5,6 +5,8 @@
 #define PURCHASE_COUNT_OFFSET 1000
 
 #include "../../ConstEnums.h"
+#include "../../SexyAppFramework/Common.h"
+#include <ctime>
 
 class PottedPlant {
 public:

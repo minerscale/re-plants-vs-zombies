@@ -11,7 +11,7 @@
 void ReanimatorCache::UpdateReanimationForVariation(Reanimation *theReanim, DrawVariation theDrawVariation) {
     if (theDrawVariation >= DrawVariation::VARIATION_MARIGOLD_WHITE &&
         theDrawVariation <= DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN) {
-        int aVariationIndex = (int)theDrawVariation - (int)DrawVariation::VARIATION_MARIGOLD_WHITE;
+        size_t aVariationIndex = (size_t)theDrawVariation - (size_t)DrawVariation::VARIATION_MARIGOLD_WHITE;
         Color MARIGOLD_VARIATIONS[] = {Color(255, 255, 255), Color(230, 30, 195),  Color(250, 125, 5),
                                        Color(255, 145, 215), Color(160, 255, 245), Color(230, 30, 30),
                                        Color(5, 130, 255),   Color(195, 55, 235),  Color(235, 210, 255),

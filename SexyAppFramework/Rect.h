@@ -18,8 +18,12 @@ public:
 public:
     TRect(_T theX, _T theY, _T theWidth, _T theHeight) : mX(theX), mY(theY), mWidth(theWidth), mHeight(theHeight) {}
 
-    TRect(const TRect<_T> &theTRect)
-        : mX(theTRect.mX), mY(theTRect.mY), mWidth(theTRect.mWidth), mHeight(theTRect.mHeight) {}
+    /*
+    TRect(const TRect<_T>& theTRect) :
+      mX(theTRect.mX), mY(theTRect.mY), mWidth(theTRect.mWidth), mHeight(theTRect.mHeight)
+    {
+    }
+    */
 
     TRect() : mX(0), mY(0), mWidth(0), mHeight(0) {}
 

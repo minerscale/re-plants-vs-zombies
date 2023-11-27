@@ -178,10 +178,6 @@ __png.h__ already includes setjmp.h __dont__ include it again
  * stdlib.h like it should (I think).  Or perhaps this is a C++
  * "feature"?
  */
-#ifdef __TURBOC__
-#include "alloc.h"
-#include <mem.h>
-#endif
 
 #ifdef _MSC_VER
 #include <malloc.h>

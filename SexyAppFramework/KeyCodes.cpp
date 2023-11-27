@@ -118,7 +118,7 @@ KeyCode Sexy::GetKeyCodeFromName(const std::string &theKeyName) {
             return (KeyCode)(aKeyNameChar + 0x80);
     }
 
-    for (int i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
+    for (size_t i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
         if (strcmp(aKeyName, aKeyCodeArray[i].mKeyName) == 0) return aKeyCodeArray[i].mKeyCode;
 
     return KEYCODE_UNKNOWN;
@@ -135,7 +135,7 @@ const std::string Sexy::GetKeyNameFromCode(const KeyCode &theKeyCode) {
         return aStr;
     }
 
-    for (int i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
+    for (size_t i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
         if (theKeyCode == aKeyCodeArray[i].mKeyCode) return aKeyCodeArray[i].mKeyName;
 
     return "UNKNOWN";

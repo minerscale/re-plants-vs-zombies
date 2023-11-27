@@ -9,7 +9,7 @@ public:
     int mBracketStartTime;
 
 public:
-    TodHesitationBracket(const char *theFormat, ...) { ; }
+    TodHesitationBracket(const char * /*theFormat*/, ...) { ; }
     ~TodHesitationBracket() { ; }
 
     inline void EndBracket() { ; }
@@ -30,8 +30,6 @@ long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo);
 /*inline*/ void *TodMalloc(int theSize);
 /*inline*/ void TodFree(void *theBlock);
 void TodAssertInitForApp();
-
-extern void (*gBetaSubmitFunc)();
 
 #ifdef _DEBUG
 #define TOD_ASSERT(condition, ...)                                                                                     \

@@ -1012,6 +1012,7 @@ void GameSelector::KeyChar(char theChar) {
 // 0x44C360
 //  GOTY @Patoke: 0x44F040
 void GameSelector::MouseDown(int x, int y, int theClickCount) {
+    (void)theClickCount;
     for (int i = 0; i < 3; i++) {
         Reanimation *aFlowerReanim = mApp->ReanimationGet(mFlowerReanimID[i]);
         if (aFlowerReanim->mAnimRate <= 0.0f && Distance2D(x, y, gFlowerCenter[i][0], gFlowerCenter[i][1]) < 20.0f) {
@@ -1036,7 +1037,7 @@ void GameSelector::ButtonMouseEnter(int theId) {
 
 // 0x44C540
 //  GOTY @Patoke: 0x44F220
-void GameSelector::ButtonPress(int theId, int theClickCount) {
+void GameSelector::ButtonPress(int theId) {
     if (theId == GameSelector::GameSelector_Adventure || theId == GameSelector::GameSelector_Minigame ||
         theId == GameSelector::GameSelector_Puzzle || theId == GameSelector::GameSelector_Survival ||
         theId == GameSelector::GameSelector_Zombatar) // @Patoke: add case

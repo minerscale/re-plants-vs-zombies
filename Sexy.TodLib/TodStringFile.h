@@ -1,10 +1,11 @@
 #ifndef __TODSTRINGFILE_H__
 #define __TODSTRINGFILE_H__
 
+#include "../ConstEnums.h"
 #include "../SexyAppFramework/Graphics.h"
 using namespace Sexy;
 
-enum DrawStringJustification;
+// enum DrawStringJustification;
 enum TodStringFormatFlag { TOD_FORMAT_IGNORE_NEWLINES, TOD_FORMAT_HIDE_UNTIL_MAGNETSHROOM };
 
 class TodStringListFormat {

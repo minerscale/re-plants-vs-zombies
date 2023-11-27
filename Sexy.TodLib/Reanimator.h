@@ -215,7 +215,7 @@ public:
     void AssignRenderGroupToPrefix(const char *theTrackName, int theRenderGroup);
     void PropogateColorToAttachments();
     bool ShouldTriggerTimedEvent(float theEventTime);
-    void TodTriangleGroupDraw(Graphics *g, TodTriangleGroup *theTriangleGroup) { ; }
+    //  void                            TodTriangleGroupDraw(Graphics* g, TodTriangleGroup* theTriangleGroup) { ; }
     Image *GetCurrentTrackImage(const char *theTrackName);
     AttachEffect *
     AttachParticleToTrack(const char *theTrackName, TodParticleSystem *theParticleSystem, float thePosX, float thePosY);

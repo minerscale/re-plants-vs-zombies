@@ -119,11 +119,11 @@ void EditWidget::Draw(Graphics *g) // Already translated
 
             if (!mShowingCursor) aCursorX += 2;
 
-            aCursorX = min(max(0, aCursorX), mWidth - 8);
-            aHiliteX = min(max(0, aHiliteX), mWidth - 8);
+            aCursorX = std::min(std::max(0, aCursorX), mWidth - 8);
+            aHiliteX = std::min(std::max(0, aHiliteX), mWidth - 8);
 
             aClipG->ClipRect(
-                4 + min(aCursorX, aHiliteX), (mHeight - mFont->GetHeight()) / 2, abs(aHiliteX - aCursorX),
+                4 + std::min(aCursorX, aHiliteX), (mHeight - mFont->GetHeight()) / 2, abs(aHiliteX - aCursorX),
                 mFont->GetHeight()
             );
         } else aClipG->ClipRect(4, 0, mWidth - 8, mHeight);
@@ -263,8 +263,9 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
             if (theChar == 3) {
                 removeHilite = false;
             } else {
-                mString = mString.substr(0, min(mCursorPos, mHilitePos)) + mString.substr(max(mCursorPos, mHilitePos));
-                mCursorPos = min(mCursorPos, mHilitePos);
+                mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) +
+                          mString.substr(std::max(mCursorPos, mHilitePos));
+                mCursorPos = std::min(mCursorPos, mHilitePos);
                 mHilitePos = -1;
                 bigChange = true;
             }
@@ -280,8 +281,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
             for (ulong i = 0; i < aBaseString.length(); i++) {
                 if ((aBaseString[i] == '\r') || (aBaseString[i] == '\n')) break;
 
-                if (mFont->CharWidth(aBaseString[i]) != 0 && mEditListener->AllowChar(mId, aBaseString[i]))
-                    aString += aBaseString[i];
+                if (mFont->CharWidth(aBaseString[i]) != 0) aString += aBaseString[i];
             }
 
             if (mHilitePos == -1) {
@@ -289,9 +289,9 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
                 mString = mString.substr(0, mCursorPos) + aString + mString.substr(mCursorPos);
             } else {
                 // Replace selection with new string
-                mString = mString.substr(0, min(mCursorPos, mHilitePos)) + aString +
-                          mString.substr(max(mCursorPos, mHilitePos));
-                mCursorPos = min(mCursorPos, mHilitePos);
+                mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + aString +
+                          mString.substr(std::max(mCursorPos, mHilitePos));
+                mCursorPos = std::min(mCursorPos, mHilitePos);
                 mHilitePos = -1;
             }
 
@@ -327,7 +327,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
             while ((mCursorPos > 0) && (IsPartOfWord(mString[mCursorPos - 1])))
                 mCursorPos--;
         } else if (shiftDown || (mHilitePos == -1)) mCursorPos--;
-        else mCursorPos = min(mCursorPos, mHilitePos);
+        else mCursorPos = std::min(mCursorPos, mHilitePos);
     } else if (theKey == KEYCODE_RIGHT) {
         if (controlDown) {
             // Get to whitespace
@@ -339,13 +339,14 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
                 mCursorPos++;
         }
         if (shiftDown || (mHilitePos == -1)) mCursorPos++;
-        else mCursorPos = max(mCursorPos, mHilitePos);
+        else mCursorPos = std::max(mCursorPos, mHilitePos);
     } else if (theKey == KEYCODE_BACK) {
         if (mString.length() > 0) {
             if ((mHilitePos != -1) && (mHilitePos != mCursorPos)) {
                 // Delete selection
-                mString = mString.substr(0, min(mCursorPos, mHilitePos)) + mString.substr(max(mCursorPos, mHilitePos));
-                mCursorPos = min(mCursorPos, mHilitePos);
+                mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) +
+                          mString.substr(std::max(mCursorPos, mHilitePos));
+                mCursorPos = std::min(mCursorPos, mHilitePos);
                 mHilitePos = -1;
 
                 bigChange = true;
@@ -364,8 +365,9 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
         if (mString.length() > 0) {
             if ((mHilitePos != -1) && (mHilitePos != mCursorPos)) {
                 // Delete selection
-                mString = mString.substr(0, min(mCursorPos, mHilitePos)) + mString.substr(max(mCursorPos, mHilitePos));
-                mCursorPos = min(mCursorPos, mHilitePos);
+                mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) +
+                          mString.substr(std::max(mCursorPos, mHilitePos));
+                mCursorPos = std::min(mCursorPos, mHilitePos);
                 mHilitePos = -1;
 
                 bigChange = true;
@@ -392,13 +394,12 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
             range = 255;
         }
 
-        if ((uTheChar >= 32) && (uTheChar <= range) && (mFont->StringWidth(aString) > 0) &&
-            mEditListener->AllowChar(mId, theChar)) {
+        if ((uTheChar >= 32) && (uTheChar <= range) && (mFont->StringWidth(aString) > 0)) {
             if ((mHilitePos != -1) && (mHilitePos != mCursorPos)) {
                 // Replace selection with new character
-                mString = mString.substr(0, min(mCursorPos, mHilitePos)) + SexyString(1, theChar) +
-                          mString.substr(max(mCursorPos, mHilitePos));
-                mCursorPos = min(mCursorPos, mHilitePos);
+                mString = mString.substr(0, std::min(mCursorPos, mHilitePos)) + SexyString(1, theChar) +
+                          mString.substr(std::max(mCursorPos, mHilitePos));
+                mCursorPos = std::min(mCursorPos, mHilitePos);
                 mHilitePos = -1;
 
                 bigChange = true;
@@ -432,11 +433,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
 
     if (removeHilite || mHilitePos == mCursorPos) mHilitePos = -1;
 
-    if (!mEditListener->AllowText(mId, mString)) {
-        mString = anOldString;
-        mCursorPos = anOldCursorPos;
-        mHilitePos = anOldHilitePos;
-    } else if (bigChange) {
+    if (bigChange) {
         mUndoString = anOldString;
         mUndoCursor = anOldCursorPos;
         mUndoHilitePos = anOldHilitePos;
@@ -446,7 +443,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
 }
 
 void EditWidget::KeyDown(KeyCode theKey) {
-    if (((theKey < 'A') || (theKey >= 'Z')) && mEditListener->AllowKey(mId, theKey)) ProcessKey(theKey, 0);
+    if (((theKey < 'A') || (theKey >= 'Z'))) ProcessKey(theKey, 0);
 
     Widget::KeyDown(theKey);
 }
@@ -459,6 +456,7 @@ void EditWidget::KeyChar(SexyChar theChar) {
 }
 
 int EditWidget::GetCharAt(int x, int y) {
+    (void)y;
     int aPos = 0;
 
     SexyString &aString = GetDisplayString();
@@ -477,8 +475,8 @@ int EditWidget::GetCharAt(int x, int y) {
 
 void EditWidget::FocusCursor(bool bigJump) {
     while (mCursorPos < mLeftPos) {
-        if (bigJump) mLeftPos = max(0, mLeftPos - 10);
-        else mLeftPos = max(0, mLeftPos - 1);
+        if (bigJump) mLeftPos = std::max(0, mLeftPos - 10);
+        else mLeftPos = std::max(0, mLeftPos - 1);
         MarkDirty();
     }
 
@@ -487,8 +485,8 @@ void EditWidget::FocusCursor(bool bigJump) {
         while ((mWidth - 8 > 0) &&
                (mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos)) >=
                 mWidth - 8)) {
-            if (bigJump) mLeftPos = min(mLeftPos + 10, (int)mString.length() - 1);
-            else mLeftPos = min(mLeftPos + 1, (int)mString.length() - 1);
+            if (bigJump) mLeftPos = std::min(mLeftPos + 10, (int)mString.length() - 1);
+            else mLeftPos = std::min(mLeftPos + 1, (int)mString.length() - 1);
 
             MarkDirty();
         }

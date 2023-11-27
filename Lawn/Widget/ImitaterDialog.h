@@ -21,7 +21,7 @@ public:
     void ShowToolTip();
     /*inline*/ void RemoveToolTip();
     virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseUp(int x, int y, int theClickCount) { ; }
+    virtual void MouseUp(int, int, int) {}
 };
 
 #endif

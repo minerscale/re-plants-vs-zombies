@@ -40,6 +40,7 @@
 #include "SexyAppFramework/Graphics.h"
 #include "SexyAppFramework/ResourceManager.h"
 #include "SexyAppFramework/WidgetManager.h"
+#include <corecrt.h>
 #include <time.h>
 
 #include "SexyAppFramework/BassMusicInterface.h"
@@ -219,9 +220,11 @@ LawnApp::~LawnApp() {
     delete mLastLevelStats;
 
     mResourceManager->DeleteResources("");
+    /*
 #ifdef _DEBUG
     BetaSubmit(true);
 #endif
+    */
 }
 
 // 0x44F200
@@ -289,9 +292,11 @@ void LawnApp::KillBoard() {
     FinishModelessDialogs();
     KillSeedChooserScreen();
     if (mBoard) {
-#ifdef _DEBUG
-        BetaRecordLevelStats();
-#endif
+        /*
+        #ifdef _DEBUG
+                BetaRecordLevelStats();
+        #endif
+        */
         mBoard->DisposeBoard();
         mWidgetManager->RemoveWidget(mBoard);
         SafeDeleteWidget(mBoard);
@@ -1052,11 +1057,15 @@ bool LawnApp::KillDialog(int theDialogId) {
 // 0x451870
 void LawnApp::ShowResourceError(bool doExit) { SexyAppBase::ShowResourceError(doExit); }
 
-void BetaSubmitFunc() {
-    if (gLawnApp) {
+/*
+void BetaSubmitFunc()
+{
+    if (gLawnApp)
+    {
         gLawnApp->BetaSubmit(false);
     }
 }
+*/
 
 // 0x451880
 //  GOTY @Patoke: 0x454C60
@@ -1091,7 +1100,6 @@ void LawnApp::Init() {
     // @Patoke: horrible debug checks, breaks the whole exe in release mode
     // #ifdef _DEBUG
     TodAssertInitForApp();
-    gBetaSubmitFunc = BetaSubmitFunc;
     TodLog("session id: %u", mSessionID);
     // #endif
 
@@ -1176,7 +1184,7 @@ void LawnApp::Init() {
 }
 
 // 0x4522A0
-bool LawnApp::ChangeDirHook(const char *theIntendedPath) { return false; }
+bool LawnApp::ChangeDirHook(const char * /*theIntendedPath*/) { return false; }
 
 // 0x4522B0
 void LawnApp::Start() {
@@ -1450,9 +1458,9 @@ void LawnApp::LoadGroup(const char *theGroupName, int theGroupAveMsToLoad) {
         mLoadingFailed = true;
     }
 
-    int aTotalGroupWeight = mResourceManager->GetNumResources(theGroupName) * theGroupAveMsToLoad;
-    int aGroupTime = max(aTimer.GetDuration(), 0.0);
-    TraceLoadGroup(theGroupName, aGroupTime, aTotalGroupWeight, theGroupAveMsToLoad);
+    // int aTotalGroupWeight = mResourceManager->GetNumResources(theGroupName) * theGroupAveMsToLoad;
+    // int aGroupTime = max(aTimer.GetDuration(), 0.0);
+    // TraceLoadGroup(theGroupName, aGroupTime, aTotalGroupWeight, theGroupAveMsToLoad);
 }
 
 // 0x4528E0
@@ -1594,7 +1602,11 @@ void LawnApp::ConfirmQuit() {
 // 0x4531D0
 void LawnApp::PreDisplayHook() { SexyApp::PreDisplayHook(); }
 
-void LawnApp::ButtonPress(int theId) {}
+void LawnApp::ButtonPress(int) {}
+void LawnApp::ButtonDownTick(int) {}
+void LawnApp::ButtonMouseEnter(int) {}
+void LawnApp::ButtonMouseLeave(int) {}
+void LawnApp::ButtonMouseMove(int, int, int) {}
 
 // 0x4531E0
 //  GOTY @Patoke: 0x456690
@@ -2237,7 +2249,7 @@ void LawnApp::CrazyDaveTalkMessage(const SexyString &theMessage) {
 
     int aWordsCount = 0;
     bool isControlWord = false;
-    for (int i = 0; i < theMessage.size(); i++) {
+    for (size_t i = 0; i < theMessage.size(); i++) {
         if (theMessage[i] == _S('{')) {
             isControlWord = true;
         } else if (theMessage[i] == _S('}')) {
@@ -2848,16 +2860,27 @@ void LawnApp::SwitchScreenMode(bool wantWindowed, bool is3d, bool force) {
 }
 
 /* #################################################################################################### */
+/*
+void LawnApp::BetaSubmit(bool theAskForComments)
+{
 
-void LawnApp::BetaSubmit(bool theAskForComments) {}
+}
 
-void LawnApp::BetaRecordLevelStats() {}
+void LawnApp::BetaRecordLevelStats()
+{
 
-void LawnApp::BetaAddFile(
-    std::list<std::string> &theUploadFileList, std::string theFileName, std::string theShortName
-) {}
+}
 
-void LawnApp::TraceLoadGroup(const char *theGroupName, int theGroupTime, int theTotalGroupWeigth, int theTaskWeight) {}
+void LawnApp::BetaAddFile(std::list<std::string>& theUploadFileList, std::string theFileName, std::string theShortName)
+{
+
+}
+
+void LawnApp::TraceLoadGroup(const char* theGroupName, int theGroupTime, int theTotalGroupWeigth, int theTaskWeight)
+{
+
+}
+*/
 
 /* #################################################################################################### */
 

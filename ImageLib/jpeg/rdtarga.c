@@ -425,7 +425,11 @@ start_input_tga(j_compress_ptr cinfo, cjpeg_source_ptr sinfo) {
  */
 
 METHODDEF(void)
-finish_input_tga(j_compress_ptr cinfo, cjpeg_source_ptr sinfo) { /* no work */ }
+finish_input_tga(j_compress_ptr cinfo, cjpeg_source_ptr sinfo) {
+    (void)cinfo;
+    (void)sinfo;
+    /* no work */
+}
 
 /*
  * The module selection routine for Targa format input.

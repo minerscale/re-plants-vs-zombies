@@ -126,7 +126,7 @@ static const unsigned char MLOOP_2[64] = {
 static const unsigned char MLOOP_3[8] = {0, 1, 2, 2, 3, 3, 3, 3};
 
 void vorbis_lsp_to_curve(
-    ogg_int32_t *curve, int *map, int n, int ln, ogg_int32_t *lsp, int m, ogg_int32_t amp, ogg_int32_t ampoffset,
+    ogg_int32_t *curve, int *map, int n, ogg_int32_t *lsp, int m, ogg_int32_t amp, ogg_int32_t ampoffset,
     ogg_int32_t *icos
 ) {
 
@@ -401,6 +401,7 @@ eop:
 }
 
 static int floor0_inverse2(vorbis_block *vb, vorbis_look_floor *i, void *memo, ogg_int32_t *out) {
+    (void)vb;
     vorbis_look_floor0 *look = (vorbis_look_floor0 *)i;
     vorbis_info_floor0 *info = look->vi;
 
@@ -409,7 +410,7 @@ static int floor0_inverse2(vorbis_block *vb, vorbis_look_floor *i, void *memo, o
         ogg_int32_t amp = lsp[look->m];
 
         /* take the coefficients back to a spectral envelope curve */
-        vorbis_lsp_to_curve(out, look->linearmap, look->n, look->ln, lsp, look->m, amp, info->ampdB, look->lsp_look);
+        vorbis_lsp_to_curve(out, look->linearmap, look->n, lsp, look->m, amp, info->ampdB, look->lsp_look);
         return (1);
     }
     memset(out, 0, sizeof(*out) * look->n);

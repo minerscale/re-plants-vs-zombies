@@ -581,6 +581,7 @@ void Reanimation::ReanimBltMatrix(
 // 0x4723B0
 //  GOTY @Patoke: 0x4769B0
 bool Reanimation::DrawTrack(Graphics *g, int theTrackIndex, int theRenderGroup, TodTriangleGroup *theTriangleGroup) {
+    (void)theRenderGroup;
     ReanimatorTransform aTransform;
     ReanimatorTrackInstance *aTrackInstance = &mTrackInstances[theTrackIndex]; // 目标轨道的指针
     GetCurrentTransform(theTrackIndex, &aTransform);                           // 取得当前动画变换
@@ -1231,6 +1232,7 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform &theTransform, At
 void Reanimation::AttacherSynchWalkSpeed(
     int theTrackIndex, Reanimation *theAttachReanim, AttacherInfo &theAttacherInfo
 ) {
+    (void)theAttacherInfo;
     ReanimatorTrack *aTrack = &mDefinition->mTracks[theTrackIndex];
     ReanimatorFrameTime aFrameTime;
     GetFrameTime(&aFrameTime);

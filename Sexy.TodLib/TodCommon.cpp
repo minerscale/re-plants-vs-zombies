@@ -814,6 +814,7 @@ void TodDrawImageCelScaledF(
     Graphics *g, Image *theImageStrip, float thePosX, float thePosY, int theCelCol, int theCelRow, float theScaleX,
     float theScaleY
 ) {
+    (void)theCelRow;
     TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
 
     int aCelWidth = theImageStrip->GetCelWidth();
@@ -1247,7 +1248,7 @@ TodReplaceString(const SexyString &theText, const SexyChar *theStringToFind, con
 // 0x513720
 SexyString TodReplaceNumberString(const SexyString &theText, const SexyChar *theStringToFind, int theNumber) {
     SexyString aFinalString = TodStringTranslate(theText);
-    int aPos = aFinalString.find(theStringToFind);
+    size_t aPos = aFinalString.find(theStringToFind);
     if (aPos != SexyString::npos) {
         SexyString aNumberString = StrFormat(_S("%d"), theNumber);
         aFinalString.replace(aPos, strlen(theStringToFind), aNumberString);

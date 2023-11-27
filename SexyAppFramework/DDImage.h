@@ -51,8 +51,8 @@ public:
     AdditiveDrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor);
     virtual void
     NormalDrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor);
-    virtual void
-    AdditiveDrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor);
+    /*virtual void			AdditiveDrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const
+     * Color& theColor);*/
 
     virtual void NormalBltMirror(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor);
     virtual void AdditiveBltMirror(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor);
@@ -80,7 +80,7 @@ public:
 
     virtual bool PolyFill3D(
         const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode,
-        int tx, int ty, bool comvex
+        int tx, int ty
     );
     virtual void FillRect(const Rect &theRect, const Color &theColor, int theDrawMode);
     virtual void DrawLine(

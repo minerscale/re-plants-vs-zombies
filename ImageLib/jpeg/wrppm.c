@@ -85,6 +85,8 @@ typedef ppm_dest_struct *ppm_dest_ptr;
 
 METHODDEF(void)
 put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied) {
+    (void)cinfo;
+    (void)rows_supplied;
     ppm_dest_ptr dest = (ppm_dest_ptr)dinfo;
 
     (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
@@ -97,6 +99,8 @@ put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_sup
 
 METHODDEF(void)
 copy_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied) {
+    (void)cinfo;
+    (void)rows_supplied;
     ppm_dest_ptr dest = (ppm_dest_ptr)dinfo;
     register char *bufferptr;
     register JSAMPROW ptr;
@@ -117,6 +121,7 @@ copy_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_su
 
 METHODDEF(void)
 put_demapped_rgb(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied) {
+    (void)rows_supplied;
     ppm_dest_ptr dest = (ppm_dest_ptr)dinfo;
     register char *bufferptr;
     register int pixval;
@@ -139,6 +144,7 @@ put_demapped_rgb(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_s
 
 METHODDEF(void)
 put_demapped_gray(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied) {
+    (void)rows_supplied;
     ppm_dest_ptr dest = (ppm_dest_ptr)dinfo;
     register char *bufferptr;
     register JSAMPROW ptr;

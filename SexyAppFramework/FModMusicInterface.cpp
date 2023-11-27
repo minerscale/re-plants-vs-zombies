@@ -14,7 +14,7 @@ FModMusicInfo::FModMusicInfo() {
     mRepeats = false;
 }
 
-FModMusicInterface::FModMusicInterface(HWND theHWnd) {
+FModMusicInterface::FModMusicInterface() {
     LoadFModDLL();
 
     mMasterVolume = 1.0;

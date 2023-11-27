@@ -50,7 +50,7 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowin
             // int aDestY = 284 - ((76 * mAchievementItems.size()) >> 1);
             int aDestY = 284 - ((76 * mAchievementItems.size()) / 2);
 
-            for (int j = 0; j < mAchievementItems.size(); j++) {
+            for (size_t j = 0; j < mAchievementItems.size(); j++) {
                 mAchievementItems[j].mDestY = aDestY;
                 aDestY += 76;
             }
@@ -367,7 +367,7 @@ void AwardScreen::Update() {
     if (mShowingAchievements) {
         mAchievementAnimTime++;
 
-        for (int i = 0; i < mAchievementItems.size(); i++) {
+        for (size_t i = 0; i < mAchievementItems.size(); i++) {
             if (mAchievementAnimTime >= mAchievementItems[i].mStartAnimTime) {
                 mAchievementItems[i].mY = TodAnimateCurve(
                     mAchievementItems[i].mStartAnimTime, mAchievementItems[i].mEndAnimTime, mAchievementAnimTime,
@@ -472,6 +472,8 @@ void AwardScreen::StartButtonPressed() {
 // 0x4079F0
 //  GOTY @Patoke: 0x4097A0
 void AwardScreen::MouseDown(int x, int y, int theClickCount) {
+    (void)x;
+    (void)y;
     if (theClickCount == 1) {
         mStartButton->Update(); // @Patoke: implemented
         mMenuButton->Update();
@@ -483,6 +485,8 @@ void AwardScreen::MouseDown(int x, int y, int theClickCount) {
 // 0x407A70
 //  GOTY @Patoke: 0x409840
 void AwardScreen::MouseUp(int x, int y, int theClickCount) {
+    (void)x;
+    (void)y;
     if (theClickCount == 1) {
         if (mStartButton->IsMouseOver()) StartButtonPressed();
         if (mContinueButton->IsMouseOver()) // @Patoke: add call
@@ -509,7 +513,7 @@ void AwardScreen::DrawAchievements(Graphics *g) {
         g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER
     );
 
-    for (int i = 0; i < mAchievementItems.size(); i++) {
+    for (size_t i = 0; i < mAchievementItems.size(); i++) {
         std::string aAchievementName = gAchievementList[mAchievementItems[i].mId].name;
         std::string aAchievementDesc = gAchievementList[mAchievementItems[i].mId].description;
         aAchievementName.append(" Earned!");

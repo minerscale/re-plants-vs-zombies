@@ -177,6 +177,7 @@ void TodTraceWithoutSpamming(const char *theFormat, ...) {
 }
 
 void TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char *theMessage) {
+    (void)theMessage;
     Sexy::SEHCatcher::UnhandledExceptionFilter(exceptioninfo);
 }
 
@@ -192,8 +193,6 @@ long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo) {
 
     return EXCEPTION_EXECUTE_HANDLER;
 }
-
-void (*gBetaSubmitFunc)() = nullptr;
 
 void TodAssertInitForApp() {
     MkDir(GetAppDataFolder() + "userdata");

@@ -94,6 +94,7 @@ METHODDEF(void)
 put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied)
 /* used for unquantized full-color output */
 {
+    (void)rows_supplied;
     tga_dest_ptr dest = (tga_dest_ptr)dinfo;
     register JSAMPROW inptr;
     register char *outptr;
@@ -114,6 +115,7 @@ METHODDEF(void)
 put_gray_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied)
 /* used for grayscale OR quantized color output */
 {
+    (void)rows_supplied;
     tga_dest_ptr dest = (tga_dest_ptr)dinfo;
     register JSAMPROW inptr;
     register char *outptr;
@@ -134,6 +136,7 @@ put_gray_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supp
 
 METHODDEF(void)
 put_demapped_gray(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied) {
+    (void)rows_supplied;
     tga_dest_ptr dest = (tga_dest_ptr)dinfo;
     register JSAMPROW inptr;
     register char *outptr;

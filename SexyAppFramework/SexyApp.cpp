@@ -8,11 +8,6 @@
 #include <time.h>
 // #include "BetaSupport.h"
 
-#ifdef ZYLOM
-#include "zylomso.h"
-using namespace zylom::zylomso;
-#endif
-
 using namespace Sexy;
 
 SexyApp *Sexy::gSexyApp = NULL;
@@ -65,8 +60,10 @@ SexyApp::~SexyApp() {
     // delete mInternetManager;
 }
 
-bool SexyApp::Validate(const std::string &theUserName, const std::string &theRegCode) {
-    /*BigInt n("42BF94023BBA6D040C8B81D9");
+/*
+bool SexyApp::Validate(const std::string& theUserName, const std::string& theRegCode)
+{
+    BigInt n("42BF94023BBA6D040C8B81D9");
     BigInt e("11");
 
     ulong i;
@@ -108,9 +105,9 @@ bool SexyApp::Validate(const std::string &theUserName, const std::string &theReg
     BigInt aSignature = KeyToInt(theRegCode);
     BigInt aHashTest = aSignature.ModPow(e, n);
 
-    return aHashTest == aHash;*/
-    return true;
+    return aHashTest == aHash;
 }
+*/
 
 void SexyApp::ReadFromRegistry() {
     SexyAppBase::ReadFromRegistry();
@@ -195,7 +192,7 @@ void SexyApp::ReadFromRegistry() {
 
     RegistryReadString("RegCode", &mRegCode);
 
-    mIsRegistered |= Validate(mRegUserName, mRegCode);
+    mIsRegistered |= true /*Validate(mRegUserName, mRegCode)*/;
 
     // Override registry values with partner.xml values
     mRegisterLink = GetString("RegisterLink", mRegisterLink);
@@ -371,14 +368,16 @@ bool SexyApp::OpenRegisterPage() {
     return OpenRegisterPage(aStatsMap);
 }
 
-bool SexyApp::CheckSignature(const Buffer &theBuffer, const std::string &theFileName) {
+/*
+bool SexyApp::CheckSignature(const Buffer& theBuffer, const std::string& theFileName)
+{
 #ifdef _DEBUG
     // Don't check signatures on debug version because it's annoying and the build number
     //  will probably be 0 anyway
     return true;
 #endif
 
-    /*if (mSkipSignatureChecks)
+    if (mSkipSignatureChecks)
         return true;
 
     char aSigStr[25];
@@ -423,9 +422,9 @@ bool SexyApp::CheckSignature(const Buffer &theBuffer, const std::string &theFile
     BigInt aSignature(aSigStr);
     BigInt aHashTest = aSignature.ModPow(e, n);
 
-    return aHashTest == aHash;*/
-    return true;
+    return aHashTest == aHash;
 }
+*/
 
 void SexyApp::PreTerminate() {
 #ifdef ZYLOM

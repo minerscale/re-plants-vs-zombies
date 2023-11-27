@@ -35,7 +35,7 @@ public:
     FSOUND_SAMPLE *LoadFMODSample(const std::string &theFileName);
 
 public:
-    FModMusicInterface(HWND theHWnd);
+    FModMusicInterface();
     virtual ~FModMusicInterface();
 
     virtual bool LoadMusic(int theSongId, const std::string &theFileName);

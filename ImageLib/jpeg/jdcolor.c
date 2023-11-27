@@ -263,7 +263,10 @@ ycck_cmyk_convert(
  */
 
 METHODDEF(void)
-start_pass_dcolor(j_decompress_ptr cinfo) { /* no work needed */ }
+start_pass_dcolor(j_decompress_ptr cinfo) {
+    (void)cinfo;
+    /* no work needed */
+}
 
 /*
  * Module initialization routine for output colorspace conversion.

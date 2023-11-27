@@ -2,6 +2,7 @@
 #define __MESSAGEWIDGET_H__
 
 #include "../ConstEnums.h"
+#include "../LawnApp.h"
 #include "../SexyAppFramework/Common.h"
 
 #define MAX_MESSAGE_LENGTH 128

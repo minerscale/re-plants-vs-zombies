@@ -4,7 +4,7 @@
 #include "TodDebug.h"
 
 void TodAllocator::Initialize(int theGrowCount, int theItemSize) {
-    TOD_ASSERT(theItemSize >= sizeof(void *));
+    TOD_ASSERT((size_t)theItemSize >= sizeof(void *));
 
     mFreeList = nullptr;
     mBlockList = nullptr;
@@ -18,7 +18,7 @@ void TodAllocator::Dispose() { FreeAll(); }
 // 0x4438C0
 void TodAllocator::Grow() {
     TOD_ASSERT(mGrowCount > 0);
-    TOD_ASSERT(mItemSize >= sizeof(void *));
+    TOD_ASSERT((size_t)mItemSize >= sizeof(void *));
 
     void *aBlock = TodMalloc(mGrowCount * mItemSize + sizeof(void *));
     *(void **)aBlock = mBlockList;
@@ -54,6 +54,7 @@ bool TodAllocator::IsPointerOnFreeList(void *theItem) {
 }
 
 void *TodAllocator::Alloc(int theItemSize) {
+    (void)theItemSize;
     mTotalItems++;
     if (mFreeList == nullptr) Grow();
 
@@ -69,6 +70,7 @@ void *TodAllocator::Calloc(int theItemSize) {
 }
 
 void TodAllocator::Free(void *theItem, int theItemSize) {
+    (void)theItemSize;
     mTotalItems--;
     TOD_ASSERT(IsPointerFromAllocator(theItem));
     TOD_ASSERT(!IsPointerOnFreeList(theItem));

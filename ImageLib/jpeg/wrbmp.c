@@ -66,6 +66,7 @@ METHODDEF(void)
 put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied)
 /* This version is for writing 24-bit pixels */
 {
+    (void)rows_supplied;
     bmp_dest_ptr dest = (bmp_dest_ptr)dinfo;
     JSAMPARRAY image_ptr;
     register JSAMPROW inptr, outptr;
@@ -100,6 +101,7 @@ METHODDEF(void)
 put_gray_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supplied)
 /* This version is for grayscale OR quantized color output */
 {
+    (void)rows_supplied;
     bmp_dest_ptr dest = (bmp_dest_ptr)dinfo;
     JSAMPARRAY image_ptr;
     register JSAMPROW inptr, outptr;
@@ -131,7 +133,11 @@ put_gray_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, JDIMENSION rows_supp
  */
 
 METHODDEF(void)
-start_output_bmp(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo) { /* no work here */ }
+start_output_bmp(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo) {
+    (void)cinfo;
+    (void)dinfo;
+    /* no work here */
+}
 
 /*
  * Finish up at the end of the file.

@@ -5,7 +5,7 @@ namespace Sexy {
 
 class ScrollListener {
 public:
-    virtual void ScrollPosition(int theId, double thePosition){};
+    virtual void ScrollPosition(int theId, double thePosition) = 0;
 };
 
 } // namespace Sexy

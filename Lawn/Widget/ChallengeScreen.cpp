@@ -364,7 +364,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
 
         if (AccomplishmentsNeeded(theChallengeIndex) <= 1) {
             // ============================================================================================
-            // °¯ ªÊ÷∆∞¥≈•…œµƒ–°”Œœ∑Õº±Í
+            // ‚ñ≤ ÁªòÂà∂ÊåâÈíÆ‰∏äÁöÑÂ∞èÊ∏∏ÊàèÂõæÊ†á
             // ============================================================================================
             if (aChallengeButton->mDisabled) {
                 g->SetColor(Color(92, 92, 92));
@@ -387,7 +387,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             }
 
             // ============================================================================================
-            // °¯ ªÊ÷∆–°”Œœ∑∞¥≈•±ﬂøÚ
+            // ‚ñ≤ ÁªòÂà∂Â∞èÊ∏∏ÊàèÊåâÈíÆËæπÊ°Ü
             // ============================================================================================
             bool aHighLight = aChallengeButton->mIsOver && theChallengeIndex != mUnlockChallengeIndex;
             g->SetColorizeImages(false);
@@ -396,7 +396,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             );
 
             // ============================================================================================
-            // °¯ ªÊ÷∆–°”Œœ∑µƒ√˚≥∆
+            // ‚ñ≤ ÁªòÂà∂Â∞èÊ∏∏ÊàèÁöÑÂêçÁß∞
             // ============================================================================================
             Color aTextColor = aHighLight ? Color(250, 40, 40) : Color(42, 42, 90);
             SexyString aName = TodStringTranslate(aDef.mChallengeName);
@@ -409,7 +409,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             if (aNameLen < 13) {
                 TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
             } else {
-                // œ»≥¢ ‘‘⁄√˚≥∆◊÷∑˚¥Æµƒ∫Û∞Î∂Œ»°ø’∏Ò“‘Ω´◊÷∑˚¥Æ∑÷∏ÙŒ™¡Ω––£¨»Ù∫Û∞Î∂Œ÷–Œﬁø’∏Ò‘Ú‘⁄’˚∏ˆ◊÷∑˚¥Æ÷–—∞’“ø’∏Ò
+                // ÂÖàÂ∞ùËØïÂú®ÂêçÁß∞Â≠óÁ¨¶‰∏≤ÁöÑÂêéÂçäÊÆµÂèñÁ©∫Ê†º‰ª•Â∞ÜÂ≠óÁ¨¶‰∏≤ÂàÜÈöî‰∏∫‰∏§Ë°åÔºåËã•ÂêéÂçäÊÆµ‰∏≠Êó†Á©∫Ê†ºÂàôÂú®Êï¥‰∏™Â≠óÁ¨¶‰∏≤‰∏≠ÂØªÊâæÁ©∫Ê†º
                 int aHalfPos =
                     (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
                 const SexyChar *aSpacedChar = sexystrchr(aName.c_str() + aHalfPos, _S(' '));
@@ -417,7 +417,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
                     aSpacedChar = sexystrchr(aName.c_str(), _S(' '));
                 }
 
-                // ∑÷±º∆À„»°µ√¡Ω––Œƒ±æµƒ≥§∂»
+                // ÂàÜÂà´ËÆ°ÁÆóÂèñÂæó‰∏§Ë°åÊñáÊú¨ÁöÑÈïøÂ∫¶
                 int aLine1Len = aNameLen;
                 int aLine2Len = 0;
                 if (aSpacedChar != nullptr) {
@@ -425,7 +425,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
                     aLine2Len = aNameLen - aLine1Len - 1;
                 }
 
-                // ∑÷±ªÊ÷∆¡Ω––Œƒ±æ◊÷∑˚¥Æ
+                // ÂàÜÂà´ÁªòÂà∂‰∏§Ë°åÊñáÊú¨Â≠óÁ¨¶‰∏≤
                 TodDrawString(
                     g, aName.substr(0, aLine1Len), aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor,
                     DS_ALIGN_CENTER
@@ -439,7 +439,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             }
 
             // ============================================================================================
-            // °¯ ªÊ÷∆πÿø®À¯∂®ªÚπÿø®ÕÍ≥…µƒÃ˘Õº“‘º∞πÿø®◊Ó∏ﬂº«¬ºµƒŒƒ±æµ»
+            // ‚ñ≤ ÁªòÂà∂ÂÖ≥Âç°ÈîÅÂÆöÊàñÂÖ≥Âç°ÂÆåÊàêÁöÑË¥¥Âõæ‰ª•ÂèäÂÖ≥Âç°ÊúÄÈ´òËÆ∞ÂΩïÁöÑÊñáÊú¨Á≠â
             // ============================================================================================
             int aRecord = mApp->mPlayerInfo->mChallengeRecords[theChallengeIndex];
             if (theChallengeIndex == mUnlockChallengeIndex) {
@@ -558,7 +558,10 @@ void ChallengeScreen::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x42F720
-void ChallengeScreen::ButtonPress(int theId) { mApp->PlaySample(Sexy::SOUND_BUTTONCLICK); }
+void ChallengeScreen::ButtonPress(int theId) {
+    (void)theId;
+    mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
+}
 
 // 0x42F740
 void ChallengeScreen::ButtonDepress(int theId) {
@@ -625,7 +628,7 @@ void ChallengeScreen::UpdateToolTip() {
                 mToolTip->mVisible = true;
                 return;
             } // end if (MoreTrophiesNeeded(aChallengeMode) > 0)
-        }     // end –Ë“™œ‘ æ±Í«©µƒÃıº˛≈–∂œ
+        }     // end ÈúÄË¶ÅÊòæÁ§∫Ê†áÁ≠æÁöÑÊù°‰ª∂Âà§Êñ≠
     }
 
     mToolTip->mVisible = false;

@@ -53,7 +53,7 @@ FindFileInStringTable(const std::string &theSearch, const char *theMem, DWORD th
 }
 
 static bool ParseModValString(std::string &theStr, int *theCounter = NULL, int *theLineNum = NULL) {
-    int aPos = theStr.length() - 1;
+    size_t aPos = theStr.length() - 1;
     bool foundComma = false;
     while (aPos > 0) {
         if (!foundComma && theStr[aPos] == ',') {
@@ -175,7 +175,7 @@ static ModStorage *CreateFileMods(const char *theFileName) {
     return CreateFileModsHelper(theFileName);
 }
 
-int Sexy::ModVal(int theAreaNum, const char *theFileName, int theInt) {
+int Sexy::ModVal(const char *theFileName, int theInt) {
     if (*theFileName != 0) CreateFileMods(theFileName);
 
     ModStorage *aModStorage = *(ModStorage **)(theFileName + 1);
@@ -183,7 +183,7 @@ int Sexy::ModVal(int theAreaNum, const char *theFileName, int theInt) {
     else return theInt;
 }
 
-double Sexy::ModVal(int theAreaNum, const char *theFileName, double theDouble) {
+double Sexy::ModVal(const char *theFileName, double theDouble) {
     if (*theFileName != 0) CreateFileMods(theFileName);
 
     ModStorage *aModStorage = *(ModStorage **)(theFileName + 1);
@@ -191,11 +191,9 @@ double Sexy::ModVal(int theAreaNum, const char *theFileName, double theDouble) {
     else return theDouble;
 }
 
-float Sexy::ModVal(int theAreaNum, const char *theFileName, float theFloat) {
-    return (float)ModVal(theAreaNum, theFileName, (double)theFloat);
-}
+float Sexy::ModVal(const char *theFileName, float theFloat) { return (float)ModVal(theFileName, (double)theFloat); }
 
-const char *Sexy::ModVal(int theAreaNum, const char *theFileName, const char *theStr) {
+const char *Sexy::ModVal(const char *theFileName, const char *theStr) {
     if (*theFileName != 0) CreateFileMods(theFileName);
 
     ModStorage *aModStorage = *(ModStorage **)(theFileName + 1);

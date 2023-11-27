@@ -1081,6 +1081,8 @@ void Coin::DroppedUsableSeed() {
 
 // 0x432C00
 void Coin::MouseDown(int x, int y, int theClickCount) {
+    (void)x;
+    (void)y;
     if (mBoard == nullptr || mBoard->mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING || mDead) {
         return;
     }

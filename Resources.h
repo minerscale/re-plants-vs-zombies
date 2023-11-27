@@ -1852,7 +1852,7 @@ bool ExtractDelayLoad_GreenHouseGardenResources(ResourceManager *theResourceMana
 bool ExtractDelayLoad_GreenHouseOverlayResources(ResourceManager *theResourceManager);
 bool ExtractDelayLoad_MushroomGardenResources(ResourceManager *theResourceManager);
 bool ExtractDelayLoad_StoreResources(ResourceManager *theResourceManager);
-bool ExtractDelayLoad_TreeOfWisdomResources(ResourceManager *theResourceManager);
+bool ExtractDelayLoad_TreeOfWisdomResources(/* ResourceManager* theResourceManager */);
 bool ExtractDelayLoad_ZombatarResources(ResourceManager *theResourceManager);
 bool ExtractDelayLoad_ZombieFinalNoteResources(ResourceManager *theResourceManager);
 bool ExtractDelayLoad_ZombieNoteResources(ResourceManager *theResourceManager);

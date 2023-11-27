@@ -157,8 +157,7 @@ DefField gReanimatorTransformDefFields[] = {
       {"",     0x0,  DefFieldType::DT_INVALID, nullptr}
 };
 DefMap gReanimatorTransformDefMap = {
-    gReanimatorTransformDefFields,
-    sizeof(ReanimatorTransform),
+    gReanimatorTransformDefFields, sizeof(ReanimatorTransform), ReanimatorTransformConstructor
 }; // 0x69F07C
 
 DefField gReanimatorTrackDefFields[] = {
@@ -796,7 +795,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             if (aStringChars[anIdx] != ']') {
                 anIdx++; // space (' ')
                 // <curve>
-                for (int i = 0; i < sizeof(TodCurveStrings) / sizeof(TodCurveStrings[0]); ++i) {
+                for (size_t i = 0; i < sizeof(TodCurveStrings) / sizeof(TodCurveStrings[0]); ++i) {
                     size_t aStrLen = strlen(TodCurveStrings[i].mString);
                     if (strncmp(TodCurveStrings[i].mString, aStringChars + anIdx, aStrLen) ==
                         0) // could be the distribution?
@@ -848,7 +847,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             if (aStringChars[anIdx] == '\0') goto _m_break; // Done!
             anIdx++;
             // <curve>
-            for (int i = 0; i < sizeof(TodCurveStrings) / sizeof(TodCurveStrings[0]); ++i) {
+            for (size_t i = 0; i < sizeof(TodCurveStrings) / sizeof(TodCurveStrings[0]); ++i) {
                 size_t aStrLen = strlen(TodCurveStrings[i].mString);
                 if (strncmp(TodCurveStrings[i].mString, aStringChars + anIdx, aStrLen) == 0) // mCurveType
                 {
@@ -1005,6 +1004,9 @@ bool DefinitionLoadMap(XMLParser *theXmlParser, DefMap *theDefMap, void *theDefi
 }
 
 bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition) {
+    (void)theCompiledFilePath;
+    (void)theDefMap;
+    (void)theDefinition;
     /*
     ####################################################################################################
     ####################################################################################################

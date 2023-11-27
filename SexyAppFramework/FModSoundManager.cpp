@@ -76,4 +76,4 @@ void FModSoundManager::SetMasterVolume(double theVolume) {}
 
 void FModSoundManager::Flush() {}
 
-void FModSoundManager::SetCooperativeWindow(HWND theHWnd, bool isWindowed) {}
+void FModSoundManager::SetCooperativeWindow(HWND theHWnd) {}
