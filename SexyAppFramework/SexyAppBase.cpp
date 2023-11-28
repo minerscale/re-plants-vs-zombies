@@ -15,6 +15,7 @@
 #include "DSoundManager.h"
 #include "Debug.h"
 #include "Dialog.h"
+#include "DummyMusicInterface.h"
 #include "FModMusicInterface.h"
 #include "HTTPTransfer.h"
 #include "KeyCodes.h"
@@ -5115,7 +5116,7 @@ bool SexyAppBase::ChangeDirHook(const char *theIntendedPath) {
 }
 
 MusicInterface *SexyAppBase::CreateMusicInterface() {
-    if (mNoSoundNeeded) return new MusicInterface;
+    if (mNoSoundNeeded) return new DummyMusicInterface();
     else if (mWantFMod) return new FModMusicInterface();
     else return new BassMusicInterface(mInvisHWnd);
 }

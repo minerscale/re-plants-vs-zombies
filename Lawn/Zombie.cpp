@@ -840,8 +840,8 @@ void Zombie::ReanimIgnoreClipRect(const char *theTrackName, bool theIgnoreClipRe
     Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (aBodyReanim == nullptr) return;
 
-    for (int i = 0; i < aBodyReanim->mDefinition->mTrackCount; i++) {
-        if (stricmp(aBodyReanim->mDefinition->mTracks[i].mName, theTrackName) == 0) {
+    for (int i = 0; i < aBodyReanim->mDefinition->mTracks.count; i++) {
+        if (stricmp(aBodyReanim->mDefinition->mTracks.tracks[i].mName, theTrackName) == 0) {
             aBodyReanim->mTrackInstances[i].mIgnoreClipRect = theIgnoreClipRect;
         }
     }
@@ -852,7 +852,7 @@ void Zombie::ReanimReenableClipping() {
     Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (aBodyReanim == nullptr) return;
 
-    for (int i = 0; i < aBodyReanim->mDefinition->mTrackCount; i++) {
+    for (int i = 0; i < aBodyReanim->mDefinition->mTracks.count; i++) {
         aBodyReanim->mTrackInstances[i].mIgnoreClipRect = false;
     }
 }
@@ -5449,9 +5449,10 @@ void Zombie::UpdateAnimSpeed() {
             mZombiePhase == ZombiePhase::PHASE_SNORKEL_WALKING_IN_POOL) {
             ApplyAnimRate(mOriginalAnimRate);
         } else if (aBodyReanim->TrackExists("_ground")) {
-            ReanimatorTrack *aTrack = &aBodyReanim->mDefinition->mTracks[aBodyReanim->FindTrackIndex("_ground")];
-            float aDistance = aTrack->mTransforms[aBodyReanim->mFrameStart + aBodyReanim->mFrameCount - 1].mTransX -
-                              aTrack->mTransforms[aBodyReanim->mFrameStart].mTransX;
+            ReanimatorTrack *aTrack = &aBodyReanim->mDefinition->mTracks.tracks[aBodyReanim->FindTrackIndex("_ground")];
+            float aDistance =
+                aTrack->mTransforms.mTransforms[aBodyReanim->mFrameStart + aBodyReanim->mFrameCount - 1].mTransX -
+                aTrack->mTransforms.mTransforms[aBodyReanim->mFrameStart].mTransX;
             if (aDistance >= 1e-6f) {
                 float aOneOverSpeed = aBodyReanim->mFrameCount / aDistance;
                 float aAnimRate = mVelX * aOneOverSpeed * 47.0f / mScaleZombie;

@@ -32,14 +32,23 @@ constexpr const double SECONDS_PER_UPDATE = 0.01f;
 
 enum ReanimFlags { REANIM_NO_ATLAS, REANIM_FAST_DRAW_IN_SW_MODE };
 
+struct ReanimatorTransformArray {
+    ReanimatorTransform *mTransforms;
+    int count;
+};
+
 class ReanimatorTrack {
 public:
-    const char *mName;                //+0x0：轨道名称
-    ReanimatorTransform *mTransforms; //+0x4：每一帧的动画变换的数组
-    int mTransformCount;              //+0x8：动画变换数量，即帧数量
+    const char *mName;                    //+0x0：轨道名称
+    ReanimatorTransformArray mTransforms; //+0x4：每一帧的动画变换的数组
 
 public:
-    ReanimatorTrack() : mName(""), mTransforms(nullptr), mTransformCount(0) {}
+    ReanimatorTrack() : mName(""), mTransforms({NULL, 0}) {}
+};
+
+struct ReanimatorTrackArray {
+    ReanimatorTrack *tracks;
+    int count;
 };
 
 // ====================================================================================================
@@ -49,13 +58,12 @@ public:
 // ====================================================================================================
 class ReanimatorDefinition {
 public:
-    ReanimatorTrack *mTracks;
-    int mTrackCount;
+    ReanimatorTrackArray mTracks;
     float mFPS;
     ReanimAtlas *mReanimAtlas;
 
 public:
-    ReanimatorDefinition() : mTracks(nullptr), mTrackCount(0), mFPS(12.0f), mReanimAtlas(nullptr) {}
+    ReanimatorDefinition() : mTracks({nullptr, 0}), mFPS(12.0f), mReanimAtlas(nullptr) {}
 };
 extern int gReanimatorDefCount;                   //[0x6A9EE4]
 extern ReanimatorDefinition *gReanimatorDefArray; //[0x6A9EE8]

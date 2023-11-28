@@ -1233,7 +1233,7 @@ void ZenGarden::UpdateStinkyMotionTrail(GridItem *theStinky, bool theStinkyHighO
         theStinky->mMotionTrailCount--;
     }
     if (theStinky->mMotionTrailCount > 0) {
-        memcpy(
+        memmove(
             theStinky->mMotionTrailFrames + 1, theStinky->mMotionTrailFrames,
             theStinky->mMotionTrailCount * sizeof(MotionTrailFrame)
         );

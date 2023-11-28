@@ -293,7 +293,9 @@ void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolu
         // gBass->BASS_ChannelSetAttribute(aMusicInfo->mHMusic, -1, aMusicInfo->mVolume * 100.0, -101);  // 调整音乐音量
         gBass->BASS_ChannelSetAttribute(aMusicInfo->mHMusic, BASS_ATTRIB_VOL, aMusicInfo->mVolume);
         gBass->BASS_ChannelFlags(aMusicInfo->mHMusic, BASS_MUSIC_POSRESET | BASS_MUSIC_RAMP | BASS_MUSIC_LOOP, -1);
-        gBass->BASS_ChannelSetPosition(aMusicInfo->mHMusic, theOffset | 0x80000000, BASS_POS_BYTE); // 设置偏移位置
+        gBass->BASS_ChannelSetPosition(
+            aMusicInfo->mHMusic, MAKELONG(theOffset, 0) /**/, BASS_POS_MUSIC_ORDER
+        );                                                   // 设置偏移位置
         gBass->BASS_ChannelPlay(aMusicInfo->mHMusic, false); // 重新开始播放
     }
 }
@@ -323,8 +325,8 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
         mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
         if (theOffset == -1) {
-            theOffset = 0x80000030;
-            theDrumsOffset = 0x8000005C;
+            theOffset = 0x30;
+            theDrumsOffset = 0x5C;
         }
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         PlayFromOffset(mCurMusicFileDrums, theDrumsOffset, 0.0);
@@ -334,7 +336,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
         mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
         mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
-        if (theOffset == -1) theOffset = 0x8000005E;
+        if (theOffset == -1) theOffset = 0x5E;
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
         PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
@@ -344,7 +346,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
         mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
         mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
-        if (theOffset == -1) theOffset = 0x8000007D;
+        if (theOffset == -1) theOffset = 0x7D;
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
         PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
@@ -354,7 +356,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
         mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
         mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
-        if (theOffset == -1) theOffset = 0x800000B8;
+        if (theOffset == -1) theOffset = 0xB8;
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
         PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
@@ -362,13 +364,13 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 
     case MusicTune::MUSIC_TUNE_CHOOSE_YOUR_SEEDS:
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-        if (theOffset == -1) theOffset = 0x8000007A;
+        if (theOffset == -1) theOffset = 0x7A;
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         break;
 
     case MusicTune::MUSIC_TUNE_TITLE_CRAZY_DAVE_MAIN_THEME:
         mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-        if (theOffset == -1) theOffset = 0x80000098;
+        if (theOffset == -1) theOffset = 0x98;
         PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
         break;
 
@@ -603,7 +605,8 @@ void Music::UpdateMusicBurst() {
         mMusicInterface->SetSongVolume(mCurMusicFileDrums, aDrumsVolume);
         if (aDrumsJumpOrder != -1)
             gBass->BASS_ChannelSetPosition(
-                GetBassMusicHandle(mCurMusicFileDrums), LOWORD(aDrumsJumpOrder) | 0x80000000, BASS_POS_BYTE
+                GetBassMusicHandle(mCurMusicFileDrums), MAKELONG(aDrumsJumpOrder, 0) /*| 0x80000000*/,
+                BASS_POS_MUSIC_ORDER
             );
     }
 }
@@ -668,7 +671,7 @@ void Music::GameMusicPause(bool thePause) {
             BassMusicInfo *aMusicInfo = &anItr->second;
 
             if (aMusicInfo->mHStream) {
-                mPauseOffset = gBass->BASS_ChannelGetPosition(aMusicInfo->mHStream, BASS_POS_BYTE);
+                mPauseOffset = gBass->BASS_ChannelGetPosition(aMusicInfo->mHStream, BASS_POS_MUSIC_ORDER);
                 mMusicInterface->StopMusic(mCurMusicFileMain);
             } else {
                 int aOrderMain = GetMusicOrder(mCurMusicFileMain);
