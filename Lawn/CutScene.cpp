@@ -378,7 +378,7 @@ void CutScene::PreloadResources() {
         Plant::PreloadPlantResources(SeedType::SEED_SUNFLOWER);
         Plant::PreloadPlantResources(SeedType::SEED_PEASHOOTER);
         Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);
-        Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM); // ÕâÀï²»ÖªÎªºÎÔ­°æ°ÑÑô¹â¹½Ô¤¼ÓÔØÁËÁ½´Î
+        Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM); // è¿™é‡Œä¸çŸ¥ä¸ºä½•åŸç‰ˆæŠŠé˜³å…‰è‡é¢„åŠ è½½äº†ä¸¤æ¬¡
         Plant::PreloadPlantResources(SeedType::SEED_FLOWERPOT);
         Plant::PreloadPlantResources(SeedType::SEED_PLANTERN);
         Plant::PreloadPlantResources(SeedType::SEED_FUMESHROOM);
@@ -408,7 +408,7 @@ void CutScene::PreloadResources() {
 
     PlaceStreetZombies();
 
-    mBoard->mPreloadTime = max(aTimer.GetDuration(), 0.0);
+    mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
     TodTrace("preloading: %d ms", mBoard->mPreloadTime);
     TodHesitationTrace("CutScene::PreloadResources");
 }
@@ -420,7 +420,7 @@ void CutScene::PlaceStreetZombies() {
     mPlacedZombies = true;
     if (mApp->IsFinalBossLevel()) return;
 
-    // ÒÔÏÂÍ³¼Æ³ö¹ÖÁĞ±íÖĞ¸÷ÖÖ¿ÉÔ¤ÀÀµÄ½©Ê¬µÄÊıÁ¿
+    // ä»¥ä¸‹ç»Ÿè®¡å‡ºæ€ªåˆ—è¡¨ä¸­å„ç§å¯é¢„è§ˆçš„åƒµå°¸çš„æ•°é‡
     // int aZombieValueTotal = 0;
     int aTotalZombieCount = 0;
     int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES] = {0};
@@ -452,21 +452,21 @@ void CutScene::PlaceStreetZombies() {
             ++aZombieTypeCount[aZombieType];
             ++aTotalZombieCount;
             if (aZombieType == ZombieType::ZOMBIE_BUNGEE || aZombieType == ZombieType::ZOMBIE_BOBSLED) {
-                aZombieTypeCount[aZombieType] = 1; // ±Ä¼«½©Ê¬ºÍÑ©ÇÁ½©Ê¬ÖÁ¶à½öÔÊĞíÓĞ 1 Ö»Ô¤ÀÀ½©Ê¬
+                aZombieTypeCount[aZombieType] = 1; // è¹¦æåƒµå°¸å’Œé›ªæ©‡åƒµå°¸è‡³å¤šä»…å…è®¸æœ‰ 1 åªé¢„è§ˆåƒµå°¸
             }
         }
     }
 
-    // Ë­Ğ¦µ½×îºó¹Ø¿¨£¬³ıÑ©ÈË½©Ê¬Íâ£¬ËùÓĞÔÊĞí³ö¹ÖµÄ½©Ê¬ÀàĞÍÖÁÉÙ¼ÆÈë 1 Ö»½©Ê¬
+    // è°ç¬‘åˆ°æœ€åå…³å¡ï¼Œé™¤é›ªäººåƒµå°¸å¤–ï¼Œæ‰€æœ‰å…è®¸å‡ºæ€ªçš„åƒµå°¸ç±»å‹è‡³å°‘è®¡å…¥ 1 åªåƒµå°¸
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND) {
         for (int aZombieType = 0; aZombieType < (int)ZombieType::NUM_ZOMBIE_TYPES; aZombieType++) {
             if (aZombieType != ZombieType::ZOMBIE_YETI && mBoard->mZombieAllowed[aZombieType]) {
-                aZombieTypeCount[aZombieType] = max(aZombieTypeCount[aZombieType], 1);
+                aZombieTypeCount[aZombieType] = std::max(aZombieTypeCount[aZombieType], 1);
             }
         }
     }
     if (mBoard->StageHasPool()) {
-        aZombieTypeCount[(int)ZombieType::ZOMBIE_DUCKY_TUBE] = 1; // Ó¾³Ø¹Ø¿¨£¬±Ø¶¨³öÏÖÑ¼×Ó½©Ê¬Ô¤ÀÀ
+        aZombieTypeCount[(int)ZombieType::ZOMBIE_DUCKY_TUBE] = 1; // æ³³æ± å…³å¡ï¼Œå¿…å®šå‡ºç°é¸­å­åƒµå°¸é¢„è§ˆ
     }
 
     bool aZombieGrid[5][5] = {{false}};
@@ -477,7 +477,7 @@ void CutScene::PlaceStreetZombies() {
         aPreviewCapacity = 18;
     }
 
-    // ÓÅÏÈ·ÅÖÃ½Ï´óÌåĞÍµÄ½©Ê¬£¬È»ºóÔÙ·ÅÖÃ½ÏĞ¡ÌåĞÍµÄ½©Ê¬
+    // ä¼˜å…ˆæ”¾ç½®è¾ƒå¤§ä½“å‹çš„åƒµå°¸ï¼Œç„¶åå†æ”¾ç½®è¾ƒå°ä½“å‹çš„åƒµå°¸
     for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES;
          aZombieType = (ZombieType)((int)aZombieType + 1)) {
         if (aZombieTypeCount[(int)aZombieType] &&
@@ -537,7 +537,7 @@ bool CutScene::IsNonScrollingCutscene() {
 // 0x43A7B0
 bool CutScene::IsScrolledLeftAtStart() {
     if (mBoard->mChallenge->mSurvivalStage > 0 && mApp->IsSurvivalMode())
-        return false; // ·ÇÊ×ÂÖµÄÉú´æÄ£Ê½µÄ¹ı³¡£¬ÆÁÄ»¹ö¶¯´ÓÆÁÄ»ÖĞÑë¿ªÊ¼
+        return false; // éé¦–è½®çš„ç”Ÿå­˜æ¨¡å¼çš„è¿‡åœºï¼Œå±å¹•æ»šåŠ¨ä»å±å¹•ä¸­å¤®å¼€å§‹
 
     return !IsNonScrollingCutscene();
 }
@@ -562,7 +562,7 @@ bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex) {
     int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
     return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] ==
-               theUpgradeIndex && // theUpgradeIndex ´ÓÊ×´ÎÎª 0 ¿ªÊ¼¼ÆËã
+               theUpgradeIndex && // theUpgradeIndex ä»é¦–æ¬¡ä¸º 0 å¼€å§‹è®¡ç®—
            mApp->mPlayerInfo->mCoins >= aCost &&
            mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
@@ -780,7 +780,7 @@ void CutScene::CancelIntro() {
     mApp->CrazyDaveDie();
 
     if (mCutsceneTime > mCrazyDaveTime + TimePanLeftStart || !mBoard->ChooseSeedsOnCurrentLevel()) {
-        // ½«¹ı³¡Ê±¼ä¿ì½øÖÁ¹Ø¿¨ÒıÈë½áÊøÊ±
+        // å°†è¿‡åœºæ—¶é—´å¿«è¿›è‡³å…³å¡å¼•å…¥ç»“æŸæ—¶
         mCutsceneTime = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime +
                         mBossTime + mReadySetPlantTime - 20;
 
@@ -862,7 +862,7 @@ void CutScene::AnimateBoard() {
     int aTimePanLeftEnd = TimePanLeftEnd + mCrazyDaveTime;
 
     // ====================================================================================================
-    // ¡ø ·è¿ñ´÷·ò¶¯Ì¬µÄ¸üĞÂ
+    // â–² ç–¯ç‹‚æˆ´å¤«åŠ¨æ€çš„æ›´æ–°
     // ====================================================================================================
     if (mCrazyDaveTime > 0) {
         if (mCutsceneTime == TimeEarlyDaveEnterStart) {
@@ -885,7 +885,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ¹Ø¿¨½çÃæÓÒÒÆµÄ¸üĞÂ
+    // â–² å…³å¡ç•Œé¢å³ç§»çš„æ›´æ–°
     // ====================================================================================================
     int aBoardOffset = IsScrolledLeftAtStart() ? BOARD_OFFSET : 0;
     if (mCutsceneTime <= aTimePanRightStart) {
@@ -898,14 +898,14 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø Ñ¡¿¨½çÃæ¶¯Ì¬µÄ¸üĞÂ
+    // â–² é€‰å¡ç•Œé¢åŠ¨æ€çš„æ›´æ–°
     // ====================================================================================================
     if (mBoard->ChooseSeedsOnCurrentLevel()) {
         int aTimeSeedChoserSlideOnStart = TimeSeedChoserSlideOnStart + mCrazyDaveTime;
         int aTimeSeedChoserSlideOnEnd = TimeSeedChoserSlideOnEnd + mCrazyDaveTime;
         SeedChooserScreen *aSeedChoser = mApp->mSeedChooserScreen;
         // ====================================================================================================
-        // ¡÷ Ñ¡¿¨½çÃæ»¬³ö
+        // â–³ é€‰å¡ç•Œé¢æ»‘å‡º
         // ====================================================================================================
         if (mCutsceneTime > aTimeSeedChoserSlideOnStart && mCutsceneTime <= aTimeSeedChoserSlideOnEnd) {
             aSeedChoser->Move(
@@ -916,7 +916,7 @@ void CutScene::AnimateBoard() {
             aSeedChoser->mMenuButton->mBtnNoDraw = false;
         }
         // ====================================================================================================
-        // ¡÷ Ñ¡¿¨½çÃæ»¬Âä
+        // â–³ é€‰å¡ç•Œé¢æ»‘è½
         // ====================================================================================================
         int aTimeSeedChoserSlideOffStart = TimeSeedChoserSlideOffStart + mCrazyDaveTime;
         int aTimeSeedChoserSlideOffEnd = TimeSeedChoserSlideOffEnd + mCrazyDaveTime;
@@ -929,7 +929,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ¹Ø¿¨½çÃæ×óÒÆµÄ¸üĞÂ
+    // â–² å…³å¡ç•Œé¢å·¦ç§»çš„æ›´æ–°
     // ====================================================================================================
     if (mCutsceneTime > aTimePanLeftStart) {
         int aPanOffset = CalcPosition(aTimePanLeftStart, aTimePanLeftEnd, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth, 0);
@@ -937,7 +937,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ¿¨²Û¶¯Ì¬µÄ¸üĞÂ
+    // â–² å¡æ§½åŠ¨æ€çš„æ›´æ–°
     // ====================================================================================================
     int aTimePrepareEnd = 0;
     if (!mBoard->ChooseSeedsOnCurrentLevel()) {
@@ -964,7 +964,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø Ã°ÏÕÄ£Ê½³õÆÚ¹Ø¿¨ÆÌ²İÆ¤µÄ¸üĞÂ
+    // â–² å†’é™©æ¨¡å¼åˆæœŸå…³å¡é“ºè‰çš®çš„æ›´æ–°
     // ====================================================================================================
     if (mSodTime > 0) {
         int aTimeRollSodStart = TimeRollSodStart + mCrazyDaveTime;
@@ -1024,7 +1024,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ºÚÒ¹¹Ø¿¨³öÏÖÄ¹±®µÄÌØĞ§µÄ¸üĞÂ
+    // â–² é»‘å¤œå…³å¡å‡ºç°å¢“ç¢‘çš„ç‰¹æ•ˆçš„æ›´æ–°
     // ====================================================================================================
     if (mGraveStoneTime > 0) {
         int aTimeGraveStoneStart = mSodTime + TimeGraveStoneStart + mCrazyDaveTime;
@@ -1035,14 +1035,14 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø »­Ãæ¿ªÊ¼Ïò×ó¹ö¶¯Ê±£¬´´½¨Õ½³¡ÎïÆ·
+    // â–² ç”»é¢å¼€å§‹å‘å·¦æ»šåŠ¨æ—¶ï¼Œåˆ›å»ºæˆ˜åœºç‰©å“
     // ====================================================================================================
     if (mCutsceneTime == aTimePanLeftStart) {
         PlaceLawnItems();
     }
 
     // ====================================================================================================
-    // ¡ø Ã¿Ò»ĞĞĞ¡ÍÆ³µµÄÆô¶¯µÄ¸üĞÂ
+    // â–² æ¯ä¸€è¡Œå°æ¨è½¦çš„å¯åŠ¨çš„æ›´æ–°
     // ====================================================================================================
     if (!IsSurvivalRepick()) {
         for (int aGridY = 0; aGridY < MAX_GRID_SIZE_Y; aGridY++) {
@@ -1059,7 +1059,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø Å¨ÎíµÄ¸üĞÂ
+    // â–² æµ“é›¾çš„æ›´æ–°
     // ====================================================================================================
     if (mBoard->mFogBlownCountDown > 0) {
         int aTimeFogRollIn = TimeFogRollIn + mSodTime + mGraveStoneTime + mCrazyDaveTime;
@@ -1072,7 +1072,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ±©·çÓêµÄ¸üĞÂ
+    // â–² æš´é£é›¨çš„æ›´æ–°
     // ====================================================================================================
     if (mApp->IsStormyNightLevel() && (mCutsceneTime == aTimePanRightEnd - 1000 || mCutsceneTime == aTimePanLeftEnd)) {
         mBoard->mChallenge->mChallengeState = ChallengeState::STATECHALLENGE_STORM_FLASH_2;
@@ -1080,7 +1080,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ½©Íõ²©Ê¿µÄÈë³¡
+    // â–² åƒµç‹åšå£«çš„å…¥åœº
     // ====================================================================================================
     if (mBossTime > 0) {
         int aTimeBossEnter = TimeReadySetPlantStart + mLawnMowerTime + mCrazyDaveTime;
@@ -1090,14 +1090,14 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ½©Íõ²©Ê¿¹Ø¿¨±³¾°ÒôÀÖµÄ²¥·Å
+    // â–² åƒµç‹åšå£«å…³å¡èƒŒæ™¯éŸ³ä¹çš„æ’­æ”¾
     // ====================================================================================================
     if (mApp->IsFinalBossLevel() && mCutsceneTime == aTimeSeedBankOnStart) {
         mApp->mMusic->StartGameMusic();
     }
 
     // ====================================================================================================
-    // ¡ø Ready Set Plant ¶¯»­µÄ²¥·Å
+    // â–² Ready Set Plant åŠ¨ç”»çš„æ’­æ”¾
     // ====================================================================================================
     int aTimeReadySetPlant =
         TimeReadySetPlantStart + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime + mBossTime;
@@ -1118,7 +1118,7 @@ void CutScene::AnimateBoard() {
     }
 
     // ====================================================================================================
-    // ¡ø ½«Ñ¡¿¨½çÃæÒÆ¶¯ÖÁ¶¥²ãÏÔÊ¾
+    // â–² å°†é€‰å¡ç•Œé¢ç§»åŠ¨è‡³é¡¶å±‚æ˜¾ç¤º
     // ====================================================================================================
     mApp->mSeedChooserScreen->mParent->BringToFront(mApp->mSeedChooserScreen);
 }
@@ -1167,14 +1167,14 @@ bool CutScene::IsShowingCrazyDave() {
 void CutScene::Update() {
     if (mPreUpdatingBoard) return;
 
-    // ¸üĞÂ·è¿ñ´÷·ò
+    // æ›´æ–°ç–¯ç‹‚æˆ´å¤«
     if (IsShowingCrazyDave() && (!mBoard->mPaused || mApp->mGameMode != GameMode::GAMEMODE_UPSELL)) {
         mApp->UpdateCrazyDave();
     }
 
     if (mBoard->mPaused) return;
 
-    // ½©Ê¬½ø¼Ò¹ı³¡µÄ¸üĞÂ
+    // åƒµå°¸è¿›å®¶è¿‡åœºçš„æ›´æ–°
     if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON) {
         mCutsceneTime += 10;
         UpdateZombiesWon();
@@ -1183,20 +1183,20 @@ void CutScene::Update() {
 
     if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mDrawCount == 0) return;
 
-    // ½øĞĞÔ¤¼ÓÔØ
+    // è¿›è¡Œé¢„åŠ è½½
     if (!mPreloaded) {
         PreloadResources();
     }
-    // ·ÅÖÃÔ¤ÀÀ½©Ê¬
+    // æ”¾ç½®é¢„è§ˆåƒµå°¸
     if (!mPlacedZombies) {
         PlaceStreetZombies();
     }
-    // ·ÅÖÃÕ½³¡ÎïÆ·
+    // æ”¾ç½®æˆ˜åœºç‰©å“
     if (IsNonScrollingCutscene() || !mBoard->ChooseSeedsOnCurrentLevel()) {
         PlaceLawnItems();
     }
 
-    // Ñ¡¿¨Ö®Ç°µÄ¸üĞÂ
+    // é€‰å¡ä¹‹å‰çš„æ›´æ–°
     bool aCutsceneTimeStop = false;
     if (mSeedChoosing || mApp->mCrazyDaveMessageIndex != -1 || IsInShovelTutorial()) {
         aCutsceneTimeStop = true;
@@ -1220,7 +1220,7 @@ void CutScene::Update() {
         }
     }
 
-    // ¹ı³¡½áÊøµÄÅĞ¶¨
+    // è¿‡åœºç»“æŸçš„åˆ¤å®š
     int aTimeStart = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime +
                      mBossTime + mReadySetPlantTime;
     if (mCutsceneTime >= aTimeStart) {
@@ -1249,17 +1249,17 @@ void CutScene::StartZombiesWon() {
 
 // 0x43C410
 void CutScene::UpdateZombiesWon() {
-    // »­Ãæ¹ö¶¯
+    // ç”»é¢æ»šåŠ¨
     if (mCutsceneTime > LostTimePanRightStart && mCutsceneTime <= LostTimePanRightEnd) {
         mBoard->Move(CalcPosition(LostTimePanRightStart, LostTimePanRightEnd, 0, BOARD_OFFSET), 0);
     }
 
-    // ¿ĞÊ³ÄÔ×ÓµÄÒôĞ§
+    // å•ƒé£Ÿè„‘å­çš„éŸ³æ•ˆ
     if (mCutsceneTime == LostTimeBrainGraphicStart - 400 || mCutsceneTime == LostTimeBrainGraphicStart - 900) {
         mApp->PlayFoley(FoleyType::FOLEY_CHOMP);
     }
 
-    // Ê³ÄÔµÄ¶¯»­¼°²Ò½ĞµÄÒôĞ§
+    // é£Ÿè„‘çš„åŠ¨ç”»åŠæƒ¨å«çš„éŸ³æ•ˆ
     if (mCutsceneTime == LostTimeBrainGraphicStart) {
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIES_WON, true);
         int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0);
@@ -1273,20 +1273,20 @@ void CutScene::UpdateZombiesWon() {
         mApp->PlayFoley(FoleyType::FOLEY_SCREAM);
     }
 
-    // Ê³ÄÔ¶¯»­¿ªÊ¼¶¶¶¯
+    // é£Ÿè„‘åŠ¨ç”»å¼€å§‹æŠ–åŠ¨
     if (mCutsceneTime == LostTimeBrainGraphicShake) {
         mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 1.0f);
     }
-    // Ê³ÄÔ¶¯»­½áÊø¶¶¶¯
+    // é£Ÿè„‘åŠ¨ç”»ç»“æŸæŠ–åŠ¨
     if (mCutsceneTime == LostTimeBrainGraphicCancelShake) {
         mApp->ReanimationGet(mZombiesWonReanimID)->SetShakeOverride("ZombiesWon", 0.0f);
     }
-    // Ê³ÄÔ¶¯»­½áÊø
+    // é£Ÿè„‘åŠ¨ç”»ç»“æŸ
     if (mCutsceneTime == LostTimeBrainGraphicEnd) {
         mApp->ReanimationGet(mZombiesWonReanimID)->SetFramesForLayer("anim_screen");
     }
 
-    // ¹ı³¡½áÊø£¬ÓÎÏ·Ê§°Ü
+    // è¿‡åœºç»“æŸï¼Œæ¸¸æˆå¤±è´¥
     if (mCutsceneTime == LostTimeEnd) {
         if (mApp->IsSurvivalMode()) {
             int aFlagsCompleted = mBoard->GetSurvivalFlagsCompleted();
@@ -1317,20 +1317,20 @@ void CutScene::ZombieWonClick() {
 void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL || mApp->mCrazyDaveMessageIndex == -1) return;
 
-    // ¡°ÄÃÆğ²ù×Ó¿ªÊ¼ÍÚ°É¡±
+    // â€œæ‹¿èµ·é“²å­å¼€å§‹æŒ–å§â€
     if (mApp->mCrazyDaveMessageIndex == 2406 && !theJustSkipping) {
         mBoard->SetTutorialState(TutorialState::TUTORIAL_SHOVEL_PICKUP);
         mApp->CrazyDaveLeave();
         return;
     }
-    // ¡°ÕâÊÇÄãµÄÖÇ»ÛÊ÷£¬ÎÒ»á¸øÄãÒ»Ğ©·ÊÁÏÈÃÄã¿ªÊ¼µÄ¡±
+    // â€œè¿™æ˜¯ä½ çš„æ™ºæ…§æ ‘ï¼Œæˆ‘ä¼šç»™ä½ ä¸€äº›è‚¥æ–™è®©ä½ å¼€å§‹çš„â€
     if (mApp->mCrazyDaveMessageIndex == 3200) {
         mApp->mPlayerInfo->mPurchases[29] = PURCHASE_COUNT_OFFSET + 5;
         mBoard->mMenuButton->mBtnNoDraw = false;
         mBoard->mStoreButton->mBtnNoDraw = false;
     }
 
-    // ÍÆ½ø´÷·ò¶Ô»°£¬Èô²»´æÔÚÏÂÒ»¾äÔòÁî´÷·òÍË³ö
+    // æ¨è¿›æˆ´å¤«å¯¹è¯ï¼Œè‹¥ä¸å­˜åœ¨ä¸‹ä¸€å¥åˆ™ä»¤æˆ´å¤«é€€å‡º
     if (!mApp->AdvanceCrazyDaveText()) {
         mApp->CrazyDaveLeave();
         if (mApp->IsFinalBossLevel() && mApp->IsAdventureMode()) {
@@ -1353,30 +1353,30 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
         return;
     }
 
-    // ¸üĞÂÎª×îĞÂµÄÒ»¾ä»°µÄ±àºÅ
+    // æ›´æ–°ä¸ºæœ€æ–°çš„ä¸€å¥è¯çš„ç¼–å·
     int aMessageIndex = mApp->mCrazyDaveMessageIndex;
     // Now_Unused
     if (aMessageIndex == 107 || aMessageIndex == 2407) {
         mBoard->mChallenge->ShovelAddWallnuts();
     }
-    // ¡°²¢ÇÒ²»ÊÇÌúÇÂ£¬ÊÇ¶Ìé³¡± || ¡°ÎÒÃÇÈ¥Íæ±£ÁäÇò£¡¡±
+    // â€œå¹¶ä¸”ä¸æ˜¯é“é”¹ï¼Œæ˜¯çŸ­æ§Œâ€ || â€œæˆ‘ä»¬å»ç©ä¿é¾„çƒï¼â€
     if (aMessageIndex == 405 || aMessageIndex == 2411) {
         mBoard->mChallenge->mShowBowlingLine = true;
     }
-    // £¨ÍÆÏú¿¨²Û£©¡°ÌıÆğÀ´ÔõÃ´Ñù¡±
+    // ï¼ˆæ¨é”€å¡æ§½ï¼‰â€œå¬èµ·æ¥æ€ä¹ˆæ ·â€
     if ((aMessageIndex == 1503 || aMessageIndex == 1553) && !theJustSkipping) {
         int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
         int aNumPackets = mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_PACKET_UPGRADE];
         SexyString aBodyString = TodReplaceNumberString(_S("[UPGRADE_DIALOG_BODY]"), _S("{SLOTS}"), aNumPackets + 1);
         SexyString aAmountString = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
-        // ´´½¨Ñ¯ÎÊÊÇ·ñÉı¼¶¿¨²Û¸ñÊıµÄ¶Ô»°
+        // åˆ›å»ºè¯¢é—®æ˜¯å¦å‡çº§å¡æ§½æ ¼æ•°çš„å¯¹è¯
         Dialog *aDialog = mApp->DoDialog(
             Dialogs::DIALOG_PURCHASE_PACKET_SLOT, true, aAmountString, aBodyString, _S(""), Dialog::BUTTONS_YES_NO
         );
         aDialog->mX += 120;
         aDialog->mY += 130;
         mBoard->ShowCoinBank(100);
-        // µÈ´ı·µ»ØÑ¡ÔñµÄÑ¡Ïî
+        // ç­‰å¾…è¿”å›é€‰æ‹©çš„é€‰é¡¹
         int aResult = aDialog->WaitForResult();
         if (aResult == Dialog::ID_YES) {
             mApp->mPlayerInfo->AddCoins(-aCost);
@@ -1398,7 +1398,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
             }
         }
     }
-    // ¡°µ±È»²»ÊÇÎÒ£¬ÊÇÄã£¡¡±
+    // â€œå½“ç„¶ä¸æ˜¯æˆ‘ï¼Œæ˜¯ä½ ï¼â€
     if (aMessageIndex == 406) {
         mBoard->mEnableGraveStones = true;
         AddGraveStoneParticles();
@@ -1426,7 +1426,7 @@ void CutScene::MouseDown(int theX, int theY) {
 void CutScene::KeyDown(KeyCode theKey) {
     if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL) {
         if (mApp->mTodCheatKeys && theKey == KeyCode::KEYCODE_ESCAPE) {
-            mCrazyDaveLastTalkIndex = 3316; // ¡°Õâ×ã¹»°ÑÄãµÄÄÔ×Ó´µµ½»ğĞÇ£¬ÔÙ´µ»ØÀ´£¡¡±
+            mCrazyDaveLastTalkIndex = 3316; // â€œè¿™è¶³å¤ŸæŠŠä½ çš„è„‘å­å¹åˆ°ç«æ˜Ÿï¼Œå†å¹å›æ¥ï¼â€
             mCrazyDaveCountDown = 1;
         } else if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_ESCAPE) {
             mApp->CrazyDaveStopSound();
@@ -1803,7 +1803,7 @@ void CutScene::UpdateUpsell() {
         mCrazyDaveCountDown--;
     }
 
-    // ¡°ßÀ£¬Äã»¹µÈÊ²Ã´ÄØ£¿¡±
+    // â€œå‘ƒï¼Œä½ è¿˜ç­‰ä»€ä¹ˆå‘¢ï¼Ÿâ€
     if (mCrazyDaveLastTalkIndex == 3317) {
         if (!mCrazyDaveCountDown) {
             mBoard->mStoreButton->Resize(510, 420, 210, 46);
@@ -1813,7 +1813,7 @@ void CutScene::UpdateUpsell() {
         }
         return;
     }
-    // ¡°ÄãÏë²ÉÈ¡ĞĞ¶¯£¿¡±
+    // â€œä½ æƒ³é‡‡å–è¡ŒåŠ¨ï¼Ÿâ€
     if (mCrazyDaveLastTalkIndex == 3311 && mCrazyDaveCountDown == 90) {
         mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);
     }
@@ -1832,7 +1832,7 @@ void CutScene::UpdateUpsell() {
 
     Reanimation *aCrazyDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
     switch (mCrazyDaveLastTalkIndex) {
-    case 3305: // ¡°ÏñÕâ¸ö£¡¡±
+    case 3305: // â€œåƒè¿™ä¸ªï¼â€
     {
         Reanimation *aReanimSquash = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_SQUASH);
         aReanimSquash->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -1845,7 +1845,7 @@ void CutScene::UpdateUpsell() {
         break;
     }
 
-    case 3306: // ¡°»¹ÓĞÕâ¸ö£¡¡±
+    case 3306: // â€œè¿˜æœ‰è¿™ä¸ªï¼â€
     {
         Reanimation *aReanimThreepeater = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_THREEPEATER);
         aReanimThreepeater->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -1865,7 +1865,7 @@ void CutScene::UpdateUpsell() {
         break;
     }
 
-    case 3307: // ¡°¹ı»á¶ù£¬ÎÒ»¹»áÌí¼ÓÕâ¸ö£¡¡±
+    case 3307: // â€œè¿‡ä¼šå„¿ï¼Œæˆ‘è¿˜ä¼šæ·»åŠ è¿™ä¸ªï¼â€
     {
         Reanimation *aReanimMagnet = mApp->AddReanimation(0, 0, 0, ReanimationType::REANIM_MAGNETSHROOM);
         aReanimMagnet->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 15.0f);
@@ -1879,31 +1879,31 @@ void CutScene::UpdateUpsell() {
         break;
     }
 
-    case 3309: // ¡°ÒòÎªÎÒºÜ·è-¿ñ-£¡£¡£¡£¡¡±
+    case 3309: // â€œå› ä¸ºæˆ‘å¾ˆç–¯-ç‹‚-ï¼ï¼ï¼ï¼â€
         aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_THREEPEATER)->ReanimationDie();
         aCrazyDaveReanim->FindSubReanim(ReanimationType::REANIM_MAGNETSHROOM)->ReanimationDie();
         break;
 
-    case 3312: // ¡°ÎÒÒª¸øÄã¸ü¶àÕ½¶·£¡¡±
+    case 3312: // â€œæˆ‘è¦ç»™ä½ æ›´å¤šæˆ˜æ–—ï¼â€
         mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);
         LoadUpsellBoardPool();
         mApp->PlaySample(SOUND_FINALWAVE);
         mUpsellHideBoard = false;
         break;
 
-    case 3313: // ¡°¸ü¶àµÄ25¼¶µÄÕ½¶·£¡¡±
+    case 3313: // â€œæ›´å¤šçš„25çº§çš„æˆ˜æ–—ï¼â€
         LoadUpsellBoardFog();
         mApp->PlaySample(SOUND_HUGE_WAVE);
         mUpsellHideBoard = false;
         break;
 
-    case 3314: // ¡°40¸öÃÔÄãÓÎÏ·&ÃÕÌâ£¡¡±
+    case 3314: // â€œ40ä¸ªè¿·ä½ æ¸¸æˆ&è°œé¢˜ï¼â€
         LoadUpsellChallengeScreen();
         mApp->PlaySample(SOUND_FINALWAVE);
         mUpsellHideBoard = false;
         break;
 
-    case 3315: // ¡°´óµØ¿ÆËş£¡£¡£¡¡±
+    case 3315: // â€œå¤§åœ°ç§‘å¡”ï¼ï¼ï¼â€
         ClearUpsellBoard();
         mApp->PlaySample(SOUND_FINALWAVE);
         mUpsellHideBoard = true;
@@ -1913,13 +1913,13 @@ void CutScene::UpdateUpsell() {
         );
         break;
 
-    case 3316: // ¡°Õâ×ã¹»°ÑÄãµÄÄÔ×Ó´µµ½»ğĞÇ£¬ÔÙ´µ»ØÀ´£¡¡±
+    case 3316: // â€œè¿™è¶³å¤ŸæŠŠä½ çš„è„‘å­å¹åˆ°ç«æ˜Ÿï¼Œå†å¹å›æ¥ï¼â€
         LoadUpsellBoardRoof();
         mApp->PlaySample(SOUND_HUGE_WAVE);
         mUpsellHideBoard = false;
         break;
 
-    case 3317: // ¡°ßÀ£¬Äã»¹µÈÊ²Ã´ÄØ£¿¡±
+    case 3317: // â€œå‘ƒï¼Œä½ è¿˜ç­‰ä»€ä¹ˆå‘¢ï¼Ÿâ€
         ClearUpsellBoard();
         mBoard->mMenuButton->mBtnNoDraw = true;
         mUpsellHideBoard = true;
@@ -1929,7 +1929,7 @@ void CutScene::UpdateUpsell() {
 
 // 0x441320
 void CutScene::DrawUpsell(Graphics *g) {
-    if (mCrazyDaveLastTalkIndex == 3315) // ¡°´óµØ¿ÆËş£¡¡±
+    if (mCrazyDaveLastTalkIndex == 3315) // â€œå¤§åœ°ç§‘å¡”ï¼â€
     {
         Reanimation aReanim;
         aReanim.ReanimationInitializeType(565, 360, ReanimationType::REANIM_FLOWER_POT);
@@ -1986,7 +1986,7 @@ void CutScene::DrawIntro(Graphics *g) {
         g->FillRect(-mBoard->mX, -mBoard->mY, BOARD_WIDTH, BOARD_HEIGHT);
     }
 
-    // »æÖÆ¡°PopCap Games ³öÆ·¡±×ÖÑù
+    // ç»˜åˆ¶â€œPopCap Games å‡ºå“â€å­—æ ·
     int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
     if (mCutsceneTime > TimeIntro_PresentsFadeIn && mCutsceneTime <= aTimePanRightStart) {
         int anAlpha =
@@ -2005,7 +2005,7 @@ void CutScene::DrawIntro(Graphics *g) {
         );
     }
 
-    // »æÖÆ¡°Plants Vs Zombies¡±µÄ Logo
+    // ç»˜åˆ¶â€œPlants Vs Zombiesâ€çš„ Logo
     if (mCutsceneTime > TimeIntro_LogoStart && mCutsceneTime <= TimeIntro_PanRightEnd) {
         float aScale = TodAnimateCurveFloat(
             TimeIntro_LogoStart, TimeIntro_LogoEnd, mCutsceneTime, 5, 1, TodCurves::CURVE_EASE_OUT

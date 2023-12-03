@@ -34,7 +34,7 @@ bool GridInRange(int x1, int y1, int x2, int y2, int theRangeX, int theRangeY) {
 
 void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int theWidth) {
     while (theWidth > 0) {
-        int aImageWidth = min(theWidth, theImage->GetWidth());
+        int aImageWidth = std::min(theWidth, theImage->GetWidth());
         g->DrawImage(theImage, theX, theY, Rect(0, 0, aImageWidth, theImage->GetHeight()));
         theX += aImageWidth;
         theWidth -= aImageWidth;
@@ -43,7 +43,7 @@ void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int
 
 void TileImageVertically(Graphics *g, Image *theImage, int theX, int theY, int theHeight) {
     while (theHeight > 0) {
-        int aImageHeight = min(theHeight, theImage->GetHeight());
+        int aImageHeight = std::min(theHeight, theImage->GetHeight());
         g->DrawImage(theImage, theX, theY, Rect(0, 0, theImage->GetWidth(), aImageHeight));
         theY += aImageHeight;
         theHeight -= aImageHeight;

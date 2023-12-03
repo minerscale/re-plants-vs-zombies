@@ -9,7 +9,7 @@
 #include "Widget.h"
 
 using namespace Sexy;
-using namespace std;
+// using namespace std;
 
 WidgetManager::WidgetManager(SexyAppBase *theApp) {
     mApp = theApp;

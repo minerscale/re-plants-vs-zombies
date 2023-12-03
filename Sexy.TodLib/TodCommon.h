@@ -12,7 +12,7 @@ class Graphics;
 class SexyMatrix;
 class SexyVector2;
 }; // namespace Sexy
-using namespace std;
+// using namespace std;
 using namespace Sexy;
 
 #define D3DIMAGEFLAG_SANDING 0x1000

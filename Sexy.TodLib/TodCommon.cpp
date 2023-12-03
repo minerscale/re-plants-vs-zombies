@@ -555,7 +555,7 @@ void TodDrawStringMatrix(
             double aScale = aFont->mScale;
             int aLayerPointSize = aLayer->mPointSize;
             if (aLayerPointSize) {
-                aScale *= aFont->mPointSize / aLayerPointSize;
+                aScale *= (float)aFont->mPointSize / (float)aLayerPointSize;
             }
 
             int anImageX, anImageY, aCharWidth, aSpacing;
@@ -594,10 +594,10 @@ void TodDrawStringMatrix(
             }
 
             Color aColor;
-            aColor.mRed = min(aLayer->mColorAdd.mRed + theColor.mRed * aLayer->mColorMult.mRed / 255, 255);
-            aColor.mGreen = min(aLayer->mColorAdd.mGreen + theColor.mGreen * aLayer->mColorMult.mGreen / 255, 255);
-            aColor.mBlue = min(aLayer->mColorAdd.mBlue + theColor.mBlue * aLayer->mColorMult.mBlue / 255, 255);
-            aColor.mAlpha = min(aLayer->mColorAdd.mAlpha + theColor.mAlpha * aLayer->mColorMult.mAlpha / 255, 255);
+            aColor.mRed = std::min(aLayer->mColorAdd.mRed + theColor.mRed * aLayer->mColorMult.mRed / 255, 255);
+            aColor.mGreen = std::min(aLayer->mColorAdd.mGreen + theColor.mGreen * aLayer->mColorMult.mGreen / 255, 255);
+            aColor.mBlue = std::min(aLayer->mColorAdd.mBlue + theColor.mBlue * aLayer->mColorMult.mBlue / 255, 255);
+            aColor.mAlpha = std::min(aLayer->mColorAdd.mAlpha + theColor.mAlpha * aLayer->mColorMult.mAlpha / 255, 255);
             int anOrder = aCharData->mOrder + aLayer->mBaseOrder;
 
             if (aCurPoolIdx >= POOL_SIZE) break;
@@ -619,7 +619,7 @@ void TodDrawStringMatrix(
             aRenderCommand->mUseAlphaCorrection = aLayer->mUseAlphaCorrection;
             aRenderCommand->mNext = nullptr;
 
-            int anOrderIdx = min(max(anOrder + 128, 0), 255);
+            int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
             if (gRenderTail[anOrderIdx]) {
                 gRenderTail[anOrderIdx]->mNext = aRenderCommand;
                 gRenderTail[anOrderIdx] = aRenderCommand;
@@ -731,10 +731,11 @@ void TodMarkImageForSanding(Image *theImage) { ((MemoryImage *)theImage)->mD3DFl
 
 void TodSandImageIfNeeded(Image *theImage) {
     MemoryImage *aImage = (MemoryImage *)theImage;
-    if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING)) {
+    /*if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING))*/ // UB shift by a billion
+    if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING) {
         FixPixelsOnAlphaEdgeForBlending(theImage);
-        //((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING;
-        SetBit((unsigned int &)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false); // 清除标记
+        ((MemoryImage *)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
+        // SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
     }
 }
 
@@ -931,11 +932,11 @@ unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel
     if (aBitsCount == 0) return 0;
 
     aRed /= aBitsCount;
-    aRed = min(aRed, 255);
+    aRed = std::min(aRed, 255);
     aGreen /= aBitsCount;
-    aGreen = min(aGreen, 255);
+    aGreen = std::min(aGreen, 255);
     aBlue /= aBitsCount;
-    aBlue = min(aBlue, 255);
+    aBlue = std::min(aBlue, 255);
     return (aRed << 16) | (aGreen << 8) | (aBlue);
 }
 
@@ -963,7 +964,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
     }
     aImage->mBitsChangedCount++;
 
-    int aDuration = max(aTimer.GetDuration(), 0.0);
+    int aDuration = std::max(aTimer.GetDuration(), 0.0);
     if (aDuration > 20) {
         TodTraceAndLog(
             "LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
@@ -1076,7 +1077,7 @@ Color ColorsMultiply(const Color &theColor1, const Color &theColor2) {
 
 // 0x513120
 //  GOTY @Patoke: inlined 0x51D4C0
-bool TodLoadResources(const string &theGroup) {
+bool TodLoadResources(const std::string &theGroup) {
     return ((TodResourceManager *)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
@@ -1105,7 +1106,7 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 
     mLoadedGroups.insert(theGroup);
 
-    int aDuration = max(aTimer.GetDuration(), 0.0);
+    int aDuration = std::max(aTimer.GetDuration(), 0.0);
     if (aDuration > 20) {
         TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
     }

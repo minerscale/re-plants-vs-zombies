@@ -1,6 +1,5 @@
 #include "SaveGame.h"
 #include "../../ConstEnums.h"
-#include "../../ImageLib/zlib/zlib.h"
 #include "../../LawnApp.h"
 #include "../../Resources.h"
 #include "../../Sexy.TodLib/Attachment.h"
@@ -14,6 +13,7 @@
 #include "../MessageWidget.h"
 #include "../SeedPacket.h"
 #include "Music.h"
+#include "zlib/zlib.h"
 
 static const char *FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
 static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;

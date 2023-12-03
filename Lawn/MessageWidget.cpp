@@ -33,7 +33,7 @@ void MessageWidget::ClearReanim() {
 
 void MessageWidget::ClearLabel() {
     if (mReanimType != ReanimationType::REANIM_NONE) {
-        mDuration = min(mDuration, 100 + mSlideOffTime + 1);
+        mDuration = std::min(mDuration, 100 + mSlideOffTime + 1);
     } else {
         mDuration = 0;
     }
@@ -116,7 +116,7 @@ void MessageWidget::LayoutReanimText() {
             SexyString aLine(&mLabel[aOff], aLen);
 
             aLineWidth[aCurLine] = aFont->StringWidth(aLine);
-            aMaxWidth = max(aMaxWidth, aLineWidth[aCurLine]);
+            aMaxWidth = std::max(aMaxWidth, aLineWidth[aCurLine]);
             aCurLine++;
         }
     }
@@ -124,16 +124,16 @@ void MessageWidget::LayoutReanimText() {
     aCurLine = 0;
     float aCurPosY = 0.0f;
     float aCurPosX = -aLineWidth[0] * 0.5f;
-    // ÒÔÏÂ±éÀú×ÖÄ»ÖĞµÄËùÓĞÎÄ±¾£¬·Ö±ğÔÚÊÊµ±µÄÎ»ÖÃ´´½¨Ã¿Ò»¸öÎÄ×ÖµÄ¶¯»­
+    // ä»¥ä¸‹éå†å­—å¹•ä¸­çš„æ‰€æœ‰æ–‡æœ¬ï¼Œåˆ†åˆ«åœ¨é€‚å½“çš„ä½ç½®åˆ›å»ºæ¯ä¸€ä¸ªæ–‡å­—çš„åŠ¨ç”»
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
-        // ´´½¨ÎÄ×ÖµÄ¶¯»­
+        // åˆ›å»ºæ–‡å­—çš„åŠ¨ç”»
         Reanimation *aReanimText = mApp->AddReanimation(aCurPosX, aCurPosY, 0, mReanimType);
         aReanimText->mIsAttachment = true;
         aReanimText->PlayReanim("anim_enter", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0.0f, 0.0f);
         mTextReanimID[aPos] = mApp->ReanimationGetID(aReanimText);
 
-        aCurPosX += aFont->CharWidth(mLabel[aPos]); // ×ø±êµ÷ÕûÖÁÏÂÒ»¸öÎÄ×ÖµÄÎ»ÖÃ
-        if (mLabel[aPos] == _S('\n'))               // »»ĞĞ´¦Àí
+        aCurPosX += aFont->CharWidth(mLabel[aPos]); // åæ ‡è°ƒæ•´è‡³ä¸‹ä¸€ä¸ªæ–‡å­—çš„ä½ç½®
+        if (mLabel[aPos] == _S('\n'))               // æ¢è¡Œå¤„ç†
         {
             aCurLine++;
             TOD_ASSERT(aCurLine < MAX_REANIM_LINES);
@@ -147,7 +147,7 @@ void MessageWidget::LayoutReanimText() {
 void MessageWidget::Update() {
     if (!mApp->mBoard || mApp->mBoard->mPaused) return;
 
-    // ¸üĞÂ×ÖÄ»µÄÊ£ÓàÊ±¼äµ¹¼ÆÊ±ºÍÏÂÒ»ÂÖ×ÖÄ»µÄÇĞ»»
+    // æ›´æ–°å­—å¹•çš„å‰©ä½™æ—¶é—´å€’è®¡æ—¶å’Œä¸‹ä¸€è½®å­—å¹•çš„åˆ‡æ¢
     if (mDuration < 10000 && mDuration > 0) {
         mDuration--;
         if (mDuration == 0) {
@@ -160,14 +160,14 @@ void MessageWidget::Update() {
     }
 
     int aLabelLen = sexystrlen(mLabel);
-    // ÒÔÏÂ±éÀúÃ¿¸öÎÄ×ÖµÄ¶¯»­£¬ÉèÖÃÆä¶¯»­ËÙÂÊ²¢¸üĞÂÆä¶¯»­
+    // ä»¥ä¸‹éå†æ¯ä¸ªæ–‡å­—çš„åŠ¨ç”»ï¼Œè®¾ç½®å…¶åŠ¨ç”»é€Ÿç‡å¹¶æ›´æ–°å…¶åŠ¨ç”»
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
         Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {
-            break; // µ±²»´æÔÚÎÄ±¾¶¯»­Ê±£¬Ìø³öÑ­»·£¬Ö±½Ó·µ»Ø
+            break; // å½“ä¸å­˜åœ¨æ–‡æœ¬åŠ¨ç”»æ—¶ï¼Œè·³å‡ºå¾ªç¯ï¼Œç›´æ¥è¿”å›
         }
 
-        // ÉèÖÃ¶¯»­ËÙÂÊ
+        // è®¾ç½®åŠ¨ç”»é€Ÿç‡
         int aTextSpeed = mReanimType == ReanimationType::REANIM_TEXT_FADE_ON ? 100 : 1;
         if (mDuration > mSlideOffTime) {
             if (mReanimType == ReanimationType::REANIM_TEXT_FADE_ON) {
@@ -186,7 +186,7 @@ void MessageWidget::Update() {
             );
         }
 
-        aTextReanim->Update(); // ¸üĞÂ¶¯»­
+        aTextReanim->Update(); // æ›´æ–°åŠ¨ç”»
     }
 }
 
@@ -196,7 +196,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
         Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {
-            break; // µ±²»´æÔÚÎÄ±¾¶¯»­Ê±£¬Ìø³öÑ­»·£¬Ö±½Ó·µ»Ø
+            break; // å½“ä¸å­˜åœ¨æ–‡æœ¬åŠ¨ç”»æ—¶ï¼Œè·³å‡ºå¾ªç¯ï¼Œç›´æ¥è¿”å›
         }
 
         ReanimatorTransform aTransform;
@@ -204,7 +204,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
 
         int anAlpha = ClampInt(FloatRoundToInt(theColor.mAlpha * aTransform.mAlpha), 0, 255);
         if (anAlpha <= 0) {
-            break; // ÎÄ±¾¶¯»­ÍêÈ«Í¸Ã÷Ê±£¬Ö±½Ó·µ»Ø
+            break; // æ–‡æœ¬åŠ¨ç”»å®Œå…¨é€æ˜æ—¶ï¼Œç›´æ¥è¿”å›
         }
         Color aFinalColor(theColor);
         aFinalColor.mAlpha = anAlpha;

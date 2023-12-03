@@ -243,7 +243,7 @@ void Projectile::CheckForCollision() {
         if (aPlant) {
             const ProjectileDefinition &aProjectileDef = GetProjectileDef();
             aPlant->mPlantHealth -= aProjectileDef.mDamage;
-            aPlant->mEatenFlashCountdown = max(aPlant->mEatenFlashCountdown, 25);
+            aPlant->mEatenFlashCountdown = std::max(aPlant->mEatenFlashCountdown, 25);
 
             mApp->PlayFoley(FoleyType::FOLEY_SPLAT);
             mApp->AddTodParticle(mPosX - 3.0f, mPosY + 17.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_PEA_SPLAT);
@@ -384,7 +384,7 @@ void Projectile::DoSplashDamage(Zombie *theZombie) {
     if (aSplashDamageAmount > aMaxSplashDamageAmount) {
         // aSplashDamage *= aMaxSplashDamageAmount / aSplashDamage;
         aSplashDamage = aOriginalDamage * aMaxSplashDamageAmount / (aSplashDamageAmount * 3);
-        aSplashDamage = max(aSplashDamage, 1);
+        aSplashDamage = std::max(aSplashDamage, 1);
     }
 
     aZombie = nullptr;
@@ -486,7 +486,7 @@ void Projectile::UpdateLobMotion() {
             }
         } else {
             aPlant->mPlantHealth -= GetProjectileDef().mDamage;
-            aPlant->mEatenFlashCountdown = max(aPlant->mEatenFlashCountdown, 25);
+            aPlant->mEatenFlashCountdown = std::max(aPlant->mEatenFlashCountdown, 25);
             mApp->PlayFoley(FoleyType::FOLEY_SPLAT);
             Die();
         }
@@ -546,7 +546,7 @@ void Projectile::UpdateNormalMotion() {
     } else if (mMotionType == ProjectileMotion::MOTION_FLOAT_OVER) {
         if (mVelZ < 0.0f) {
             mVelZ += 0.002f;
-            mVelZ = min(mVelZ, 0.0f);
+            mVelZ = std::min(mVelZ, 0.0f);
             mPosY += mVelZ;
             mRotation = 0.3f - 0.7f * mVelZ * PI * 0.25f;
         }

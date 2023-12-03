@@ -1073,7 +1073,7 @@ void Coin::DroppedUsableSeed() {
     mIsBeingCollected = false;
 
     if (mTimesDropped == 0) {
-        mDisappearCounter = min(mDisappearCounter, 1200);
+        mDisappearCounter = std::min(mDisappearCounter, 1200);
     }
 
     mTimesDropped++;

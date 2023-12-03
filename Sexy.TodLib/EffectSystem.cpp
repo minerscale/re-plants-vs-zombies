@@ -1,5 +1,3 @@
-#pragma warning(disable : 4244 4305 4309)
-
 #include "EffectSystem.h"
 #include "../GameConstants.h"
 #include "../SexyAppFramework/D3DInterface.h"
@@ -38,7 +36,7 @@ void EffectSystem::EffectSystemDispose() {
         mParticleHolder = nullptr;
     }
     if (mTrailHolder) {
-        mTrailHolder->DisposeHolder();
+        mTrailHolder->DisposeHolder(); // DisposeHolder is called from the destructor!
         delete mTrailHolder;
         mTrailHolder = nullptr;
     }

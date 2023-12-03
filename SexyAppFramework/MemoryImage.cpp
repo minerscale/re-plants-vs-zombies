@@ -1,5 +1,7 @@
 #include "MemoryImage.h"
 
+#include "D3DInterface.h"
+#include "DDInterface.h"
 #include "Debug.h"
 #include "Graphics.h"
 #include "NativeDisplay.h"

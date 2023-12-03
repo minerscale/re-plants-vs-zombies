@@ -4,7 +4,7 @@
 #include "../SexyAppFramework/SexyMatrix.h"
 #include "DataArray.h"
 #include "FilterEffect.h"
-using namespace std;
+// using namespace std;
 using namespace Sexy;
 
 class Reanimation;
@@ -65,7 +65,7 @@ public:
 public:
     ReanimatorDefinition() : mTracks({nullptr, 0}), mFPS(12.0f), mReanimAtlas(nullptr) {}
 };
-extern int gReanimatorDefCount;                   //[0x6A9EE4]
+extern unsigned int gReanimatorDefCount;          //[0x6A9EE4]
 extern ReanimatorDefinition *gReanimatorDefArray; //[0x6A9EE8]
 
 // ====================================================================================================
@@ -79,7 +79,7 @@ public:
     const char *mReanimFileName;
     int mReanimParamFlags;
 };
-extern int gReanimationParamArraySize;            //[0x6A9EEC]
+extern unsigned int gReanimationParamArraySize;   //[0x6A9EEC]
 extern ReanimationParams *gReanimationParamArray; //[0x6A9EF0]
 
 /*inline*/ void ReanimationFillInMissingData(float &thePrev, float &theValue);

@@ -29,8 +29,8 @@ bool Sexy::ExtractResourcesByName(ResourceManager *theResourceManager, const cha
     if (!strcmp(theName, "DelayLoad_MushroomGarden"))
         return ExtractDelayLoad_MushroomGardenResources(theResourceManager);
     if (!strcmp(theName, "DelayLoad_Store")) return ExtractDelayLoad_StoreResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_TreeOfWisdom"))
-        return ExtractDelayLoad_TreeOfWisdomResources(/*theResourceManager*/);
+    //	if (!strcmp(theName, "DelayLoad_TreeOfWisdom")) return
+    //ExtractDelayLoad_TreeOfWisdomResources(theResourceManager);
     if (!strcmp(theName, "DelayLoad_Zombatar")) return ExtractDelayLoad_ZombatarResources(theResourceManager);
     if (!strcmp(theName, "DelayLoad_ZombieFinalNote"))
         return ExtractDelayLoad_ZombieFinalNoteResources(theResourceManager);
@@ -421,17 +421,6 @@ bool Sexy::ExtractDelayLoad_StoreResources(ResourceManager *theManager) {
 }
 
 // DelayLoad_TreeOfWisdom Resources
-
-bool Sexy::ExtractDelayLoad_TreeOfWisdomResources(/* ResourceManager* theManager */) {
-    gNeedRecalcVariableToIdMap = true;
-
-    // ResourceManager& aMgr = *theManager; // Unused
-    try {
-    } catch (ResourceManagerException &) {
-        return false;
-    }
-    return true;
-}
 
 // DelayLoad_Zombatar Resources
 Image *Sexy::IMAGE_ZOMBATAR_ACCEPT_BUTTON;
@@ -3147,6 +3136,6 @@ Sexy::ResourceId Sexy::GetIdByVariable(void *theVariable) {
     {
         mov edi,[aMap+04]  ; edi = *aMap.end()
         mov ebx,[anIter]   ; ebx = *anIter
-        cmp ebx,edi        ; this Óë other µÄ ¡°==¡±²Ù×÷£¬±È½Ï *this Óë *other ÊÇ·ñÏàÍ¬
+        cmp ebx,edi        ; this ä¸ other çš„ â€œ==â€æ“ä½œï¼Œæ¯”è¾ƒ *this ä¸ *other æ˜¯å¦ç›¸åŒ
     }
 */

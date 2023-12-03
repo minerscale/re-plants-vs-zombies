@@ -3,7 +3,6 @@
 // #define SEXY_MEMTRACE
 
 #include "SexyAppBase.h"
-#include "../ImageLib/ImageLib.h"
 #include "../PakLib/PakInterface.h"
 #include "AutoCrit.h"
 #include "BassMusicInterface.h"
@@ -18,6 +17,7 @@
 #include "DummyMusicInterface.h"
 #include "FModMusicInterface.h"
 #include "HTTPTransfer.h"
+#include "ImageLib.h"
 #include "KeyCodes.h"
 #include "MTRand.h"
 #include "MemoryImage.h"
@@ -131,7 +131,7 @@ SexyAppBase::SexyAppBase() {
     gDSoundDLL = LoadLibraryA("dsound.dll");
     gGetLastInputInfoFunc = (GetLastInputInfoFunc)GetProcAddress(GetModuleHandleA("user32.dll"), "GetLastInputInfo");
 
-    ImageLib::InitJPEG2000();
+    // ImageLib::InitJPEG2000();
 
     mMutex = NULL;
     mNotifyGameMessage = 0;
@@ -1960,7 +1960,7 @@ void SexyAppBase::Shutdown() {
 
         if (mReadFromRegistry) WriteToRegistry();
 
-        ImageLib::CloseJPEG2000();
+        // ImageLib::CloseJPEG2000();
     }
 }
 

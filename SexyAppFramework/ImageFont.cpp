@@ -90,7 +90,9 @@ FontLayer::FontLayer(const FontLayer &theFontLayer)
       mMinPointSize(theFontLayer.mMinPointSize), mMaxPointSize(theFontLayer.mMaxPointSize),
       mPointSize(theFontLayer.mPointSize), mAscent(theFontLayer.mAscent), mAscentPadding(theFontLayer.mAscentPadding),
       mHeight(theFontLayer.mHeight), mDefaultHeight(theFontLayer.mDefaultHeight),
-      mLineSpacingOffset(theFontLayer.mLineSpacingOffset), mBaseOrder(theFontLayer.mBaseOrder) {
+      mLineSpacingOffset(theFontLayer.mLineSpacingOffset), mBaseOrder(theFontLayer.mBaseOrder),
+      // @Minerscale mUseAlphaCorrection wasn't initialised in the copy constructor causing UB
+      mUseAlphaCorrection(theFontLayer.mUseAlphaCorrection) {
     // ulong i;
     //
     // for (i = 0; i < 256; i++)
@@ -582,8 +584,6 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                             // aRectElement[1]);
                             aLayer->GetCharData(aWString[0])->mOffset = Point(aRectElement[0], aRectElement[1]);
                         } else {
-                            Error("Fucking Fuck");
-                            return false;
                             invalidParamFormat = true;
                         }
                     }
@@ -1132,6 +1132,7 @@ void ImageFont::DrawStringEx(
         int aMaxXPos = aCurXPos;
 
         ActiveFontLayerList::iterator anItr = mActiveLayerList.begin();
+        int layerOrderOffset = 0;
         while (anItr != mActiveLayerList.end()) {
             ActiveFontLayer *anActiveFontLayer = &*anItr;
 
@@ -1145,7 +1146,7 @@ void ImageFont::DrawStringEx(
             int aLayerPointSize = anActiveFontLayer->mBaseFontLayer->mPointSize;
 
             double aScale = mScale;
-            if (aLayerPointSize != 0) aScale *= mPointSize / aLayerPointSize;
+            if (aLayerPointSize != 0) aScale *= (float)mPointSize / (float)aLayerPointSize;
 
             if (aScale == 1.0) {
                 // anImageX = aLayerXPos + anActiveFontLayer->mBaseFontLayer->mOffset.mX +
@@ -1216,7 +1217,7 @@ void ImageFont::DrawStringEx(
 
             // int anOrder = anActiveFontLayer->mBaseFontLayer->mBaseOrder +
             // anActiveFontLayer->mBaseFontLayer->mCharData[(uchar) aChar].mOrder;
-            int anOrder = anActiveFontLayer->mBaseFontLayer->mBaseOrder +
+            int anOrder = layerOrderOffset + anActiveFontLayer->mBaseFontLayer->mBaseOrder +
                           anActiveFontLayer->mBaseFontLayer->GetCharData(aChar)->mOrder;
 
             if (aCurPoolIdx >= POOL_SIZE) break;
@@ -1300,6 +1301,7 @@ void ImageFont::DrawStringEx(
             if (aLayerXPos > aMaxXPos) aMaxXPos = aLayerXPos;
 
             ++anItr;
+            ++layerOrderOffset;
         }
 
         aCurXPos = aMaxXPos;

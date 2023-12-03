@@ -115,7 +115,7 @@ int ScrollbarWidget::GetThumbSize() {
     if (mPageSize > mMaxValue) return 0;
 
     int aThumbSize = (int)((double)((GetTrackSize() * mPageSize / mMaxValue)) + 0.5);
-    return max(8, aThumbSize);
+    return std::max(8, aThumbSize);
 }
 
 int ScrollbarWidget::GetThumbPosition() {

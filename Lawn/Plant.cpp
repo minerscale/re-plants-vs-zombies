@@ -907,7 +907,7 @@ void Plant::UpdateProductionPlant() {
     mLaunchCounter--;
     if (mLaunchCounter <= 100) {
         int aFlashCountdown = TodAnimateCurve(100, 0, mLaunchCounter, 0, 100, TodCurves::CURVE_LINEAR);
-        mEatenFlashCountdown = max(mEatenFlashCountdown, aFlashCountdown);
+        mEatenFlashCountdown = std::max(mEatenFlashCountdown, aFlashCountdown);
     }
     if (mLaunchCounter <= 0) {
         mLaunchCounter = RandRangeInt(mLaunchRate - 150, mLaunchRate);
@@ -1809,7 +1809,7 @@ void Plant::UpdateMagnetShroom() {
             if (aGridItem->mGridItemType == GridItemType::GRIDITEM_LADDER) {
                 int aDiffX = abs(aGridItem->mGridX - mPlantCol);
                 int aDiffY = abs(aGridItem->mGridY - mRow);
-                int aSquareDistance = max(aDiffX, aDiffY);
+                int aSquareDistance = std::max(aDiffX, aDiffY);
                 if (aSquareDistance <= 2) {
                     float aDistance = aSquareDistance + aDiffY * 0.05f;
                     if (aClosestLadder == nullptr || aDistance < aClosestLadderDist) {
@@ -4014,7 +4014,7 @@ int Plant::DistanceToClosestZombie() {
             Rect aZombieRect = aZombie->GetZombieRect();
             int aDistance = -GetRectOverlap(aAttackRect, aZombieRect);
             if (aDistance < aClosestDistance) {
-                aClosestDistance = max(aDistance, 0);
+                aClosestDistance = std::max(aDistance, 0);
             }
         }
     }

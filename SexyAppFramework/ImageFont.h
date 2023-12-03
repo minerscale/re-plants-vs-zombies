@@ -3,6 +3,7 @@
 
 #include "DescParser.h"
 #include "Font.h"
+#include "SexyAppBase.h"
 #include "SharedImage.h"
 
 namespace Sexy {

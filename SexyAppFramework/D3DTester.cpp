@@ -4,6 +4,7 @@
 #include "D3DInterface.h"
 #include "DirectXErrorString.h"
 #include "SexyAppBase.h"
+#include <cstdint>
 
 using namespace Sexy;
 static const int gD3DTestTextureWidth = 64;
