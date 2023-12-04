@@ -1,15 +1,15 @@
 #include "Reanimator.h"
 #include "../GameConstants.h"
 #include "../LawnApp.h"
-#include "../SexyAppFramework/Font.h"
-#include "../SexyAppFramework/MemoryImage.h"
-#include "../SexyAppFramework/PerfTimer.h"
 #include "Attachment.h"
 #include "Definition.h"
 #include "EffectSystem.h"
 #include "ReanimAtlas.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include "graphics/Font.h"
+#include "graphics/MemoryImage.h"
+#include "misc/PerfTimer.h"
 
 unsigned int gReanimatorDefCount;          //[0x6A9EE4]
 ReanimatorDefinition *gReanimatorDefArray; //[0x6A9EE8]

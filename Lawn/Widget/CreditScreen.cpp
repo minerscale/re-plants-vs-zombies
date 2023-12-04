@@ -8,10 +8,10 @@
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodParticle.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/Dialog.h"
 #include "../System/Music.h"
 #include "../System/PoolEffect.h"
 #include "GameButton.h"
+#include "widget/Dialog.h"
 
 static CreditsTiming gCreditsTiming[] = {
   //  0x6A1AD8

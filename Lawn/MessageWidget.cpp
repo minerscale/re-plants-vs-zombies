@@ -4,9 +4,9 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/TodCommon.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include "../SexyAppFramework/Font.h"
 #include "Board.h"
 #include "Challenge.h"
+#include "graphics/Font.h"
 
 //(0x4081F1)
 MessageWidget::MessageWidget(LawnApp *theApp) {

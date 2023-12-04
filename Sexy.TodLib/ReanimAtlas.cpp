@@ -1,9 +1,9 @@
 #include "ReanimAtlas.h"
-#include "../SexyAppFramework/MemoryImage.h"
-#include "../SexyAppFramework/PerfTimer.h"
 #include "Reanimator.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include "graphics/MemoryImage.h"
+#include "misc/PerfTimer.h"
 
 // 0x470250
 ReanimAtlas::ReanimAtlas() {

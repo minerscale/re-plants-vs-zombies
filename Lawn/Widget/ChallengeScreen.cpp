@@ -5,12 +5,12 @@
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/Debug.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../System/Music.h"
 #include "../System/PlayerInfo.h"
 #include "../ToolTipWidget.h"
 #include "GameButton.h"
+#include "misc/Debug.h"
+#include "widget/WidgetManager.h"
 
 ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
     {GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1,           0,  ChallengePage::CHALLENGE_PAGE_SURVIVAL,  0, 0,

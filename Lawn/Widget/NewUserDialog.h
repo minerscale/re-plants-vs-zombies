@@ -1,8 +1,8 @@
 #ifndef __NEWUSERDIALOG_H__
 #define __NEWUSERDIALOG_H__
 
-#include "../../SexyAppFramework/EditListener.h"
 #include "LawnDialog.h"
+#include "widget/EditListener.h"
 
 class NewUserDialog : public LawnDialog, public EditListener {
 public:

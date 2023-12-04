@@ -1,7 +1,7 @@
 #pragma once
 #include "../Lawn/LawnCommon.h"
 #include "../SexyAppFramework/Common.h"
-#include "../SexyAppFramework/ResourceManager.h"
+#include "misc/ResourceManager.h"
 #include <cfloat>
 #include <cmath>
 #include <stdlib.h>

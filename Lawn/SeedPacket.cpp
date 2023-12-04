@@ -2,13 +2,13 @@
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "../Sexy.TodLib/FilterEffect.h"
-#include "../SexyAppFramework/Font.h"
-#include "../SexyAppFramework/SexyMatrix.h"
 #include "Board.h"
 #include "Challenge.h"
 #include "CursorObject.h"
 #include "Cutscene.h"
 #include "MessageWidget.h"
+#include "graphics/Font.h"
+#include "misc/SexyMatrix.h"
 
 SeedPacket::SeedPacket() {
     mSlotMachiningPosition = 0.0f;

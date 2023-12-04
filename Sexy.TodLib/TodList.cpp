@@ -1,7 +1,7 @@
 #include "TodList.h"
-#include "../SexyAppFramework/Debug.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include "misc/Debug.h"
 
 void TodAllocator::Initialize(int theGrowCount, int theItemSize) {
     TOD_ASSERT((size_t)theItemSize >= sizeof(void *));

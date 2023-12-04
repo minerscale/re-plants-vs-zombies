@@ -6,9 +6,6 @@
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/Debug.h"
-#include "../../SexyAppFramework/ImageFont.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../Board.h"
 #include "../Coin.h"
 #include "../Plant.h"
@@ -20,6 +17,9 @@
 #include "GameButton.h"
 #include "LawnDialog.h"
 #include "SeedChooserScreen.h"
+#include "graphics/ImageFont.h"
+#include "misc/Debug.h"
+#include "widget/WidgetManager.h"
 #include <time.h>
 
 static StoreItem gStoreItemSpots[NUM_STORE_PAGES][MAX_PAGE_SPOTS] = {

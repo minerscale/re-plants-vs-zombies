@@ -1,9 +1,9 @@
 #ifndef __USERDIALOG_H__
 #define __USERDIALOG_H__
 
-#include "../../SexyAppFramework/EditListener.h"
-#include "../../SexyAppFramework/ListListener.h"
 #include "LawnDialog.h"
+#include "widget/EditListener.h"
+#include "widget/ListListener.h"
 
 namespace Sexy {
 class ListWidget;

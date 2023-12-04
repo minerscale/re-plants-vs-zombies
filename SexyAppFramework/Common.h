@@ -20,7 +20,8 @@
 #include <string>
 #include <vector>
 
-#include "ModVal.h"
+#define NOMINMAX 1
+#include "misc/ModVal.h"
 #include <mmsystem.h>
 #include <shellapi.h>
 #include <windows.h>

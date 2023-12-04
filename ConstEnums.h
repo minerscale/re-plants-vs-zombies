@@ -1,6 +1,5 @@
 #pragma once
 
-// #include "Sexy.TodLib/Attachment.h"
 enum AdviceType {
     ADVICE_NONE = -1,
     ADVICE_CLICK_ON_SUN = 0,

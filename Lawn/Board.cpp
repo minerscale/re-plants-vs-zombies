@@ -6,15 +6,6 @@
 #include "../Sexy.TodLib/TodParticle.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 #include "../Sexy.TodLib/Trail.h"
-#include "../SexyAppFramework/BassLoader.h"
-#include "../SexyAppFramework/ButtonWidget.h"
-#include "../SexyAppFramework/Dialog.h"
-#include "../SexyAppFramework/ImageFont.h"
-#include "../SexyAppFramework/MTRand.h"
-#include "../SexyAppFramework/SoundInstance.h"
-#include "../SexyAppFramework/SoundManager.h"
-#include "../SexyAppFramework/SysFont.h"
-#include "../SexyAppFramework/WidgetManager.h"
 #include "BoardInclude.h"
 #include "System/Music.h"
 #include "System/PlayerInfo.h"
@@ -28,11 +19,20 @@
 #include "Widget/SeedChooserScreen.h"
 #include "Widget/StoreScreen.h"
 #include "ZenGarden.h"
+#include "graphics/ImageFont.h"
+#include "graphics/SysFont.h"
+#include "misc/MTRand.h"
+#include "sound/BassLoader.h"
+#include "sound/SoundInstance.h"
+#include "sound/SoundManager.h"
+#include "widget/ButtonWidget.h"
+#include "widget/Dialog.h"
+#include "widget/WidgetManager.h"
 #include <time.h>
 
 #define SEXY_PERF_ENABLED
-#include "../SexyAppFramework/PerfTimer.h"
 #include "Widget/AchievementsScreen.h"
+#include "misc/PerfTimer.h"
 
 // #define SEXY_MEMTRACE
 // #include "../SexyAppFramework/memmgr.h"

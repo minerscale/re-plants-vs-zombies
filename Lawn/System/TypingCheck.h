@@ -1,7 +1,7 @@
 #ifndef __TYPINGCHECK_H__
 #define __TYPINGCHECK_H__
 
-#include "../../SexyAppFramework/KeyCodes.h"
+#include "misc/KeyCodes.h"
 #include <string>
 
 class TypingCheck {

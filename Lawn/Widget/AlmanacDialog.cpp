@@ -3,7 +3,6 @@
 #include "../../LawnApp.h"
 #include "../../Resources.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../Board.h"
 #include "../Plant.h"
 #include "../SeedPacket.h"
@@ -13,6 +12,7 @@
 #include "../System/ReanimationLawn.h"
 #include "../Zombie.h"
 #include "GameButton.h"
+#include "widget/WidgetManager.h"
 
 bool gZombieDefeated[NUM_ZOMBIE_TYPES] = {false};
 

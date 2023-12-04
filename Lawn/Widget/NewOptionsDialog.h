@@ -1,9 +1,9 @@
 #ifndef __NEWOPTIONSDIALOG_H__
 #define __NEWOPTIONSDIALOG_H__
 
-#include "../../SexyAppFramework/CheckboxListener.h"
-#include "../../SexyAppFramework/Dialog.h"
-#include "../../SexyAppFramework/SliderListener.h"
+#include "widget/CheckboxListener.h"
+#include "widget/Dialog.h"
+#include "widget/SliderListener.h"
 
 class LawnApp;
 class LawnStoneButton;

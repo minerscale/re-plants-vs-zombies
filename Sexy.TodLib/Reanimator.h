@@ -1,9 +1,9 @@
 #ifndef __REANIMATION_H__
 #define __REANIMATION_H__
 
-#include "../SexyAppFramework/SexyMatrix.h"
 #include "DataArray.h"
 #include "FilterEffect.h"
+#include "misc/SexyMatrix.h"
 // using namespace std;
 using namespace Sexy;
 

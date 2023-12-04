@@ -1,10 +1,10 @@
 #include "Attachment.h"
-#include "../SexyAppFramework/Graphics.h"
 #include "EffectSystem.h"
 #include "Reanimator.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
+#include "graphics/Graphics.h"
 
 Attachment::Attachment() {
     mNumEffects = 0;

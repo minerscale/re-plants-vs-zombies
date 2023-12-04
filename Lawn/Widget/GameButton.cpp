@@ -3,10 +3,10 @@
 #include "../../Resources.h"
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/Font.h"
-#include "../../SexyAppFramework/Graphics.h"
-#include "../../SexyAppFramework/SysFont.h"
-#include "../../SexyAppFramework/WidgetManager.h"
+#include "graphics/Font.h"
+#include "graphics/Graphics.h"
+#include "graphics/SysFont.h"
+#include "widget/WidgetManager.h"
 
 static Color gGameButtonColors[6] = {Color(0, 0, 0),       Color(0, 0, 0),       Color(0, 0, 0),
                                      Color(255, 255, 255), Color(132, 132, 132), Color(212, 212, 212)};

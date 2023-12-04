@@ -3,12 +3,12 @@
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "../Sexy.TodLib/TodCommon.h"
-#include "../SexyAppFramework/Checkbox.h"
-#include "../SexyAppFramework/Dialog.h"
-#include "../SexyAppFramework/Font.h"
-#include "../SexyAppFramework/SexyMatrix.h"
 #include "Board.h"
 #include "Plant.h"
+#include "graphics/Font.h"
+#include "misc/SexyMatrix.h"
+#include "widget/Checkbox.h"
+#include "widget/Dialog.h"
 #include <time.h>
 
 int gLawnEditWidgetColors[][4] = {

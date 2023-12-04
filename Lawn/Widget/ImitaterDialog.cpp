@@ -1,12 +1,12 @@
 #include "ImitaterDialog.h"
 #include "../../GameConstants.h"
 #include "../../LawnApp.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../Plant.h"
 #include "../SeedPacket.h"
 #include "../ToolTipWidget.h"
 #include "GameButton.h"
 #include "SeedChooserScreen.h"
+#include "widget/WidgetManager.h"
 
 // 0x482B00
 ImitaterDialog::ImitaterDialog()

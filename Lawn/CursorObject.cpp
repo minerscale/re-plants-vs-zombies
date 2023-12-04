@@ -2,10 +2,10 @@
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "../Sexy.TodLib/Reanimator.h"
-#include "../SexyAppFramework/WidgetManager.h"
 #include "Board.h"
 #include "Cutscene.h"
 #include "ZenGarden.h"
+#include "widget/WidgetManager.h"
 
 // 0x438640
 CursorObject::CursorObject() {

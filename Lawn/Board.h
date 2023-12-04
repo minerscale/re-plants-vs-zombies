@@ -3,8 +3,8 @@
 
 #include "../ConstEnums.h"
 #include "../Sexy.TodLib/DataArray.h"
-#include "../SexyAppFramework/ButtonListener.h"
-#include "../SexyAppFramework/Widget.h"
+#include "widget/ButtonListener.h"
+#include "widget/Widget.h"
 
 #include "Coin.h"
 #include "GridItem.h"

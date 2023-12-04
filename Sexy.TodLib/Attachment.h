@@ -2,8 +2,8 @@
 #define __ATTACHMENT_H__
 
 #include "../ConstEnums.h"
-#include "../SexyAppFramework/SexyMatrix.h"
 #include "DataArray.h"
+#include "misc/SexyMatrix.h"
 
 namespace Sexy {
 class Graphics;

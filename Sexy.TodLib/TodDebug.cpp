@@ -1,8 +1,8 @@
 #include "TodDebug.h"
-#include "../SexyAppFramework/Debug.h"
-#include "../SexyAppFramework/SEHCatcher.h"
 #include "../SexyAppFramework/SexyAppBase.h"
 #include "TodCommon.h"
+#include "misc/Debug.h"
+#include "misc/SEHCatcher.h"
 #include <time.h>
 
 using namespace Sexy;

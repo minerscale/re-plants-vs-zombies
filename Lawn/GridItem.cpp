@@ -4,7 +4,6 @@
 #include "../Sexy.TodLib/Reanimator.h"
 #include "../Sexy.TodLib/TodFoley.h"
 #include "../Sexy.TodLib/TodParticle.h"
-#include "../SexyAppFramework/WidgetManager.h"
 #include "Board.h"
 #include "Challenge.h"
 #include "CursorObject.h"
@@ -12,6 +11,7 @@
 #include "SeedPacket.h"
 #include "System/ReanimationLawn.h"
 #include "ZenGarden.h"
+#include "widget/WidgetManager.h"
 
 using namespace Sexy;
 

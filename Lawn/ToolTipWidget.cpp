@@ -3,7 +3,7 @@
 #include "../Resources.h"
 #include "../Sexy.TodLib/TodCommon.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include "../SexyAppFramework/Font.h"
+#include "graphics/Font.h"
 
 using namespace Sexy;
 

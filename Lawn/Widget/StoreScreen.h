@@ -3,8 +3,8 @@
 
 #include "../../ConstEnums.h"
 #include "../../Sexy.TodLib/DataArray.h"
-#include "../../SexyAppFramework/Dialog.h"
 #include "../System/PlayerInfo.h"
+#include "widget/Dialog.h"
 // using namespace std;
 using namespace Sexy;
 

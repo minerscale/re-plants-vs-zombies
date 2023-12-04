@@ -7,9 +7,6 @@
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodParticle.h"
-#include "../../SexyAppFramework/Dialog.h"
-#include "../../SexyAppFramework/Font.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../Board.h"
 #include "../System/Music.h"
 #include "../System/PlayerInfo.h"
@@ -17,6 +14,9 @@
 #include "AlmanacDialog.h"
 #include "GameButton.h"
 #include "GameSelector.h"
+#include "graphics/Font.h"
+#include "widget/Dialog.h"
+#include "widget/WidgetManager.h"
 
 Rect aBackButtonRect = {120, 35, 130, 80};
 

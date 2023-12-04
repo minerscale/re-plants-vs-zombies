@@ -8,8 +8,6 @@
 #include "../Sexy.TodLib/TodFoley.h"
 #include "../Sexy.TodLib/TodParticle.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include "../SexyAppFramework/PerfTimer.h"
-#include "../SexyAppFramework/WidgetManager.h"
 #include "Board.h"
 #include "Challenge.h"
 #include "GridItem.h"
@@ -25,6 +23,8 @@
 #include "Widget/SeedChooserScreen.h"
 #include "Widget/StoreScreen.h"
 #include "Zombie.h"
+#include "misc/PerfTimer.h"
+#include "widget/WidgetManager.h"
 
 static const int TimePanRightStart = 1500;
 static const int TimePanRightEnd = 3500;         //[0x6A4FFC]

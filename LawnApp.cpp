@@ -37,16 +37,16 @@
 #include "Sexy.TodLib/TodParticle.h"
 #include "Sexy.TodLib/TodStringFile.h"
 #include "Sexy.TodLib/Trail.h"
-#include "SexyAppFramework/Graphics.h"
-#include "SexyAppFramework/ResourceManager.h"
-#include "SexyAppFramework/WidgetManager.h"
+#include "graphics/Graphics.h"
+#include "misc/ResourceManager.h"
+#include "widget/WidgetManager.h"
 #include <corecrt.h>
 #include <time.h>
 
-#include "SexyAppFramework/BassMusicInterface.h"
-#include "SexyAppFramework/Checkbox.h"
-#include "SexyAppFramework/Dialog.h"
 #include "SexyAppFramework/resource.h"
+#include "sound/BassMusicInterface.h"
+#include "widget/Checkbox.h"
+#include "widget/Dialog.h"
 
 bool gIsPartnerBuild = false; // GOTY @Patoke: 0x729659
 bool gSlowMo = false;         // 0x6A9EAA

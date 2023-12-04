@@ -2,9 +2,9 @@
 #define __EFFECTSYSTEM_H__
 
 #include "../ConstEnums.h"
-#include "../SexyAppFramework/Graphics.h"
-#include "../SexyAppFramework/SWTri.h"
 #include "DataArray.h"
+#include "graphics/Graphics.h"
+#include "graphics/SWTri.h"
 using namespace Sexy;
 
 #define MAX_TRIANGLES 256

@@ -1,7 +1,7 @@
 #include "SexyApp.h"
 
 // #include "..\Crypt\RegKey.h"
-#include "SEHCatcher.h"
+#include "misc/SEHCatcher.h"
 // #include "InternetManager.h"
 #include <direct.h>
 #include <fstream>

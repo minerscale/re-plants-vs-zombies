@@ -1,13 +1,13 @@
 #include "EffectSystem.h"
 #include "../GameConstants.h"
-#include "../SexyAppFramework/D3DInterface.h"
-#include "../SexyAppFramework/DDImage.h"
-#include "../SexyAppFramework/DDInterface.h"
 #include "Attachment.h"
 #include "Reanimator.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
+#include "graphics/D3DInterface.h"
+#include "graphics/DDImage.h"
+#include "graphics/DDInterface.h"
 
 EffectSystem *gEffectSystem = nullptr; //[0x6A9EB8]
 

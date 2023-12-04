@@ -5,11 +5,11 @@
 #include "../../Sexy.TodLib/Reanimator.h"
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/ImageFont.h"
 #include "../Board.h"
 #include "../LawnCommon.h"
 #include "ChallengeScreen.h"
 #include "GameButton.h"
+#include "graphics/ImageFont.h"
 
 // 0x456A80
 LawnDialog::LawnDialog(

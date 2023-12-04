@@ -4,14 +4,14 @@
 #include "../../Resources.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/Checkbox.h"
-#include "../../SexyAppFramework/Slider.h"
 #include "../Board.h"
 #include "../Cutscene.h"
 #include "../LawnCommon.h"
 #include "../System/Music.h"
 #include "AlmanacDialog.h"
 #include "GameButton.h"
+#include "widget/Checkbox.h"
+#include "widget/Slider.h"
 
 using namespace Sexy;
 

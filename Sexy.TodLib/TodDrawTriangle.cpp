@@ -4,19 +4,19 @@
 
 #if (TRI0 == 0)
 #define PTYPE unsigned long
-#define PIXEL_INCLUDE "../SexyAppFramework/SWTri_Pixel8888.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel8888.cpp"
 #define NAME0 8888
 #elif (TRI0 == 1)
 #define PTYPE unsigned long
-#define PIXEL_INCLUDE "../SexyAppFramework/SWTri_Pixel888.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel888.cpp"
 #define NAME0 0888
 #elif (TRI0 == 2)
 #define PTYPE unsigned short
-#define PIXEL_INCLUDE "../SexyAppFramework/SWTri_Pixel565.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel565.cpp"
 #define NAME0 0565
 #elif (TRI0 == 3)
 #define PTYPE unsigned short
-#define PIXEL_INCLUDE "../SexyAppFramework/SWTri_Pixel555.cpp"
+#define PIXEL_INCLUDE "graphics/SWTri/SWTri_Pixel555.cpp"
 #define NAME0 0555
 #endif
 
@@ -237,7 +237,7 @@ void funcname(
 
                 int x0 = (lx + 0xffff) & 0xffff0000;
                 int x1 = (sx + 0xffff) & 0xffff0000;
-#include "../SexyAppFramework/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.cpp"
             }
         } else if (mid > v1->x) {
             while (iHeight-- > 0) {
@@ -245,7 +245,7 @@ void funcname(
 
                 int x0 = (sx + 0xffff) & 0xffff0000;
                 int x1 = (lx + 0xffff) & 0xffff0000;
-#include "../SexyAppFramework/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.cpp"
             }
         }
     }
@@ -271,7 +271,7 @@ void funcname(
 
             int x0 = (lx + 0xffff) & 0xffff0000;
             int x1 = (sx + 0xffff) & 0xffff0000;
-#include "../SexyAppFramework/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.cpp"
         }
     } else if (mid > v1->x) {
         while (iHeight-- > 0) {
@@ -279,7 +279,7 @@ void funcname(
 
             int x0 = (sx + 0xffff) & 0xffff0000;
             int x1 = (lx + 0xffff) & 0xffff0000;
-#include "../SexyAppFramework/SWTri_Loop.cpp"
+#include "graphics/SWTri/SWTri_Loop.cpp"
         }
     }
 }

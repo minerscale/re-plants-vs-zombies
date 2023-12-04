@@ -1,8 +1,8 @@
 #ifndef __CUTSCENE_H__
 #define __CUTSCENE_H__
 
-#include "../SexyAppFramework/KeyCodes.h"
 #include "Zombie.h"
+#include "misc/KeyCodes.h"
 
 using namespace Sexy;
 class LawnApp;

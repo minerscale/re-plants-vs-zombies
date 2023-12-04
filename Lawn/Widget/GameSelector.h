@@ -2,10 +2,10 @@
 #define __GAMESELECTOR_H__
 
 #include "../../ConstEnums.h"
-#include "../../SexyAppFramework/ButtonListener.h"
-#include "../../SexyAppFramework/Widget.h"
 #include "AchievementsScreen.h"
 #include "GameButton.h"
+#include "widget/ButtonListener.h"
+#include "widget/Widget.h"
 
 class LawnApp;
 class ToolTipWidget;

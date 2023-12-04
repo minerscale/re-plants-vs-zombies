@@ -1,10 +1,10 @@
 #include "Definition.h"
-#include "../PakLib/PakInterface.h"
-#include "../SexyAppFramework/PerfTimer.h"
-#include "../SexyAppFramework/XMLParser.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
+#include "misc/PerfTimer.h"
+#include "misc/XMLParser.h"
+#include "paklib/PakInterface.h"
 #include "zlib/zlib.h"
 #include <assert.h>
 #include <stddef.h>

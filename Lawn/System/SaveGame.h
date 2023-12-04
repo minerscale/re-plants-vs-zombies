@@ -2,7 +2,7 @@
 #define __SAVEGAMECONTEXT_H__
 
 #include "../../Sexy.TodLib/TodList.h"
-#include "../../SexyAppFramework/Buffer.h"
+#include "misc/Buffer.h"
 #include <string>
 
 class Board;

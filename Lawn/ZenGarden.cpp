@@ -6,7 +6,6 @@
 #include "../Sexy.TodLib/TodFoley.h"
 #include "../Sexy.TodLib/TodParticle.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include "../SexyAppFramework/Graphics.h"
 #include "Board.h"
 #include "Challenge.h"
 #include "CursorObject.h"
@@ -17,6 +16,7 @@
 #include "Widget/GameButton.h"
 #include "Widget/LawnDialog.h"
 #include "Widget/StoreScreen.h"
+#include "graphics/Graphics.h"
 #include <time.h>
 
 static SpecialGridPlacement gGreenhouseGridPlacement[] = // 0x69DE50

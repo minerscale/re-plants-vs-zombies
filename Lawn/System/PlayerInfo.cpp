@@ -1,11 +1,11 @@
 #include "PlayerInfo.h"
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "../../Sexy.TodLib/TodDebug.h"
-#include "../../SexyAppFramework/Buffer.h"
 #include "../../SexyAppFramework/SexyAppBase.h"
 #include "../LawnCommon.h"
 #include "../Widget/ChallengeScreen.h"
 #include "DataSync.h"
+#include "misc/Buffer.h"
 
 static int gUserVersion = 12;
 

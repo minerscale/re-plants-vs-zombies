@@ -8,10 +8,6 @@
 #include "../Sexy.TodLib/TodFoley.h"
 #include "../Sexy.TodLib/TodParticle.h"
 #include "../Sexy.TodLib/TodStringFile.h"
-#include "../SexyAppFramework/Debug.h"
-#include "../SexyAppFramework/Font.h"
-#include "../SexyAppFramework/MTRand.h"
-#include "../SexyAppFramework/WidgetManager.h"
 #include "Board.h"
 #include "Coin.h"
 #include "CursorObject.h"
@@ -30,6 +26,10 @@
 #include "Widget/StoreScreen.h"
 #include "ZenGarden.h"
 #include "Zombie.h"
+#include "graphics/Font.h"
+#include "misc/Debug.h"
+#include "misc/MTRand.h"
+#include "widget/WidgetManager.h"
 
 int gZombieWaves[NUM_LEVELS] = {
     // 0x6A34E8
@@ -4714,7 +4714,7 @@ void Challenge::TreeOfWisdomUpdate() {
         }
     }
 
-    for (int i = 5; i > 0; i--) // Off by one error!
+    for (int i = 5; i >= 0; i--) // Off by one error!
     {
         Reanimation *aReanimCloud = mApp->ReanimationGet(mReanimClouds[i]);
         if (mCloudsCounter[i] > 0) {

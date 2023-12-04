@@ -7,10 +7,10 @@
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "../../Sexy.TodLib/TodStringFile.h"
-#include "../../SexyAppFramework/HyperlinkWidget.h"
-#include "../../SexyAppFramework/SexyMatrix.h"
-#include "../../SexyAppFramework/WidgetManager.h"
 #include "../System/Music.h"
+#include "misc/SexyMatrix.h"
+#include "widget/HyperlinkWidget.h"
+#include "widget/WidgetManager.h"
 
 // 0x48D4B0
 //  GOTY @Patoke: 0x498220

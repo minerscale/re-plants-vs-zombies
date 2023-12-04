@@ -1,10 +1,10 @@
 #include "TodParticle.h"
 #include "../GameConstants.h"
-#include "../SexyAppFramework/D3DInterface.h"
-#include "../SexyAppFramework/Graphics.h"
 #include "Definition.h"
 #include "EffectSystem.h"
 #include "TodDebug.h"
+#include "graphics/D3DInterface.h"
+#include "graphics/Graphics.h"
 
 int gParticleDefCount;                    // [0x6A9F08]
 TodParticleDefinition *gParticleDefArray; // [0x6A9F0C]
