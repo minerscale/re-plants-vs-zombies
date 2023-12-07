@@ -252,7 +252,7 @@ _Font *MessageWidget::GetFont() {
     }
 
     TOD_ASSERT();
-    __builtin_unreachable();
+    std::unreachable();
 }
 
 // 0x4599E0

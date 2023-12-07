@@ -189,7 +189,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(
         if (aWeight > aRndResult) return theArray[j].mItem;
     }
     DBG_ASSERT(false);
-    __builtin_unreachable();
+    std::unreachable();
 }
 
 // 0x483F70

@@ -7727,7 +7727,7 @@ int Zombie::GetBobsledPosition() {
 
     TOD_ASSERT();
 
-    __builtin_unreachable();
+    std::unreachable();
 }
 
 bool Zombie::IsBobsledTeamWithSled() { return GetBobsledPosition() != -1; }

@@ -286,14 +286,14 @@ void ZenGarden::FindOpenZenGardenSpot(int &theSpotX, int &theSpotY) {
     for (int x = 0; x < ZEN_MAX_GRIDSIZE_X; x++) {
         for (int y = 0; y < ZEN_MAX_GRIDSIZE_Y; y++) {
             if (mApp->mCrazyDaveMessageIndex != -1 && (x < 2 || y < 1)) {
-                continue; // ºöÂÔ±»´÷·òÕÚµ²×¡µÄ²¿·Ö
+                goto _m_skip_plant_pick; // å¿½ç•¥è¢«æˆ´å¤«é®æŒ¡ä½çš„éƒ¨åˆ†
             }
 
             for (int i = 0; i < mApp->mPlayerInfo->mNumPottedPlants; i++) {
                 PottedPlant *aPottedPlant = PottedPlantFromIndex(i);
                 if (aPottedPlant->mWhichZenGarden == GardenType::GARDEN_MAIN && aPottedPlant->mX == x &&
                     aPottedPlant->mY == y) {
-                    continue; // ¸ñ×ÓÄÚÒÑÓĞÅèÔÔÖ²ÎïÔò²»¿ÉÑ¡Ôñ
+                    goto _m_skip_plant_pick; // æ ¼å­å†…å·²æœ‰ç›†æ ½æ¤ç‰©åˆ™ä¸å¯é€‰æ‹©
                 }
             }
 
@@ -301,6 +301,7 @@ void ZenGarden::FindOpenZenGardenSpot(int &theSpotX, int &theSpotY) {
             aPicks[aPickCount].mY = y;
             aPicks[aPickCount].mWeight = 1;
             aPickCount++;
+        _m_skip_plant_pick:; // @Minerscale fixed broken Zen Garden plant picker. Now I have to fix my save file...
         }
     }
 
@@ -365,7 +366,7 @@ int ZenGarden::GetPlantSellPrice(Plant *thePlant) {
     }
     TOD_ASSERT();
 
-    __builtin_unreachable();
+    std::unreachable();
 }
 
 // 0x51DA00

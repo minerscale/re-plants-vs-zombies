@@ -601,6 +601,7 @@ bool D3DTester::Init(HWND theHWND, LPDIRECTDRAW7 theDDraw) {
         if (!SUCCEEDED(aResult)) {
             Warn(StrFormat("GetAvailableVidMem failed: %s", GetDirectXErrorString(aResult).c_str()));
         } else {
+            // @Patoke todo: fix this and reimplement, for x64 builds it's broken
             // fix @Patoke: fix integer overflow
             int64_t total64bit =
                 dwTotal; // dwTotal will overflow but as long as the vram isn't INT_MAX + 1 it won't heck up
@@ -608,8 +609,10 @@ bool D3DTester::Init(HWND theHWND, LPDIRECTDRAW7 theDDraw) {
             total64bit /= (1024 * 1024);
             // dwTotal += (aBPP/8)*aWidth*aHeight;
             // dwTotal /= (1024*1024);
-            if (total64bit < mMinVidMemory) return Fail("Not enough video memory.");
-            else if (total64bit < mRecommendedVidMemory) Warn("Low video memory.");
+            // if (total64bit < mMinVidMemory)
+            //	return Fail("Not enough video memory.");
+            // else if (total64bit < mRecommendedVidMemory)
+            //	Warn("Low video memory.");
         }
 
         // Check registry to see if we've already done the test

@@ -3,6 +3,7 @@
 #include "Image.h"
 #include "MemoryImage.h"
 #include "SexyAppBase.h"
+#include "graphics/DDImage.h"
 #include "misc/AutoCrit.h"
 
 using namespace Sexy;
@@ -757,9 +758,7 @@ ActiveFontLayer::ActiveFontLayer() {
 ActiveFontLayer::ActiveFontLayer(const ActiveFontLayer &theActiveFontLayer)
     : mBaseFontLayer(theActiveFontLayer.mBaseFontLayer), mScaledImage(theActiveFontLayer.mScaledImage),
       mOwnsImage(theActiveFontLayer.mOwnsImage) {
-    if (mOwnsImage)
-        __builtin_unreachable(); // FIXME: Find out how Image and DDImage are related so this function can be called
-                                 // mScaledImage = mBaseFontLayer->mFontData->mApp->CopyImage(mScaledImage);
+    if (mOwnsImage) mScaledImage = mBaseFontLayer->mFontData->mApp->CopyImage(mScaledImage);
 
     // for (int aCharNum = 0; aCharNum < 256; aCharNum++)
     //	mScaledCharImageRects[aCharNum] = theActiveFontLayer.mScaledCharImageRects[aCharNum];

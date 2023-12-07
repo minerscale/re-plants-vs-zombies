@@ -423,7 +423,7 @@ SexyAppBase::~SexyAppBase() {
     if (mInvisHWnd != NULL) {
         HWND aWindow = mInvisHWnd;
         mInvisHWnd = NULL;
-        SetWindowLong(aWindow, GWLP_USERDATA, 0);
+        SetWindowLongPtr(aWindow, GWLP_USERDATA, 0);
         DestroyWindow(aWindow);
     }
 
@@ -448,7 +448,7 @@ SexyAppBase::~SexyAppBase() {
         HWND aWindow = mHWnd;
         mHWnd = NULL;
 
-        SetWindowLong(aWindow, GWLP_USERDATA, 0);
+        SetWindowLongPtr(aWindow, GWLP_USERDATA, 0);
 
         /*char aStr[256];
         sprintf(aStr, "HWND: %d\r\n", aWindow);
@@ -3008,7 +3008,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
         if (ScreenSaverWindowProc(hWnd, uMsg, wParam, lParam, aResult)) return aResult;
     }
 
-    SexyAppBase *aSexyApp = (SexyAppBase *)(intptr_t)GetWindowLong(hWnd, GWLP_USERDATA);
+    SexyAppBase *aSexyApp = (SexyAppBase *)(intptr_t)GetWindowLongPtr(hWnd, GWLP_USERDATA);
     switch (uMsg) {
         //  TODO: switch to killfocus/setfocus?
         //	case WM_KILLFOCUS:
@@ -4021,7 +4021,7 @@ void SexyAppBase::MakeWindow() {
     // OutputDebugString("MAKING WINDOW\r\n");
 
     if (mHWnd != NULL) {
-        SetWindowLong(mHWnd, GWLP_USERDATA, 0);
+        SetWindowLongPtr(mHWnd, GWLP_USERDATA, 0);
         HWND anOldWindow = mHWnd;
         mHWnd = NULL;
         DestroyWindow(anOldWindow);
@@ -4107,7 +4107,7 @@ void SexyAppBase::MakeWindow() {
     sprintf(aStr, "HWND: %d\r\n", mHWnd);
     OutputDebugString(aStr);*/
 
-    SetWindowLong(mHWnd, GWLP_USERDATA, (intptr_t)this);
+    SetWindowLongPtr(mHWnd, GWLP_USERDATA, (intptr_t)this);
 
     if (mDDInterface == NULL) {
         mDDInterface = new DDInterface(this);
@@ -4856,10 +4856,8 @@ bool SexyAppBase::LoadProperties(const std::string &theFileName, bool required, 
     if (checkSig) {
         // if (!CheckSignature(aBuffer, theFileName))
         //{
-        Popup(
-            GetString("PROPERTIES_SIG_FAILED", _S("Signature check failed on ")) + StringToSexyString(theFileName + "'")
-        );
-        return false;
+        // Popup(GetString("PROPERTIES_SIG_FAILED", _S("Signature check failed on ")) + StringToSexyString(theFileName +
+        // "'")); return false;
         //}
     }
 
@@ -5238,7 +5236,7 @@ void SexyAppBase::Init() {
         mInvisHWnd = CreateWindowExA(
             0, "InvisWindow", SexyStringToStringFast(mTitle).c_str(), 0, 0, 0, 0, 0, NULL, NULL, gHInstance, 0
         );
-        SetWindowLong(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
+        SetWindowLongPtr(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
     } else {
         mIsWideWindow = sizeof(SexyChar) == sizeof(wchar_t);
 
@@ -5270,7 +5268,7 @@ void SexyAppBase::Init() {
         DBG_ASSERTE(success);
 
         mInvisHWnd = CreateWindowEx(0, _S("InvisWindow"), mTitle.c_str(), 0, 0, 0, 0, 0, NULL, NULL, gHInstance, 0);
-        SetWindowLong(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
+        SetWindowLongPtr(mInvisHWnd, GWLP_USERDATA, (intptr_t)this);
     }
 
     mHandCursor =

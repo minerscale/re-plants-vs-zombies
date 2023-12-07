@@ -26,6 +26,10 @@
 #include <shellapi.h>
 #include <windows.h>
 
+// fallback if NOMINMAX fails (somehow?)
+#undef min
+#undef max
+
 // Removed wide string support
 typedef std::string SexyString;
 #define _S(x) x
