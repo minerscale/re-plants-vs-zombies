@@ -26,7 +26,7 @@ typedef std::map<SexyString, SexyString> XMLParamMap;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class ResourceManager {
-protected:
+public: // @Patoke todo: revert to protected
     enum ResType { ResType_Image, ResType_Sound, ResType_Font };
 
     struct BaseRes {
