@@ -315,7 +315,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
         }
     }
 
-    std::unreachable();
+    unreachable();
 }
 
 // 0x42E6E0

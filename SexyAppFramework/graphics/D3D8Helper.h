@@ -20,6 +20,7 @@ bool GetD3D8AdapterInfo(GUID &theGUID, std::string &theDriver, std::string &theD
 
 #endif
 
+#ifdef MSVC
 // @Patoke todo: remove this
 /*==========================================================================;
  *
@@ -389,3 +390,4 @@ typedef struct _D3DCAPS8 {
 
 // #endif /* (DIRECT3D_VERSION >= 0x0800) */
 #endif /* _D3D8CAPS_H_ */
+#endif

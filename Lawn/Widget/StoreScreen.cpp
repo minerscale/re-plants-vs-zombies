@@ -189,7 +189,7 @@ bool StoreScreen::IsItemSoldOut(StoreItem theStoreItem) {
                aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000();
     else return aPlayer->mPurchases[theStoreItem];
 
-    std::unreachable();
+    unreachable();
 }
 
 // 0x48AAD0
