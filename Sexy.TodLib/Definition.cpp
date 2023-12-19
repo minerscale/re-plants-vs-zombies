@@ -280,7 +280,7 @@ unsigned int DefGetSizeString(char **theValue) { return strlen(*theValue) + size
 
 unsigned int DefinitionGetArraySize(DefinitionArrayDef *theValue, DefMap *theDefMap) {
     unsigned int aResult = theValue->mArrayCount * theDefMap->mDefSize + sizeof(intptr_t);
-    for (unsigned int i = 0; theValue->mArrayCount > i; ++i) {
+    for (int i = 0; theValue->mArrayCount > i; ++i) {
         aResult += DefinitionGetDeepSize(theDefMap, (void *)((intptr_t)theValue->mArrayData + i * theDefMap->mDefSize));
     }
     return aResult;
@@ -290,7 +290,7 @@ unsigned int DefGetSizeFloatTrack(FloatParameterTrack *theValue) {
     return sizeof(FloatParameterTrackNode) * theValue->mCountNodes + sizeof(intptr_t);
 }
 
-unsigned int DefGetSizeImage(Image *theValue) { return sizeof(Image *); }
+unsigned int DefGetSizeImage(Image *theValue) { return sizeof(theValue); }
 
 unsigned int DefGetSizeFont(_Font **theValue) {
     std::string aFontPath{};
@@ -1163,8 +1163,7 @@ void DefMapWriteToCache(void *theWritePtr, DefMap *theDefMap, void *theDefinitio
 }
 
 void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSize, unsigned int *theResultSize) {
-    uLongf aCompressedSizePart = theBufferSize / 100 + 12;
-    uLongf aCompressedSize = theBufferSize + aCompressedSizePart;
+    uLongf aCompressedSize = compressBound(theBufferSize);
     auto aCompressedBuffer =
         (CompressedDefinitionHeader *)DefinitionAlloc(aCompressedSize + sizeof(CompressedDefinitionHeader));
     compress(
@@ -1189,7 +1188,7 @@ bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *
     void *aCompressedDef = DefinitionCompressCompiledBuffer(aDef, aDefSize, &aCompressedSize);
 
     // @Patoke todo: intentionally causing a memory leak, this causes a critical breakpoint when executed (softlock?)
-    // delete[] aDef; // already compressed, no need to keep this instance alive
+    delete[] (uint *)aDef; // already compressed, no need to keep this instance alive
 
     std::string aFilePath = GetFileDir(theCompiledFilePath);
     MkDir(aFilePath);
@@ -1198,13 +1197,13 @@ bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *
     if (aFileStream) {
         unsigned int aBytesWritten = fwrite(aCompressedDef, 1u, aCompressedSize, aFileStream);
 
-        delete[] aCompressedDef;
+        delete[] (char *)aCompressedDef;
 
         fclose(aFileStream);
         return aBytesWritten == aCompressedSize;
     }
 
-    delete[] aCompressedDef;
+    delete[] (char *)aCompressedDef;
     return false;
 }
 
