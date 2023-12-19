@@ -4066,17 +4066,11 @@ void SexyAppBase::MakeWindow() {
             if (aPlaceY + aHeight >= aDesktopRect.bottom - aSpacing) aPlaceY = aDesktopRect.bottom - aHeight - aSpacing;
         }
 
-        if (CheckFor98Mill()) {
-            mHWnd = CreateWindowExA(
-                0, "MainWindow", SexyStringToStringFast(mTitle).c_str(), aWindowStyle, aPlaceX, aPlaceY, aWidth,
-                aHeight, NULL, NULL, gHInstance, 0
-            );
-        } else {
-            mHWnd = CreateWindowEx(
-                0, _S("MainWindow"), mTitle.c_str(), aWindowStyle, aPlaceX, aPlaceY, aWidth, aHeight, NULL, NULL,
-                gHInstance, 0
-            );
-        }
+        // @Patoke: removed unnecessary if checks for win98
+        mHWnd = CreateWindowEx(
+            0, _S("MainWindow"), SexyStringToStringFast(mTitle).c_str(), aWindowStyle, aPlaceX, aPlaceY, aWidth,
+            aHeight, NULL, NULL, gHInstance, 0
+        );
 
         if (mPreferredX == -1) {
             ::MoveWindow(
@@ -4088,17 +4082,11 @@ void SexyAppBase::MakeWindow() {
 
         mIsPhysWindowed = true;
     } else {
-        if (CheckFor98Mill()) {
-            mHWnd = CreateWindowExA(
-                WS_EX_TOPMOST, "MainWindow", SexyStringToStringFast(mTitle).c_str(), WS_POPUP | WS_VISIBLE, 0, 0,
-                mWidth, mHeight, NULL, NULL, gHInstance, 0
-            );
-        } else {
-            mHWnd = CreateWindowEx(
-                WS_EX_TOPMOST, _S("MainWindow"), mTitle.c_str(), WS_POPUP | WS_VISIBLE, 0, 0, mWidth, mHeight, NULL,
-                NULL, gHInstance, 0
-            );
-        }
+
+        mHWnd = CreateWindowEx(
+            WS_EX_TOPMOST, _S("MainWindow"), SexyStringToStringFast(mTitle).c_str(), WS_POPUP | WS_VISIBLE, 0, 0,
+            mWidth, mHeight, NULL, NULL, gHInstance, 0
+        );
 
         mIsPhysWindowed = false;
     }
