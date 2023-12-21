@@ -1276,6 +1276,7 @@ Zombie *Plant::FindSquashTarget() {
 // 0x4609D0
 void Plant::UpdateSquash() {
     Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
+    (void)aBodyReanim; // unused in Release mode
     TOD_ASSERT(aBodyReanim);
 
     if (mState == PlantState::STATE_NOTREADY) {

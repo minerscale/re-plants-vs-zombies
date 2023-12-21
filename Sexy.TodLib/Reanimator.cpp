@@ -171,12 +171,12 @@ ReanimatorTransform::ReanimatorTransform()
       mFrame(DEFAULT_FIELD_PLACEHOLDER), mAlpha(DEFAULT_FIELD_PLACEHOLDER), mImage(nullptr), mFont(nullptr), mText("") {
 }
 
-void ReanimationFillInMissingData(float &thePrev, float &theValue) {
+inline void ReanimationFillInMissingData(float &thePrev, float &theValue) {
     if (theValue == DEFAULT_FIELD_PLACEHOLDER) theValue = thePrev; // 若当前帧上的值未设定，则以前一帧的数值赋值当前帧
     else thePrev = theValue; // 否则，将当前帧的数据记录为“前一帧的数据”
 }
 
-void ReanimationFillInMissingData(void *&thePrev, void *&theValue) {
+inline void ReanimationFillInMissingData(void *&thePrev, void *&theValue) {
     if (theValue == nullptr) theValue = thePrev;
     else thePrev = theValue;
 }

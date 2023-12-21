@@ -1390,6 +1390,7 @@ void MemoryImage::SlowStretchBlt(
     // from some Graphics Gems book.
 
     ulong *aDestEnd = GetBits() + (mWidth * mHeight);
+    (void)aDestEnd; // Unused in Release mode
 
     MemoryImage *aSrcMemoryImage = dynamic_cast<MemoryImage *>(theImage);
 
