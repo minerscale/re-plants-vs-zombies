@@ -1,9 +1,9 @@
 #ifndef __DATAARRAY_H__
 #define __DATAARRAY_H__
 
+// #include <new.h>
 #include "TodCommon.h"
 #include "TodDebug.h"
-#include <new.h>
 #include <string.h>
 
 enum {

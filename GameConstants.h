@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ConstEnums.h"
-#include <wtypes.h>
 constexpr const double PI = 3.141592653589793;
 
 // ============================================================

@@ -1,13 +1,14 @@
 #include "EffectSystem.h"
 #include "../GameConstants.h"
 #include "Attachment.h"
+#include "Common.h"
 #include "Reanimator.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
-#include "graphics/D3DInterface.h"
-#include "graphics/DDImage.h"
-#include "graphics/DDInterface.h"
+// #include "graphics/DDImage.h"
+// #include "graphics/DDInterface.h"
+// #include "graphics/D3DInterface.h"
 
 EffectSystem *gEffectSystem = nullptr; //[0x6A9EB8]
 
@@ -336,25 +337,27 @@ TodTriangleGroup::TodTriangleGroup() {
 }
 
 // 0x4461F0
-void TodTriangleGroup::DrawGroup(Graphics *g) {
+void TodTriangleGroup::DrawGroup(Graphics * /*g*/) {
     if (mImage && mTriangleCount) {
         // @Patoke: do we want this? if 3D acceleration is off then blending is messed up
         if (!gSexyAppBase->Is3DAccelerated() && mDrawMode == Graphics::DRAWMODE_ADDITIVE)
             gTodTriangleDrawAdditive = true;
         TodSandImageIfNeeded(mImage);
 
-        if (DDImage::Check3D(g->mDestImage)) {
-            DDImage *anImage = (DDImage *)g->mDestImage;
+        unreachable();
+        /* FIXME
+        if (DDImage::Check3D(g->mDestImage))
+        {
+            DDImage* anImage = (DDImage*)g->mDestImage;
             mImage->mDrawn = true;
-            anImage->mDDInterface->mD3DInterface->DrawTrianglesTex(
-                mVertArray, mTriangleCount, Color::White, mDrawMode, mImage, 0.0f, 0.0f, g->mLinearBlend
-            );
-        } else {
-            g->mDestImage->BltTrianglesTex(
-                mImage, mVertArray, mTriangleCount, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), Color::White, mDrawMode,
-                0.0f, 0.0f, g->mLinearBlend
-            );
+            anImage->mDDInterface->mD3DInterface->DrawTrianglesTex(mVertArray, mTriangleCount, Color::White, mDrawMode,
+        mImage, 0.0f, 0.0f, g->mLinearBlend);
         }
+        else
+        {
+            g->mDestImage->BltTrianglesTex(mImage, mVertArray, mTriangleCount, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT),
+        Color::White, mDrawMode, 0.0f, 0.0f, g->mLinearBlend);
+        }*/
 
         mTriangleCount = 0;
         gTodTriangleDrawAdditive = false;

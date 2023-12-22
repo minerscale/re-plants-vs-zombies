@@ -10,6 +10,8 @@
 #include "graphics/Font.h"
 #include "graphics/MemoryImage.h"
 #include "misc/PerfTimer.h"
+#include <bits/chrono.h>
+#include <chrono>
 
 unsigned int gReanimatorDefCount;          //[0x6A9EE4]
 ReanimatorDefinition *gReanimatorDefArray; //[0x6A9EE8]
@@ -315,15 +317,18 @@ void ReanimationCreateAtlas(ReanimatorDefinition *theDefinition, ReanimationType
     if (theDefinition->mReanimAtlas != nullptr || TestBit(aParam.mReanimParamFlags, ReanimFlags::REANIM_NO_ATLAS))
         return; // 当动画已存在 Atlas 或无需 Atlas 时，直接退出
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    auto aTimer = std::chrono::high_resolution_clock::now();
+
     TodHesitationTrace("preatlas");
     ReanimAtlas *aAtlas = new ReanimAtlas();
     theDefinition->mReanimAtlas = aAtlas; // 赋值动画 Atlas 指针
     aAtlas->ReanimAtlasCreate(theDefinition);
 
     TodHesitationTrace("atlas '%s'", aParam.mReanimFileName);
-    int aDuration = std::max(aTimer.GetDuration(), 0.0);
+    // int aDuration = std::max(aTimer.GetDuration(), 0.0);
+    int aDuration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+            .count();
     if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE) // （仅内测版）创建时间过长的报告
         TodTraceAndLog(
             "LOADING:Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str()
@@ -369,7 +374,7 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 void Reanimation::Update() {
     if (mFrameCount == 0 || mDead) return;
 
-    TOD_ASSERT(_finite(mAnimRate));
+    TOD_ASSERT(std::isfinite(mAnimRate));
     mLastFrameTime = mAnimTime;                                // 更新上一帧的循环率
     mAnimTime += SECONDS_PER_UPDATE * mAnimRate / mFrameCount; // 更新当前循环率
 
@@ -437,7 +442,7 @@ void Reanimation::Update() {
             aTrack->mShakeY = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
         }
 
-        if (strnicmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0) // IsAttacher
+        if (strncasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0) // IsAttacher
             UpdateAttacherTrack(aTrackIndex);
 
         if (aTrack->mAttachmentID != AttachmentID::ATTACHMENTID_NULL) {
@@ -655,7 +660,7 @@ bool Reanimation::DrawTrack(Graphics *g, int theTrackIndex, int theRenderGroup, 
         int aWidth = aTransform.mFont->StringWidth(aTransform.mText);
         SexyMatrix3Translation(aMatrix, -aWidth * 0.5f, aTransform.mFont->mAscent);
     } else {
-        if (stricmp(
+        if (strcasecmp(
                 mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"
             ))              // 如果既没有图像也没有文本，且不是全屏轨道
             return false;   // 无需绘制
@@ -835,7 +840,7 @@ void Reanimation::Draw(Graphics *g) { DrawRenderGroup(g, RENDER_GROUP_NORMAL); }
 //  GOTY @Patoke: 0x477640
 int Reanimation::FindTrackIndex(const char *theTrackName) {
     for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-        if (stricmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0) return aTrackIndex;
+        if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0) return aTrackIndex;
 
     TodTrace("Can't find track '%s'", theTrackName);
     return 0;
@@ -938,7 +943,7 @@ void Reanimation::SetFramesForLayer(const char *theTrackName) {
 // 0x4732C0
 bool Reanimation::TrackExists(const char *theTrackName) {
     for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-        if (stricmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0) return true;
+        if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0) return true;
     return false;
 }
 
@@ -1046,15 +1051,17 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
             );
     } // < 以上部分仅内测版执行 >
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    auto aTimer = std::chrono::high_resolution_clock::now();
+
     TodHesitationBracket aHesitation("Load Reanim '%s'", aReanimParams->mReanimFileName);
     if (!ReanimationLoadDefinition(aReanimParams->mReanimFileName, aReanimDef)) {
         char aBuf[1024];
-        sprintf_s<1024U>(aBuf, "Failed to load reanim '%s'", aReanimParams->mReanimFileName);
+        sprintf(aBuf, "Failed to load reanim '%s'", aReanimParams->mReanimFileName);
         TodErrorMessageBox(aBuf, "Error");
     }
-    int aDuration = aTimer.GetDuration();
+    int aDuration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+            .count();
     if (aDuration > 100) // （仅内测版）创建时间过长的报告
         TodTraceAndLog(
             "LOADING:Long reanim '%s' %d ms on %s", aReanimParams->mReanimFileName, aDuration,
@@ -1119,7 +1126,7 @@ bool Reanimation::IsTrackShowing(const char *theTrackName) {
 void Reanimation::ShowOnlyTrack(const char *theTrackName) {
     for (int i = 0; i < mDefinition->mTracks.count; i++) {
         // 轨道名与指定名称相同时，设置轨道渲染分组为正常显示，否则设置轨道渲染分组为隐藏
-        mTrackInstances[i].mRenderGroup = stricmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0
+        mTrackInstances[i].mRenderGroup = strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0
                                               ? RENDER_GROUP_NORMAL
                                               : RENDER_GROUP_HIDDEN;
     }
@@ -1129,7 +1136,7 @@ void Reanimation::ShowOnlyTrack(const char *theTrackName) {
 //  GOTY @Patoke: 0x478120
 void Reanimation::AssignRenderGroupToTrack(const char *theTrackName, int theRenderGroup) {
     for (int i = 0; i < mDefinition->mTracks.count; i++)
-        if (stricmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0) {
+        if (strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0) {
             mTrackInstances[i].mRenderGroup = theRenderGroup; // 仅设置首个名称恰好为 theTrackName 的轨道
             return;
         }
@@ -1142,7 +1149,7 @@ void Reanimation::AssignRenderGroupToPrefix(const char *theTrackName, int theRen
     for (int i = 0; i < mDefinition->mTracks.count; i++) {
         const char *const aTrackName = mDefinition->mTracks.tracks[i].mName;
         if (strlen(aTrackName) >= aPrifixLength &&
-            !strnicmp(aTrackName, theTrackName, aPrifixLength)) // 轨道名称长度必须不小于指定前缀长度
+            !strncasecmp(aTrackName, theTrackName, aPrifixLength)) // 轨道名称长度必须不小于指定前缀长度
             mTrackInstances[i].mRenderGroup = theRenderGroup;
     }
 }
@@ -1221,7 +1228,7 @@ void Reanimation::ParseAttacherTrack(const ReanimatorTransform &theTransform, At
             break;
 
         std::string aCode(aTags + 1, aTagEnds - aTags - 1); // 取中括号内的文本
-        if (sscanf_s(aCode.c_str(), "%f", &theAttacherInfo.mAnimRate) !=
+        if (sscanf(aCode.c_str(), "%f", &theAttacherInfo.mAnimRate) !=
             1) // 尝试将文本作为浮点数扫描，如果扫描成功则将结果作为动画速率
         {
             if (aCode.compare("hold") == 0) theAttacherInfo.mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
@@ -1312,7 +1319,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex) {
         for (unsigned int i = 0; i < gReanimationParamArraySize; i++) // 在动画参数数组中寻找动画文件名对应的动画类型
         {
             ReanimationParams *aParams = &gReanimationParamArray[i];
-            if (stricmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0) {
+            if (strcasecmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0) {
                 aReanimationType = aParams->mReanimationType;
                 break;
             }

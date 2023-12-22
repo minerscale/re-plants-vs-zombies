@@ -2,25 +2,25 @@
 #include "../../GameConstants.h"
 #include "../../LawnApp.h"
 #include "../../Resources.h"
-#include "../../Sexy.TodLib/Reanimator.h"
-#include "../../Sexy.TodLib/TodCommon.h"
-#include "../../Sexy.TodLib/TodFoley.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
 #include "../Board.h"
 #include "../Coin.h"
 #include "../Plant.h"
 #include "../SeedPacket.h"
 #include "../System/Music.h"
-#include "../System/PopDRMComm.h"
 #include "../ZenGarden.h"
-#include "AchievementsScreen.h"
 #include "GameButton.h"
 #include "LawnDialog.h"
 #include "SeedChooserScreen.h"
+#include <time.h>
+// #include "../System/PopDRMComm.h"
+#include "../../Sexy.TodLib/Reanimator.h"
+#include "../../Sexy.TodLib/TodCommon.h"
+#include "../../Sexy.TodLib/TodFoley.h"
+#include "../../Sexy.TodLib/TodStringFile.h"
+#include "AchievementsScreen.h"
 #include "graphics/ImageFont.h"
 #include "misc/Debug.h"
 #include "widget/WidgetManager.h"
-#include <time.h>
 
 static StoreItem gStoreItemSpots[NUM_STORE_PAGES][MAX_PAGE_SPOTS] = {
     {STORE_ITEM_PACKET_UPGRADE,    STORE_ITEM_POOL_CLEANER,      STORE_ITEM_RAKE,              STORE_ITEM_ROOF_CLEANER,
@@ -820,7 +820,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
             } else if (theStoreItem == STORE_ITEM_RAKE) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 3;
             } else if (theStoreItem == STORE_ITEM_STINKY_THE_SNAIL) {
-                mApp->mPlayerInfo->mPurchases[theStoreItem] = _time64(nullptr);
+                mApp->mPlayerInfo->mPurchases[theStoreItem] = time(nullptr);
             } else if (theStoreItem == STORE_ITEM_FERTILIZER || theStoreItem == STORE_ITEM_BUG_SPRAY) {
                 if (mApp->mPlayerInfo->mPurchases[theStoreItem] < PURCHASE_COUNT_OFFSET) {
                     mApp->mPlayerInfo->mPurchases[theStoreItem] = PURCHASE_COUNT_OFFSET;
@@ -951,17 +951,19 @@ void StoreScreen::MouseDown(int x, int y, int theClickCount) {
                     BUTTONS_FOOTER
                 );
                 mWaitForDialog = false;
-            } else if (aItemType == STORE_ITEM_PVZ) {
+            }
+            /*
+            else if (aItemType == STORE_ITEM_PVZ)
+            {
                 mWaitForDialog = true;
                 int aResult = mApp->LawnMessageBox(
                     DIALOG_MESSAGE, "[BUY_PVZ_TITLE]", "[BUY_PVZ_BODY]", "[GET_FULL_VERSION_YES_BUTTON]",
-                    "[GET_FULL_VERSION_NO_BUTTON]", BUTTONS_YES_NO
-                );
-                mWaitForDialog = false;
-                if (aResult == ID_OK) {
+            "[GET_FULL_VERSION_NO_BUTTON]", BUTTONS_YES_NO); mWaitForDialog = false; if (aResult == ID_OK)
+                {
                     if (mApp->mDRM) mApp->mDRM->BuyGame();
                 }
-            } else if (!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))
+            }*/
+            else if (!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))
                 PurchaseItem(aItemType);
             break;
         }

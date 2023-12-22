@@ -2,9 +2,10 @@
 #define __CREDITSCREEN_H__
 
 #include "../../ConstEnums.h"
-#include "misc/PerfTimer.h"
-#include "widget/ButtonListener.h"
 #include "widget/Widget.h"
+// #include "misc/PerfTimer.h"
+#include "widget/ButtonListener.h"
+#include <chrono>
 
 using namespace Sexy;
 
@@ -24,10 +25,12 @@ public:
     CreditBrainType mBrainType; //+0xC
 };
 
-class TodsHackyUnprotectedPerfTimer : public PerfTimer {
+/*
+class TodsHackyUnprotectedPerfTimer : public PerfTimer
+{
 public:
-    void SetStartTime(int theTimeMillisecondsAgo);
-};
+    void					SetStartTime(int theTimeMillisecondsAgo);
+};*/
 
 class GameButton;
 class LawnApp;
@@ -40,27 +43,27 @@ protected:
     enum { Credits_Button_Replay, Credits_Button_MainMenu };
 
 public:
-    GameButton *mCloseButton;         //+0x8C
-    LawnApp *mApp;                    //+0x90
-    CreditsPhase mCreditsPhase;       //+0x94
-    int mCreditsPhaseCounter;         //+0x98
-    ReanimationID mCreditsReanimID;   //+0x9C
-    ParticleSystemID mFogParticleID;  //+0xA0
-    int mBlinkCountdown;              //+0xA4
-    LawnStoneButton *mMainMenuButton; //+0xA8
-    NewLawnButton *mReplayButton;     //+0xAC
-    Widget *mOverlayWidget;           //+0xB0
-    bool mDrawBrain;                  //+0xB4
-    float mBrainPosX;                 //+0xB8
-    float mBrainPosY;                 //+0xBC
-    int mUpdateCount;                 //+0xC0
-    int mDrawCount;                   //+0xC4
-    PerfTimer mTimerSinceStart;       //+0xC8
-    bool mDontSync;                   //+0xE0
-    bool mCreditsPaused;              //+0xE1
-    double mOriginalMusicVolume;      //+0xE8
-    bool mPreloaded;                  //+0xF0
-    int mLastDrawCount;               //+0xF4
+    GameButton *mCloseButton;                                        //+0x8C
+    LawnApp *mApp;                                                   //+0x90
+    CreditsPhase mCreditsPhase;                                      //+0x94
+    int mCreditsPhaseCounter;                                        //+0x98
+    ReanimationID mCreditsReanimID;                                  //+0x9C
+    ParticleSystemID mFogParticleID;                                 //+0xA0
+    int mBlinkCountdown;                                             //+0xA4
+    LawnStoneButton *mMainMenuButton;                                //+0xA8
+    NewLawnButton *mReplayButton;                                    //+0xAC
+    Widget *mOverlayWidget;                                          //+0xB0
+    bool mDrawBrain;                                                 //+0xB4
+    float mBrainPosX;                                                //+0xB8
+    float mBrainPosY;                                                //+0xBC
+    int mUpdateCount;                                                //+0xC0
+    int mDrawCount;                                                  //+0xC4
+    std::chrono::high_resolution_clock::time_point mTimerSinceStart; //+0xC8
+    bool mDontSync;                                                  //+0xE0
+    bool mCreditsPaused;                                             //+0xE1
+    double mOriginalMusicVolume;                                     //+0xE8
+    bool mPreloaded;                                                 //+0xF0
+    int mLastDrawCount;                                              //+0xF4
 
 public:
     CreditScreen(LawnApp *theApp);

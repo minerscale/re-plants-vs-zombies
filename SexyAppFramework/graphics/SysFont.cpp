@@ -1,11 +1,8 @@
 #include "SysFont.h"
-#include "D3DInterface.h"
-#include "DDImage.h"
 #include "Graphics.h"
 #include "ImageFont.h"
 #include "MemoryImage.h"
 #include "SexyAppBase.h"
-#include "graphics/DDInterface.h"
 #include "widget/WidgetManager.h"
 #include <stdlib.h>
 

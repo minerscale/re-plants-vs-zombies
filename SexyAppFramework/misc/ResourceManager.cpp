@@ -1,12 +1,13 @@
 #include "ResourceManager.h"
+#include "Common.h"
 #include "XMLParser.h"
-#include "graphics/D3DInterface.h"
-#include "graphics/DDImage.h"
+#include "sound/SoundManager.h"
+#include <memory>
+// #include "graphics/DDImage.h"
+// #include "graphics/D3DInterface.h"
 #include "graphics/ImageFont.h"
 #include "graphics/SysFont.h"
 #include "imagelib/ImageLib.h"
-#include "sound/SoundManager.h"
-#include <memory>
 
 // #define SEXY_PERF_ENABLED
 #include "PerfTimer.h"
@@ -252,7 +253,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
 
     aRes->mAlphaColor = 0xFFFFFF;
     anItr = theElement.mAttributes.find(_S("alphacolor"));
-    if (anItr != theElement.mAttributes.end()) sexysscanf(anItr->second.c_str(), _S("%lx"), &aRes->mAlphaColor);
+    if (anItr != theElement.mAttributes.end()) sexysscanf(anItr->second.c_str(), _S("%x"), &aRes->mAlphaColor);
 
     anItr = theElement.mAttributes.find(_S("variant"));
     if (anItr != theElement.mAttributes.end()) aRes->mVariant = SexyStringToStringFast(anItr->second);
@@ -491,32 +492,39 @@ bool ResourceManager::ReparseResourcesFile(const std::string &theFilename) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, DDImage *theImage) {
-    ImageLib::Image *anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage, true);
-    if (anAlphaImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mAlphaGridImage.c_str()));
+bool ResourceManager::LoadAlphaGridImage(ImageRes * /*theRes*/, DDImage * /*theImage*/) {
+    unreachable();
+    /*
+    ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage,true);
+    if (anAlphaImage==NULL)
+        return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaGridImage.c_str()));
 
     std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
 
     int aNumRows = theRes->mRows;
     int aNumCols = theRes->mCols;
 
-    int aCelWidth = theImage->mWidth / aNumCols;
-    int aCelHeight = theImage->mHeight / aNumRows;
+    int aCelWidth = theImage->mWidth/aNumCols;
+    int aCelHeight = theImage->mHeight/aNumRows;
 
-    if (anAlphaImage->mWidth != aCelWidth || anAlphaImage->mHeight != aCelHeight)
-        return Fail(StrFormat(
-            "GridAlphaImage size mismatch between %s and %s", theRes->mPath.c_str(), theRes->mAlphaGridImage.c_str()
-        ));
+
+    if (anAlphaImage->mWidth!=aCelWidth || anAlphaImage->mHeight!=aCelHeight)
+        return Fail(StrFormat("GridAlphaImage size mismatch between %s and
+    %s",theRes->mPath.c_str(),theRes->mAlphaGridImage.c_str()));
 
     unsigned long *aMasterRowPtr = theImage->mBits;
-    for (int i = 0; i < aNumRows; i++) {
+    for (int i=0; i < aNumRows; i++)
+    {
         unsigned long *aMasterColPtr = aMasterRowPtr;
-        for (int j = 0; j < aNumCols; j++) {
-            unsigned long *aRowPtr = aMasterColPtr;
-            unsigned long *anAlphaBits = anAlphaImage->mBits;
-            for (int y = 0; y < aCelHeight; y++) {
+        for (int j=0; j < aNumCols; j++)
+        {
+            unsigned long* aRowPtr = aMasterColPtr;
+            unsigned long* anAlphaBits = anAlphaImage->mBits;
+            for (int y=0; y<aCelHeight; y++)
+            {
                 unsigned long *aDestPtr = aRowPtr;
-                for (int x = 0; x < aCelWidth; x++) {
+                for (int x=0; x<aCelWidth; x++)
+                {
                     *aDestPtr = (*aDestPtr & 0x00FFFFFF) | ((*anAlphaBits & 0xFF) << 24);
                     ++anAlphaBits;
                     ++aDestPtr;
@@ -526,70 +534,81 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, DDImage *theImage) {
 
             aMasterColPtr += aCelWidth;
         }
-        aMasterRowPtr += aCelHeight * theImage->mWidth;
+        aMasterRowPtr += aCelHeight*theImage->mWidth;
     }
 
     theImage->BitsChanged();
-    return true;
+    return true;*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaImage(ImageRes *theRes, DDImage *theImage) {
+bool ResourceManager::LoadAlphaImage(ImageRes * /*theRes*/, DDImage * /*theImage*/) {
+    unreachable();
+    /*
     SEXY_PERF_BEGIN("ResourceManager::GetImage");
-    ImageLib::Image *anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage, true);
+    ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
     SEXY_PERF_END("ResourceManager::GetImage");
 
-    if (anAlphaImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mAlphaImage.c_str()));
+    if (anAlphaImage==NULL)
+        return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaImage.c_str()));
 
     std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
 
-    if (anAlphaImage->mWidth != theImage->mWidth || anAlphaImage->mHeight != theImage->mHeight)
-        return Fail(
-            StrFormat("AlphaImage size mismatch between %s and %s", theRes->mPath.c_str(), theRes->mAlphaImage.c_str())
-        );
+    if (anAlphaImage->mWidth!=theImage->mWidth || anAlphaImage->mHeight!=theImage->mHeight)
+        return Fail(StrFormat("AlphaImage size mismatch between %s and
+    %s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
 
-    unsigned long *aBits1 = theImage->mBits;
-    unsigned long *aBits2 = anAlphaImage->mBits;
-    int aSize = theImage->mWidth * theImage->mHeight;
+    unsigned long* aBits1 = theImage->mBits;
+    unsigned long* aBits2 = anAlphaImage->mBits;
+    int aSize = theImage->mWidth*theImage->mHeight;
 
-    for (int i = 0; i < aSize; i++) {
+    for (int i = 0; i < aSize; i++)
+    {
         *aBits1 = (*aBits1 & 0x00FFFFFF) | ((*aBits2 & 0xFF) << 24);
         ++aBits1;
         ++aBits2;
     }
 
     theImage->BitsChanged();
-    return true;
+    return true;*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::DoLoadImage(ImageRes *theRes) {
-    // bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; //
-    // unused
+bool ResourceManager::DoLoadImage(ImageRes * /*theRes*/) {
+    unreachable();
+    /*
+    //bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; //
+    unused
 
     SEXY_PERF_BEGIN("ResourceManager:GetImage");
 
-    // ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
-    // SEXY_PERF_END("ResourceManager:GetImage");
+    //ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
+    //SEXY_PERF_END("ResourceManager:GetImage");
 
     bool isNew;
     ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
     SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-    DDImage *aDDImage = (DDImage *)aSharedImageRef;
+    DDImage* aDDImage = (DDImage*) aSharedImageRef;
 
-    if (aDDImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
+    if (aDDImage == NULL)
+        return Fail(StrFormat("Failed to load image: %s",theRes->mPath.c_str()));
 
-    if (isNew) {
-        if (!theRes->mAlphaImage.empty()) {
-            if (!LoadAlphaImage(theRes, aSharedImageRef)) return false;
+    if (isNew)
+    {
+        if (!theRes->mAlphaImage.empty())
+        {
+            if (!LoadAlphaImage(theRes, aSharedImageRef))
+                return false;
         }
 
-        if (!theRes->mAlphaGridImage.empty()) {
-            if (!LoadAlphaGridImage(theRes, aSharedImageRef)) return false;
+        if (!theRes->mAlphaGridImage.empty())
+        {
+            if (!LoadAlphaGridImage(theRes, aSharedImageRef))
+                return false;
         }
     }
 
@@ -597,12 +616,14 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
     theRes->mImage = aSharedImageRef;
     aDDImage->mPurgeBits = theRes->mPurgeBits;
 
-    if (theRes->mDDSurface) {
+    if (theRes->mDDSurface)
+    {
         SEXY_PERF_BEGIN("ResourceManager:DDSurface");
 
         aDDImage->CommitBits();
 
-        if (!aDDImage->mHasAlpha) {
+        if (!aDDImage->mHasAlpha)
+        {
             aDDImage->mWantDDSurface = true;
             aDDImage->mPurgeBits = true;
         }
@@ -610,28 +631,36 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
         SEXY_PERF_END("ResourceManager:DDSurface");
     }
 
-    if (theRes->mPalletize) {
+    if (theRes->mPalletize)
+    {
         SEXY_PERF_BEGIN("ResourceManager:Palletize");
-        if (aDDImage->mSurface == NULL) aDDImage->Palletize();
-        else aDDImage->mWantPal = true;
+        if (aDDImage->mSurface==NULL)
+            aDDImage->Palletize();
+        else
+            aDDImage->mWantPal = true;
         SEXY_PERF_END("ResourceManager:Palletize");
     }
 
-    if (theRes->mA4R4G4B4) aDDImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
+    if (theRes->mA4R4G4B4)
+        aDDImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
 
-    if (theRes->mA8R8G8B8) aDDImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
+    if (theRes->mA8R8G8B8)
+        aDDImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
 
-    if (theRes->mMinimizeSubdivisions) aDDImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
+    if (theRes->mMinimizeSubdivisions)
+        aDDImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
 
-    if (theRes->mAnimInfo.mAnimType != AnimType_None) aDDImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
+    if (theRes->mAnimInfo.mAnimType != AnimType_None)
+        aDDImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
 
     aDDImage->mNumRows = theRes->mRows;
     aDDImage->mNumCols = theRes->mCols;
 
-    if (aDDImage->mPurgeBits) aDDImage->PurgeBits();
+    if (aDDImage->mPurgeBits)
+        aDDImage->PurgeBits();
 
     ResourceLoadedHook(theRes);
-    return true;
+    return true;*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -680,51 +709,68 @@ bool ResourceManager::DoLoadSound(SoundRes *theRes) {
 #include <../Sexy.TodLib/TodCommon.h>
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::DoLoadFont(FontRes *theRes) {
+bool ResourceManager::DoLoadFont(FontRes * /*theRes*/) {
+    unreachable();
+    /*
     _Font *aFont = NULL;
 
     SEXY_PERF_BEGIN("ResourceManager:DoLoadFont");
 
-    if (theRes->mSysFont) {
+    if (theRes->mSysFont)
+    {
         bool bold = theRes->mBold, simulateBold = false;
-        if (Sexy::CheckFor98Mill()) {
+        if (Sexy::CheckFor98Mill())
+        {
             simulateBold = bold;
             bold = false;
         }
-        aFont = new SysFont(theRes->mPath, theRes->mSize, bold, theRes->mItalic, theRes->mUnderline);
-        SysFont *aSysFont = (SysFont *)aFont;
+        aFont = new SysFont(theRes->mPath,theRes->mSize,bold,theRes->mItalic,theRes->mUnderline);
+        SysFont* aSysFont = (SysFont*)aFont;
         aSysFont->mDrawShadow = theRes->mShadow;
         aSysFont->mSimulateBold = simulateBold;
-    } else if (theRes->mImagePath.empty()) {
-        if (strncmp(theRes->mPath.c_str(), "!ref:", 5) == 0) {
+    }
+    else if (theRes->mImagePath.empty())
+    {
+        if (strncmp(theRes->mPath.c_str(),"!ref:",5)==0)
+        {
             std::string aRefName = theRes->mPath.substr(5);
             _Font *aRefFont = GetFont(aRefName);
-            if (aRefFont == NULL) return Fail("Ref font not found: " + aRefName);
+            if (aRefFont==NULL)
+                return Fail("Ref font not found: " + aRefName);
 
             aFont = aRefFont->Duplicate();
-        } else aFont = new ImageFont(mApp, theRes->mPath);
-    } else {
+        }
+        else
+            aFont = new ImageFont(mApp, theRes->mPath);
+    }
+    else
+    {
         Image *anImage = mApp->GetImage(theRes->mImagePath);
-        if (anImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mImagePath.c_str()));
+        if (anImage==NULL)
+            return Fail(StrFormat("Failed to load image: %s",theRes->mImagePath.c_str()));
 
         theRes->mImage = anImage;
         aFont = new ImageFont(anImage, theRes->mPath);
     }
 
-    ImageFont *anImageFont = dynamic_cast<ImageFont *>(aFont);
-    if (anImageFont != NULL) {
-        if (anImageFont->mFontData == NULL || !anImageFont->mFontData->mInitialized) {
+    ImageFont *anImageFont = dynamic_cast<ImageFont*>(aFont);
+    if (anImageFont!=NULL)
+    {
+        if (anImageFont->mFontData==NULL || !anImageFont->mFontData->mInitialized)
+        {
             delete aFont;
-            return Fail(StrFormat("Failed to load font: %s", theRes->mPath.c_str()));
+            return Fail(StrFormat("Failed to load font: %s",theRes->mPath.c_str()));
         }
 
-        if (!theRes->mTags.empty()) {
+        if (!theRes->mTags.empty())
+        {
             char aBuf[1024];
-            strcpy(aBuf, theRes->mTags.c_str());
-            const char *aPtr = strtok(aBuf, ", \r\n\t");
-            while (aPtr != NULL) {
+            strcpy(aBuf,theRes->mTags.c_str());
+            const char *aPtr = strtok(aBuf,", \r\n\t");
+            while (aPtr != NULL)
+            {
                 anImageFont->AddTag(aPtr);
-                aPtr = strtok(NULL, ", \r\n\t");
+                aPtr = strtok(NULL,", \r\n\t");
             }
             anImageFont->Prepare();
         }
@@ -735,7 +781,7 @@ bool ResourceManager::DoLoadFont(FontRes *theRes) {
     SEXY_PERF_END("ResourceManager:DoLoadFont");
 
     ResourceLoadedHook(theRes);
-    return true;
+    return true;*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

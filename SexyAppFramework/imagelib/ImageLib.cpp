@@ -1,13 +1,10 @@
 #define XMD_H
 
-#define NOMINMAX 1
 #include "ImageLib.h"
 #include "Common.h"
 #include "paklib/PakInterface.h"
 #include "png/png.h"
 #include <math.h>
-#include <tchar.h>
-#include <windows.h>
 
 extern "C" {
 #include "jpeg/jerror.h"
@@ -28,7 +25,7 @@ int Image::GetWidth() { return mWidth; }
 
 int Image::GetHeight() { return mHeight; }
 
-unsigned long *Image::GetBits() { return mBits; }
+uint32_t *Image::GetBits() { return mBits; }
 
 //////////////////////////////////////////////////////////////////////////
 // PNG Pak Support
@@ -101,7 +98,7 @@ Image *GetPNGImage(const std::string &theFileName) {
 
     //	int aNumBytes = png_get_rowbytes(png_ptr, info_ptr) * height / 4;
     png_bytep row_pointers[height];
-    unsigned long *aBits = new unsigned long[width * height];
+    uint32_t *aBits = new uint32_t[width * height];
     for (uint i = 0; i < height; i++) {
         row_pointers[i] = (png_bytep)(aBits + i * width);
     }
@@ -180,7 +177,7 @@ Image *GetTGAImage(const std::string &theFileName) {
 
     anImage->mWidth = anImageWidth;
     anImage->mHeight = anImageHeight;
-    anImage->mBits = new unsigned long[anImageWidth * anImageHeight];
+    anImage->mBits = new uint32_t[anImageWidth * anImageHeight];
 
     p_fread(anImage->mBits, 4, anImage->mWidth * anImage->mHeight, aTGAFile);
 
@@ -508,7 +505,7 @@ Image *GetGIFImage(const std::string &theFileName) {
         pass = 0;
         top_stack = pixel_stack;
 
-        unsigned long *aBits = new unsigned long[width * height];
+        uint32_t *aBits = new uint32_t[width * height];
 
         unsigned char *c = NULL;
 
@@ -518,7 +515,7 @@ Image *GetGIFImage(const std::string &theFileName) {
             // break;
             // indexes=GetIndexes(image);
 
-            unsigned long *q = aBits + offset * width;
+            uint32_t *q = aBits + offset * width;
 
             for (x = 0; x < (int)width;) {
                 if (top_stack == pixel_stack) {
@@ -734,7 +731,7 @@ bool ImageLib::WriteJPEGImage(const std::string &theFileName, Image *theImage) {
 
     unsigned char *aTempBuffer = new unsigned char[row_stride];
 
-    unsigned long *aSrcPtr = theImage->mBits;
+    uint32_t *aSrcPtr = theImage->mBits;
 
     for (int aRow = 0; aRow < theImage->mHeight; aRow++) {
         unsigned char *aDest = aTempBuffer;
@@ -792,7 +789,7 @@ bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
         png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         // If we get here, we had a problem writeing the file
-        return NULL;
+        return 0;
     }
 
     png_init_io(png_ptr, fp);
@@ -883,6 +880,40 @@ bool ImageLib::WriteTGAImage(const std::string &theFileName, Image *theImage) {
 
     return true;
 }
+
+typedef struct tagBITMAPFILEHEADER {
+    WORD bfType;
+    DWORD bfSize;
+    WORD bfReserved1;
+    WORD bfReserved2;
+    DWORD bfOffBits;
+} BITMAPFILEHEADER, *LPBITMAPFILEHEADER, *PBITMAPFILEHEADER;
+
+typedef struct tagBITMAPINFOHEADER {
+    DWORD biSize;
+    LONG biWidth;
+    LONG biHeight;
+    WORD biPlanes;
+    WORD biBitCount;
+    DWORD biCompression;
+    DWORD biSizeImage;
+    LONG biXPelsPerMeter;
+    LONG biYPelsPerMeter;
+    DWORD biClrUsed;
+    DWORD biClrImportant;
+} BITMAPINFOHEADER, *LPBITMAPINFOHEADER, *PBITMAPINFOHEADER;
+
+typedef enum {
+    BI_RGB = 0x0000,
+    BI_RLE8 = 0x0001,
+    BI_RLE4 = 0x0002,
+    BI_BITFIELDS = 0x0003,
+    BI_JPEG = 0x0004,
+    BI_PNG = 0x0005,
+    BI_CMYK = 0x000B,
+    BI_CMYKRLE8 = 0x000C,
+    BI_CMYKRLE4 = 0x000D
+} Compression;
 
 bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     FILE *aFile = fopen(theFileName.c_str(), "wb");
@@ -1036,8 +1067,8 @@ Image *GetJPEGImage(const std::string &theFileName) {
 
     unsigned char **buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
 
-    unsigned long *aBits = new unsigned long[cinfo.output_width * cinfo.output_height];
-    unsigned long *q = aBits;
+    uint32_t *aBits = new uint32_t[cinfo.output_width * cinfo.output_height];
+    uint32_t *q = aBits;
 
     if (cinfo.output_components == 1) {
         while (cinfo.output_scanline < cinfo.output_height) {
@@ -1097,22 +1128,22 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
 
     Image *anImage = NULL;
 
-    if ((anImage == NULL) && ((stricmp(anExt.c_str(), ".tga") == 0) || (anExt.length() == 0)))
+    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".tga") == 0) || (anExt.length() == 0)))
         anImage = GetTGAImage(aFilename + ".tga");
 
-    if ((anImage == NULL) && ((stricmp(anExt.c_str(), ".jpg") == 0) || (anExt.length() == 0)))
+    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".jpg") == 0) || (anExt.length() == 0)))
         anImage = GetJPEGImage(aFilename + ".jpg");
 
-    if ((anImage == NULL) && ((stricmp(anExt.c_str(), ".png") == 0) || (anExt.length() == 0)))
+    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".png") == 0) || (anExt.length() == 0)))
         anImage = GetPNGImage(aFilename + ".png");
 
-    if ((anImage == NULL) && ((stricmp(anExt.c_str(), ".gif") == 0) || (anExt.length() == 0)))
+    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".gif") == 0) || (anExt.length() == 0)))
         anImage = GetGIFImage(aFilename + ".gif");
 
-    if ((anImage == NULL) && (stricmp(anExt.c_str(), ".j2k") == 0))
+    if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".j2k") == 0))
         unreachable(); // There are no JPEG2000 files in the project
                        // anImage = GetJPEG2000Image(aFilename + ".j2k");
-    if ((anImage == NULL) && (stricmp(anExt.c_str(), ".jp2") == 0))
+    if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".jp2") == 0))
         unreachable(); // There are no JPEG2000 files in the project
                        // anImage = GetJPEG2000Image(aFilename + ".jp2");
 
@@ -1134,8 +1165,8 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
     if (anAlphaImage != NULL) {
         if (anImage != NULL) {
             if ((anImage->mWidth == anAlphaImage->mWidth) && (anImage->mHeight == anAlphaImage->mHeight)) {
-                unsigned long *aBits1 = anImage->mBits;
-                unsigned long *aBits2 = anAlphaImage->mBits;
+                uint32_t *aBits1 = anImage->mBits;
+                uint32_t *aBits2 = anAlphaImage->mBits;
                 int aSize = anImage->mWidth * anImage->mHeight;
 
                 for (int i = 0; i < aSize; i++) {
@@ -1149,7 +1180,7 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
         } else if (gAlphaComposeColor == 0xFFFFFF) {
             anImage = anAlphaImage;
 
-            unsigned long *aBits1 = anImage->mBits;
+            uint32_t *aBits1 = anImage->mBits;
 
             int aSize = anImage->mWidth * anImage->mHeight;
             for (int i = 0; i < aSize; i++) {
@@ -1160,7 +1191,7 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
             const int aColor = gAlphaComposeColor;
             anImage = anAlphaImage;
 
-            unsigned long *aBits1 = anImage->mBits;
+            uint32_t *aBits1 = anImage->mBits;
 
             int aSize = anImage->mWidth * anImage->mHeight;
             for (int i = 0; i < aSize; i++) {

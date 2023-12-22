@@ -1,7 +1,8 @@
 #include "Graphics.h"
-#include "DDImage.h"
+#include "Common.h"
 #include "Font.h"
 #include "Image.h"
+// #include "DDImage.h"
 #include "MemoryImage.h"
 #include "misc/Debug.h"
 #include "misc/Rect.h"
@@ -57,7 +58,8 @@ Graphics::Graphics(Image *theDestImage) {
         mDestImage = &mStaticImage;
         mIs3D = false;
     } else {
-        mIs3D = DDImage::Check3D(theDestImage);
+        unreachable(); // FIXME
+                       // mIs3D = DDImage::Check3D(theDestImage);
     }
 
     mClipRect = Rect(0, 0, mDestImage->GetWidth(), mDestImage->GetHeight());
@@ -733,10 +735,13 @@ void Graphics::DrawImageMatrix(
 void Graphics::DrawImageTransformHelper(
     Image *theImage, const Transform &theTransform, const Rect &theSrcRect, float x, float y, bool useFloat
 ) {
-    if (theTransform.mComplex || (DDImage::Check3D(mDestImage) && useFloat)) {
-        DrawImageMatrix(theImage, theTransform.GetMatrix(), theSrcRect, x, y);
+    unreachable(); // FIXME
+    /*
+    if (theTransform.mComplex || (DDImage::Check3D(mDestImage) && useFloat))
+    {
+        DrawImageMatrix(theImage,theTransform.GetMatrix(),theSrcRect,x,y);
         return;
-    }
+    }*/
 
     // Translate into appropriate graphics call
     float w2 = theSrcRect.mWidth / 2.0f;

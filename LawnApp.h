@@ -4,6 +4,7 @@
 #include "ConstEnums.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "SexyAppFramework/SexyApp.h"
+#include <chrono>
 
 class Board;
 class GameSelector;
@@ -53,74 +54,74 @@ public:
 
 class LawnApp : public SexyApp {
 public:
-    Board *mBoard;                         //+0x768
-    TitleScreen *mTitleScreen;             //+0x76C
-    GameSelector *mGameSelector;           //+0x770
-    SeedChooserScreen *mSeedChooserScreen; //+0x774
-    AwardScreen *mAwardScreen;             //+0x778
-    CreditScreen *mCreditScreen;           //+0x77C
-    ChallengeScreen *mChallengeScreen;     //+0x780
-    TodFoley *mSoundSystem;                //+0x784
-    ButtonList mControlButtonList;         //+0x788
-    ImageList mCreatedImageList;           //+0x794
-    std::string mReferId;                  //+0x7A0
-    std::string mRegisterLink;             //+0x7BC
-    std::string mMod;                      //+0x7D8
-    bool mRegisterResourcesLoaded;         //+0x7F4
-    bool mTodCheatKeys;                    //+0x7F5
-    GameMode mGameMode;                    //+0x7F8
-    GameScenes mGameScene;                 //+0x7FC
-    bool mLoadingZombiesThreadCompleted;   //+0x800
-    bool mFirstTimeGameSelector;           //+0x801
-    int mGamesPlayed;                      //+0x804
-    int mMaxExecutions;                    //+0x808
-    int mMaxPlays;                         //+0x80C
-    int mMaxTime;                          //+0x810
-    bool mEasyPlantingCheat;               //+0x814
-    PoolEffect *mPoolEffect;               //+0x818
-    ZenGarden *mZenGarden;                 //+0x81C
-    EffectSystem *mEffectSystem;           //+0x820
-    ReanimatorCache *mReanimatorCache;     //+0x824
-    ProfileMgr *mProfileMgr;               //+0x828
-    PlayerInfo *mPlayerInfo;               //+0x82C
-    LevelStats *mLastLevelStats;           //+0x830
-    bool mCloseRequest;                    //+0x834
-    int mAppCounter;                       //+0x838
-    Music *mMusic;                         //+0x83C
-    ReanimationID mCrazyDaveReanimID;      //+0x840
-    CrazyDaveState mCrazyDaveState;        //+0x844
-    int mCrazyDaveBlinkCounter;            //+0x848
-    ReanimationID mCrazyDaveBlinkReanimID; //+0x84C
-    int mCrazyDaveMessageIndex;            //+0x850
-    SexyString mCrazyDaveMessageText;      //+0x854
-    int mAppRandSeed;                      //+0x870
-    HICON mBigArrowCursor;                 //+0x874
-    PopDRMComm *mDRM;                      //+0x878
-    intptr_t mSessionID;                   //+0x87C
-    int mPlayTimeActiveSession;            //+0x880
-    int mPlayTimeInactiveSession;          //+0x884
-    BoardResult mBoardResult;              //+0x888
-    bool mSawYeti;                         //+0x88C
-    TypingCheck *mKonamiCheck;             //+0x890
-    TypingCheck *mMustacheCheck;           //+0x894
-    TypingCheck *mMoustacheCheck;          //+0x898
-    TypingCheck *mSuperMowerCheck;         //+0x89C
-    TypingCheck *mSuperMowerCheck2;        //+0x8A0
-    TypingCheck *mFutureCheck;             //+0x8A4
-    TypingCheck *mPinataCheck;             //+0x8A8
-    TypingCheck *mDanceCheck;              //+0x8AC
-    TypingCheck *mDaisyCheck;              //+0x8B0
-    TypingCheck *mSukhbirCheck;            //+0x8B4
-    bool mMustacheMode;                    //+0x8B8
-    bool mSuperMowerMode;                  //+0x8B9
-    bool mFutureMode;                      //+0x8BA
-    bool mPinataMode;                      //+0x8BB
-    bool mDanceMode;                       //+0x8BC
-    bool mDaisyMode;                       //+0x8BD
-    bool mSukhbirMode;                     //+0x8BE
-    TrialType mTrialType;                  //+0x8C0
-    bool mDebugTrialLocked;                //+0x8C4
-    bool mMuteSoundsForCutscene;           //+0x8C5
+    Board *mBoard;                                                       //+0x768
+    TitleScreen *mTitleScreen;                                           //+0x76C
+    GameSelector *mGameSelector;                                         //+0x770
+    SeedChooserScreen *mSeedChooserScreen;                               //+0x774
+    AwardScreen *mAwardScreen;                                           //+0x778
+    CreditScreen *mCreditScreen;                                         //+0x77C
+    ChallengeScreen *mChallengeScreen;                                   //+0x780
+    TodFoley *mSoundSystem;                                              //+0x784
+    ButtonList mControlButtonList;                                       //+0x788
+    ImageList mCreatedImageList;                                         //+0x794
+    std::string mReferId;                                                //+0x7A0
+    std::string mRegisterLink;                                           //+0x7BC
+    std::string mMod;                                                    //+0x7D8
+    bool mRegisterResourcesLoaded;                                       //+0x7F4
+    bool mTodCheatKeys;                                                  //+0x7F5
+    GameMode mGameMode;                                                  //+0x7F8
+    GameScenes mGameScene;                                               //+0x7FC
+    bool mLoadingZombiesThreadCompleted;                                 //+0x800
+    bool mFirstTimeGameSelector;                                         //+0x801
+    int mGamesPlayed;                                                    //+0x804
+    int mMaxExecutions;                                                  //+0x808
+    int mMaxPlays;                                                       //+0x80C
+    int mMaxTime;                                                        //+0x810
+    bool mEasyPlantingCheat;                                             //+0x814
+    PoolEffect *mPoolEffect;                                             //+0x818
+    ZenGarden *mZenGarden;                                               //+0x81C
+    EffectSystem *mEffectSystem;                                         //+0x820
+    ReanimatorCache *mReanimatorCache;                                   //+0x824
+    ProfileMgr *mProfileMgr;                                             //+0x828
+    PlayerInfo *mPlayerInfo;                                             //+0x82C
+    LevelStats *mLastLevelStats;                                         //+0x830
+    bool mCloseRequest;                                                  //+0x834
+    int mAppCounter;                                                     //+0x838
+    Music *mMusic;                                                       //+0x83C
+    ReanimationID mCrazyDaveReanimID;                                    //+0x840
+    CrazyDaveState mCrazyDaveState;                                      //+0x844
+    int mCrazyDaveBlinkCounter;                                          //+0x848
+    ReanimationID mCrazyDaveBlinkReanimID;                               //+0x84C
+    int mCrazyDaveMessageIndex;                                          //+0x850
+    SexyString mCrazyDaveMessageText;                                    //+0x854
+    int mAppRandSeed;                                                    //+0x870
+                                                                         //	HICON							mBigArrowCursor;								//+0x874
+    PopDRMComm *mDRM;                                                    //+0x878
+    intptr_t mSessionID;                                                 //+0x87C
+    std::chrono::high_resolution_clock::duration mPlayTimeActiveSession; //+0x880
+    std::chrono::high_resolution_clock::duration mPlayTimeInactiveSession; //+0x884
+    BoardResult mBoardResult;                                              //+0x888
+    bool mSawYeti;                                                         //+0x88C
+    TypingCheck *mKonamiCheck;                                             //+0x890
+    TypingCheck *mMustacheCheck;                                           //+0x894
+    TypingCheck *mMoustacheCheck;                                          //+0x898
+    TypingCheck *mSuperMowerCheck;                                         //+0x89C
+    TypingCheck *mSuperMowerCheck2;                                        //+0x8A0
+    TypingCheck *mFutureCheck;                                             //+0x8A4
+    TypingCheck *mPinataCheck;                                             //+0x8A8
+    TypingCheck *mDanceCheck;                                              //+0x8AC
+    TypingCheck *mDaisyCheck;                                              //+0x8B0
+    TypingCheck *mSukhbirCheck;                                            //+0x8B4
+    bool mMustacheMode;                                                    //+0x8B8
+    bool mSuperMowerMode;                                                  //+0x8B9
+    bool mFutureMode;                                                      //+0x8BA
+    bool mPinataMode;                                                      //+0x8BB
+    bool mDanceMode;                                                       //+0x8BC
+    bool mDaisyMode;                                                       //+0x8BD
+    bool mSukhbirMode;                                                     //+0x8BE
+    TrialType mTrialType;                                                  //+0x8C0
+    bool mDebugTrialLocked;                                                //+0x8C4
+    bool mMuteSoundsForCutscene;                                           //+0x8C5
 
 public:
     LawnApp();

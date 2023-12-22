@@ -1,16 +1,19 @@
 #include "Definition.h"
-#include "../Resources.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
-#include "misc/PerfTimer.h"
-#include "misc/XMLParser.h"
 #include "paklib/PakInterface.h"
 #include "zlib/zlib.h"
 #include <assert.h>
+#include <bits/chrono.h>
+#include <chrono>
 #include <cstring>
+#include <filesystem>
 #include <stddef.h>
+// #include "misc/PerfTimer.h"
+#include "../Resources.h"
+#include "misc/XMLParser.h"
 
 DefSymbol gTrailFlagDefSymbols[] = {
   //  0x69E150
@@ -206,7 +209,7 @@ void *ParticleFieldConstructor(void *thePointer) {
 // 0x5155C0
 void *TodEmitterDefinitionConstructor(void *thePointer) {
     if (thePointer) {
-        memset(thePointer, NULL, sizeof(TodEmitterDefinition));
+        memset(thePointer, 0, sizeof(TodEmitterDefinition));
         ((TodEmitterDefinition *)thePointer)->mImageFrames = 1;
         ((TodEmitterDefinition *)thePointer)->mEmitterType = EmitterType::EMITTER_BOX;
         ((TodEmitterDefinition *)thePointer)->mName = "";
@@ -436,9 +439,10 @@ inline bool DefReadFromCacheString(void *&theReadPtr, char **theString) {
 // 0x444180
 inline bool DefReadFromCacheImage(void *&theReadPtr, Image **theImage) {
     int aLen;
-    SMemR(theReadPtr, &aLen, sizeof(int));        // 读取贴图标签字符数组的长度
-    char *aImageName = (char *)_alloca(aLen + 1); // 在栈上分配贴图标签字符数组的内存空间
-    SMemR(theReadPtr, aImageName, aLen);          // 读取贴图标签字符数组
+    SMemR(theReadPtr, &aLen, sizeof(int)); // 读取贴图标签字符数组的长度
+    // char* aImageName = (char*)alloca(aLen + 1);  // 在栈上分配贴图标签字符数组的内存空间
+    char aImageName[aLen + 1];
+    SMemR(theReadPtr, aImageName, aLen); // 读取贴图标签字符数组
     aImageName[aLen] = '\0';
 
     *theImage = nullptr;
@@ -448,9 +452,10 @@ inline bool DefReadFromCacheImage(void *&theReadPtr, Image **theImage) {
 // 0x444220
 inline bool DefReadFromCacheFont(void *&theReadPtr, _Font **theFont) {
     int aLen;
-    SMemR(theReadPtr, &aLen, sizeof(int));       // 读取字体标签字符数组的长度
-    char *aFontName = (char *)_alloca(aLen + 1); // 在栈上分配字体标签字符数组的内存空间
-    SMemR(theReadPtr, aFontName, aLen);          // 读取字体标签字符数组
+    SMemR(theReadPtr, &aLen, sizeof(int)); // 读取字体标签字符数组的长度
+    // char* aFontName = (char*)alloca(aLen + 1);  // 在栈上分配字体标签字符数组的内存空间
+    char aFontName[aLen + 1];
+    SMemR(theReadPtr, aFontName, aLen); // 读取字体标签字符数组
     aFontName[aLen] = '\0';
 
     *theFont = nullptr;
@@ -519,7 +524,7 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap
 uint DefinitionCalcHash(DefMap *theDefMap) {
     // Uninitialised!!
     TodList<DefMap *> aProgressMaps = TodList<DefMap *>();
-    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef *)Z_NULL, NULL) + 1, theDefMap, aProgressMaps);
+    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef *)Z_NULL, 0) + 1, theDefMap, aProgressMaps);
 
     // TodList destructor is called upon it going out of scope.
     return aResult;
@@ -560,8 +565,8 @@ void *DefinitionUncompressCompiledBuffer(
 
 // 0x444560 : (void* def, *defMap, eax = string& compiledFilePath)  //esp -= 8
 bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition) {
-    PerfTimer aTimer;
-    aTimer.Start();
+    // auto aTimer = std::chrono::high_resolution_clock::now();
+    // aTimer.Start();
     PFILE *pFile = p_fopen(theCompiledFilePath.c_str(), _S("rb"));
     if (!pFile) return false;
 
@@ -636,20 +641,37 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
     if (IsFileInPakFile(aCompiledFilePath)) return true;
 
-    _WIN32_FILE_ATTRIBUTE_DATA lpFileData;
-    _FILETIME aCompiledFileTime;
-    bool aSucceed =
-        GetFileAttributesEx(aCompiledFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData);
-    if (aSucceed) aCompiledFileTime = lpFileData.ftLastWriteTime;
+    auto src = std::filesystem::path(theXMLFilePath);
+    auto compiled = std::filesystem::path(aCompiledFilePath);
 
-    if (!GetFileAttributesEx(theXMLFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData)) {
+    if (!std::filesystem::exists(src)) {
         TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
         return false;
-    } else return aSucceed && CompareFileTime(&aCompiledFileTime, &lpFileData.ftLastWriteTime) == 1;
+    } else if (!std::filesystem::exists(compiled)) {
+        return false;
+    }
+    return std::filesystem::last_write_time(compiled) > std::filesystem::last_write_time(src);
+
+    // Compare last file write times and ensure compiled file time is newer than the uncompiled time
+
+    /*
+    _WIN32_FILE_ATTRIBUTE_DATA lpFileData;
+    _FILETIME aCompiledFileTime;
+    bool aSucceed = GetFileAttributesEx(aCompiledFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard,
+    &lpFileData); if (aSucceed) aCompiledFileTime = lpFileData.ftLastWriteTime;
+
+    if (!GetFileAttributesEx(theXMLFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData))
+    {
+        TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
+        return false;
+    }
+    else
+        return aSucceed && CompareFileTime(&aCompiledFileTime, &lpFileData.ftLastWriteTime) == 1;
+    */
 }
 
 void DefinitionFillWithDefaults(DefMap *theDefMap, void *theDefinition) {
-    memset(theDefinition, NULL, theDefMap->mDefSize); // 将 theDefinition 初始化填充为 0
+    memset(theDefinition, 0, theDefMap->mDefSize); // 将 theDefinition 初始化填充为 0
     for (DefField *aField = theDefMap->mMapFields; *aField->mFieldName != '\0';
          aField++) // 遍历 theDefinition 的每一个成员变量
         if (aField->mFieldType == DefFieldType::DT_STRING)
@@ -700,7 +722,7 @@ bool DefinitionReadXMLString(XMLParser *theXmlParser, SexyString &theValue) {
 
 bool DefSymbolValueFromString(DefSymbol *theSymbolMap, const char *theName, int *theResultValue) {
     while (theSymbolMap->mSymbolName != nullptr) {
-        if (stricmp(theName, theSymbolMap->mSymbolName) == 0) {
+        if (strcasecmp(theName, theSymbolMap->mSymbolName) == 0) {
             *theResultValue = theSymbolMap->mSymbolValue;
             return true;
         }
@@ -756,7 +778,7 @@ bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue) 
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (sexysscanf(aStringValue.c_str(), _S("%f %f"), theValue) == 1) return true;
+    if (sexysscanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse vector2 value '%s'", aStringValue.c_str());
     return false;
@@ -997,7 +1019,7 @@ bool DefinitionReadFlagField(
 
     float
         aFlag; // This was obviously a bug, the casting is wrong, although amusingly it just woks since it's just a bit
-    if (sexysscanf(aStringValue.c_str(), _S("%f %f"), &aFlag) != 1) {
+    if (sexysscanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
         DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
         return false;
     }
@@ -1069,7 +1091,7 @@ bool DefinitionReadField(XMLParser *theXmlParser, DefMap *theDefMap, void *theDe
             DefinitionReadFlagField(theXmlParser, aXMLElement.mValue, (uint *)pVar, (DefSymbol *)aField->mExtraData))
             return true;
 
-        if (stricmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0) // 判断 aXMLElement 定义的是否为该成员变量
+        if (strcasecmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0) // 判断 aXMLElement 定义的是否为该成员变量
         {
             bool aSuccess;
             switch (aField->mFieldType) {
@@ -1241,10 +1263,15 @@ bool DefinitionCompileAndLoad(const SexyString &theXMLFilePath, DefMap *theDefMa
         TodHesitationTrace(_S("loaded %s"), aCompiledFilePath.c_str());
         return true;
     } else {
-        PerfTimer aTimer;
-        aTimer.Start();
+        auto aTimer = std::chrono::high_resolution_clock::now();
+
         bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-        TodTrace(_S("compile %d ms:'%s'"), (int)aTimer.GetDuration(), aCompiledFilePath.c_str());
+        TodTrace(
+            _S("compile %d ms:'%s'"),
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+                .count(),
+            aCompiledFilePath.c_str()
+        );
         TodHesitationTrace(_S("compiled %s"), aCompiledFilePath.c_str());
         return aResult;
     }

@@ -1,21 +1,25 @@
-#include "TodCommon.h"
+#include <bits/chrono.h>
+#include <chrono>
+#include <cstdarg>
+
 #include "../GameConstants.h"
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "EffectSystem.h"
 #include "SexyAppBase.h"
+#include "TodCommon.h"
 #include "TodDebug.h"
 #include "TodList.h"
 #include "TodStringFile.h"
-#include "graphics/D3DInterface.h"
-#include "graphics/DDImage.h"
-#include "graphics/DDInterface.h"
 #include "graphics/Font.h"
+#include "misc/Debug.h"
+// #include "graphics/DDImage.h"
 #include "graphics/Graphics.h"
 #include "graphics/ImageFont.h"
-#include "misc/Debug.h"
-#include "misc/PerfTimer.h"
+// #include "misc/PerfTimer.h"
 #include "misc/SexyMatrix.h"
+// #include "graphics/DDInterface.h"
+// #include "graphics/D3DInterface.h"
 
 // 0x510BC0
 void Tod_SWTri_AddAllDrawTriFuncs() {
@@ -761,14 +765,15 @@ void TodBltMatrix(
         g->mDestImage->BltMatrix(
             theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend
         );
-    } else if (DDImage::Check3D(g->mDestImage)) {
-        theImage->mDrawn = true;
-        D3DInterface *aInterface = ((DDImage *)g->mDestImage)->mDDInterface->mD3DInterface;
-        aInterface->BltTransformed(
-            theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend, aOffsetX, aOffsetY,
-            true
-        );
-    } else {
+    } /*
+     else if (DDImage::Check3D(g->mDestImage))
+     {
+         theImage->mDrawn = true;
+         D3DInterface* aInterface = ((DDImage*)g->mDestImage)->mDDInterface->mD3DInterface;
+         aInterface->BltTransformed(theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend,
+     aOffsetX, aOffsetY, true);
+     }*/
+    else {
         Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
         g->mDestImage->BltMatrix(
             theImage, aOffsetX, aOffsetY, theTransform, aBufFixClipRect, theColor, theDrawMode, theSrcRect,
@@ -901,7 +906,7 @@ void TodDrawImageCenterScaledF(
 }
 
 // 0x512AC0
-unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel, int x, int y) {
+uint32_t AverageNearByPixels(MemoryImage *theImage, uint32_t *thePixel, int x, int y) {
     int aRed = 0;
     int aGreen = 0;
     int aBlue = 0;
@@ -949,10 +954,9 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
     aImage->CommitBits(); // 分析 mHasTrans 和 mHasAlpha
     if (!aImage->mHasTrans) return;
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    auto aTimer = std::chrono::high_resolution_clock::now();
 
-    unsigned long *aBitsPtr = aImage->mBits;
+    uint32_t *aBitsPtr = aImage->mBits;
     for (int y = 0; y < theImage->mHeight; y++) {
         for (int x = 0; x < theImage->mWidth; x++) {
             if ((*aBitsPtr & 0xFF000000UL) == 0) // 如果像素的不透明度为 0
@@ -965,7 +969,9 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
     }
     aImage->mBitsChangedCount++;
 
-    int aDuration = std::max(aTimer.GetDuration(), 0.0);
+    int aDuration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+            .count();
     if (aDuration > 20) {
         TodTraceAndLog(
             "LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
@@ -1087,8 +1093,7 @@ bool TodLoadResources(const std::string &theGroup) {
 bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
     if (IsGroupLoaded(theGroup)) return true;
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    auto aTimer = std::chrono::high_resolution_clock::now();
 
     StartLoadResources(theGroup);
     while (!gSexyAppBase->mShutdown && TodLoadNextResource())
@@ -1107,7 +1112,9 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 
     mLoadedGroups.insert(theGroup);
 
-    int aDuration = std::max(aTimer.GetDuration(), 0.0);
+    int aDuration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+            .count();
     if (aDuration > 20) {
         TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
     }
@@ -1133,7 +1140,7 @@ bool TodLoadNextResource() { return ((TodResourceManager *)gSexyAppBase->mResour
 
 // 0x513330
 bool TodResourceManager::TodLoadNextResource() {
-    GetTickCount();
+    // GetTickCount();
     TodHesitationTrace("preres");
 
     while (mCurResGroupListItr != mCurResGroupList->end()) {
@@ -1182,7 +1189,7 @@ bool TodResourceManager::TodLoadNextResource() {
             }
         }
 
-        GetTickCount();
+        // GetTickCount();
         TodHesitationTrace("Loading: '%s'", aRes->mPath.c_str());
         TodHesitationTrace("resource '%s'", aRes->mPath.c_str());
         return true;
@@ -1296,7 +1303,7 @@ bool TodIsPointInPolygon(
 
 int TodVsnprintf(char *theBuffer, int theSize, const char *theFormat, va_list theArgList) {
     try {
-        int aCount = _vsnprintf(theBuffer, theSize, theFormat, theArgList);
+        int aCount = vsnprintf(theBuffer, theSize, theFormat, theArgList);
         if (aCount == -1) {
             theBuffer[theSize - 1] = '\0';
             aCount = theSize - 1;

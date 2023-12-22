@@ -4,6 +4,7 @@
 #include "misc/ResourceManager.h"
 #include <cfloat>
 #include <cmath>
+#include <cstdint>
 #include <stdlib.h>
 
 struct TodAllocator;
