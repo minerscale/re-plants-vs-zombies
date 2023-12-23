@@ -1429,16 +1429,13 @@ double SexyAppBase::GetLoadingThreadProgress() {
     return std::min(mCompletedLoadingThreadTasks / (double)mNumLoadingThreadTasks, 1.0);
 }
 
-/*
-bool SexyAppBase::RegistryWrite(const std::string& theValueName, ulong theType, const uchar* theValue, ulong theLength)
-{
-    if (mRegKey.length() == 0)
-        return false;
+bool SexyAppBase::RegistryWrite(
+    const std::string &theValueName, uint32_t theType, const uchar *theValue, uint32_t theLength
+) {
+    if (mRegKey.length() == 0) return false;
 
-    if (mPlayingDemoBuffer)
-    {
-        if (mManualShutdown)
-            return true;
+    if (mPlayingDemoBuffer) {
+        if (mManualShutdown) return true;
 
         PrepareDemoCommand(true);
         mDemoNeedsCommand = true;
@@ -1449,48 +1446,22 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, ulong theType, 
         return mDemoBuffer.ReadNumBits(1, false) != 0;
     }
 
-    HKEY aGameKey;
+    // HKEY aGameKey;
 
     std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
     std::string aValueName;
 
-    int aSlashPos = (int) theValueName.rfind('\\');
-    if (aSlashPos != -1)
-    {
+    int aSlashPos = (int)theValueName.rfind('\\');
+    if (aSlashPos != -1) {
         aKeyName += "\\" + theValueName.substr(0, aSlashPos);
         aValueName = theValueName.substr(aSlashPos + 1);
-    }
-    else
-    {
+    } else {
         aValueName = theValueName;
     }
 
-    int aResult = RegOpenKeyExA(HKEY_CURRENT_USER, aKeyName.c_str(), 0, KEY_WRITE, &aGameKey);
-    if (aResult != ERROR_SUCCESS)
-    {
-        ulong aDisp;
-        aResult = RegCreateKeyExA(HKEY_CURRENT_USER, aKeyName.c_str(), 0, (char *)"Key", REG_OPTION_NON_VOLATILE,
-            KEY_ALL_ACCESS, NULL, &aGameKey, &aDisp);
-    }
+    mRegHandle.Write(aValueName, theType, theValue, theLength);
 
-    if (aResult != ERROR_SUCCESS)
-    {
-        if (mRecordingDemoBuffer)
-        {
-            WriteDemoTimingBlock();
-            mDemoBuffer.WriteNumBits(0, 1);
-            mDemoBuffer.WriteNumBits(DEMO_REGISTRY_WRITE, 5);
-            mDemoBuffer.WriteNumBits(0, 1); // failure
-        }
-
-        return false;
-    }
-
-    RegSetValueExA(aGameKey, aValueName.c_str(), 0, theType, theValue, theLength);
-    RegCloseKey(aGameKey);
-
-    if (mRecordingDemoBuffer)
-    {
+    if (mRecordingDemoBuffer) {
         WriteDemoTimingBlock();
         mDemoBuffer.WriteNumBits(0, 1);
         mDemoBuffer.WriteNumBits(DEMO_REGISTRY_WRITE, 5);
@@ -1498,55 +1469,43 @@ bool SexyAppBase::RegistryWrite(const std::string& theValueName, ulong theType, 
     }
 
     return true;
-}*/
-
-/*
-bool SexyAppBase::RegistryWriteString(const std::string& theValueName, const std::string& theString)
-{
-    return RegistryWrite(theValueName, REG_SZ, (uchar*) theString.c_str(), theString.length());
 }
 
-bool SexyAppBase::RegistryWriteInteger(const std::string& theValueName, int theValue)
-{
-    return RegistryWrite(theValueName, REG_DWORD, (uchar*) &theValue, sizeof(int));
+bool SexyAppBase::RegistryWriteString(const std::string &theValueName, const std::string &theString) {
+    return RegistryWrite(theValueName, REG_SZ, (uchar *)theString.c_str(), theString.length());
 }
 
-bool SexyAppBase::RegistryWriteBoolean(const std::string& theValueName, bool theValue)
-{
+bool SexyAppBase::RegistryWriteInteger(const std::string &theValueName, int theValue) {
+    return RegistryWrite(theValueName, REG_DWORD, (uchar *)&theValue, sizeof(int));
+}
+
+bool SexyAppBase::RegistryWriteBoolean(const std::string &theValueName, bool theValue) {
     int aValue = theValue ? 1 : 0;
-    return RegistryWrite(theValueName, REG_DWORD, (uchar*) &aValue, sizeof(int));
+    return RegistryWrite(theValueName, REG_DWORD, (uchar *)&aValue, sizeof(int));
 }
 
-bool SexyAppBase::RegistryWriteData(const std::string& theValueName, const uchar* theValue, ulong theLength)
-{
-    return RegistryWrite(theValueName, REG_BINARY, (uchar*) theValue, theLength);
-}*/
+bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uchar *theValue, ulong theLength) {
+    return RegistryWrite(theValueName, REG_BINARY, (uchar *)theValue, theLength);
+}
 
 void SexyAppBase::WriteToRegistry() {
-    unreachable();
-    /* TODO
-    RegistryWriteInteger("MusicVolume", (int) (mMusicVolume * 100));
-    RegistryWriteInteger("SfxVolume", (int) (mSfxVolume * 100));
+    RegistryWriteInteger("MusicVolume", (int)(mMusicVolume * 100));
+    RegistryWriteInteger("SfxVolume", (int)(mSfxVolume * 100));
     RegistryWriteInteger("Muted", (mMuteCount - mAutoMuteCount > 0) ? 1 : 0);
     RegistryWriteInteger("ScreenMode", mIsWindowed ? 0 : 1);
     RegistryWriteInteger("PreferredX", mPreferredX);
     RegistryWriteInteger("PreferredY", mPreferredY);
     RegistryWriteInteger("CustomCursors", mCustomCursorsEnabled ? 1 : 0);
     RegistryWriteInteger("InProgress", 0);
-    RegistryWriteBoolean("WaitForVSync", mWaitForVSync);*/
+    RegistryWriteBoolean("WaitForVSync", mWaitForVSync);
 }
 
-bool SexyAppBase::RegistryEraseKey(const SexyString & /*_theKeyName*/) {
-    unreachable();
-    /* TODO
+bool SexyAppBase::RegistryEraseKey(const SexyString &_theKeyName) {
     std::string theKeyName = SexyStringToStringFast(_theKeyName);
-    if (mRegKey.length() == 0)
-        return false;
+    if (mRegKey.length() == 0) return false;
 
-    if (mPlayingDemoBuffer)
-    {
-        if (mManualShutdown)
-            return true;
+    if (mPlayingDemoBuffer) {
+        if (mManualShutdown) return true;
 
         PrepareDemoCommand(true);
         mDemoNeedsCommand = true;
@@ -1559,11 +1518,9 @@ bool SexyAppBase::RegistryEraseKey(const SexyString & /*_theKeyName*/) {
 
     std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey) + "\\" + theKeyName;
 
-    int aResult = RegDeleteKeyA(HKEY_CURRENT_USER, aKeyName.c_str());
-    if (aResult != ERROR_SUCCESS)
-    {
-        if (mRecordingDemoBuffer)
-        {
+    // int aResult = RegDeleteKeyA(HKEY_CURRENT_USER, aKeyName.c_str());
+    if (!mRegHandle.Erase(aKeyName)) {
+        if (mRecordingDemoBuffer) {
             WriteDemoTimingBlock();
             mDemoBuffer.WriteNumBits(0, 1);
             mDemoBuffer.WriteNumBits(DEMO_REGISTRY_ERASE, 5);
@@ -1573,15 +1530,14 @@ bool SexyAppBase::RegistryEraseKey(const SexyString & /*_theKeyName*/) {
         return false;
     }
 
-    if (mRecordingDemoBuffer)
-    {
+    if (mRecordingDemoBuffer) {
         WriteDemoTimingBlock();
         mDemoBuffer.WriteNumBits(0, 1);
         mDemoBuffer.WriteNumBits(DEMO_REGISTRY_ERASE, 5);
         mDemoBuffer.WriteNumBits(1, 1); // success
     }
 
-    return true;*/
+    return true;
 }
 
 void SexyAppBase::RegistryEraseValue(const SexyString & /*_theValueName*/) {
@@ -1695,23 +1651,13 @@ bool SexyAppBase::RegistryGetSubKeys(const std::string & /*theKeyName*/, StringV
     }*/
 }
 
-/*
-bool SexyAppBase::RegistryRead(const std::string& theValueName, ulong* theType, uchar* theValue, ulong* theLength)
-{
-    return RegistryReadKey(theValueName, theType, theValue, theLength, HKEY_CURRENT_USER);
-}*/
+bool SexyAppBase::RegistryRead(
+    const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
+) {
+    if (mRegKey.length() == 0) return false;
 
-/*
-bool SexyAppBase::RegistryReadKey(const std::string& theValueName, ulong* theType, uchar* theValue, ulong* theLength,
-HKEY theKey)
-{
-    if (mRegKey.length() == 0)
-        return false;
-
-    if (mPlayingDemoBuffer)
-    {
-        if (mManualShutdown)
-            return false;
+    if (mPlayingDemoBuffer) {
+        if (mManualShutdown) return false;
 
         PrepareDemoCommand(true);
         mDemoNeedsCommand = true;
@@ -1720,113 +1666,84 @@ HKEY theKey)
         DBG_ASSERTE(mDemoCmdNum == DEMO_REGISTRY_READ);
 
         bool success = mDemoBuffer.ReadNumBits(1, false) != 0;
-        if (!success)
-            return false;
+        if (!success) return false;
 
-        *theType = mDemoBuffer.ReadLong();
+        theType = mDemoBuffer.ReadLong();
 
-        ulong aLen = mDemoBuffer.ReadLong();
-        *theLength = aLen;
+        uint32_t aLen = mDemoBuffer.ReadLong();
+        theValue.resize(aLen);
+        theLength = aLen;
 
-        if (*theLength >= aLen)
-        {
-            mDemoBuffer.ReadBytes(theValue, aLen);
+        if (theLength >= aLen) {
+            mDemoBuffer.ReadBytes(theValue.data(), aLen);
             return true;
-        }
-        else
-        {
-            for (int i = 0; i < (int) aLen; i++)
+        } else {
+            for (int i = 0; i < (int)aLen; i++)
                 mDemoBuffer.ReadByte();
             return false;
         }
-    }
-    else
-    {
-        HKEY aGameKey;
+    } else {
+        // HKEY aGameKey;
 
         std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
         std::string aValueName;
 
-        int aSlashPos = (int) theValueName.rfind('\\');
-        if (aSlashPos != -1)
-        {
+        int aSlashPos = (int)theValueName.rfind('\\');
+        if (aSlashPos != -1) {
             aKeyName += "\\" + theValueName.substr(0, aSlashPos);
             aValueName = theValueName.substr(aSlashPos + 1);
-        }
-        else
-        {
+        } else {
             aValueName = theValueName;
         }
 
-        if (RegOpenKeyExA(theKey, aKeyName.c_str(), 0, KEY_READ, &aGameKey) == ERROR_SUCCESS)
-        {
-            if (RegQueryValueExA(aGameKey, aValueName.c_str(), 0, theType, (uchar*) theValue, theLength) ==
-ERROR_SUCCESS)
-            {
-                if (mRecordingDemoBuffer)
-                {
-                    WriteDemoTimingBlock();
-                    mDemoBuffer.WriteNumBits(0, 1);
-                    mDemoBuffer.WriteNumBits(DEMO_REGISTRY_READ, 5);
-                    mDemoBuffer.WriteNumBits(1, 1); // success
-                    mDemoBuffer.WriteLong(*theType);
-                    mDemoBuffer.WriteLong(*theLength);
-                    mDemoBuffer.WriteBytes(theValue, *theLength);
-                }
-
-                RegCloseKey(aGameKey);
-                return true;
+        if (!mRegHandle.Read(theValueName, theType, theValue, theLength)) {
+            if (mRecordingDemoBuffer) {
+                WriteDemoTimingBlock();
+                mDemoBuffer.WriteNumBits(0, 1);
+                mDemoBuffer.WriteNumBits(DEMO_REGISTRY_READ, 5);
+                mDemoBuffer.WriteNumBits(0, 1); // failure
             }
-
-            RegCloseKey(aGameKey);
+            return false;
         }
 
-        if (mRecordingDemoBuffer)
-        {
+        if (mRecordingDemoBuffer) {
             WriteDemoTimingBlock();
             mDemoBuffer.WriteNumBits(0, 1);
             mDemoBuffer.WriteNumBits(DEMO_REGISTRY_READ, 5);
-            mDemoBuffer.WriteNumBits(0, 1); // failure
+            mDemoBuffer.WriteNumBits(1, 1); // success
+            mDemoBuffer.WriteLong(theType);
+            mDemoBuffer.WriteLong(theLength);
+            mDemoBuffer.WriteBytes(theValue.data(), theLength);
         }
-
-        return false;
+        return true;
     }
-}*/
-
-bool SexyAppBase::RegistryReadString(const std::string & /*theKey*/, std::string * /*theString*/) {
-    unreachable();
-    /* TODO
-    char aStr[1024];
-
-    ulong aType;
-    ulong aLen = sizeof(aStr) - 1;
-    if (!RegistryRead(theKey, &aType, (uchar*) aStr, &aLen))
-        return false;
-
-    if (aType != REG_SZ)
-        return false;
-
-    aStr[aLen] = 0;
-
-    *theString = aStr;
-    return true;*/
 }
 
-bool SexyAppBase::RegistryReadInteger(const std::string & /*theKey*/, int * /*theValue*/) {
-    unreachable();
-    /* TODO
-    ulong aType;
-    ulong aLong;
-    ulong aLen = 4;
-    if (!RegistryRead(theKey, &aType, (uchar*) &aLong, &aLen))
-        return false;
+bool SexyAppBase::RegistryReadString(const std::string &theKey, std::string *theString) {
+    std::vector<uint8_t> aStr;
 
-    if (aType != REG_DWORD)
-        return false;
+    uint32_t aType;
+    uint32_t aLen;
+    if (!RegistryRead(theKey, aType, aStr, aLen)) return false;
 
-    *theValue = aLong;
+    if (aType != REG_SZ) return false;
+
+    aStr.push_back('\0');
+
+    *theString = (char *)aStr.data();
     return true;
-    */
+}
+
+bool SexyAppBase::RegistryReadInteger(const std::string &theKey, int *theValue) {
+    uint32_t aType;
+    std::vector<uint8_t> aLong;
+    uint32_t aLen;
+    if (!RegistryRead(theKey, aType, aLong, aLen)) return false;
+
+    if (aType != REG_DWORD) return false;
+
+    *theValue = *(int *)aLong.data();
+    return true;
 }
 
 bool SexyAppBase::RegistryReadBoolean(const std::string &theKey, bool *theValue) {
@@ -1837,18 +1754,13 @@ bool SexyAppBase::RegistryReadBoolean(const std::string &theKey, bool *theValue)
     return true;
 }
 
-bool SexyAppBase::RegistryReadData(const std::string & /*theKey*/, uchar * /*theValue*/, ulong * /*theLength*/) {
-    unreachable();
-    /*
-    ulong aType;
-    if (!RegistryRead(theKey, &aType, (uchar*) theValue, theLength))
-        return false;
+bool SexyAppBase::RegistryReadData(const std::string &theKey, std::vector<uint8_t> &theValue, uint32_t &theLength) {
+    uint32_t aType;
+    if (!RegistryRead(theKey, aType, theValue, theLength)) return false;
 
-    if (aType != REG_BINARY)
-        return false;
+    if (aType != REG_BINARY) return false;
 
     return true;
-    */
 }
 
 void SexyAppBase::ReadFromRegistry() {
@@ -1876,9 +1788,7 @@ void SexyAppBase::ReadFromRegistry() {
     if (RegistryReadInteger("InProgress", &anInt)) mLastShutdownWasGraceful = anInt == 0;
 
     if (!IsScreenSaver()) {
-        unreachable();
-        /* TODO
-        RegistryWriteInteger("InProgress", 1);*/
+        RegistryWriteInteger("InProgress", 1);
     }
 }
 
@@ -2700,7 +2610,8 @@ void SexyAppBase::Popup(const std::string &theString) {
     }
 
     BeginPopup();
-    if (!mShutdown) printf("%s\n", SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str());
+    if (!mShutdown)
+        printf("%s: %s\n", SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(), theString.c_str());
     //::MessageBoxA(mHWnd, theString.c_str(), SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(),
     //:MB_APPLMODAL | MB_ICONSTOP);
     EndPopup();
@@ -2713,7 +2624,10 @@ void SexyAppBase::Popup(const std::wstring &theString) {
     }
 
     BeginPopup();
-    if (!mShutdown) printf("%ls\n", SexyStringToWString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str());
+    if (!mShutdown)
+        printf(
+            "%ls: %ls\n", SexyStringToWString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(), theString.c_str()
+        );
     //::MessageBoxW(mHWnd, theString.c_str(), SexyStringToWString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(),
     //:MB_APPLMODAL | MB_ICONSTOP);
     EndPopup();
@@ -5631,9 +5545,8 @@ void SexyAppBase::SetDouble(const std::string &theId, double theValue) {
         aPair.first->second = theValue;
 }
 
-void SexyAppBase::DoParseCmdLine() {
-    unreachable();
-    /* TODO
+void SexyAppBase::DoParseCmdLine(int argc, char *argv[]) {
+    /*
     char* aCmdLine = GetCommandLineA();
     char* aCmdLinePtr = aCmdLine;
     if (aCmdLinePtr[0] == '"')
@@ -5641,16 +5554,20 @@ void SexyAppBase::DoParseCmdLine() {
         aCmdLinePtr = strchr(aCmdLinePtr + 1, '"');
         if (aCmdLinePtr != NULL)
             aCmdLinePtr++;
+    }*/
+
+    // something to parse?
+    if (argc > 1) {
+        std::string aCmdLine{}; // Create a space seprated list of command line arguments
+
+        aCmdLine.append(argv[1]);
+        for (int i = 2; i < argc; ++i) {
+            aCmdLine.append(" ").append(argv[i]);
+        }
+        ParseCmdLine(aCmdLine);
     }
 
-    if (aCmdLinePtr != NULL)
-    {
-        aCmdLinePtr = strchr(aCmdLinePtr, ' ');
-        if (aCmdLinePtr != NULL)
-            ParseCmdLine(aCmdLinePtr+1);
-    }
-
-    mCmdLineParsed = true;*/
+    mCmdLineParsed = true;
 }
 
 void SexyAppBase::ParseCmdLine(const std::string &theCmdLine) {
@@ -5757,10 +5674,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string &theParamName, const std:
     } else if (theParamName == "-screensaver") {
         mIsScreenSaver = true;
     } else if (theParamName == "-changedir") {
-        unreachable();
-        /* TODO
         mChangeDirTo = theParamValue;
-        */
     } else {
         Popup(
             GetString("INVALID_COMMANDLINE_PARAM", _S("Invalid command line parameter: ")) +
@@ -5842,7 +5756,9 @@ void SexyAppBase::Init() {
         }
     }*/
 
-    if (!mCmdLineParsed) DoParseCmdLine();
+    if (!mCmdLineParsed) {
+        mCmdLineParsed = true;
+    }
 
     if (IsScreenSaver()) mOnlyAllowOneCopyToRun = false;
 

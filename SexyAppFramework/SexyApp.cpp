@@ -111,112 +111,90 @@ bool SexyApp::Validate(const std::string& theUserName, const std::string& theReg
 */
 
 void SexyApp::ReadFromRegistry() {
-    unreachable(); // FIXME
-                   /*
-                   SexyAppBase::ReadFromRegistry();
-               
-                   if (!mPlayingDemoBuffer)
-                   {
-                       mTimesPlayed = 0;
-                       mTimesExecuted = 0;
-               
-                       char aFileName[256];
-                       GetWindowsDirectory(aFileName, 256);
-                       if (aFileName[strlen(aFileName)-1] != '\\')
-                           strcat(aFileName, "\\");
-                       strcat(aFileName, "popcinfo.dat");
-               
-                       FILE* fp = fopen(aFileName, "rb");
-                       if (fp != NULL)
-                       {
-                           for (;;)
-                           {
-                               ushort aLen;
-                               if (fread(&aLen, 1, sizeof(short), fp) == 0)
-                                   break;
-               
-                               if (aLen < 256)
-                               {
-                                   char aProdName[256];
-                                   aProdName[aLen] = '\0';
-                                   fread(aProdName, aLen, sizeof(char), fp);
-               
-                                   if (strcmp(aProdName, mProdName.c_str()) == 0)
-                                   {
-                                       short aShort;
-                                       fread(&aShort, 1, sizeof(short), fp);
-                                       mTimesPlayed = aShort;
-               
-                                       fread(&aShort, 1, sizeof(short), fp);
-                                       mTimesExecuted = aShort;
-               
-                                       break;
-                                   }
-                               }
-               
-                               fseek(fp, sizeof(int), SEEK_CUR);
-                           }
-                           fclose(fp);
-                       }
-                   }
-               
-                   RegistryReadString("ReferId", &mReferId);
-                   mReferId = GetString("ReferId", mReferId);
-                   mRegisterLink = "http://www.popcap.com/register.php?theGame=" + mProdName + "&referid=" + mReferId;
-                   RegistryReadString("RegisterLink", &mRegisterLink);
-               
-                   int anInt;
-               
-                   if (RegistryReadInteger("DontUpdate", &anInt))
-                       mDontUpdate = anInt != 0;
-               
-                   if (RegistryReadInteger("DownloadId", &anInt))
-                       mDownloadId = anInt;
-               
-                   RegistryReadString("Variation", &mVariation);
-               
-                   if (RegistryReadInteger("TimesPlayed", &anInt))
-                   {
-                       if (!mPlayingDemoBuffer)
-                       {
-                           if (mTimesPlayed != anInt)
-                               mTimesPlayed = 100;
-                       }
-                       else
-                       {
-                           mTimesPlayed = anInt;
-                       }
-                   }
-               
-                   if (RegistryReadInteger("TimesExecuted", &anInt))
-                   {
-                       if (!mPlayingDemoBuffer)
-                       {
-                           if (mTimesExecuted != anInt)
-                               mTimesExecuted = 100;
-                       }
-                       else
-                       {
-                           mTimesExecuted = anInt;
-                       }
-                   }
-               
-                   if (RegistryReadInteger("LastVerCheckQueryTime", &anInt))
-                   {
-                       mLastVerCheckQueryTime = anInt;
-                   }
-                   else
-                   {
-                       time_t aTimeNow;
-                       time(&aTimeNow);
-               
-                       mLastVerCheckQueryTime = aTimeNow;
-                   }
-               
-                   if (RegistryReadString("RegName", &mRegUserName))
-                       mUserName = mRegUserName;
-               
-                   RegistryReadString("RegCode", &mRegCode);*/
+    // RegistryEmulatorTest();
+    SexyAppBase::ReadFromRegistry();
+
+    if (!mPlayingDemoBuffer) {
+        mTimesPlayed = 0;
+        mTimesExecuted = 0;
+
+        // char aFileName[256];
+        // GetWindowsDirectory(aFileName, 256);
+        // if (aFileName[strlen(aFileName)-1] != '\\')
+        //	strcat(aFileName, "\\");
+        // strcat(aFileName, "popcinfo.dat");
+
+        // read popcinfo.dat from current directory instead
+        FILE *fp = fopen("popcinfo.dat", "rb");
+        if (fp != NULL) {
+            for (;;) {
+                ushort aLen;
+                if (fread(&aLen, 1, sizeof(short), fp) == 0) break;
+
+                if (aLen < 256) {
+                    char aProdName[256];
+                    aProdName[aLen] = '\0';
+                    fread(aProdName, aLen, sizeof(char), fp);
+
+                    if (strcmp(aProdName, mProdName.c_str()) == 0) {
+                        short aShort;
+                        fread(&aShort, 1, sizeof(short), fp);
+                        mTimesPlayed = aShort;
+
+                        fread(&aShort, 1, sizeof(short), fp);
+                        mTimesExecuted = aShort;
+
+                        break;
+                    }
+                }
+
+                fseek(fp, sizeof(int), SEEK_CUR);
+            }
+            fclose(fp);
+        }
+    }
+
+    RegistryReadString("ReferId", &mReferId);
+    mReferId = GetString("ReferId", mReferId);
+    mRegisterLink = "http://www.popcap.com/register.php?theGame=" + mProdName + "&referid=" + mReferId;
+    RegistryReadString("RegisterLink", &mRegisterLink);
+
+    int anInt;
+
+    if (RegistryReadInteger("DontUpdate", &anInt)) mDontUpdate = anInt != 0;
+
+    if (RegistryReadInteger("DownloadId", &anInt)) mDownloadId = anInt;
+
+    RegistryReadString("Variation", &mVariation);
+
+    if (RegistryReadInteger("TimesPlayed", &anInt)) {
+        if (!mPlayingDemoBuffer) {
+            if (mTimesPlayed != anInt) mTimesPlayed = 100;
+        } else {
+            mTimesPlayed = anInt;
+        }
+    }
+
+    if (RegistryReadInteger("TimesExecuted", &anInt)) {
+        if (!mPlayingDemoBuffer) {
+            if (mTimesExecuted != anInt) mTimesExecuted = 100;
+        } else {
+            mTimesExecuted = anInt;
+        }
+    }
+
+    if (RegistryReadInteger("LastVerCheckQueryTime", &anInt)) {
+        mLastVerCheckQueryTime = anInt;
+    } else {
+        time_t aTimeNow;
+        time(&aTimeNow);
+
+        mLastVerCheckQueryTime = aTimeNow;
+    }
+
+    if (RegistryReadString("RegName", &mRegUserName)) mUserName = mRegUserName;
+
+    RegistryReadString("RegCode", &mRegCode);
 
     // mIsRegistered |= true /*Validate(mRegUserName, mRegCode)*/;
     /*

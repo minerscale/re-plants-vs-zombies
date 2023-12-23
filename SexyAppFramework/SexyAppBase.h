@@ -8,6 +8,7 @@
 #include "misc/CritSect.h"
 #include "misc/Ratio.h"
 #include "misc/Rect.h"
+#include "misc/RegistryEmulator.h"
 #include "widget/ButtonListener.h"
 #include "widget/DialogListener.h"
 #include <chrono>
@@ -312,6 +313,8 @@ public:
     StringStringVectorMap mStringVectorProperties;
     ResourceManager *mResourceManager;
 
+    RegistryEmulator mRegHandle;
+
 #ifdef ZYLOM
     uint mZylomGameId;
 #endif
@@ -352,10 +355,12 @@ protected:
     void ShowMemoryUsage();
 
     // Registry helpers
-    //	bool					RegistryRead(const std::string& theValueName, ulong* theType, uchar* theValue, ulong*
-    //theLength); 	bool					RegistryReadKey(const std::string& theValueName, ulong* theType, uchar*
-    //theValue, ulong* theLength, HKEY theMainKey = HKEY_CURRENT_USER); 	bool					RegistryWrite(const
-    //std::string& theValueName, ulong theType, const uchar* theValue, ulong theLength);
+    bool RegistryRead(
+        const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
+    );
+    //	bool					RegistryReadKey(const std::string& theValueName, uint32_t &theType, std::vector<uint8_t>
+    //&theValue, uint32_t &theLength);
+    bool RegistryWrite(const std::string &theValueName, uint32_t theType, const uchar *theValue, uint32_t theLength);
 
     // Demo recording helpers
     void ProcessDemo();
@@ -399,7 +404,7 @@ public:
     virtual void GetSEHWebParams(DefinesMap *theDefinesMap);
     virtual void Shutdown();
 
-    virtual void DoParseCmdLine();
+    virtual void DoParseCmdLine(int argc, char *argv[]);
     virtual void ParseCmdLine(const std::string &theCmdLine);
     virtual void HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue);
     virtual void HandleNotifyGameMessage(int theType
@@ -549,7 +554,7 @@ public:
     bool RegistryReadString(const std::string &theValueName, std::string *theString);
     bool RegistryReadInteger(const std::string &theValueName, int *theValue);
     bool RegistryReadBoolean(const std::string &theValueName, bool *theValue);
-    bool RegistryReadData(const std::string &theValueName, uchar *theValue, ulong *theLength);
+    bool RegistryReadData(const std::string &theKey, std::vector<uint8_t> &theValue, uint32_t &theLength);
     bool RegistryWriteString(const std::string &theValueName, const std::string &theString);
     bool RegistryWriteInteger(const std::string &theValueName, int theValue);
     bool RegistryWriteBoolean(const std::string &theValueName, bool theValue);
