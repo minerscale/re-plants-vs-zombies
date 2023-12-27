@@ -5,6 +5,7 @@
 #include "../GameConstants.h"
 #include "../LawnApp.h"
 #include "../Resources.h"
+#include "Common.h"
 #include "EffectSystem.h"
 #include "SexyAppBase.h"
 #include "TodCommon.h"
@@ -1085,6 +1086,13 @@ Color ColorsMultiply(const Color &theColor1, const Color &theColor2) {
 // 0x513120
 //  GOTY @Patoke: inlined 0x51D4C0
 bool TodLoadResources(const std::string &theGroup) {
+    // It's fixed now.. but still, wtf
+    /* For everything that is mighty, this is so not okay. This code promotes the base class
+     * ResourceManager to the derived class TodResourceManager and just yolo raw dogs it
+     * and hopes for the best. It does work but Address sanitizer is having an aneurism.
+     * Honestly I don't even know what the best way to do this is. Probably implement a
+     * constructor in TodResourceManager and use that instead?
+     */
     return ((TodResourceManager *)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
@@ -1149,13 +1157,16 @@ bool TodResourceManager::TodLoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            ImageRes *anImageRes = (ImageRes *)aRes;
-            if ((DDImage *)anImageRes->mImage != nullptr) {
+            unreachable();
+            /* TODO
+            ImageRes* anImageRes = (ImageRes*)aRes;
+            if ((DDImage*)anImageRes->mImage != nullptr)
+            {
                 mCurResGroupListItr++;
                 continue;
             }
 
-            break;
+            break;*/
         }
 
         case ResType_Sound: {

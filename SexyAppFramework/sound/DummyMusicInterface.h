@@ -1,3 +1,6 @@
+#ifndef __DUMMY_MUSIC_INTERFACE_H__
+#define __DUMMY_MUSIC_INTERFACE_H__
+
 #include "MusicInterface.h"
 #include "SexyAppBase.h"
 
@@ -29,3 +32,5 @@ public:
     virtual void SetMusicAmplify(int, double) {}
     virtual void Update() {}
 };
+
+#endif // __DUMMY_MUSIC_INTERFACE_H__

@@ -18,8 +18,7 @@ int main(int argc, char *argv[]) {
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
     gLawnApp = new LawnApp();
     gLawnApp->mChangeDirTo =
-        (!Sexy::FileExists("properties\\resources.xml") && Sexy::FileExists("..\\properties\\resources.xml")) ? ".."
-                                                                                                              : ".";
+        (!Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml")) ? ".." : ".";
     gLawnApp->DoParseCmdLine(argc, argv);
     gLawnApp->Init();
     gLawnApp->Start();

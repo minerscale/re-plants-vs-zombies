@@ -1112,7 +1112,7 @@ void LawnApp::Init() {
     TodLog("session id: %u", mSessionID);
     // #endif
 
-    if (!mResourceManager->ParseResourcesFile("properties\\resources.xml")) {
+    if (!mResourceManager->ParseResourcesFile("properties/resources.xml")) {
         ShowResourceError(true);
         return;
     }
@@ -1484,7 +1484,7 @@ void LawnApp::LoadGroup(const char *theGroupName, int theGroupAveMsToLoad) {
 void LawnApp::LoadingThreadProc() {
     if (!TodLoadResources("LoaderBar")) return;
 
-    TodStringListLoad("Properties\\LawnStrings.txt");
+    TodStringListLoad("Properties/LawnStrings.txt");
 
     if (mTitleScreen) {
         mTitleScreen->mLoaderScreenIsLoaded = true;

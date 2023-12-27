@@ -20,7 +20,7 @@ WidgetManager::WidgetManager(SexyAppBase *theApp) {
     mWidgetManager = this;
     mMouseIn = false;
     mDefaultTab = NULL;
-    mImage = NULL;
+    // mImage = NULL;
     mLastHadTransients = false;
     mPopupCommandWidget = NULL;
     mFocusWidget = NULL;
@@ -322,6 +322,7 @@ bool WidgetManager::DrawScreen() {
     bool drewStuff = false;
 
     int aDirtyCount = 0;
+    (void)aDirtyCount;
     // unused
     // bool hasTransients = false;
     // bool hasDirtyTransients = false;
@@ -337,29 +338,34 @@ bool WidgetManager::DrawScreen() {
     mMinDeferredOverlayPriority = 0x7FFFFFFF;
     mDeferredOverlayWidgets.resize(0);
 
+    unreachable();
+    /* FIXME
+    unreachable();
     Graphics aScrG(mImage);
     mCurG = &aScrG;
 
-    unreachable();
-    /* FIXME
     DDImage* aDDImage = dynamic_cast<DDImage*>(mImage);
     bool surfaceLocked = false;
     if (aDDImage != NULL)
         surfaceLocked = aDDImage->LockSurface();
-    */
 
-    if (aDirtyCount > 0) {
+
+    if (aDirtyCount > 0)
+    {
         Graphics g(aScrG);
         g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
         bool is3D = mApp->Is3DAccelerated();
 
         WidgetList::iterator anItr = mWidgets.begin();
-        while (anItr != mWidgets.end()) {
-            Widget *aWidget = *anItr;
+        while (anItr != mWidgets.end())
+        {
+            Widget* aWidget = *anItr;
 
-            if (aWidget == mWidgetManager->mBaseModalWidget) aModalFlags.mIsOver = true;
+            if (aWidget == mWidgetManager->mBaseModalWidget)
+                aModalFlags.mIsOver = true;
 
-            if ((aWidget->mDirty) && (aWidget->mVisible)) {
+            if ((aWidget->mDirty) && (aWidget->mVisible))
+            {
                 Graphics aClipG(g);
                 aClipG.SetFastStretch(!is3D);
                 aClipG.SetLinearBlend(is3D);
@@ -373,7 +379,7 @@ bool WidgetManager::DrawScreen() {
 
             ++anItr;
         }
-    }
+    }*/
 
     FlushDeferredOverlayWidgets(0x7FFFFFFF);
 

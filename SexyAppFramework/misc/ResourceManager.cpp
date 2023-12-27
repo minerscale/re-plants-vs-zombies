@@ -492,9 +492,9 @@ bool ResourceManager::ReparseResourcesFile(const std::string &theFilename) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaGridImage(ImageRes * /*theRes*/, DDImage * /*theImage*/) {
-    unreachable();
-    /*
+/*
+bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, DDImage *theImage)
+{
     ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage,true);
     if (anAlphaImage==NULL)
         return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaGridImage.c_str()));
@@ -510,7 +510,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes * /*theRes*/, DDImage * /*theI
 
     if (anAlphaImage->mWidth!=aCelWidth || anAlphaImage->mHeight!=aCelHeight)
         return Fail(StrFormat("GridAlphaImage size mismatch between %s and
-    %s",theRes->mPath.c_str(),theRes->mAlphaGridImage.c_str()));
+%s",theRes->mPath.c_str(),theRes->mAlphaGridImage.c_str()));
 
     unsigned long *aMasterRowPtr = theImage->mBits;
     for (int i=0; i < aNumRows; i++)
@@ -538,14 +538,14 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes * /*theRes*/, DDImage * /*theI
     }
 
     theImage->BitsChanged();
-    return true;*/
-}
+    return true;
+}*/
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaImage(ImageRes * /*theRes*/, DDImage * /*theImage*/) {
-    unreachable();
-    /*
+/*
+bool ResourceManager::LoadAlphaImage(ImageRes *theRes, DDImage *theImage)
+{
     SEXY_PERF_BEGIN("ResourceManager::GetImage");
     ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
     SEXY_PERF_END("ResourceManager::GetImage");
@@ -557,7 +557,7 @@ bool ResourceManager::LoadAlphaImage(ImageRes * /*theRes*/, DDImage * /*theImage
 
     if (anAlphaImage->mWidth!=theImage->mWidth || anAlphaImage->mHeight!=theImage->mHeight)
         return Fail(StrFormat("AlphaImage size mismatch between %s and
-    %s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
+%s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
 
     unsigned long* aBits1 = theImage->mBits;
     unsigned long* aBits2 = anAlphaImage->mBits;
@@ -571,27 +571,28 @@ bool ResourceManager::LoadAlphaImage(ImageRes * /*theRes*/, DDImage * /*theImage
     }
 
     theImage->BitsChanged();
-    return true;*/
-}
+    return true;
+}*/
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::DoLoadImage(ImageRes * /*theRes*/) {
-    unreachable();
-    /*
-    //bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; //
-    unused
+bool ResourceManager::DoLoadImage(ImageRes *theRes) {
+    // bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; //
+    // unused
 
     SEXY_PERF_BEGIN("ResourceManager:GetImage");
 
-    //ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
-    //SEXY_PERF_END("ResourceManager:GetImage");
+    // ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
+    // SEXY_PERF_END("ResourceManager:GetImage");
 
     bool isNew;
     ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
     SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
+    unreachable();
+
+    /*
     DDImage* aDDImage = (DDImage*) aSharedImageRef;
 
     if (aDDImage == NULL)
@@ -659,8 +660,8 @@ bool ResourceManager::DoLoadImage(ImageRes * /*theRes*/) {
     if (aDDImage->mPurgeBits)
         aDDImage->PurgeBits();
 
-    ResourceLoadedHook(theRes);
-    return true;*/
+    ResourceLoadedHook(theRes);*/
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -674,7 +675,10 @@ SharedImageRef ResourceManager::LoadImage(const std::string &theName) {
     if (anItr == mImageMap.end()) return NULL;
 
     ImageRes *aRes = (ImageRes *)anItr->second;
-    if ((DDImage *)aRes->mImage != NULL) return aRes->mImage;
+    unreachable();
+    /* TODO
+    if ((DDImage*) aRes->mImage != NULL)
+        return aRes->mImage;*/
 
     if (aRes->mFromProgram) return NULL;
 
@@ -818,7 +822,10 @@ bool ResourceManager::LoadNextResource() {
         switch (aRes->mType) {
         case ResType_Image: {
             ImageRes *anImageRes = (ImageRes *)aRes;
-            if ((DDImage *)anImageRes->mImage != NULL) continue;
+            unreachable();
+            /* TODO
+            if ((DDImage*)anImageRes->mImage!=NULL)
+                continue;*/
 
             return DoLoadImage(anImageRes);
         }

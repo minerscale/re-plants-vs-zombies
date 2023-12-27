@@ -10,7 +10,7 @@ namespace Sexy {
 class CritSect {
 private:
     // CRITICAL_SECTION mCriticalSection;
-    pthread_mutex_t mCriticalSection;
+    // pthread_mutex_t mCriticalSection;
     friend class AutoCrit;
 
 public:
