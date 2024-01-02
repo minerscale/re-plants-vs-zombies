@@ -339,9 +339,10 @@ TodTriangleGroup::TodTriangleGroup() {
 // 0x4461F0
 void TodTriangleGroup::DrawGroup(Graphics * /*g*/) {
     if (mImage && mTriangleCount) {
+        /*
         // @Patoke: do we want this? if 3D acceleration is off then blending is messed up
         if (!gSexyAppBase->Is3DAccelerated() && mDrawMode == Graphics::DRAWMODE_ADDITIVE)
-            gTodTriangleDrawAdditive = true;
+            gTodTriangleDrawAdditive = true;*/
         TodSandImageIfNeeded(mImage);
 
         unreachable();
@@ -409,7 +410,7 @@ void TodTriangleGroup::AddTriangle(
     TriVertex(*aTriRef)[3] = aVertBuffer;
     if (mTriangleCount + 2 <= MAX_TRIANGLES) {
         if ((theClipRect.mX == 0 && theClipRect.mY == 0 && theClipRect.mWidth == BOARD_WIDTH &&
-             theClipRect.mHeight == BOARD_HEIGHT && gSexyAppBase->Is3DAccelerated()) ||
+             theClipRect.mHeight == BOARD_HEIGHT) ||
             (theClipRect.mX <= tp[0].x && theClipRect.mX + theClipRect.mWidth >= tp[0].x && theClipRect.mX <= tp[1].x &&
              theClipRect.mX + theClipRect.mWidth >= tp[1].x && theClipRect.mX <= tp[2].x &&
              theClipRect.mX + theClipRect.mWidth >= tp[2].x && theClipRect.mX <= tp[3].x &&

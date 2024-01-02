@@ -4,7 +4,6 @@
 // #include "DDInterface.h"
 #include "Graphics.h"
 #include "NativeDisplay.h"
-#include "Quantize.h"
 #include "SWTri.h"
 #include "SexyAppBase.h"
 #include "misc/Debug.h"

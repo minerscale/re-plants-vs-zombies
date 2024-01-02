@@ -1,8 +1,10 @@
 #include "Definition.h"
+#include "Common.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
+#include "misc/fcaseopen.h"
 #include "paklib/PakInterface.h"
 #include "zlib/zlib.h"
 #include <assert.h>
@@ -10,7 +12,9 @@
 #include <chrono>
 #include <cstring>
 #include <filesystem>
+#include <memory>
 #include <stddef.h>
+#include <stdexcept>
 // #include "misc/PerfTimer.h"
 #include "../Resources.h"
 #include "misc/XMLParser.h"
@@ -188,10 +192,10 @@ DefMap gReanimatorDefMap = {
 }; // 0x69F1B4
 
 static DefLoadResPath gDefLoadResPaths[4] = {
-    {"IMAGE_",        ""           },
-    {"IMAGE_",        "particles\\"},
-    {"IMAGE_REANIM_", "reanim\\"   },
-    {"IMAGE_REANIM_", "images\\"   }
+    {"IMAGE_",        ""          },
+    {"IMAGE_",        "particles/"},
+    {"IMAGE_REANIM_", "reanim/"   },
+    {"IMAGE_REANIM_", "images/"   }
 }; // 0x6A1A48
 
 // 0x5155A0
@@ -330,13 +334,6 @@ unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition) {
     return theDefMap->mDefSize + DefinitionGetDeepSize(theDefMap, theDefinition);
 }
 
-void *DefinitionAlloc(int theSize) {
-    void *aPtr = operator new[](theSize);
-    TOD_ASSERT(aPtr);
-    memset(aPtr, 0, theSize);
-    return aPtr;
-}
-
 // 0x443BE0
 bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
     // 当贴图文件路径不存在时，无须获取贴图
@@ -346,25 +343,26 @@ bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
     }
 
     // 尝试借助资源管理器，从 XML 中加载贴图
-    Image *anImage = (Image *)gSexyAppBase->mResourceManager->LoadImage(theName);
+    auto anImage = gSexyAppBase->mResourceManager->LoadImage(theName);
     if (anImage) {
         *theImage = anImage;
         return true;
     }
 
-    // This for loop's performance is HORRIBLE
+    // This for loops performance is HORRIBLE
     // 从可能的贴图路径中手动加载贴图
     for (const DefLoadResPath &aLoadResPath : gDefLoadResPaths) {
         int aNameLen = theName.size();
         int aPrefixLen = strlen(aLoadResPath.mPrefix);
         if (aPrefixLen < aNameLen) {
             SexyString aPathToTry = aLoadResPath.mDirectory + theName.substr(aPrefixLen, aNameLen);
-            SharedImageRef aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
-            if ((Image *)aImageRef != nullptr) {
+
+            auto aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
+            if (aImageRef != nullptr) {
                 TodHesitationTrace("Load Image '%s'", theName.c_str());
-                TodAddImageToMap(&aImageRef, theName);
-                TodMarkImageForSanding((Image *)aImageRef);
-                *theImage = (Image *)aImageRef;
+                TodAddImageToMap(aImageRef, theName);
+                TodMarkImageForSanding(aImageRef);
+                *theImage = aImageRef;
                 return true;
             }
         }
@@ -395,10 +393,9 @@ inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArra
     if (theArray->mArrayCount == 0) // 如果类中没有实例，则无需读取
         return true;
 
-    int aArraySize = aDefSize * theArray->mArrayCount;
-    theArray->mArrayData = DefinitionAlloc(aArraySize); // 申请内存并初始化填充为 0
+    theArray->mArrayData = calloc(theArray->mArrayCount, aDefSize); // 申请内存并初始化填充为 0
     SMemR(
-        theReadPtr, theArray->mArrayData, aArraySize
+        theReadPtr, theArray->mArrayData, aDefSize * theArray->mArrayCount
     ); // 仍然是粗略读取全部数据，然后再根据 theDefMap 的结构字段数组修复指针
     for (int i = 0; i < theArray->mArrayCount; i++)
         if (!DefMapReadFromCache(
@@ -413,10 +410,9 @@ inline bool DefReadFromCacheFloatTrack(void *&theReadPtr, FloatParameterTrack *t
     int &aCountNodes = theTrack->mCountNodes;
     SMemR(theReadPtr, &aCountNodes, sizeof(int));
     if (aCountNodes > 0) {
-        int aSize = aCountNodes * sizeof(FloatParameterTrackNode);
-        FloatParameterTrackNode *aPtr = (FloatParameterTrackNode *)DefinitionAlloc(aSize);
+        FloatParameterTrackNode *aPtr = (FloatParameterTrackNode *)calloc(aCountNodes, sizeof(FloatParameterTrackNode));
         theTrack->mNodes = aPtr;
-        SMemR(theReadPtr, aPtr, aSize);
+        SMemR(theReadPtr, aPtr, aCountNodes * sizeof(FloatParameterTrackNode));
     }
     return true;
 }
@@ -428,7 +424,7 @@ inline bool DefReadFromCacheString(void *&theReadPtr, char **theString) {
     TOD_ASSERT(aLen >= 0 && aLen <= 100000);
     if (aLen == 0) *theString = (char *)"";
     else {
-        char *aPtr = (char *)DefinitionAlloc(aLen + 1);
+        char *aPtr = (char *)calloc(aLen + 1, sizeof(char));
         *theString = aPtr;
         SMemR(theReadPtr, aPtr, aLen);
         aPtr[aLen] = '\0';
@@ -547,7 +543,7 @@ void *DefinitionUncompressCompiledBuffer(
         return nullptr;
     }
 
-    Bytef *aUncompressedBuffer = (Bytef *)DefinitionAlloc(aHeader->mUncompressedSize);
+    Bytef *aUncompressedBuffer = (Bytef *)calloc(aHeader->mUncompressedSize, sizeof(Bytef));
     Bytef *aSrc = (Bytef *)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader)
     ); // 实际解压数据从第 3 个四字节开始
     // BuGFIXX!!
@@ -565,15 +561,16 @@ void *DefinitionUncompressCompiledBuffer(
 
 // 0x444560 : (void* def, *defMap, eax = string& compiledFilePath)  //esp -= 8
 bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition) {
-    // auto aTimer = std::chrono::high_resolution_clock::now();
-    // aTimer.Start();
+    bool aResult = false;
+
     PFILE *pFile = p_fopen(theCompiledFilePath.c_str(), _S("rb"));
     if (!pFile) return false;
 
-    p_fseek(pFile, 0, 2);                    // 将读取位置的指针移动至文件末尾
+    p_fseek(pFile, 0, SEEK_END);             // 将读取位置的指针移动至文件末尾
     size_t aCompressedSize = p_ftell(pFile); // 此时获取到的偏移量即为整个文件的大小
-    p_fseek(pFile, 0, 0);                    // 再把读取位置的指针移回文件开头
-    void *aCompressedBuffer = DefinitionAlloc(aCompressedSize);
+    p_fseek(pFile, 0, SEEK_SET);             // 再把读取位置的指针移回文件开头
+
+    void *aCompressedBuffer = calloc(aCompressedSize, 1);
     // 读取文件，并判断实际读取的大小是否为完整的文件大小，若不等则判断为读取失败
     bool aReadCompressedFailed = p_fread(aCompressedBuffer, sizeof(char), aCompressedSize, pFile) != aCompressedSize;
     p_fclose(pFile);             // 关闭资源文件流并释放 pFile 占用的内存
@@ -586,13 +583,13 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     size_t aUncompressedSize;
     void *aUncompressedBuffer =
         DefinitionUncompressCompiledBuffer(aCompressedBuffer, aCompressedSize, aUncompressedSize, theCompiledFilePath);
-    delete[] (char *)aCompressedBuffer;
+    free(aCompressedBuffer);
     if (!aUncompressedBuffer) return false;
 
     uint aDefHash = DefinitionCalcHash(theDefMap); // 计算 CRC 校验值，后将用于检测数据的完整性
     if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
         TodTrace(_S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
-        delete[] (char *)aUncompressedBuffer;
+        free(aUncompressedBuffer);
         return false;
     } // 检测解压数据的长度是否足够“定义数据 + 一个校验值记录数据”的长度
 
@@ -602,7 +599,7 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     SMemR(aBufferPtr, &aCashHash, sizeof(uint)); // 读取记录的 CRC 校验值
     if (aCashHash != aDefHash) {
         TodTrace(_S("Compiled file schema wrong: %s\n"), theCompiledFilePath.c_str());
-        delete[] (char *)aUncompressedBuffer;
+        free(aUncompressedBuffer);
         return false;
     } // 判断校验值是否一致，若不一致则说明数据发生错误
 
@@ -612,19 +609,21 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     // 这些野指针的问题后续将会在 DefMapReadFromCache() 中借助相应 DefField 的 mExtraData 进行修复
     SMemR(aBufferPtr, theDefinition, theDefMap->mDefSize);
     // 修复野指针及标志型数据，并保存是否成功的结果，后续作为返回值
-    bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
+    aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
     size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer;
-    delete[] (char *)aUncompressedBuffer;
+    free(aUncompressedBuffer);
+
     if (aResult && aReadMemSize != aUncompressedSize) {
         TodTrace(_S("Compiled file wrong size: %s\n"), theCompiledFilePath.c_str());
-        return false;
+        aResult = false;
     }
+
     return aResult;
 }
 
 // 0x444770
 SexyString DefinitionGetCompiledFilePathFromXMLFilePath(const SexyString &theXMLFilePath) {
-    return _S("compiled\\") + theXMLFilePath + _S(".compiled");
+    return _S("compiled/") + theXMLFilePath + _S(".compiled");
 }
 
 bool IsFileInPakFile(const SexyString &theFilePath) {
@@ -641,6 +640,23 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
     if (IsFileInPakFile(aCompiledFilePath)) return true;
 
+#if !defined(_WIN32) // It should be abundantly clear that I didn't want to write this.
+    char *src_correct_name = (char *)malloc(theXMLFilePath.length() + 3);
+    char *compiled_correct_name = (char *)malloc(aCompiledFilePath.length() + 3);
+    bool src_exists = casepath(theXMLFilePath.c_str(), src_correct_name);
+    bool compiled_exists = casepath(aCompiledFilePath.c_str(), compiled_correct_name);
+    if (!src_exists) {
+        throw std::runtime_error("Can't find source file to compile: " + theXMLFilePath);
+        return false;
+    } else if (!compiled_exists) {
+        return false;
+    }
+    bool rebuild =
+        std::filesystem::last_write_time(compiled_correct_name) > std::filesystem::last_write_time(src_correct_name);
+    free(src_correct_name);
+    free(compiled_correct_name);
+    return rebuild;
+#else
     auto src = std::filesystem::path(theXMLFilePath);
     auto compiled = std::filesystem::path(aCompiledFilePath);
 
@@ -651,6 +667,7 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
         return false;
     }
     return std::filesystem::last_write_time(compiled) > std::filesystem::last_write_time(src);
+#endif
 
     // Compare last file write times and ensure compiled file time is newer than the uncompiled time
 
@@ -758,7 +775,7 @@ bool DefinitionReadStringField(XMLParser *theXmlParser, char **theValue) {
     if (aStringValue.size() == 0) {
         *theValue = (char *)"";
     } else {
-        *theValue = (char *)DefinitionAlloc(aStringValue.size());
+        *theValue = (char *)calloc(aStringValue.size() + 1, sizeof(char));
         strcpy(*theValue, aStringValue.c_str());
     }
     return true;
@@ -789,16 +806,16 @@ bool DefinitionReadArrayField(XMLParser *theXmlParser, DefinitionArrayDef *theAr
 
     if (theArray->mArrayCount == 0) {
         theArray->mArrayCount = 1;
-        theArray->mArrayData = DefinitionAlloc(aDefMap->mDefSize);
+        theArray->mArrayData = calloc(1, aDefMap->mDefSize);
     } else {
         // 当 theArray 中已存在元素，且元素的个数为 2 的整数次幂时
         // TODO Potential error with the bracketing for the &
         if (theArray->mArrayCount >= 1 &&
             (theArray->mArrayCount == 1 || ((theArray->mArrayCount & (theArray->mArrayCount - 1)) == 0))) {
             void *anOldData = theArray->mArrayData;
-            theArray->mArrayData = DefinitionAlloc(2 * theArray->mArrayCount * aDefMap->mDefSize);
+            theArray->mArrayData = calloc(2 * theArray->mArrayCount, aDefMap->mDefSize);
             memcpy(theArray->mArrayData, anOldData, theArray->mArrayCount * aDefMap->mDefSize);
-            delete[] (char *)anOldData;
+            free(anOldData);
         }
         theArray->mArrayCount++;
     }
@@ -998,11 +1015,10 @@ _m_break:
     }
     */
 
-    size_t alloc_size = aFloatTrackVec.size() * sizeof(FloatParameterTrackNode);
-    theTrack->mNodes = (FloatParameterTrackNode *)DefinitionAlloc(alloc_size);
+    theTrack->mNodes = (FloatParameterTrackNode *)calloc(aFloatTrackVec.size(), sizeof(FloatParameterTrackNode));
     if (!theTrack->mNodes) return false;
 
-    ::memcpy(theTrack->mNodes, aFloatTrackVec.data(), alloc_size);
+    memcpy(theTrack->mNodes, aFloatTrackVec.data(), aFloatTrackVec.size() * sizeof(FloatParameterTrackNode));
     theTrack->mCountNodes = aFloatTrackVec.size();
 
     return true;
@@ -1044,11 +1060,11 @@ bool DefinitionReadImageField(XMLParser *theXmlParser, Image **theImage) {
 
     if (DefinitionLoadImage(theImage, aStringValue)) return true;
 
-    std::string aMessgae = StrFormat(
+    std::string aMessage = StrFormat(
         "Failed to find image '%s' in %s", SexyStringToStringFast(aStringValue).c_str(),
         theXmlParser->GetFileName().c_str()
     );
-    TodErrorMessageBox(aMessgae.c_str(), "Missing image");
+    TodErrorMessageBox(aMessage.c_str(), "Missing image");
 
     return false;
 }
@@ -1196,9 +1212,9 @@ void DefMapWriteToCache(void *&theWritePtr, DefMap *theDefMap, void *theDefiniti
 }
 
 void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSize, unsigned int *theResultSize) {
-    uLongf aCompressedSize = compressBound(theBufferSize);
+    size_t aCompressedSize = compressBound(theBufferSize);
     auto aCompressedBuffer =
-        (CompressedDefinitionHeader *)DefinitionAlloc(aCompressedSize + sizeof(CompressedDefinitionHeader));
+        (CompressedDefinitionHeader *)calloc(sizeof(CompressedDefinitionHeader) + aCompressedSize, 1);
     compress(
         (Bytef *)((uintptr_t)aCompressedBuffer + sizeof(CompressedDefinitionHeader)), &aCompressedSize,
         (Bytef *)theBuffer, theBufferSize
@@ -1212,7 +1228,7 @@ void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSi
 bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition) {
     unsigned int aCompressedSize = 0;
     unsigned int aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(unsigned int);
-    void *aDefBasePtr = DefinitionAlloc(aDefSize);
+    void *aDefBasePtr = calloc(aDefSize, 1);
     void *aDef = aDefBasePtr;
     uint aDefHash = DefinitionCalcHash(theDefMap);
 
@@ -1221,23 +1237,20 @@ bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *
     DefMapWriteToCache(aDef, theDefMap, theDefinition);
     void *aCompressedDef = DefinitionCompressCompiledBuffer(aDefBasePtr, aDefSize, &aCompressedSize);
 
-    delete[] (uint *)aDefBasePtr; // already compressed, no need to keep this instance alive
+    free(aDefBasePtr); // already compressed, no need to keep this instance alive
 
     std::string aFilePath = GetFileDir(theCompiledFilePath);
     MkDir(aFilePath);
 
+    bool success = false;
     auto aFileStream = fopen(theCompiledFilePath.c_str(), "wb");
     if (aFileStream) {
-        unsigned int aBytesWritten = fwrite(aCompressedDef, 1u, aCompressedSize, aFileStream);
-
-        delete[] (char *)aCompressedDef;
-
+        success = fwrite(aCompressedDef, 1u, aCompressedSize, aFileStream) == aCompressedSize;
         fclose(aFileStream);
-        return aBytesWritten == aCompressedSize;
     }
 
-    delete[] (char *)aCompressedDef;
-    return false;
+    free(aCompressedDef);
+    return success;
 }
 
 bool DefinitionCompileFile(
@@ -1255,7 +1268,6 @@ bool DefinitionCompileFile(
 // 0x4447F0 : (void* def, *defMap, string& xmlFilePath)  //esp -= 0xC
 bool DefinitionCompileAndLoad(const SexyString &theXMLFilePath, DefMap *theDefMap, void *theDefinition) {
 #ifdef _DEBUG // 内测版执行的内容
-
     TodHesitationTrace(_S("predef"));
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
     if (DefinitionIsCompiled(theXMLFilePath) &&
@@ -1321,7 +1333,7 @@ void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue) {
     if (theTrack.mNodes == nullptr && theValue != 0.0f) // 确保该参数轨道无节点（未被赋值过）且给定的默认值不为 0
     {
         theTrack.mCountNodes = 1; // 默认参数轨道有且仅有 1 个节点
-        FloatParameterTrackNode *aNode = (FloatParameterTrackNode *)DefinitionAlloc(sizeof(FloatParameterTrackNode));
+        FloatParameterTrackNode *aNode = (FloatParameterTrackNode *)calloc(1, sizeof(FloatParameterTrackNode));
         theTrack.mNodes = aNode;
         aNode->mTime = 0.0f;
         aNode->mLowValue = theValue;
@@ -1354,7 +1366,7 @@ void DefinitionFreeArrayField(DefinitionArrayDef *theArray, DefMap *theDefMap) {
         DefinitionFreeMap(
             theDefMap, (void *)((intptr_t)theArray->mArrayData + theDefMap->mDefSize * i)
         ); // 最后一个参数表示 pData[i]
-    delete[] (char *)theArray->mArrayData;
+    free(theArray->mArrayData);
     theArray->mArrayData = nullptr;
 }
 
@@ -1367,8 +1379,7 @@ void DefinitionFreeMap(DefMap *theDefMap, void *theDefinition) {
         case DefFieldType::DT_STRING:
             // @Patoke todo: removed this, caused a heap problem when closing the game, add back properly (causes memory
             // leak)
-            // if (**(char**)aVar != '\0')
-            //    delete[] *(char**)aVar;  // 释放字符数组
+            if (**(char **)aVar != '\0') free(*(char **)aVar); // 释放字符数组
             *(char **)aVar = nullptr;
             break;
         case DefFieldType::DT_ARRAY:
@@ -1376,7 +1387,7 @@ void DefinitionFreeMap(DefMap *theDefMap, void *theDefinition) {
             break;
         case DefFieldType::DT_TRACK_FLOAT:
             if (((FloatParameterTrack *)aVar)->mCountNodes != 0)
-                delete[] ((FloatParameterTrack *)aVar)->mNodes; // 释放浮点参数轨道的节点
+                free(((FloatParameterTrack *)aVar)->mNodes); // 释放浮点参数轨道的节点
             ((FloatParameterTrack *)aVar)->mNodes = nullptr;
             break;
         default: break;

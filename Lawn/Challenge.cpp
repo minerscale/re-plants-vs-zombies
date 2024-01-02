@@ -2473,7 +2473,7 @@ void Challenge::DrawWeather(Graphics *g) {
 
 // 0x426B90
 void Challenge::DrawRain(Graphics *g) {
-    if (mBoard->mCutScene->IsBeforePreloading() || !mApp->Is3DAccelerated()) return;
+    if (mBoard->mCutScene->IsBeforePreloading()) return;
 
     // Whatever is going on here is a bit yikes
     int aBoardOffsetX;

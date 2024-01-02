@@ -8,7 +8,7 @@ TrailParams *gTrailParamArray;   //[0x6A9F2C]
 
 TrailParams gLawnTrailArray[(int)TrailType::NUM_TRAILS] = {
   //  0x6A19F4
-    {TrailType::TRAIL_ICE, "particles\\IceTrail.trail"}
+    {TrailType::TRAIL_ICE, "particles/IceTrail.trail"}
 };
 
 TrailDefinition::TrailDefinition() {

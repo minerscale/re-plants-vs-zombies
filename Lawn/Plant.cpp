@@ -3302,14 +3302,18 @@ void Plant::Draw(Graphics *g) {
         } else if (mBodyReanimID != ReanimationID::REANIMATIONID_NULL) {
             Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
             if (aBodyReanim) {
+                aBodyReanim->Draw(g);
+                /*
                 if (!mApp->Is3DAccelerated() && mSeedType == SeedType::SEED_FLOWERPOT && IsOnBoard() &&
-                    aBodyReanim->mAnimRate == 0.0f && aBodyReanim->IsAnimPlaying("anim_idle")) {
-                    mApp->mReanimatorCache->DrawCachedPlant(
-                        g, aOffsetX, aOffsetY, mSeedType, DrawVariation::VARIATION_NORMAL
-                    );
-                } else {
-                    aBodyReanim->Draw(g);
+                    aBodyReanim->mAnimRate == 0.0f && aBodyReanim->IsAnimPlaying("anim_idle"))
+                {
+                    mApp->mReanimatorCache->DrawCachedPlant(g, aOffsetX, aOffsetY, mSeedType,
+                DrawVariation::VARIATION_NORMAL);
                 }
+                else
+                {
+                    aBodyReanim->Draw(g);
+                }*/
             }
         } else {
             SeedType aSeedType = SeedType::SEED_NONE;

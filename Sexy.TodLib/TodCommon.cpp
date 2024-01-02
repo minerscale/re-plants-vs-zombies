@@ -13,7 +13,6 @@
 #include "TodList.h"
 #include "TodStringFile.h"
 #include "graphics/Font.h"
-#include "misc/Debug.h"
 // #include "graphics/DDImage.h"
 #include "graphics/Graphics.h"
 #include "graphics/ImageFont.h"
@@ -23,207 +22,97 @@
 // #include "graphics/D3DInterface.h"
 
 // 0x510BC0
-void Tod_SWTri_AddAllDrawTriFuncs() {
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4A59B0
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x48E6F0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x48F9C0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x490920
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4921A0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x493970
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x495BB0
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x497480
+/*
+void Tod_SWTri_AddAllDrawTriFuncs()
+{
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4A59B0 SWTri_AddDrawTriFunc(true, false, false, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x48E6F0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x48F9C0 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x490920
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4921A0 SWTri_AddDrawTriFunc(true, false, true, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x493970 SWTri_AddDrawTriFunc(true, false, true, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x495BB0 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x497480
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4997D0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x49A610
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x49BC90
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x49CBB0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x49E400
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x49FC10
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4A1DF0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4A3710
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4997D0 SWTri_AddDrawTriFunc(true, true, false, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x49A610 SWTri_AddDrawTriFunc(true, true, false, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x49BC90 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x49CBB0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x49E400 SWTri_AddDrawTriFunc(true, true, true, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x49FC10 SWTri_AddDrawTriFunc(true, true, true, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4A1DF0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4A3710
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4A59B0
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x48E6F0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4A63C0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4A7D70
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4AAAA0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4AD590
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x4B1580
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x4B42D0
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4A59B0 SWTri_AddDrawTriFunc(true, false, false, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x48E6F0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4A63C0 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4A7D70
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4AAAA0 SWTri_AddDrawTriFunc(true, false, true, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4AD590 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x4B1580 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x4B42D0
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4B84F0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x4B9D30
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x4BC670
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x4BE040
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x4C0D60
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x4C38C0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4C77C0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4CA580
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4B84F0 SWTri_AddDrawTriFunc(true, true, false, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x4B9D30 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x4BC670 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x4BE040
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x4C0D60 SWTri_AddDrawTriFunc(true, true, true, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x4C38C0 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4C77C0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4CA580
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4CE700
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x4CF170
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4D0500
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4D20B0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4D4F40
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4D7C20
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x4DBDF0
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x4DED40
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4CE700 SWTri_AddDrawTriFunc(true, false, false, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x4CF170 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4D0500 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4D20B0
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4D4F40 SWTri_AddDrawTriFunc(true, false, true, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4D7C20 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x4DBDF0 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x4DED40
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4E3150
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x4E4B90
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x4E76C0
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x4E92B0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x4EC170
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x4EEE70
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4F2FB0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4F5F90
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4E3150 SWTri_AddDrawTriFunc(true, true, false, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x4E4B90 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x4E76C0 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x4E92B0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x4EC170 SWTri_AddDrawTriFunc(true, true, true, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x4EEE70 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4F2FB0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4F5F90
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4FA280
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x4FACF0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4FC080
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4FCE50
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4FE560
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4FFB80
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x501C80
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x503390
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4FA280 SWTri_AddDrawTriFunc(true, false, false, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x4FACF0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4FC080 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4FCE50
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4FE560 SWTri_AddDrawTriFunc(true, false, true, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4FFB80 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x501C80 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x503390
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x5054D0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x5061E0
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x507710
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x5084B0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x509BD0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x50B230
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x50D2F0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x50EA10
-}
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x5054D0 SWTri_AddDrawTriFunc(true, true, false, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x5061E0 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x507710 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x5084B0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x509BD0 SWTri_AddDrawTriFunc(true, true, true, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x50B230 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x50D2F0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x50EA10
+}*/
 
 // 0x5114E0
 SexyString TodGetCurrentLevelName() { return _S("Unknown level"); }
@@ -733,16 +622,25 @@ void SexyMatrix3ExtractScale(const SexyMatrix3 &m, float &theScaleX, float &theS
     }
 }
 
-void TodMarkImageForSanding(Image *theImage) { ((MemoryImage *)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING; }
+void TodMarkImageForSanding(Image * /*theImage*/) {
+    static bool madeWarning = false;
+    if (!madeWarning) printf("warning:  Image Sanding is Skipped\n");
+    madeWarning = true;
+    // unreachable();
+    //((MemoryImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
+}
 
-void TodSandImageIfNeeded(Image *theImage) {
-    MemoryImage *aImage = (MemoryImage *)theImage;
-    /*if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING))*/ // UB shift by a billion
-    if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING) {
+void TodSandImageIfNeeded(Image * /*theImage*/) {
+    static bool madeWarning = false;
+    if (!madeWarning) printf("warning:  Tried to sand Image but it didn't exist!\n");
+    madeWarning = true;
+    /* TODO
+    MemoryImage* aImage = (MemoryImage*)theImage;
+    if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
+    {
         FixPixelsOnAlphaEdgeForBlending(theImage);
-        ((MemoryImage *)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
-        // SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
-    }
+        ((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
+    }*/
 }
 
 // 0x512650
@@ -752,12 +650,16 @@ void TodBltMatrix(
 ) {
     float aOffsetX = 0.0f;
     float aOffsetY = 0.0f;
-    if (gSexyAppBase->Is3DAccelerated()) {
-        aOffsetX -= 0.5f;
-        aOffsetY -= 0.5f;
-    } else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE) {
+    // if (gSexyAppBase->Is3DAccelerated())
+    //{
+    aOffsetX -= 0.5f;
+    aOffsetY -= 0.5f;
+    //}
+    /*
+    else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE)
+    {
         gTodTriangleDrawAdditive = true;
-    }
+    }*/
 
     TodSandImageIfNeeded(theImage);
 
@@ -907,25 +809,28 @@ void TodDrawImageCenterScaledF(
 }
 
 // 0x512AC0
-uint32_t AverageNearByPixels(MemoryImage *theImage, uint32_t *thePixel, int x, int y) {
+/*
+uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, int y)
+{
     int aRed = 0;
     int aGreen = 0;
     int aBlue = 0;
     int aBitsCount = 0;
 
-    for (int i = -1; i <= 1; i++) // 依次循环上方、当前、下方的一行
+    for (int i = -1; i <= 1; i++)  // 依次循环上方、当前、下方的一行
     {
-        if (i == 0) // 排除当前行
+        if (i == 0)  // 排除当前行
         {
             continue;
         }
 
-        for (int j = -1; j <= 1; j++) // 依次循环左方、当前、右方的一列
+        for (int j = -1; j <= 1; j++)  // 依次循环左方、当前、右方的一列
         {
-            if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) &&
-                (y != theImage->mHeight - 1 || i != 1)) {
+            if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) && (y !=
+theImage->mHeight - 1 || i != 1))
+            {
                 unsigned long aPixel = *(thePixel + i * theImage->mWidth + j);
-                if (aPixel & 0xFF000000UL) // 如果不是透明像素
+                if (aPixel & 0xFF000000UL)  // 如果不是透明像素
                 {
                     aRed += (aPixel >> 16) & 0x000000FFUL;
                     aGreen += (aPixel >> 8) & 0x000000FFUL;
@@ -936,7 +841,8 @@ uint32_t AverageNearByPixels(MemoryImage *theImage, uint32_t *thePixel, int x, i
         }
     }
 
-    if (aBitsCount == 0) return 0;
+    if (aBitsCount == 0)
+        return 0;
 
     aRed /= aBitsCount;
     aRed = std::min(aRed, 255);
@@ -945,24 +851,31 @@ uint32_t AverageNearByPixels(MemoryImage *theImage, uint32_t *thePixel, int x, i
     aBlue /= aBitsCount;
     aBlue = std::min(aBlue, 255);
     return (aRed << 16) | (aGreen << 8) | (aBlue);
-}
+}*/
 
 // 0x512C60
-void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
-    MemoryImage *aImage = (MemoryImage *)theImage;
-    if (aImage->mBits == nullptr) return;
+/*
+void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
+{
+    MemoryImage* aImage = (MemoryImage*)theImage;
+    if (aImage->mBits == nullptr)
+        return;
 
-    aImage->CommitBits(); // 分析 mHasTrans 和 mHasAlpha
-    if (!aImage->mHasTrans) return;
+    aImage->CommitBits();  // 分析 mHasTrans 和 mHasAlpha
+    if (!aImage->mHasTrans)
+        return;
 
     auto aTimer = std::chrono::high_resolution_clock::now();
 
-    uint32_t *aBitsPtr = aImage->mBits;
-    for (int y = 0; y < theImage->mHeight; y++) {
-        for (int x = 0; x < theImage->mWidth; x++) {
-            if ((*aBitsPtr & 0xFF000000UL) == 0) // 如果像素的不透明度为 0
+
+    uint32_t* aBitsPtr = aImage->mBits;
+    for (int y = 0; y < theImage->mHeight; y++)
+    {
+        for (int x = 0; x < theImage->mWidth; x++)
+        {
+            if ((*aBitsPtr & 0xFF000000UL) == 0)  // 如果像素的不透明度为 0
             {
-                *aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y); // 计算该点周围非透明像素的平均颜色
+                *aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);  // 计算该点周围非透明像素的平均颜色
             }
 
             aBitsPtr++;
@@ -970,16 +883,13 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
     }
     aImage->mBitsChangedCount++;
 
-    int aDuration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
-            .count();
-    if (aDuration > 20) {
-        TodTraceAndLog(
-            "LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
-            gGetCurrentLevelName().c_str()
-        );
+    int aDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() -
+aTimer).count(); if (aDuration > 20)
+    {
+        TodTraceAndLog("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
+gGetCurrentLevelName().c_str());
     }
-}
+}*/
 
 void SexyMatrix3Transpose(const SexyMatrix3 &m, SexyMatrix3 &r) {
     SexyMatrix3 temp;
@@ -1130,16 +1040,16 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
     return true;
 }
 
-void TodAddImageToMap(SharedImageRef *theImage, const std::string &thePath) {
+void TodAddImageToMap(Image *theImage, const std::string &thePath) {
     ((TodResourceManager *)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 
 // 0x513230
-void TodResourceManager::AddImageToMap(SharedImageRef *theImage, const std::string &thePath) {
+void TodResourceManager::AddImageToMap(Image *theImage, const std::string &thePath) {
     TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
 
     ImageRes *aImageRes = new ImageRes();
-    aImageRes->mImage = *theImage;
+    aImageRes->mImage = theImage;
     aImageRes->mPath = thePath;
     mImageMap.insert(ResMap::value_type(thePath, aImageRes));
 }
@@ -1157,16 +1067,13 @@ bool TodResourceManager::TodLoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            unreachable();
-            /* TODO
-            ImageRes* anImageRes = (ImageRes*)aRes;
-            if ((DDImage*)anImageRes->mImage != nullptr)
-            {
+            ImageRes *anImageRes = (ImageRes *)aRes;
+            if (anImageRes->mImage != nullptr) {
                 mCurResGroupListItr++;
                 continue;
             }
 
-            break;*/
+            break;
         }
 
         case ResType_Sound: {
@@ -1221,7 +1128,7 @@ bool TodFindFontPath(_Font *theFont, std::string *thePath) {
 bool TodResourceManager::FindFontPath(_Font *theFont, std::string *thePath) {
     for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++) {
         FontRes *aFontRes = (FontRes *)anItr->second;
-        _Font *aFont = (_Font *)aFontRes->mFont;
+        _Font *aFont = aFontRes->mFont;
         if (aFont == theFont) {
             *thePath = anItr->first;
             return true;

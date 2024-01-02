@@ -15,7 +15,7 @@ void TypingCheck::AddKeyCode(Sexy::KeyCode theKeyCode) { mPhrase.append(1, (char
 // 0x51C510
 void TypingCheck::AddChar(char theChar) {
     theChar = (char)tolower(theChar);
-    std::string aCharString(&theChar);
+    std::string aCharString{theChar};
     AddKeyCode(GetKeyCodeFromName(aCharString));
 }
 

@@ -3,7 +3,6 @@
 
 #include "Common.h"
 #include "graphics/Color.h"
-#include "graphics/SharedImage.h"
 #include "graphics/VkInterface.h"
 #include "graphics/WindowInterface.h"
 #include "misc/Buffer.h"
@@ -13,7 +12,9 @@
 #include "misc/RegistryEmulator.h"
 #include "widget/ButtonListener.h"
 #include "widget/DialogListener.h"
+#include <atomic>
 #include <chrono>
+#include <memory>
 #include <thread>
 
 // extern HMODULE gDDrawDLL;
@@ -35,7 +36,7 @@ class Image;
 class Widget;
 class SoundManager;
 class MusicInterface;
-class MemoryImage;
+// class MemoryImage;
 class HTTPTransfer;
 class Dialog;
 
@@ -48,7 +49,7 @@ public:
 };
 
 typedef std::list<WidgetSafeDeleteInfo> WidgetSafeDeleteList;
-typedef std::set<MemoryImage *> MemoryImageSet;
+// typedef std::set<MemoryImage*> MemoryImageSet;
 typedef std::map<int, Dialog *> DialogMap;
 typedef std::list<Dialog *> DialogList;
 // typedef std::list<MSG> WindowsMessageList;
@@ -113,6 +114,7 @@ enum { FPS_ShowFPS, FPS_ShowCoords, Num_FPS_Types };
 enum { UPDATESTATE_MESSAGES, UPDATESTATE_PROCESS_1, UPDATESTATE_PROCESS_2, UPDATESTATE_PROCESS_DONE };
 
 // typedef std::map<HANDLE, int> HandleToIntMap;
+typedef std::map<std::pair<std::string, std::string>, std::unique_ptr<Image>> SharedImageMap;
 
 class SexyAppBase : public ButtonListener, public DialogListener {
 public:
@@ -191,7 +193,7 @@ public:
     int mAutoMuteCount;
     bool mDemoMute;
     bool mMuteOnLostFocus;
-    MemoryImageSet mMemoryImageSet;
+    //	MemoryImageSet			mMemoryImageSet;
     SharedImageMap mSharedImageMap;
     bool mCleanupSharedImages;
 
@@ -243,8 +245,8 @@ public:
     int mShowFPSMode;
     std::chrono::high_resolution_clock::duration mScreenBltTime;
     bool mAutoStartLoadingThread;
-    bool mLoadingThreadStarted;
-    bool mLoadingThreadCompleted;
+    std::atomic_bool mLoadingThreadStarted;
+    std::atomic_bool mLoadingThreadCompleted;
     bool mLoaded;
     bool mYieldMainThread;
     bool mLoadingFailed;
@@ -318,7 +320,7 @@ public:
 
     RegistryEmulator mRegHandle;
 
-    WindowInterface<VkInterface> *mWindowInterface;
+    WindowInterface<Vk::VkInterface> *mWindowInterface;
 
 #ifdef ZYLOM
     uint mZylomGameId;
@@ -343,7 +345,7 @@ protected:
 
     // Loading thread methods
     virtual void LoadingThreadCompleted();
-    static void *LoadingThreadProcStub(void *theArg);
+    static void LoadingThreadProcStub(void *theArg);
 
     // Cursor thread methods
     void CursorThreadProc();
@@ -444,16 +446,15 @@ public:
     void SetCursor(int theCursorNum);
     int GetCursor();
     void EnableCustomCursors(bool enabled);
-    //	virtual DDImage*		GetImage(const std::string& theFileName, bool commitBits = true);
+    virtual std::unique_ptr<Image> GetImage(const std::string &theFileName);
     //	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, DDImage*
     //theImage, bool* isNew);
-    virtual SharedImageRef
-    GetSharedImage(const std::string &theFileName, const std::string &theVariant = "", bool *isNew = NULL);
+    virtual Image *GetSharedImage(const std::string &theFileName, const std::string &theVariant = "");
 
     void CleanSharedImages();
-    void PrecacheAdditive(MemoryImage *theImage);
-    void PrecacheAlpha(MemoryImage *theImage);
-    void PrecacheNative(MemoryImage *theImage);
+    //	void					PrecacheAdditive(MemoryImage* theImage);
+    //	void					PrecacheAlpha(MemoryImage* theImage);
+    //	void					PrecacheNative(MemoryImage* theImage);
     void SetCursorImage(int theCursorNum, Image *theImage);
 
     //	DDImage*				CreateCrossfadeImage(Image* theImage1, const Rect& theRect1, Image* theImage2, const
@@ -464,15 +465,15 @@ public:
     //	DDImage*				CopyImage(Image* theImage);
     void MirrorImage(Image *theImage);
     void FlipImage(Image *theImage);
-    void RotateImageHue(Sexy::MemoryImage *theImage, int theDelta);
+    //	void					RotateImageHue(Sexy::MemoryImage *theImage, int theDelta);
     ulong HSLToRGB(int h, int s, int l);
     ulong RGBToHSL(int r, int g, int b);
     void HSLToRGB(const ulong *theSource, ulong *theDest, int theSize);
     void RGBToHSL(const ulong *theSource, ulong *theDest, int theSize);
 
-    void AddMemoryImage(MemoryImage *theMemoryImage);
-    void RemoveMemoryImage(MemoryImage *theMemoryImage);
-    void Remove3DData(MemoryImage *theMemoryImage);
+    //	void					AddMemoryImage(MemoryImage* theMemoryImage);
+    //	void					RemoveMemoryImage(MemoryImage* theMemoryImage);
+    //	void					Remove3DData(MemoryImage* theMemoryImage);
     virtual void SwitchScreenMode();
     virtual void SwitchScreenMode(bool wantWindowed);
     virtual void SwitchScreenMode(bool wantWindowed, bool is3d, bool force = false);
@@ -500,17 +501,17 @@ public:
     virtual bool DebugKeyDown(int theKey);
     //	virtual bool			DebugKeyDownAsync(int theKey, bool ctrlDown, bool altDown);
     virtual void CloseRequestAsync();
-    bool Is3DAccelerated();
-    bool Is3DAccelerationSupported();
-    bool Is3DAccelerationRecommended();
+    //	bool					Is3DAccelerated();
+    //	bool					Is3DAccelerationSupported();
+    //	bool					Is3DAccelerationRecommended();
     void DemoSyncRefreshRate();
-    void Set3DAcclerated(bool is3D, bool reinit = true);
+    //	void					Set3DAcclerated(bool is3D, bool reinit = true);
     virtual void Done3dTesting();
     virtual std::string NotifyCrashHook(); // return file name that you want to upload
 
     //	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
     virtual bool DrawDirtyStuff();
-    virtual void Redraw(Rect *theClipRect);
+    virtual void Redraw();
 
     // Properties access methods
     bool LoadProperties(const std::string &theFileName, bool required, bool checkSig);

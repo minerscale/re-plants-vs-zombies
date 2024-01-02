@@ -5,7 +5,7 @@
 
 namespace Sexy {
 class Image;
-class MemoryImage;
+//    class MemoryImage;
 } // namespace Sexy
 using namespace Sexy;
 
@@ -22,11 +22,11 @@ extern ImageFilterMap gFilterMap[FilterEffect::NUM_FILTER_EFFECTS];
 
 void FilterEffectInitForApp();
 void FilterEffectDisposeForApp();
-void FilterEffectDoLumSat(MemoryImage *theImage, float theLum, float theSat);
-/*inline*/ void FilterEffectDoWashedOut(MemoryImage *theImage);
-/*inline*/ void FilterEffectDoLessWashedOut(MemoryImage *theImage);
-void FilterEffectDoWhite(MemoryImage *theImage);
-MemoryImage *FilterEffectCreateImage(Image *theImage, FilterEffect theFilterEffect);
+// void                FilterEffectDoLumSat(MemoryImage* theImage, float theLum, float theSat);
+///*inline*/ void     FilterEffectDoWashedOut(MemoryImage* theImage);
+///*inline*/ void     FilterEffectDoLessWashedOut(MemoryImage* theImage);
+// void                FilterEffectDoWhite(MemoryImage* theImage);
+// MemoryImage*        FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffect);
 Image *FilterEffectGetImage(Image *theImage, FilterEffect theFilterEffect);
 
 #endif

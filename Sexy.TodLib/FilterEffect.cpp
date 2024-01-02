@@ -1,7 +1,8 @@
 #include "FilterEffect.h"
+#include "Common.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
-#include "graphics/MemoryImage.h"
+// #include "graphics/MemoryImage.h"
 
 // 0x446B80
 void RGB_to_HSL(float r, float g, float b, float &h, float &s, float &l) {
@@ -98,10 +99,14 @@ void FilterEffectDisposeForApp() {
 }
 
 // 0x446FD0
-void FilterEffectDoLumSat(MemoryImage *theImage, float theLum, float theSat) {
-    uint32_t *ptr = theImage->mBits;
-    for (int y = 0; y < theImage->mHeight; y++) {
-        for (int x = 0; x < theImage->mWidth; x++) {
+/*
+void FilterEffectDoLumSat(MemoryImage* theImage, float theLum, float theSat)
+{
+    uint32_t* ptr = theImage->mBits;
+    for (int y = 0; y < theImage->mHeight; y++)
+    {
+        for (int x = 0; x < theImage->mWidth; x++)
+        {
             float b = (float)(*ptr & 255) / 255;
             float g = (float)(*ptr >> 8 & 255) / 255;
             float r = (float)(*ptr >> 16 & 255) / 255;
@@ -113,28 +118,36 @@ void FilterEffectDoLumSat(MemoryImage *theImage, float theLum, float theSat) {
             l *= theLum;
             HSL_to_RGB(h, s, l, r, g, b);
 
-            *ptr =
-                a << 24 | ClampInt(r * 255, 0, 255) << 16 | ClampInt(g * 255, 0, 255) << 8 | ClampInt(b * 255, 0, 255);
-            ptr++;
+            *ptr = a << 24 | ClampInt(r * 255, 0, 255) << 16 | ClampInt(g * 255, 0, 255) << 8 | ClampInt(b * 255, 0,
+255); ptr++;
         }
     }
+}*/
+
+/*
+void FilterEffectDoWashedOut(MemoryImage* theImage)
+{
+    FilterEffectDoLumSat(theImage, 1.8f, 0.2f);
 }
 
-void FilterEffectDoWashedOut(MemoryImage *theImage) { FilterEffectDoLumSat(theImage, 1.8f, 0.2f); }
+void FilterEffectDoLessWashedOut(MemoryImage* theImage)
+{
+    FilterEffectDoLumSat(theImage, 1.2f, 0.3f);
+}
 
-void FilterEffectDoLessWashedOut(MemoryImage *theImage) { FilterEffectDoLumSat(theImage, 1.2f, 0.3f); }
-
-// 0x447190
-void FilterEffectDoWhite(MemoryImage *theImage) {
-    uint32_t *ptr = theImage->mBits;
+//0x447190
+void FilterEffectDoWhite(MemoryImage* theImage)
+{
+    uint32_t* ptr = theImage->mBits;
     for (int y = 0; y < theImage->mHeight; y++)
         for (int x = 0; x < theImage->mWidth; x++)
             *ptr++ |= 0x00FFFFFF;
 }
 
-// 0x4471D0
-MemoryImage *FilterEffectCreateImage(Image *theImage, FilterEffect theFilterEffect) {
-    MemoryImage *aImage = new MemoryImage();
+//0x4471D0
+MemoryImage* FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffect)
+{
+    MemoryImage* aImage = new MemoryImage();
     aImage->mWidth = theImage->mWidth;
     aImage->mHeight = theImage->mHeight;
     int aNumBits = theImage->mWidth * theImage->mHeight;
@@ -148,19 +161,21 @@ MemoryImage *FilterEffectCreateImage(Image *theImage, FilterEffect theFilterEffe
     aMemoryGraphics.DrawImage(theImage, 0, 0);
     FixPixelsOnAlphaEdgeForBlending(aImage);
 
-    switch (theFilterEffect) {
-    case FilterEffect::FILTER_EFFECT_WASHED_OUT:      FilterEffectDoWashedOut(aImage); break;
-    case FilterEffect::FILTER_EFFECT_LESS_WASHED_OUT: FilterEffectDoLessWashedOut(aImage); break;
-    case FilterEffect::FILTER_EFFECT_WHITE:           FilterEffectDoWhite(aImage); break;
+    switch (theFilterEffect)
+    {
+    case FilterEffect::FILTER_EFFECT_WASHED_OUT:		FilterEffectDoWashedOut(aImage);		break;
+    case FilterEffect::FILTER_EFFECT_LESS_WASHED_OUT:	FilterEffectDoLessWashedOut(aImage);	break;
+    case FilterEffect::FILTER_EFFECT_WHITE:				FilterEffectDoWhite(aImage);			break;
     case FilterEffect::NUM_FILTER_EFFECTS:
-    case FilterEffect::FILTER_EFFECT_NONE:            break;
+    case FilterEffect::FILTER_EFFECT_NONE:
+        break;
     }
 
     aImage->mBitsChangedCount++;
     aImage->mNumCols = theImage->mNumCols;
     aImage->mNumRows = theImage->mNumRows;
     return aImage;
-}
+}*/
 
 // 0x447340
 Image *FilterEffectGetImage(Image *theImage, FilterEffect theFilterEffect) {
@@ -170,7 +185,9 @@ Image *FilterEffectGetImage(Image *theImage, FilterEffect theFilterEffect) {
     ImageFilterMap::iterator it = aFilterMap.find(theImage);
     if (it != aFilterMap.end()) return it->second;
 
-    MemoryImage *aImage = FilterEffectCreateImage(theImage, theFilterEffect);
+    unreachable();
+    /* TODO
+    MemoryImage* aImage = FilterEffectCreateImage(theImage, theFilterEffect);
     aFilterMap.insert(ImageFilterMap::value_type(theImage, aImage));
-    return aImage;
+    return aImage;*/
 }

@@ -5,8 +5,8 @@
 #include "graphics/Image.h"
 #include "misc/KeyCodes.h"
 // #include "graphics/DDImage.h"
+// #include "graphics/MemoryImage.h"
 #include "SexyAppBase.h"
-#include "graphics/MemoryImage.h"
 #include "misc/Debug.h"
 #include "misc/PerfTimer.h"
 
@@ -20,7 +20,7 @@ WidgetManager::WidgetManager(SexyAppBase *theApp) {
     mWidgetManager = this;
     mMouseIn = false;
     mDefaultTab = NULL;
-    // mImage = NULL;
+    mImage = NULL;
     mLastHadTransients = false;
     mPopupCommandWidget = NULL;
     mFocusWidget = NULL;
@@ -115,8 +115,8 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
                     Graphics g(*mCurG);
                     g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
                     g.Translate(aWidget->mX, aWidget->mY);
-                    g.SetFastStretch(!g.Is3D());
-                    g.SetLinearBlend(g.Is3D());
+                    g.SetFastStretch(false);
+                    g.SetLinearBlend(true);
 
                     aWidget->DrawOverlay(&g, aPriority);
                     mDeferredOverlayWidgets[i].first = NULL;
@@ -322,7 +322,6 @@ bool WidgetManager::DrawScreen() {
     bool drewStuff = false;
 
     int aDirtyCount = 0;
-    (void)aDirtyCount;
     // unused
     // bool hasTransients = false;
     // bool hasDirtyTransients = false;
@@ -338,37 +337,29 @@ bool WidgetManager::DrawScreen() {
     mMinDeferredOverlayPriority = 0x7FFFFFFF;
     mDeferredOverlayWidgets.resize(0);
 
-    unreachable();
-    /* FIXME
-    unreachable();
     Graphics aScrG(mImage);
     mCurG = &aScrG;
 
+    /*
     DDImage* aDDImage = dynamic_cast<DDImage*>(mImage);
     bool surfaceLocked = false;
     if (aDDImage != NULL)
-        surfaceLocked = aDDImage->LockSurface();
+        surfaceLocked = aDDImage->LockSurface();*/
 
-
-    if (aDirtyCount > 0)
-    {
+    if (aDirtyCount > 0) {
         Graphics g(aScrG);
         g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
-        bool is3D = mApp->Is3DAccelerated();
 
         WidgetList::iterator anItr = mWidgets.begin();
-        while (anItr != mWidgets.end())
-        {
-            Widget* aWidget = *anItr;
+        while (anItr != mWidgets.end()) {
+            Widget *aWidget = *anItr;
 
-            if (aWidget == mWidgetManager->mBaseModalWidget)
-                aModalFlags.mIsOver = true;
+            if (aWidget == mWidgetManager->mBaseModalWidget) aModalFlags.mIsOver = true;
 
-            if ((aWidget->mDirty) && (aWidget->mVisible))
-            {
+            if ((aWidget->mDirty) && (aWidget->mVisible)) {
                 Graphics aClipG(g);
-                aClipG.SetFastStretch(!is3D);
-                aClipG.SetLinearBlend(is3D);
+                aClipG.SetFastStretch(false);
+                aClipG.SetLinearBlend(true);
                 aClipG.Translate(aWidget->mX, aWidget->mY);
                 aWidget->DrawAll(&aModalFlags, &aClipG);
 
@@ -379,12 +370,11 @@ bool WidgetManager::DrawScreen() {
 
             ++anItr;
         }
-    }*/
+    }
 
     FlushDeferredOverlayWidgets(0x7FFFFFFF);
 
-    unreachable();
-    /* FIXME
+    /*
     if (aDDImage != NULL && surfaceLocked)
         aDDImage->UnlockSurface();
     */

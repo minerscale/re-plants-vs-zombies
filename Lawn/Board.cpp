@@ -6322,7 +6322,7 @@ void Board::UpdateFog() {
 
 // 0x41A730
 void Board::DrawFog(Graphics *g) {
-    Image *aImageFog = mApp->Is3DAccelerated() ? Sexy::IMAGE_FOG : Sexy::IMAGE_FOG_SOFTWARE;
+    Image *aImageFog = /*mApp->Is3DAccelerated() ?*/ Sexy::IMAGE_FOG; /*: Sexy::IMAGE_FOG_SOFTWARE*/
     for (int x = 0; x < MAX_GRID_SIZE_X; x++) {
         for (int y = 0; y < MAX_GRID_SIZE_Y + 1; y++) {
             int aFadeAmount = mGridCelFog[x][y];
@@ -6345,13 +6345,15 @@ void Board::DrawFog(Graphics *g) {
 
             int aColorVariant = 255 - aCelLook * 1.5 - aMotion * 1.5;
             int aLightnessVariant = 255 - aCelLook - aMotion;
-            if (!mApp->Is3DAccelerated()) {
+            /*
+            if (!mApp->Is3DAccelerated())
+            {
                 aPosX += 10;
                 aPosY += 3;
                 aCelCol = aCelLook % Sexy::IMAGE_FOG_SOFTWARE->mNumCols;
                 aColorVariant = 255;
                 aLightnessVariant = 255;
-            }
+            }*/
 
             g->SetColorizeImages(true);
             g->SetColor(Color(aColorVariant, aColorVariant, aLightnessVariant, aFadeAmount));
@@ -7175,7 +7177,7 @@ void Board::KeyChar(SexyChar theChar) {
         return;
     }
     if (theChar == _S('%')) {
-        mApp->SwitchScreenMode(mApp->mIsWindowed, !mApp->Is3DAccelerated(), false);
+        mApp->SwitchScreenMode(mApp->mIsWindowed, false, false);
     }
     if (theChar == _S('M')) {
         mApp->mMusic->mBurstOverride -= 2 - (mApp->mMusic->mBurstOverride != 1);

@@ -1,23 +1,28 @@
 #include "ReanimAtlas.h"
+#include "Common.h"
 #include "Reanimator.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
-#include "graphics/MemoryImage.h"
 #include "misc/PerfTimer.h"
+// #include "graphics/MemoryImage.h"
 #include <chrono>
 
 // 0x470250
 ReanimAtlas::ReanimAtlas() {
     mImageCount = 0;
-    mMemoryImage = nullptr;
+    unreachable();
+    //	mMemoryImage = nullptr;
 }
 
 void ReanimAtlas::ReanimAtlasDispose() {
-    if (mMemoryImage) {
+    unreachable();
+    /* TODO
+    if (mMemoryImage)
+    {
         delete mMemoryImage;
         mMemoryImage = nullptr;
     }
-    mImageCount = 0;
+    mImageCount = 0;*/
 }
 
 ReanimAtlasImage *ReanimAtlas::GetEncodedReanimAtlas(Image *theImage) {
@@ -29,8 +34,10 @@ ReanimAtlasImage *ReanimAtlas::GetEncodedReanimAtlas(Image *theImage) {
 }
 
 // 0x470290
-MemoryImage *ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight) {
-    MemoryImage *aImage = new MemoryImage();
+/*
+MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
+{
+    MemoryImage* aImage = new MemoryImage();
 
     int aBitsCount = theWidth * theHeight;
     aImage->mBits = new uint32_t[aBitsCount + 1];
@@ -41,7 +48,7 @@ MemoryImage *ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight) {
     memset(aImage->mBits, 0, aBitsCount * 4);
     aImage->mBits[aBitsCount] = Sexy::MEMORYCHECK_ID;
     return aImage;
-}
+}*/
 
 // 0x470340
 bool sSortByNonIncreasingHeight(const ReanimAtlasImage &image1, const ReanimAtlasImage &image2) {
@@ -217,11 +224,15 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition *theReanimDef) {
         }
     }
 
+    unreachable();
+    /* TODO
     mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
     Graphics aMemoryGraphis(mMemoryImage);
-    for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++) {
-        ReanimAtlasImage *aImage = &mImageArray[aImageIndex];
-        aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY); // 将原贴图绘制在图集上
+    for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++)
+    {
+        ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
+        aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);  // 将原贴图绘制在图集上
     }
-    FixPixelsOnAlphaEdgeForBlending(mMemoryImage); // 将所有透明像素的颜色修正为其周围像素颜色的平均值
+    FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // 将所有透明像素的颜色修正为其周围像素颜色的平均值
+    */
 }

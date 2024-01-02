@@ -4,10 +4,15 @@
 // #include <direct.h>
 // #include <io.h>
 #include <chrono>
+#include <codecvt>
 #include <cstdarg>
+#include <cstdio>
 #include <cwchar>
 #include <errno.h>
 #include <filesystem>
+#include <iostream>
+#include <locale>
+#include <stdexcept>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -1100,15 +1105,17 @@ bool Sexy::StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLen
     return c2 == 0 || i == maxLength;
 }
 
-std::wstring Sexy::UTF8StringToWString(const std::string /*theString*/) {
-    unreachable(); // FIXME
-                   /*
-                   int size = MultiByteToWideChar(CP_UTF8, 0, theString.c_str(), theString.length() + 1, nullptr, 0);
-                   wchar_t* buffer = new wchar_t[size];
-                   MultiByteToWideChar(CP_UTF8, 0, theString.c_str(), theString.length() + 1, buffer, size);
-                   std::wstring result = buffer;
-                   delete[] buffer;
-                   return result;*/
+std::wstring Sexy::UTF8StringToWString(const std::string theString) {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> cv;
+    return cv.from_bytes(theString);
+
+    /*
+    int size = MultiByteToWideChar(CP_UTF8, 0, theString.c_str(), theString.length() + 1, nullptr, 0);
+    wchar_t* buffer = new wchar_t[size];
+    MultiByteToWideChar(CP_UTF8, 0, theString.c_str(), theString.length() + 1, buffer, size);
+    std::wstring result = buffer;
+    delete[] buffer;
+    return result;*/
 }
 
 void Sexy::SMemR(void *&_Src, void *_Dst, size_t _Size) {

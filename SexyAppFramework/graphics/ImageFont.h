@@ -3,8 +3,8 @@
 
 #include "Font.h"
 #include "SexyAppBase.h"
-#include "SharedImage.h"
 #include "misc/DescParser.h"
+// #include "SharedImage.h"
 
 namespace Sexy {
 
@@ -39,7 +39,7 @@ public:
     CharDataMap mCharDataMap;
     Color mColorMult;
     Color mColorAdd;
-    SharedImageRef mImage;
+    Image *mImage;
     int mDrawMode;
     Point mOffset;
     int mSpacing;

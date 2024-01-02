@@ -46,7 +46,6 @@
 #include "widget/WidgetManager.h"
 
 #include "SexyAppFramework/resource.h"
-#include "sound/BassMusicInterface.h"
 #include "widget/Checkbox.h"
 #include "widget/Dialog.h"
 
@@ -111,7 +110,7 @@ LawnApp::LawnApp() {
     mSfxVolume = 0.5525;
     mAutoStartLoadingThread = false;
     mDebugKeysEnabled = false;
-    mProdName = "PopCap\\PlantsVsZombies";
+    mProdName = "PopCap/PlantsVsZombies";
     std::string aTitleName = "Plants vs. Zombies";
 #ifdef _DEBUG
     aTitleName += " BETA ";
@@ -125,7 +124,7 @@ LawnApp::LawnApp() {
     mGameMode = GameMode::GAMEMODE_ADVENTURE;
     mEasyPlantingCheat = false;
     mAutoEnable3D = true;
-    Tod_SWTri_AddAllDrawTriFuncs();
+    //	Tod_SWTri_AddAllDrawTriFuncs();
     mLoadingZombiesThreadCompleted = true;
     mGamesPlayed = 0;
     mMaxExecutions = 0;
@@ -270,7 +269,6 @@ void LawnApp::Shutdown() {
         }
 
         if (mReanimatorCache) {
-            mReanimatorCache->ReanimatorCacheDispose();
             delete mReanimatorCache;
             mReanimatorCache = nullptr;
         }
@@ -1495,7 +1493,8 @@ void LawnApp::LoadingThreadProc() {
     for (int i = 0; i < 3; i++) {
         mNumLoadingThreadTasks += mResourceManager->GetNumResources(groups[i]) * group_ave_ms_to_load[i];
     }
-    mNumLoadingThreadTasks += 636;
+    // mNumLoadingThreadTasks += 636;
+    mNumLoadingThreadTasks -= 744; // I have no idea why but the count is off by this much.
     mNumLoadingThreadTasks += GetNumPreloadingTasks();
     mNumLoadingThreadTasks += mMusic->GetNumLoadingTasks();
 
@@ -1507,12 +1506,13 @@ void LawnApp::LoadingThreadProc() {
 
     LoadGroup("LoadingImages", 9);
     LoadGroup("LoadingFonts", 54);
+    LoadGroup("LoadingSounds", 54);
     if (mLoadingFailed || mShutdown || mCloseRequest) return;
 
     aHesitationResources.EndBracket();
 
     TodTrace(
-        "loading '%s' %d ms", "resources",
+        "loading: '%s' %d ms", "resources",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
@@ -1521,24 +1521,21 @@ void LawnApp::LoadingThreadProc() {
     // aDuration goes unused
     // int aDuration = max(aTimer.GetDuration(), 0.0);
     aTimer = std::chrono::high_resolution_clock::now();
-
     mPoolEffect = new PoolEffect();
     mPoolEffect->PoolEffectInitialize();
     mZenGarden = new ZenGarden();
     mReanimatorCache = new ReanimatorCache();
-    mReanimatorCache->ReanimatorCacheInitialize();
     TodFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
-
     TodTrace(
-        "loading '%s' %d ms", "stuff",
+        "loading: '%s' %d ms", "stuff",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
-    aTimer = std::chrono::high_resolution_clock::now();
 
+    aTimer = std::chrono::high_resolution_clock::now();
     TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
     TodTrace(
-        "loading '%s' %d ms", "trail",
+        "loading: '%s' %d ms", "trail",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
@@ -1552,8 +1549,8 @@ void LawnApp::LoadingThreadProc() {
 
     // aDuration = max(aTimer.GetDuration(), 0.0);
 
-    GetNumPreloadingTasks();
-    LoadGroup("LoadingSounds", 54);
+    // GetNumPreloadingTasks();
+
     TodHesitationTrace("finished loading");
 }
 
@@ -2615,7 +2612,7 @@ int LawnApp::GetNumPreloadingTasks() {
 
 // 0x455720
 void LawnApp::PreloadForUser() {
-    int aNumTasks = mNumLoadingThreadTasks + GetNumPreloadingTasks();
+    int aNumTasks = mNumLoadingThreadTasks /*+ GetNumPreloadingTasks()*/;
     if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN) {
         TodTrace("preload canceled\n");
         mNumLoadingThreadTasks = aNumTasks;
@@ -2625,19 +2622,19 @@ void LawnApp::PreloadForUser() {
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_PUFF, true);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LAWN_MOWERED_ZOMBIE, true);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_READYSETPLANT, true);
-    mCompletedLoadingThreadTasks += 68;
+    // mCompletedLoadingThreadTasks += 68;
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_FINAL_WAVE, true);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_SUN, true);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_TEXT_FADE_ON, true);
-    mCompletedLoadingThreadTasks += 68;
+    // mCompletedLoadingThreadTasks += 68;
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE, true);
-    mCompletedLoadingThreadTasks += 68;
+    // mCompletedLoadingThreadTasks += 68;
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE_NEWSPAPER, true);
-    mCompletedLoadingThreadTasks += 68;
+    // mCompletedLoadingThreadTasks += 68;
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_SELECTOR_SCREEN, true);
-    mCompletedLoadingThreadTasks += 340;
+    // mCompletedLoadingThreadTasks += 340;
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE_HAND, true);
-    mCompletedLoadingThreadTasks += 68;
+    mCompletedLoadingThreadTasks += 68 * 10;
 
     if (mPlayerInfo) {
         for (SeedType i = SeedType::SEED_PEASHOOTER; i < SeedType::NUM_SEED_TYPES; i = (SeedType)((int)i + 1)) {
@@ -2687,7 +2684,11 @@ void LawnApp::PreloadForUser() {
     }
 
     if (mCompletedLoadingThreadTasks != aNumTasks) {
-        TodTrace("num preload tasks wasn't calculated correctly");
+        printf(
+            "warning:  num preload tasks wasn't calculated correctly: supposed to be %d, was %d\n",
+            mCompletedLoadingThreadTasks, aNumTasks
+        );
+        // TodTrace("num preload tasks wasn't calculated correctly");
         mCompletedLoadingThreadTasks = aNumTasks;
     }
 }

@@ -6,7 +6,6 @@
 // #include "graphics/DDImage.h"
 // #include "graphics/D3DInterface.h"
 #include "graphics/ImageFont.h"
-#include "graphics/SysFont.h"
 #include "imagelib/ImageLib.h"
 
 // #define SEXY_PERF_ENABLED
@@ -16,7 +15,10 @@ using namespace Sexy;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void ResourceManager::ImageRes::DeleteResource() { mImage.Release(); }
+void ResourceManager::ImageRes::DeleteResource() {
+    // delete mImage;
+    // mImage.Release();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,6 +30,7 @@ void ResourceManager::SoundRes::DeleteResource() {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
 void ResourceManager::FontRes::DeleteResource() {
     delete mFont;
     mFont = NULL;
@@ -92,14 +95,20 @@ void ResourceManager::DeleteResources(const std::string &theGroup) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void ResourceManager::DeleteExtraImageBuffers(const std::string &theGroup) {
-    for (ResMap::iterator anItr = mImageMap.begin(); anItr != mImageMap.end(); ++anItr) {
-        if (theGroup.empty() || anItr->second->mResGroup == theGroup) {
-            ImageRes *aRes = (ImageRes *)anItr->second;
-            MemoryImage *anImage = (MemoryImage *)aRes->mImage;
-            if (anImage != NULL) anImage->DeleteExtraBuffers();
+void ResourceManager::DeleteExtraImageBuffers(const std::string & /*theGroup*/) {
+    unreachable();
+    /* TODO
+    for (ResMap::iterator anItr = mImageMap.begin(); anItr != mImageMap.end(); ++anItr)
+    {
+        if (theGroup.empty() || anItr->second->mResGroup==theGroup)
+        {
+            ImageRes *aRes = (ImageRes*)anItr->second;
+
+            MemoryImage *anImage = (MemoryImage*)aRes->mImage;
+            if (anImage != NULL)
+                anImage->DeleteExtraBuffers();
         }
-    }
+    }*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -239,10 +248,8 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
     aRes->mPalletize = theElement.mAttributes.find(_S("nopal")) == theElement.mAttributes.end();
     aRes->mA4R4G4B4 = theElement.mAttributes.find(_S("a4r4g4b4")) != theElement.mAttributes.end();
     aRes->mDDSurface = theElement.mAttributes.find(_S("ddsurface")) != theElement.mAttributes.end();
-    aRes->mPurgeBits =
-        (theElement.mAttributes.find(_S("nobits")) != theElement.mAttributes.end()) ||
-        ((mApp->Is3DAccelerated()) && (theElement.mAttributes.find(_S("nobits3d")) != theElement.mAttributes.end())) ||
-        ((!mApp->Is3DAccelerated()) && (theElement.mAttributes.find(_S("nobits2d")) != theElement.mAttributes.end()));
+    aRes->mPurgeBits = (theElement.mAttributes.find(_S("nobits")) != theElement.mAttributes.end()) ||
+                       (theElement.mAttributes.find(_S("nobits3d")) != theElement.mAttributes.end());
     aRes->mA8R8G8B8 = theElement.mAttributes.find(_S("a8r8g8b8")) != theElement.mAttributes.end();
     aRes->mMinimizeSubdivisions = theElement.mAttributes.find(_S("minsubdivide")) != theElement.mAttributes.end();
     aRes->mAutoFindAlpha = theElement.mAttributes.find(_S("noalpha")) == theElement.mAttributes.end();
@@ -581,23 +588,25 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
     // unused
 
     SEXY_PERF_BEGIN("ResourceManager:GetImage");
+    static bool has_shown = false;
+    if (!has_shown) {
+        printf("warning:  ResourceManager::DoLoadImage is probably full of bugs\n");
+        has_shown = true;
+    }
 
     // ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
     // SEXY_PERF_END("ResourceManager:GetImage");
 
-    bool isNew;
+    // bool isNew;
     ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
-    SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
+    Image *anImage = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-    unreachable();
+    // DDImage* aDDImage = (DDImage*) aSharedImageRef;
+
+    if (anImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
 
     /*
-    DDImage* aDDImage = (DDImage*) aSharedImageRef;
-
-    if (aDDImage == NULL)
-        return Fail(StrFormat("Failed to load image: %s",theRes->mPath.c_str()));
-
     if (isNew)
     {
         if (!theRes->mAlphaImage.empty())
@@ -611,12 +620,13 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
             if (!LoadAlphaGridImage(theRes, aSharedImageRef))
                 return false;
         }
-    }
+    }*/
 
-    aDDImage->CommitBits();
-    theRes->mImage = aSharedImageRef;
-    aDDImage->mPurgeBits = theRes->mPurgeBits;
+    // aDDImage->CommitBits();
+    theRes->mImage = anImage;
+    // aDDImage->mPurgeBits = theRes->mPurgeBits;
 
+    /*
     if (theRes->mDDSurface)
     {
         SEXY_PERF_BEGIN("ResourceManager:DDSurface");
@@ -630,8 +640,9 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
         }
 
         SEXY_PERF_END("ResourceManager:DDSurface");
-    }
+    }*/
 
+    /*
     if (theRes->mPalletize)
     {
         SEXY_PERF_BEGIN("ResourceManager:Palletize");
@@ -640,8 +651,9 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
         else
             aDDImage->mWantPal = true;
         SEXY_PERF_END("ResourceManager:Palletize");
-    }
+    }*/
 
+    /*
     if (theRes->mA4R4G4B4)
         aDDImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
 
@@ -650,17 +662,18 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
 
     if (theRes->mMinimizeSubdivisions)
         aDDImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
+    */
 
-    if (theRes->mAnimInfo.mAnimType != AnimType_None)
-        aDDImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
+    if (theRes->mAnimInfo.mAnimType != AnimType_None) anImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
 
-    aDDImage->mNumRows = theRes->mRows;
-    aDDImage->mNumCols = theRes->mCols;
+    anImage->mNumRows = theRes->mRows;
+    anImage->mNumCols = theRes->mCols;
 
+    /*
     if (aDDImage->mPurgeBits)
-        aDDImage->PurgeBits();
+        aDDImage->PurgeBits();*/
 
-    ResourceLoadedHook(theRes);*/
+    ResourceLoadedHook(theRes);
     return true;
 }
 
@@ -670,15 +683,13 @@ void ResourceManager::DeleteImage(const std::string &theName) { ReplaceImage(the
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-SharedImageRef ResourceManager::LoadImage(const std::string &theName) {
+Image *ResourceManager::LoadImage(const std::string &theName) {
     ResMap::iterator anItr = mImageMap.find(theName);
     if (anItr == mImageMap.end()) return NULL;
 
     ImageRes *aRes = (ImageRes *)anItr->second;
-    unreachable();
-    /* TODO
-    if ((DDImage*) aRes->mImage != NULL)
-        return aRes->mImage;*/
+
+    if (aRes->mImage != NULL) return aRes->mImage;
 
     if (aRes->mFromProgram) return NULL;
 
@@ -713,15 +724,14 @@ bool ResourceManager::DoLoadSound(SoundRes *theRes) {
 #include <../Sexy.TodLib/TodCommon.h>
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::DoLoadFont(FontRes * /*theRes*/) {
-    unreachable();
-    /*
+bool ResourceManager::DoLoadFont(FontRes *theRes) {
     _Font *aFont = NULL;
 
     SEXY_PERF_BEGIN("ResourceManager:DoLoadFont");
 
-    if (theRes->mSysFont)
-    {
+    if (theRes->mSysFont) {
+        unreachable();
+        /* TODO
         bool bold = theRes->mBold, simulateBold = false;
         if (Sexy::CheckFor98Mill())
         {
@@ -731,50 +741,40 @@ bool ResourceManager::DoLoadFont(FontRes * /*theRes*/) {
         aFont = new SysFont(theRes->mPath,theRes->mSize,bold,theRes->mItalic,theRes->mUnderline);
         SysFont* aSysFont = (SysFont*)aFont;
         aSysFont->mDrawShadow = theRes->mShadow;
-        aSysFont->mSimulateBold = simulateBold;
-    }
-    else if (theRes->mImagePath.empty())
-    {
-        if (strncmp(theRes->mPath.c_str(),"!ref:",5)==0)
-        {
+        aSysFont->mSimulateBold = simulateBold;*/
+    } else if (theRes->mImagePath.empty()) {
+        if (strncmp(theRes->mPath.c_str(), "!ref:", 5) == 0) {
             std::string aRefName = theRes->mPath.substr(5);
             _Font *aRefFont = GetFont(aRefName);
-            if (aRefFont==NULL)
-                return Fail("Ref font not found: " + aRefName);
+            if (aRefFont == NULL) return Fail("Ref font not found: " + aRefName);
 
             aFont = aRefFont->Duplicate();
-        }
-        else
-            aFont = new ImageFont(mApp, theRes->mPath);
-    }
-    else
-    {
-        Image *anImage = mApp->GetImage(theRes->mImagePath);
+        } else aFont = new ImageFont(mApp, theRes->mPath);
+    } else {
+        unreachable();
+        /* TODO
+        auto anImage = mApp->GetImage(theRes->mImagePath);
         if (anImage==NULL)
             return Fail(StrFormat("Failed to load image: %s",theRes->mImagePath.c_str()));
 
         theRes->mImage = anImage;
-        aFont = new ImageFont(anImage, theRes->mPath);
+        aFont = new ImageFont(anImage, theRes->mPath);*/
     }
 
-    ImageFont *anImageFont = dynamic_cast<ImageFont*>(aFont);
-    if (anImageFont!=NULL)
-    {
-        if (anImageFont->mFontData==NULL || !anImageFont->mFontData->mInitialized)
-        {
+    ImageFont *anImageFont = dynamic_cast<ImageFont *>(aFont);
+    if (anImageFont != NULL) {
+        if (anImageFont->mFontData == NULL || !anImageFont->mFontData->mInitialized) {
             delete aFont;
-            return Fail(StrFormat("Failed to load font: %s",theRes->mPath.c_str()));
+            return Fail(StrFormat("Failed to load font: %s", theRes->mPath.c_str()));
         }
 
-        if (!theRes->mTags.empty())
-        {
+        if (!theRes->mTags.empty()) {
             char aBuf[1024];
-            strcpy(aBuf,theRes->mTags.c_str());
-            const char *aPtr = strtok(aBuf,", \r\n\t");
-            while (aPtr != NULL)
-            {
+            strcpy(aBuf, theRes->mTags.c_str());
+            const char *aPtr = strtok(aBuf, ", \r\n\t");
+            while (aPtr != NULL) {
                 anImageFont->AddTag(aPtr);
-                aPtr = strtok(NULL,", \r\n\t");
+                aPtr = strtok(NULL, ", \r\n\t");
             }
             anImageFont->Prepare();
         }
@@ -785,7 +785,7 @@ bool ResourceManager::DoLoadFont(FontRes * /*theRes*/) {
     SEXY_PERF_END("ResourceManager:DoLoadFont");
 
     ResourceLoadedHook(theRes);
-    return true;*/
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -822,10 +822,7 @@ bool ResourceManager::LoadNextResource() {
         switch (aRes->mType) {
         case ResType_Image: {
             ImageRes *anImageRes = (ImageRes *)aRes;
-            unreachable();
-            /* TODO
-            if ((DDImage*)anImageRes->mImage!=NULL)
-                continue;*/
+            if (anImageRes->mImage != NULL) continue;
 
             return DoLoadImage(anImageRes);
         }
@@ -937,7 +934,7 @@ int ResourceManager::GetNumResources(const std::string &theGroup) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-SharedImageRef ResourceManager::GetImage(const std::string &theId) {
+Image *ResourceManager::GetImage(const std::string &theId) {
     ResMap::iterator anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) return ((ImageRes *)anItr->second)->mImage;
     else return NULL;
@@ -961,11 +958,12 @@ _Font *ResourceManager::GetFont(const std::string &theId) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-SharedImageRef ResourceManager::GetImageThrow(const std::string &theId) {
+Image *ResourceManager::GetImageThrow(const std::string &theId) {
     ResMap::iterator anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
         ImageRes *aRes = (ImageRes *)anItr->second;
-        if ((MemoryImage *)aRes->mImage != NULL) return aRes->mImage;
+
+        if (aRes->mImage != NULL) return aRes->mImage;
 
         if (mAllowMissingProgramResources && aRes->mFromProgram) return NULL;
     }
@@ -1010,12 +1008,14 @@ void ResourceManager::SetAllowMissingProgramImages(bool allow) { mAllowMissingPr
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage) {
+bool ResourceManager::ReplaceImage(const std::string &theId, Image * /*theImage*/) {
     ResMap::iterator anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
         anItr->second->DeleteResource();
-        ((ImageRes *)anItr->second)->mImage = (MemoryImage *)theImage;
-        ((ImageRes *)anItr->second)->mImage.mOwnsUnshared = true;
+        unreachable();
+        /* TODO
+        ((ImageRes*)anItr->second)->mImage = (MemoryImage*) theImage;
+        ((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;*/
         return true;
     } else return false;
 }
