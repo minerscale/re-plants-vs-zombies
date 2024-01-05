@@ -422,7 +422,6 @@ void WidgetManager::RemovePopupCommandWidget() {
 }
 
 void WidgetManager::MousePosition(int x, int y) {
-
     int aLastMouseX = mLastMouseX;
     int aLastMouseY = mLastMouseY;
 

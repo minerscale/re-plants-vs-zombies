@@ -120,7 +120,7 @@ class RenderCommand {
 public:
     Image *mImage;
     int mDest[2];
-    int mSrc[4];
+    TRect<int> mSrc;
     int mMode;
     Color mColor;
     bool mUseAlphaCorrection;

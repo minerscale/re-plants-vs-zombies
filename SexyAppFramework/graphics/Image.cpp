@@ -13,13 +13,19 @@ Image::Image() {
     mAnimInfo = NULL;
     mDrawn = false;
 }
-
-Image::Image(const Image &theImage)
-    : mWidth(theImage.mWidth), mHeight(theImage.mHeight), mNumRows(theImage.mNumRows), mNumCols(theImage.mNumCols) {
+/*
+Image::Image(const Image& theImage) :
+    mWidth(theImage.mWidth),
+    mHeight(theImage.mHeight),
+    mNumRows(theImage.mNumRows),
+    mNumCols(theImage.mNumCols)
+{
     mDrawn = false;
-    if (theImage.mAnimInfo != NULL) mAnimInfo = new AnimInfo(*theImage.mAnimInfo);
-    else mAnimInfo = NULL;
-}
+    if (theImage.mAnimInfo != NULL)
+        mAnimInfo = new AnimInfo(*theImage.mAnimInfo);
+    else
+        mAnimInfo = NULL;
+}*/
 
 Image::~Image() { delete mAnimInfo; }
 

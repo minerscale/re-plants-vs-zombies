@@ -308,7 +308,7 @@ void Board::TryToSaveGame() {
         MkDir(GetAppDataFolder() + "userdata");
         mApp->mMusic->GameMusicPause(true);
         LawnSaveGame(this, aFileName);
-        mApp->ClearUpdateBacklog();
+        // mApp->ClearUpdateBacklog();
         SurvivalSaveScore();
     }
 }
@@ -337,7 +337,7 @@ bool Board::LoadGame(const std::string &theFileName) {
     if (!LawnLoadGame(this, theFileName)) return false;
 
     LoadBackgroundImages();
-    mApp->ClearUpdateBacklog();
+    // mApp->ClearUpdateBacklog();
     ResetFPSStats();
     UpdateLayers();
     return true;
@@ -2511,7 +2511,7 @@ void Board::UpdateCursor() {
 
     if (mPaused || mBoardFadeOutCounter >= 0 || mTimeStopCounter > 0 ||
         mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON) {
-        mApp->SetCursor(Sexy::CURSOR_POINTER);
+        mApp->SetCursor(CURSOR_POINTER);
         return;
     }
 
@@ -2566,13 +2566,13 @@ void Board::UpdateCursor() {
     }
 
     if (mChallenge->mBeghouledMouseCapture || aShowDrag) {
-        mApp->SetCursor(Sexy::CURSOR_DRAGGING);
+        mApp->SetCursor(CURSOR_DRAGGING);
     } else if (aShowFinger) {
-        mApp->SetCursor(Sexy::CURSOR_HAND);
+        mApp->SetCursor(CURSOR_HAND);
     } else if (aHideCursor) {
-        mApp->SetCursor(Sexy::CURSOR_NONE);
+        mApp->SetCursor(CURSOR_NONE);
     } else {
-        mApp->SetCursor(Sexy::CURSOR_POINTER);
+        mApp->SetCursor(CURSOR_POINTER);
     }
 }
 

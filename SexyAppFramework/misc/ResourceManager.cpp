@@ -1008,14 +1008,13 @@ void ResourceManager::SetAllowMissingProgramImages(bool allow) { mAllowMissingPr
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::ReplaceImage(const std::string &theId, Image * /*theImage*/) {
+bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage) {
     ResMap::iterator anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
         anItr->second->DeleteResource();
-        unreachable();
-        /* TODO
-        ((ImageRes*)anItr->second)->mImage = (MemoryImage*) theImage;
-        ((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;*/
+
+        ((ImageRes *)anItr->second)->mImage = theImage;
+        //((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;
         return true;
     } else return false;
 }

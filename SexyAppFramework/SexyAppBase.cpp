@@ -5,7 +5,6 @@
 #include "graphics/VkImage.h"
 #include "graphics/WindowInterface.h"
 
-#include "imagelib/ImageLib.h"
 #include "sound/DummySoundManager.h"
 #include "sound/SoundManager.h"
 
@@ -164,23 +163,23 @@ SexyAppBase::SexyAppBase() {
     mIsScreenSaver = false;
     mAllowMonitorPowersave = true;
     // mHWnd = NULL;
-    mDDInterface = NULL;
+    //	mDDInterface = NULL;
     mMusicInterface = NULL;
     // mInvisHWnd = NULL;
     mFrameTime = std::chrono::milliseconds(10);
-    mNonDrawCount = 0;
+    //	mNonDrawCount = 0;
     mDrawCount = 0;
     mSleepCount = 0;
     mUpdateCount = 0;
     mUpdateAppState = 0;
     mUpdateAppDepth = 0;
-    mPendingUpdatesAcc = 0.0;
-    mUpdateFTimeAcc = std::chrono::high_resolution_clock::duration(0);
-    mHasPendingDraw = true;
+    mPendingUpdatesAcc = 0;
+    //	mUpdateFTimeAcc = std::chrono::high_resolution_clock::duration(0);
+    //	mHasPendingDraw = true;
     mIsDrawing = false;
     mLastDrawWasEmpty = false;
-    mLastTimeCheck = std::chrono::high_resolution_clock::now();
-    mUpdateMultiplier = 1;
+    //	mLastTimeCheck = std::chrono::high_resolution_clock::now();
+    //	mUpdateMultiplier = 1;
     mPaused = false;
     mFastForwardToUpdateNum = 0;
     mFastForwardToMarker = false;
@@ -200,7 +199,7 @@ SexyAppBase::SexyAppBase() {
     mLoadingThreadStarted = false;
     mAutoStartLoadingThread = true;
     mLoadingThreadCompleted = false;
-    mCursorThreadRunning = false;
+    // mCursorThreadRunning = false;
     mNumLoadingThreadTasks = 0;
     mCompletedLoadingThreadTasks = 0;
     mLastDrawTick = std::chrono::high_resolution_clock::now();
@@ -253,11 +252,6 @@ SexyAppBase::SexyAppBase() {
     mWantFMod = false;
 
     mSyncRefreshRate = 100;
-    mVSyncUpdates = false;
-    mVSyncBroken = false;
-    mVSyncBrokenCount = 0;
-    mVSyncBrokenTestStartTick = std::chrono::high_resolution_clock::now();
-    mVSyncBrokenTestUpdates = 0;
     mWaitForVSync = false;
     mSoftVSyncWait = true;
     mUserChanged3DSetting = false;
@@ -273,8 +267,9 @@ SexyAppBase::SexyAppBase() {
 
     int i;
 
+    /*
     for (i = 0; i < NUM_CURSORS; i++)
-        mCursorImages[i] = NULL;
+        mCursorImages[i] = NULL;*/
 
     for (i = 0; i < 256; i++)
         mAdd8BitMaxTable[i] = i;
@@ -355,8 +350,7 @@ SexyAppBase::SexyAppBase() {
 SexyAppBase::~SexyAppBase() {
     Shutdown();
 
-    unreachable();
-    /* TODO
+    /*
     if (!showedMsgBox && gD3DInterfacePreDrawError && !IsScreenSaver())
     {
         printf("%s\n",
@@ -390,12 +384,8 @@ SexyAppBase::~SexyAppBase() {
 
     delete mWidgetManager;
     delete mResourceManager;
-    unreachable(); // FIXME
-    // delete gFPSImage;
-    // gFPSImage = NULL;
 
-    unreachable();
-    /* TODO
+    /* The shared image map contains unique_ptr, so it should destruct these automatically.
     SharedImageMap::iterator aSharedImageItr = mSharedImageMap.begin();
     while (aSharedImageItr != mSharedImageMap.end())
     {
@@ -411,7 +401,6 @@ SexyAppBase::~SexyAppBase() {
     delete mMusicInterface;
     delete mSoundManager;
 
-    unreachable();
     /* FIXME
     if (mHWnd != NULL)
     {
@@ -429,8 +418,7 @@ SexyAppBase::~SexyAppBase() {
 
     WaitForLoadingThread();
 
-    unreachable();
-    /* FIXME
+    /* The cursors are also unique_ptr so they don't need to be freed.
     DestroyCursor(mHandCursor);
     DestroyCursor(mDraggingCursor);
     */
@@ -484,12 +472,15 @@ static BOOL CALLBACK ChangeDisplayWindowEnumProc(HWND hwnd, LPARAM lParam)
     return TRUE;
 }*/
 
-void SexyAppBase::ClearUpdateBacklog(bool relaxForASecond) {
+/*
+void SexyAppBase::ClearUpdateBacklog(bool relaxForASecond)
+{
     mLastTimeCheck = std::chrono::high_resolution_clock::now();
     mUpdateFTimeAcc = std::chrono::high_resolution_clock::duration(0);
 
-    if (relaxForASecond) mRelaxUpdateBacklogCount = 1000;
-}
+    if (relaxForASecond)
+        mRelaxUpdateBacklogCount = 1000;
+}*/
 
 bool SexyAppBase::IsScreenSaver() { return mIsScreenSaver; }
 
@@ -1023,12 +1014,15 @@ void SexyAppBase::WaitForLoadingThread() {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 }
 
-void SexyAppBase::SetCursorImage(int theCursorNum, Image *theImage) {
-    if ((theCursorNum >= 0) && (theCursorNum < NUM_CURSORS)) {
+/*
+void SexyAppBase::SetCursorImage(int theCursorNum, Image* theImage)
+{
+    if ((theCursorNum >= 0) && (theCursorNum < NUM_CURSORS))
+    {
         mCursorImages[theCursorNum] = theImage;
         EnforceCursor();
     }
-}
+}*/
 
 void SexyAppBase::TakeScreenshot() {
     unreachable();
@@ -1951,29 +1945,17 @@ void SexyAppBase::Shutdown() {
             SetSfxVolume(mDemoSfxVolume);
         }
 
+        /*
         // Blah
-        while (mCursorThreadRunning) {
+        while (mCursorThreadRunning)
+        {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            // Sleep(10);
-        }
+            //Sleep(10);
+        }*/
 
         if (mMusicInterface != NULL) mMusicInterface->StopAllMusic();
 
-        unreachable(); // TODO
-        /*
-        if ((!mIsPhysWindowed) && (mDDInterface != NULL) && (mDDInterface->mDD != NULL))
-        {
-            mDDInterface->mDD->RestoreDisplayMode();
-        }*/
-
-        unreachable();
-        /* TODO
-        if (mHWnd != NULL)
-        {
-            ShowWindow(mHWnd, SW_HIDE);
-        }*/
-
-        RestoreScreenResolution();
+        // RestoreScreenResolution();
 
         if (mReadFromRegistry) WriteToRegistry();
 
@@ -2015,49 +1997,16 @@ void SexyAppBase::UpdateFrames() {
     // CleanSharedImages();
 }
 
-void SexyAppBase::DoUpdateFramesF(float theFrac) {
-    if ((mVSyncUpdates) && (!mMinimized)) mWidgetManager->UpdateFrameF(theFrac);
-}
-
-bool SexyAppBase::DoUpdateFrames() {
+void SexyAppBase::DoUpdateFrames() {
     SEXY_AUTO_PERF("SexyAppBase::DoUpdateFrames");
 
-    if (gScreenSaverActive) return false;
-
-    if (mPlayingDemoBuffer) {
-        if ((mLoadingThreadCompleted) && (!mLoaded) && (mDemoLoadingComplete)) {
-            mLoaded = true;
-            // TODO
-            //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-            mYieldMainThread = false;
-            LoadingThreadCompleted();
-        }
-
-        // Hrrm not sure why we check (mUpdateCount != mLastDemoUpdateCnt) here
-        if ((mLoaded == mDemoLoadingComplete) && (mUpdateCount != mLastDemoUpdateCnt)) {
-            UpdateFrames();
-            return true;
-        }
-
-        return false;
-    } else {
-        if ((mLoadingThreadCompleted) && (!mLoaded)) {
-            // TODO
-            //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-            mLoaded = true;
-            mYieldMainThread = false;
-            LoadingThreadCompleted();
-
-            if (mRecordingDemoBuffer) {
-                WriteDemoTimingBlock();
-                mDemoBuffer.WriteNumBits(0, 1);
-                mDemoBuffer.WriteNumBits(DEMO_LOADING_COMPLETE, 5);
-            }
-        }
-
-        UpdateFrames();
-        return true;
+    if ((mLoadingThreadCompleted) && (!mLoaded)) {
+        mLoaded = true;
+        mYieldMainThread = false;
+        LoadingThreadCompleted();
     }
+
+    UpdateFrames();
 }
 
 void SexyAppBase::Redraw() {
@@ -2301,7 +2250,7 @@ bool SexyAppBase::DrawDirtyStuff() {
     }
 
     if (gScreenSaverActive) {
-        mHasPendingDraw = false;
+        // mHasPendingDraw = false;
         mLastDrawWasEmpty = true;
         return false;
     }
@@ -2348,9 +2297,6 @@ bool SexyAppBase::DrawDirtyStuff() {
 
         Redraw();
 
-        // This is our one UpdateFTimeAcc if we are vsynched
-        UpdateFTimeAcc();
-
         auto aEndTime = std::chrono::high_resolution_clock::now();
 
         mScreenBltTime = aEndTime - aPreScreenBltTime;
@@ -2387,12 +2333,10 @@ bool SexyAppBase::DrawDirtyStuff() {
             OutputDebugString(aStr);*/
         } else mNextDrawTick = aEndTime;
 
-        mHasPendingDraw = false;
         mCustomCursorDirty = false;
 
         return true;
     } else {
-        mHasPendingDraw = false;
         mLastDrawWasEmpty = true;
         return false;
     }
@@ -2431,7 +2375,7 @@ void SexyAppBase::BeginPopup() {
 void SexyAppBase::EndPopup() {
     if (!mIsPhysWindowed) mNoDefer = false;
 
-    ClearUpdateBacklog();
+    // ClearUpdateBacklog();
     ClearKeysDown();
 
     if (mWidgetManager->mDownButtons) {
@@ -3447,29 +3391,6 @@ void SexyAppBase::HandleNotifyGameMessage(int /*theType*/) {
     }*/
 }
 
-void SexyAppBase::RehupFocus() {
-    bool wantHasFocus = mActive && !mMinimized;
-
-    if (wantHasFocus != mHasFocus) {
-        mHasFocus = wantHasFocus;
-
-        if (mHasFocus) {
-            if (mMuteOnLostFocus) Unmute(true);
-
-            mWidgetManager->GotFocus();
-            GotFocus();
-        } else {
-            if (mMuteOnLostFocus) Mute(true);
-
-            mWidgetManager->LostFocus();
-            LostFocus();
-
-            mWindowInterface->ReleaseMouseCapture();
-            mWidgetManager->DoMouseUps();
-        }
-    }
-}
-
 void SexyAppBase::ClearKeysDown() {
     if (mWidgetManager != NULL) // fix stuck alt-key problem
     {
@@ -3562,7 +3483,7 @@ void SexyAppBase::ProcessDemo() {
                     case DEMO_ACTIVATE_APP: {
                         mActive = mDemoBuffer.ReadNumBits(1, false) != 0;
 
-                        RehupFocus();
+                        mWindowInterface->RehupFocus();
 
                         if ((mActive) && (!mIsWindowed)) mWidgetManager->MarkAllDirty();
 
@@ -3582,7 +3503,7 @@ void SexyAppBase::ProcessDemo() {
                             }
                         }
 
-                        RehupFocus();
+                        mWindowInterface->RehupFocus();
                     } break;
                     case DEMO_MOUSE_WHEEL: {
                         int aScroll = mDemoBuffer.ReadNumBits(8, true);
@@ -3604,12 +3525,12 @@ void SexyAppBase::ProcessDemo() {
                     case DEMO_CLOSE: Shutdown(); break;
                     case DEMO_MOUSE_ENTER:
                         mMouseIn = true;
-                        EnforceCursor();
+                        mWindowInterface->EnforceCursor();
                         break;
                     case DEMO_MOUSE_EXIT:
                         mWidgetManager->MouseExit(mLastDemoMouseX, mLastDemoMouseY);
                         mMouseIn = false;
-                        EnforceCursor();
+                        mWindowInterface->EnforceCursor();
                         break;
                     case DEMO_LOADING_COMPLETE: mDemoLoadingComplete = true; break;
                     case DEMO_VIDEO_DATA:
@@ -4288,7 +4209,7 @@ void SexyAppBase::Done3dTesting() {}
 std::string SexyAppBase::NotifyCrashHook() { return ""; }
 
 void SexyAppBase::MakeWindow() {
-    mWindowInterface = new Vk::VkInterface(mWidth, mHeight);
+    mWindowInterface = new Vk::VkInterface(mWidth, mHeight, mWidgetManager);
 
     if ((mPlayingDemoBuffer) || (mIsWindowed && !mFullScreenWindow)) {
         mIsPhysWindowed = true;
@@ -4364,7 +4285,6 @@ void SexyAppBase::MakeWindow() {
     */
 
     bool isActive = mActive;
-    mActive = mWindowInterface->IsFocused();
 
     mPhysMinimized = false;
     if (mMinimized) {
@@ -4372,10 +4292,10 @@ void SexyAppBase::MakeWindow() {
 
         mMinimized = false;
         isActive = mActive; // set this here so we don't call RehupFocus again.
-        RehupFocus();
+        mWindowInterface->RehupFocus();
     }
 
-    if (isActive != mActive) RehupFocus();
+    if (isActive != mActive) mWindowInterface->RehupFocus();
 
     // ReInitImages();
 
@@ -4431,15 +4351,12 @@ void SexyAppBase::LoadingThreadProcStub(void *theArg) {
 
     aSexyApp->LoadingThreadProc();
 
-    char aStr[256];
-    sprintf(
-        aStr, "Resource Loading Time: %ldms\n",
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
-        )
-            .count()
+    printf(
+        "Resource Loading Time: %ldms\n", std::chrono::duration_cast<std::chrono::milliseconds>(
+                                              std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
+                                          )
+                                              .count()
     );
-    printf("%s", aStr);
 
     aSexyApp->mLoadingThreadCompleted = true;
 }
@@ -4449,21 +4366,16 @@ void SexyAppBase::StartLoadingThread() {
         mYieldMainThread = true;
         //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
         mLoadingThreadStarted = true;
-        /*
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
-        pthread_t ptid;
-        pthread_create(&ptid, &attr, &LoadingThreadProcStub, this);*/
 
         std::thread thread_obj(LoadingThreadProcStub, this);
         thread_obj.detach();
     }
 }
-void SexyAppBase::CursorThreadProc() {
-    unreachable();
-    /* TODO
+
+/*
+void SexyAppBase::CursorThreadProc()
+{
+
     ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
     POINT aLastCursorPos = {0, 0};
     int aLastDrawCount = 0;
@@ -4515,38 +4427,27 @@ void SexyAppBase::CursorThreadProc() {
     }
 
     mCursorThreadRunning = false;
-    */
-}
+}*/
 
-void SexyAppBase::CursorThreadProcStub(void * /*theArg*/) {
-    unreachable();
-    /* TODO
+/*
+void SexyAppBase::CursorThreadProcStub(void *theArg)
+{
+
     CoInitialize(NULL);
     SexyAppBase* aSexyApp = (SexyAppBase*) theArg;
     aSexyApp->CursorThreadProc();
-    */
-}
+}*/
 
-void SexyAppBase::StartCursorThread() {
-    if (!mCursorThreadRunning) {
-        mCursorThreadRunning = true;
-        printf("warning:  Cursor thread is deprecated. Good luck using your mouse\n");
-        //::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-        // std::thread thread_obj(CursorThreadProcStub, this);
-    }
-}
+void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool /*is3d*/, bool force) {
+    if (mForceFullscreen) wantWindowed = false;
 
-void SexyAppBase::SwitchScreenMode(bool /*wantWindowed*/, bool /*is3d*/, bool /*force*/) {
-    unreachable();
-    /* TODO
-    if (mForceFullscreen)
-        wantWindowed = false;
-
-    if (mIsWindowed == wantWindowed && !force)
-    {
-        Set3DAcclerated(is3d);
+    if (mIsWindowed == wantWindowed && !force) {
+        // Set3DAcclerated(is3d);
         return;
     }
+
+    unreachable();
+    /* TODO
 
     // Set 3d acceleration preference
     Set3DAcclerated(is3d,false);
@@ -4598,23 +4499,23 @@ void SexyAppBase::SetAlphaDisabled(bool isDisabled) {
     }
 }
 
-void SexyAppBase::EnforceCursor() {
+/* TODO
+void SexyAppBase::EnforceCursor()
+{
+
     bool wantSysCursor = true;
 
-    if (mDDInterface == NULL) return;
-
-    if (!mMouseIn) {
-        unreachable();
-        /* TODO
+    if (!mMouseIn)
+    {
         ::SetCursor(::LoadCursor(NULL, IDC_ARROW));
         if (mDDInterface->SetCursorImage(NULL))
             mCustomCursorDirty = true;
-        */
-    } else {
+    }
+    else
+    {
         if ((mCursorImages[mCursorNum] == NULL) ||
-            ((!mPlayingDemoBuffer) && (!mCustomCursorsEnabled) && (mCursorNum != CURSOR_CUSTOM))) {
-            unreachable();
-            /* TODO
+            ((!mPlayingDemoBuffer) && (!mCustomCursorsEnabled) && (mCursorNum != CURSOR_CUSTOM)))
+        {
             if (mOverrideCursor != NULL)
                 ::SetCursor(mOverrideCursor);
             else if (mCursorNum == CURSOR_POINTER)
@@ -4648,10 +4549,9 @@ void SexyAppBase::EnforceCursor() {
 
             if (mDDInterface->SetCursorImage(NULL))
                 mCustomCursorDirty = true;
-            */
-        } else {
-            unreachable();
-            /* TODO
+        }
+        else
+        {
             if (mDDInterface->SetCursorImage(mCursorImages[mCursorNum]))
                 mCustomCursorDirty = true;
 
@@ -4685,18 +4585,18 @@ void SexyAppBase::EnforceCursor() {
             }
 
             wantSysCursor = false;
-            */
         }
     }
 
-    if (wantSysCursor != mSysCursor) {
+    if (wantSysCursor != mSysCursor)
+    {
         mSysCursor = wantSysCursor;
 
         // Don't hide the hardware cursor when playing back a demo buffer
-        //		if (!mPlayingDemoBuffer)
-        //			::ShowCursor(mSysCursor);
+//		if (!mPlayingDemoBuffer)
+//			::ShowCursor(mSysCursor);
     }
-}
+}*/
 
 void SexyAppBase::ProcessSafeDeleteList() {
     MTAutoDisallowRand aDisallowRand;
@@ -4704,6 +4604,7 @@ void SexyAppBase::ProcessSafeDeleteList() {
     WidgetSafeDeleteList::iterator anItr = mSafeDeleteList.begin();
     while (anItr != mSafeDeleteList.end()) {
         WidgetSafeDeleteInfo *aWidgetSafeDeleteInfo = &(*anItr);
+        printf("depth: %d | widget depth: %d\n", mUpdateAppDepth, aWidgetSafeDeleteInfo->mUpdateAppDepth);
         if (mUpdateAppDepth <= aWidgetSafeDeleteInfo->mUpdateAppDepth) {
             delete aWidgetSafeDeleteInfo->mWidget;
             anItr = mSafeDeleteList.erase(anItr);
@@ -4711,278 +4612,50 @@ void SexyAppBase::ProcessSafeDeleteList() {
     }
 }
 
-void SexyAppBase::UpdateFTimeAcc() {
+/*
+void SexyAppBase::UpdateFTimeAcc()
+{
     auto aCurTime = std::chrono::high_resolution_clock::now();
 
-    // if (mLastTimeCheck != 0)
+    //if (mLastTimeCheck != 0)
     //{
     auto aDeltaTime = aCurTime - mLastTimeCheck;
 
-    mUpdateFTimeAcc =
-        ((mUpdateFTimeAcc + aDeltaTime) < (std::chrono::milliseconds(200)) ? (mUpdateFTimeAcc + aDeltaTime)
-                                                                           : (std::chrono::milliseconds(200)));
+    mUpdateFTimeAcc = ((mUpdateFTimeAcc + aDeltaTime) < (std::chrono::milliseconds(200)) ? (mUpdateFTimeAcc +
+aDeltaTime) : (std::chrono::milliseconds(200)));
 
     if (mRelaxUpdateBacklogCount > 0) {
         auto aRelaxDelta = std::chrono::milliseconds(mRelaxUpdateBacklogCount) - aDeltaTime;
-        mRelaxUpdateBacklogCount = (aRelaxDelta > std::chrono::milliseconds(0))
-                                       ? std::chrono::duration_cast<std::chrono::milliseconds>(aRelaxDelta).count()
-                                       : 0;
+        mRelaxUpdateBacklogCount =
+            (aRelaxDelta > std::chrono::milliseconds(0)) ?
+            std::chrono::duration_cast<std::chrono::milliseconds>(aRelaxDelta).count() :
+            0;
     }
     //}
 
     mLastTimeCheck = aCurTime;
-}
+}*/
 
 // int aNumCalls = 0;
 // DWORD aLastCheck = 0;
 
-bool SexyAppBase::Process(bool allowSleep) {
-    /*DWORD aTimeNow = GetTickCount();
-    if (aTimeNow - aLastCheck >= 10000)
-    {
-        OutputDebugString(StrFormat(_S("FUpdates: %d\n"), aNumCalls).c_str());
-        aLastCheck = aTimeNow;
-        aNumCalls = 0;
-    }*/
-
-    if (mLoadingFailed) Shutdown();
-
-    bool isVSynched = (!mPlayingDemoBuffer) && (mVSyncUpdates) && (!mLastDrawWasEmpty) && (!mVSyncBroken) &&
-                      ((!mIsPhysWindowed) || (mIsPhysWindowed && mWaitForVSync && !mSoftVSyncWait));
-    double aFrameFTime;
-    double anUpdatesPerUpdateF;
-
-    if (mVSyncUpdates) {
-        aFrameFTime = (1000.0 / mSyncRefreshRate) / mUpdateMultiplier;
-        anUpdatesPerUpdateF =
-            (float)(1000.0 / (1000 * (std::chrono::duration_cast<std::chrono::duration<float>>(mFrameTime).count()) *
-                              mSyncRefreshRate));
-    } else {
-        aFrameFTime =
-            (1000.0 * std::chrono::duration_cast<std::chrono::duration<float>>(mFrameTime).count()) / mUpdateMultiplier;
-        anUpdatesPerUpdateF = 1.0;
-    }
-
-    // Do we need to fast forward?
-    if (mPlayingDemoBuffer) {
-        if (mUpdateCount < mFastForwardToUpdateNum || mFastForwardToMarker) {
-            if (!mDemoMute && !mFastForwardStep) {
-                mDemoMute = true;
-                Mute(true);
-            }
-
-            static auto aTick = std::chrono::high_resolution_clock::now();
-            while (mUpdateCount < mFastForwardToUpdateNum || mFastForwardToMarker) {
-                ClearUpdateBacklog();
-                int aLastUpdateCount = mUpdateCount;
-
-                // Actual updating code below
-                //////////////////////////////////////////////////////////////////////////
-
-                bool hadRealUpdate = DoUpdateFrames();
-
-                if (hadRealUpdate) {
-                    mPendingUpdatesAcc += anUpdatesPerUpdateF;
-                    mPendingUpdatesAcc -= 1.0;
-                    ProcessSafeDeleteList();
-
-                    // Process any extra updates
-                    while (mPendingUpdatesAcc >= 1.0) {
-                        // These should just be IDLE commands we have to clear out
-                        ProcessDemo();
-
-                        bool hasRealUpdate = DoUpdateFrames();
-                        DBG_ASSERTE(hasRealUpdate);
-
-                        if (!hasRealUpdate) break;
-
-                        ProcessSafeDeleteList();
-                        mPendingUpdatesAcc -= 1.0;
-                    }
-
-                    DoUpdateFramesF((float)anUpdatesPerUpdateF);
-                    ProcessSafeDeleteList();
-                }
-
-                //////////////////////////////////////////////////////////////////////////
-
-                // If the update count doesn't change, its because we are
-                //  playing back a demo and need to read more
-                if (aLastUpdateCount == mUpdateCount) return true;
-
-                auto aNewTick = std::chrono::high_resolution_clock::now();
-                if (aNewTick - aTick >= std::chrono::milliseconds(1000) || mFastForwardStep) // let the app draw some
-                {
-                    mFastForwardStep = false;
-                    aTick = std::chrono::high_resolution_clock::now();
-                    DrawDirtyStuff();
-                    return true;
-                }
-            }
-        }
-
-        if (mDemoMute) {
-            mDemoMute = false;
-            mSoundManager->StopAllSounds();
-            Unmute(true);
-        }
-    }
+/*
+bool SexyAppBase::Process(bool allowSleep)
+{
+    if (mLoadingFailed)
+        Shutdown();
 
     // Make sure we're not paused
-    if ((!mPaused) && (mUpdateMultiplier > 0)) {
-        auto aStartTime = std::chrono::high_resolution_clock::now();
-
-        // ulong aCurTime = aStartTime; // Unused
-        auto aCumSleepTime = std::chrono::high_resolution_clock::duration(0);
-
-        // When we are VSynching, only calculate this FTimeAcc right after drawing
-
-        if (!isVSynched) UpdateFTimeAcc();
-
-        // mNonDrawCount is used to make sure we draw the screen at least
-        // 10 times per second, even if it means we have to slow down
-        // the updates to make it draw 10 times per second in "game time"
-
-        bool didUpdate = false;
-
-        if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
-            if ((++mNonDrawCount < (int)ceil(10 * mUpdateMultiplier)) || (!mLoaded)) {
-                bool doUpdate = false;
-
-                if (isVSynched) {
-                    // Synch'ed to vertical refresh, so update as soon as possible after draw
-                    doUpdate = (!mHasPendingDraw) ||
-                               (mUpdateFTimeAcc >= std::chrono::duration<float>((aFrameFTime * 0.75) / 1000.0));
-                } else if (mUpdateFTimeAcc >= std::chrono::duration<float>(aFrameFTime / 1000.0)) {
-                    doUpdate = true;
-                }
-
-                if (doUpdate) {
-                    // Do VSyncBroken test.  This test fails if we're in fullscreen and
-                    // "don't vsync" has been forced in Advanced settings up Display Properties
-                    if ((!mPlayingDemoBuffer) && (mUpdateMultiplier == 1.0)) {
-                        mVSyncBrokenTestUpdates++;
-                        float aFrameTimeInMsec =
-                            1000 * std::chrono::duration_cast<std::chrono::duration<float>>(mFrameTime).count();
-                        if (mVSyncBrokenTestUpdates >=
-                            (DWORD)((1000 + 1000 * aFrameTimeInMsec - 1) / aFrameTimeInMsec)) {
-                            // It has to be running 33% fast to be "broken" (25% = 1/0.800)
-                            if (aStartTime - mVSyncBrokenTestStartTick <= std::chrono::milliseconds(800)) {
-                                // The test has to fail 3 times in a row before we decide that
-                                //  vsync is broken overall
-                                mVSyncBrokenCount++;
-                                if (mVSyncBrokenCount >= 3) mVSyncBroken = true;
-                            } else mVSyncBrokenCount = 0;
-
-                            mVSyncBrokenTestStartTick = aStartTime;
-                            mVSyncBrokenTestUpdates = 0;
-                        }
-                    }
-
-                    bool hadRealUpdate = DoUpdateFrames();
-                    if (hadRealUpdate) mUpdateAppState = UPDATESTATE_PROCESS_2;
-
-                    mHasPendingDraw = true;
-                    didUpdate = true;
-                }
-            }
-        } else if (mUpdateAppState == UPDATESTATE_PROCESS_2) {
-            mUpdateAppState = UPDATESTATE_PROCESS_DONE;
-
-            mPendingUpdatesAcc += anUpdatesPerUpdateF;
-            mPendingUpdatesAcc -= 1.0;
-            ProcessSafeDeleteList();
-
-            // Process any extra updates
-            while (mPendingUpdatesAcc >= 1.0) {
-                // These should just be IDLE commands we have to clear out
-                ProcessDemo();
-
-                ++mNonDrawCount;
-                bool hasRealUpdate = DoUpdateFrames();
-                DBG_ASSERTE(hasRealUpdate);
-
-                if (!hasRealUpdate) break;
-
-                ProcessSafeDeleteList();
-                mPendingUpdatesAcc -= 1.0;
-            }
-
-            // aNumCalls++;
-            DoUpdateFramesF((float)anUpdatesPerUpdateF);
-            ProcessSafeDeleteList();
-
-            // Don't let mUpdateFTimeAcc dip below 0
-            //  Subtract an extra 0.2ms, because sometimes refresh rates have some
-            //  fractional component that gets truncated, and it's better to take off
-            //  too much to keep our timing tending toward occuring right after
-            //  redraws
-            if (isVSynched) {
-                auto aUpdateDuration =
-                    mUpdateFTimeAcc - std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(
-                                          std::chrono::duration<float>((aFrameFTime - 0.2f) / 1000.0)
-                                      );
-                mUpdateFTimeAcc =
-                    (aUpdateDuration > std::chrono::milliseconds(0)) ? aUpdateDuration : std::chrono::milliseconds(0);
-            }
-
-            else
-                mUpdateFTimeAcc -= std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(
-                    std::chrono::duration<float>(aFrameFTime / 1000.0)
-                );
-
-            if (mRelaxUpdateBacklogCount > 0) mUpdateFTimeAcc = std::chrono::milliseconds(0);
-
-            didUpdate = true;
-        }
-
-        if (!didUpdate) {
-            mUpdateAppState = UPDATESTATE_PROCESS_DONE;
-
-            mNonDrawCount = 0;
-
-            if (mHasPendingDraw) {
-                DrawDirtyStuff();
-            } else {
-                // Let us take into account the time it took to draw dirty stuff
-                auto aTimeToNextFrame = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(
-                                            std::chrono::duration<float>(aFrameFTime / 1000.0)
-                                        ) -
-                                        mUpdateFTimeAcc;
-                if (aTimeToNextFrame > std::chrono::milliseconds(0)) {
-                    if (!allowSleep) return false;
-
-                    // Wait till next processing cycle
-                    ++mSleepCount;
-                    std::this_thread::sleep_for(aTimeToNextFrame);
-
-                    aCumSleepTime += aTimeToNextFrame;
-                }
-            }
-        }
-
-        if (mYieldMainThread) {
-            // This is to make sure that the title screen doesn't take up any more than
-            // 1/3 of the processor time
-
-            auto anEndTime = std::chrono::high_resolution_clock::now();
-            auto anElapsedTime = (anEndTime - aStartTime) - aCumSleepTime;
-            auto aTestDuration = (anElapsedTime * 2) - aCumSleepTime;
-
-            auto aLoadingYieldSleepTime =
-                aTestDuration < std::chrono::milliseconds(250) ? aTestDuration : std::chrono::milliseconds(250);
-
-            if (aLoadingYieldSleepTime >= std::chrono::milliseconds(0)) {
-                if (!allowSleep) return false;
-
-                std::this_thread::sleep_for(aLoadingYieldSleepTime);
-            }
-        }
+    if (!mPaused)
+    {
+        ProcessSafeDeleteList();
+        DoUpdateFrames();
+        DrawDirtyStuff();
+        ProcessSafeDeleteList();
     }
 
-    ProcessSafeDeleteList();
     return true;
-}
+}*/
 
 /*void SexyAppBase::DoMainLoop()
 {
@@ -5025,57 +4698,59 @@ void SexyAppBase::DoMainLoop() {
     }
 }
 
+double gFramerate = 69420;
+static auto timer = std::chrono::high_resolution_clock::now();
+constexpr auto frame_length =
+    std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 60));
+static auto timer_then = std::chrono::steady_clock::now();
+static uint32_t frames = 0;
+constexpr int poll_frequency = 60;
+
+/*==========================================================*
+ |               — WARNING HERE BE DRAGONS —                |
+ | UpdateAppStep is called in a loop by dialogs. This means |
+ | ProcessSafeDeleteList()   can only  be    called  in  an |
+ | invocation of this function different to DoUpdateFrames  |
+ |                                                          |
+ |    times attempted to fix this fucked up function: 1     |
+ *==========================================================*/
 bool SexyAppBase::UpdateAppStep(bool *updated) {
     if (updated != NULL) *updated = false;
 
     if (mExitToTop) return false;
 
-    if (mUpdateAppState == UPDATESTATE_PROCESS_DONE) mUpdateAppState = UPDATESTATE_MESSAGES;
-
     mUpdateAppDepth++;
 
-    // We update in two stages to avoid doing a Process if our loop termination
-    //  condition has already been met by processing windows messages
-    if (mUpdateAppState == UPDATESTATE_MESSAGES) {
-        mWindowInterface->PollEvents();
-        // unreachable();
-        /* FIXME
-        MSG msg;
-        while ((PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) && (!mShutdown))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }*/
-
-        ProcessDemo();
+    if (mUpdateAppState == UPDATESTATE_PROCESS_DONE) {
         mUpdateAppState = UPDATESTATE_PROCESS_1;
-        static bool has_shown = false;
-        if (!has_shown) {
-            printf("warning:  No window messages are actually being processed.\n");
-            has_shown = true;
+        mWindowInterface->PollEvents();
+    } else if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
+        if (updated != NULL) *updated = true;
+        mUpdateAppState = UPDATESTATE_PROCESS_2;
+
+        if (mLoadingFailed) Shutdown();
+
+        // Make sure we're not paused
+        if (!mPaused) {
+            DoUpdateFrames();
+            DrawDirtyStuff();
         }
-        /* TODO
-        if (!ProcessDeferredMessages(true))
-        {
-            mUpdateAppState = UPDATESTATE_PROCESS_1;
-        }*/
-    } else {
-        // Process changes state by itself
-        if (mStepMode) {
-            if (mStepMode == 2) {
-                std::this_thread::sleep_for(mFrameTime);
-                mUpdateAppState = UPDATESTATE_PROCESS_DONE; // skip actual update until next step
-            } else {
-                mStepMode = 2;
-                DoUpdateFrames();
-                DoUpdateFramesF(1.0f);
-                DrawDirtyStuff();
-            }
-        } else {
-            int anOldUpdateCnt = mUpdateCount;
-            Process();
-            if (updated != NULL) *updated = mUpdateCount != anOldUpdateCnt;
+    } else if (mUpdateAppState == UPDATESTATE_PROCESS_2) {
+        mUpdateAppState = UPDATESTATE_PROCESS_DONE;
+        ProcessSafeDeleteList();
+
+        timer = timer + frame_length;
+        if (frames % poll_frequency == 0 && frames != 0) {
+            auto timer_now = std::chrono::steady_clock::now();
+            auto Duration = duration_cast<std::chrono::duration<float>>(timer_now - timer_then);
+            gFramerate = poll_frequency / Duration.count();
+            // std::cout << poll_frequency << " frames took " << Duration.count() << " seconds. " <<
+            // poll_frequency/Duration.count() << "fps." << std::endl;
+            timer_then = timer_now;
         }
+        ++frames;
+
+        std::this_thread::sleep_until(timer);
     }
 
     mUpdateAppDepth--;
@@ -5091,9 +4766,9 @@ bool SexyAppBase::UpdateApp() {
     }
 }
 
-int SexyAppBase::InitDDInterface() {
-    unreachable();
-    /* FIXME
+/*
+int SexyAppBase::InitDDInterface()
+{
     PreDDInterfaceInitHook();
     DeleteNativeImageData();
     int aResult = mDDInterface->Init(mHWnd, mIsPhysWindowed);
@@ -5108,15 +4783,13 @@ int SexyAppBase::InitDDInterface() {
         PostDDInterfaceInitHook();
     }
     return aResult;
-    */
-}
+
+}*/
 
 void SexyAppBase::PreTerminate() {}
 
 void SexyAppBase::Start() {
     if (mShutdown) return;
-
-    StartCursorThread();
 
     if (mAutoStartLoadingThread) StartLoadingThread();
 
@@ -5469,9 +5142,14 @@ void SexyAppBase::HandleCmdLineParam(const std::string &theParamName, const std:
 
 void SexyAppBase::PreDisplayHook() {}
 
-void SexyAppBase::PreDDInterfaceInitHook() {}
+/*
+void SexyAppBase::PreDDInterfaceInitHook()
+{
+}
 
-void SexyAppBase::PostDDInterfaceInitHook() {}
+void SexyAppBase::PostDDInterfaceInitHook()
+{
+}*/
 
 bool SexyAppBase::ChangeDirHook(const char *theIntendedPath) {
     (void)theIntendedPath;
@@ -5633,12 +5311,6 @@ void SexyAppBase::Init() {
     SetWindowLongPtr(mInvisHWnd, GWLP_USERDATA, (intptr_t) this);
     */
 
-    /* TODO
-    mHandCursor = CreateCursor(gHInstance, 11, 4, 32, 32, gFingerCursorData,
-    gFingerCursorData+sizeof(gFingerCursorData)/2); mDraggingCursor = CreateCursor(gHInstance, 15, 10, 32, 32,
-    gDraggingCursorData, gDraggingCursorData+sizeof(gDraggingCursorData)/2);
-    */
-
     // Let app do something before showing window, or switching to fullscreen mode
     // NOTE: Moved call to PreDisplayHook above mIsWindowed and GetSystemsMetrics
     // checks because the checks below use values that could change in PreDisplayHook.
@@ -5692,6 +5364,13 @@ void SexyAppBase::Init() {
     }
 
     MakeWindow();
+
+    mHandCursor = mWindowInterface->CreateCursor(
+        11, 4, 32, 32, gFingerCursorData, gFingerCursorData + sizeof(gFingerCursorData) / 2
+    );
+    mDraggingCursor = mWindowInterface->CreateCursor(
+        15, 10, 32, 32, gDraggingCursorData, gDraggingCursorData + sizeof(gDraggingCursorData) / 2
+    );
 
     if (mPlayingDemoBuffer) {
         // Get video data
@@ -5802,14 +5481,14 @@ std::string SexyAppBase::GetClipboard() {
 
 void SexyAppBase::SetCursor(int theCursorNum) {
     mCursorNum = theCursorNum;
-    EnforceCursor();
+    mWindowInterface->EnforceCursor();
 }
 
 int SexyAppBase::GetCursor() { return mCursorNum; }
 
 void SexyAppBase::EnableCustomCursors(bool enabled) {
     mCustomCursorsEnabled = enabled;
-    EnforceCursor();
+    mWindowInterface->EnforceCursor();
 }
 
 std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const std::string &theFileName) {

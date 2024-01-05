@@ -287,7 +287,7 @@ public:
         int theDialogId, const SexyChar *theHeaderName, const SexyChar *theLinesName, const SexyChar *theButton1Name,
         const SexyChar *theButton2Name, int theButtonMode
     );
-    virtual void EnforceCursor();
+    //	virtual void					EnforceCursor();
     void ShowCreditScreen();
     void KillCreditScreen();
     static SexyString Pluralize(int theCount, const SexyChar *theSingular, const SexyChar *thePlural);
