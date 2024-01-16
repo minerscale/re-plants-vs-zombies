@@ -8,6 +8,7 @@
 #include "misc/XMLParser.h"
 #include "paklib/PakInterface.h"
 #include "zlib/zlib.h"
+#include <SDL2/SDL.h>
 #include <assert.h>
 #include <cstring>
 #include <stddef.h>
@@ -484,8 +485,9 @@ bool DefMapReadFromCache(void *&theReadPtr, DefMap *theDefMap, void *theDefiniti
 // 0x444380
 uint DefinitionCalcHashSymbolMap(int aSchemaHash, DefSymbol *theSymbolMap) {
     while (theSymbolMap->mSymbolName != nullptr) {
-        aSchemaHash = crc32(aSchemaHash, (const Bytef *)theSymbolMap->mSymbolName, strlen(theSymbolMap->mSymbolName));
-        aSchemaHash = crc32(aSchemaHash, (const Bytef *)&theSymbolMap->mSymbolValue, sizeof(int));
+        aSchemaHash =
+            SDL_crc32(aSchemaHash, (const void *)theSymbolMap->mSymbolName, strlen(theSymbolMap->mSymbolName));
+        aSchemaHash = SDL_crc32(aSchemaHash, (const void *)&theSymbolMap->mSymbolValue, sizeof(int));
         theSymbolMap++;
     }
     return aSchemaHash;
@@ -497,10 +499,10 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap
         if (aNode->mValue == theDefMap) return aSchemaHash;
     theProgressMaps.AddTail(theDefMap);
 
-    aSchemaHash = crc32(aSchemaHash, (Bytef *)&theDefMap->mDefSize, sizeof(int));
+    aSchemaHash = SDL_crc32(aSchemaHash, (const void *)&theDefMap->mDefSize, sizeof(int));
     for (DefField *aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++) {
-        aSchemaHash = crc32(aSchemaHash, (Bytef *)&aField->mFieldType, sizeof(DefFieldType));
-        aSchemaHash = crc32(aSchemaHash, (Bytef *)&aField->mFieldOffset, sizeof(int));
+        aSchemaHash = SDL_crc32(aSchemaHash, (const void *)&aField->mFieldType, sizeof(DefFieldType));
+        aSchemaHash = SDL_crc32(aSchemaHash, (const void *)&aField->mFieldOffset, sizeof(int));
         switch (aField->mFieldType) {
         case DefFieldType::DT_ENUM:
         case DefFieldType::DT_FLAGS:
@@ -519,7 +521,7 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap
 uint DefinitionCalcHash(DefMap *theDefMap) {
     // Uninitialised!!
     TodList<DefMap *> aProgressMaps = TodList<DefMap *>();
-    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef *)Z_NULL, NULL) + 1, theDefMap, aProgressMaps);
+    uint aResult = DefinitionCalcHashDefMap(SDL_crc32(0L, (const void *)NULL, NULL) + 1, theDefMap, aProgressMaps);
 
     // TodList destructor is called upon it going out of scope.
     return aResult;
