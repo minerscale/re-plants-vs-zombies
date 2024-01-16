@@ -3,19 +3,21 @@
 #include "Reanimator.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include "graphics/VkImage.h"
 #include "misc/PerfTimer.h"
 // #include "graphics/MemoryImage.h"
 #include <chrono>
+#include <memory>
 
 // 0x470250
 ReanimAtlas::ReanimAtlas() {
     mImageCount = 0;
-    unreachable();
-    //	mMemoryImage = nullptr;
+    // unreachable();
+    mMemoryImage = nullptr;
 }
 
 void ReanimAtlas::ReanimAtlasDispose() {
-    unreachable();
+    // unreachable();
     /* TODO
     if (mMemoryImage)
     {
@@ -224,15 +226,17 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition *theReanimDef) {
         }
     }
 
-    unreachable();
-    /* TODO
-    mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
-    Graphics aMemoryGraphis(mMemoryImage);
-    for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++)
-    {
-        ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
-        aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);  // 将原贴图绘制在图集上
+    // mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
+    if (aAtlasWidth <= 0 || aAtlasHeight <= 0) {
+        return; // Can't make images of zero size.
     }
-    FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // 将所有透明像素的颜色修正为其周围像素颜色的平均值
-    */
+
+    mMemoryImage = std::make_unique<Vk::VkImage>(aAtlasWidth, aAtlasHeight);
+    Graphics aMemoryGraphis(mMemoryImage.get());
+    for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++) {
+        ReanimAtlasImage *aImage = &mImageArray[aImageIndex];
+        if (!aImage->mOriginalImage->mWidth || !aImage->mOriginalImage->mHeight) continue;
+        aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY); // 将原贴图绘制在图集上
+    }
+    FixPixelsOnAlphaEdgeForBlending(mMemoryImage.get()); // 将所有透明像素的颜色修正为其周围像素颜色的平均值
 }

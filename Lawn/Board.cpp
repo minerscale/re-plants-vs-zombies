@@ -152,6 +152,7 @@ Board::Board(LawnApp *theApp) {
     mShowShovel = false;
     mToolTip = new ToolTipWidget();
     // mDebugFont = new SysFont("Arial Unicode MS", 10, true, false, false);
+    mDebugFont = nullptr;
     mAdvice = new MessageWidget(mApp);
     mBackground = BackgroundType::BACKGROUND_1_DAY;
     mMainCounter = 0;
@@ -6068,9 +6069,10 @@ void Board::DrawDebugText(Graphics *g) {
     default: TOD_ASSERT(); break;
     }
 
-    unreachable();
-    // TODO
-    // g->SetFont(mDebugFont);
+    // unreachable();
+    //  TODO
+    mDebugFont = FONT_BRIANNETOD16;
+    g->SetFont(mDebugFont);
     g->SetColor(Color::Black);
     g->DrawStringWordWrapped(aText, 10, 89);
     g->DrawStringWordWrapped(aText, 11, 91);

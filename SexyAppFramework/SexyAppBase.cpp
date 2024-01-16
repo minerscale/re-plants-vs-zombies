@@ -5,6 +5,7 @@
 #include "graphics/VkImage.h"
 #include "graphics/WindowInterface.h"
 
+#include "misc/RegistryEmulator.h"
 #include "sound/DummySoundManager.h"
 #include "sound/SoundManager.h"
 
@@ -29,6 +30,7 @@
 #include <bits/iterator_concepts.h>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <math.h>
 #include <memory>
 #include <thread>
@@ -1402,7 +1404,7 @@ bool SexyAppBase::RegistryWrite(
         aValueName = theValueName;
     }
 
-    mRegHandle.Write(aValueName, theType, theValue, theLength);
+    mRegHandle->Write(aValueName, theType, theValue, theLength);
 
     if (mRecordingDemoBuffer) {
         WriteDemoTimingBlock();
@@ -1462,7 +1464,7 @@ bool SexyAppBase::RegistryEraseKey(const SexyString &_theKeyName) {
     std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey) + "\\" + theKeyName;
 
     // int aResult = RegDeleteKeyA(HKEY_CURRENT_USER, aKeyName.c_str());
-    if (!mRegHandle.Erase(aKeyName)) {
+    if (!mRegHandle->Erase(aKeyName)) {
         if (mRecordingDemoBuffer) {
             WriteDemoTimingBlock();
             mDemoBuffer.WriteNumBits(0, 1);
@@ -1639,7 +1641,7 @@ bool SexyAppBase::RegistryRead(
             aValueName = theValueName;
         }
 
-        if (!mRegHandle.Read(theValueName, theType, theValue, theLength)) {
+        if (!mRegHandle->Read(theValueName, theType, theValue, theLength)) {
             if (mRecordingDemoBuffer) {
                 WriteDemoTimingBlock();
                 mDemoBuffer.WriteNumBits(0, 1);
@@ -4210,6 +4212,7 @@ std::string SexyAppBase::NotifyCrashHook() { return ""; }
 
 void SexyAppBase::MakeWindow() {
     mWindowInterface = new Vk::VkInterface(mWidth, mHeight, mWidgetManager);
+    mWindowInterface->EnforceCursor();
 
     if ((mPlayingDemoBuffer) || (mIsWindowed && !mFullScreenWindow)) {
         mIsPhysWindowed = true;
@@ -4604,7 +4607,6 @@ void SexyAppBase::ProcessSafeDeleteList() {
     WidgetSafeDeleteList::iterator anItr = mSafeDeleteList.begin();
     while (anItr != mSafeDeleteList.end()) {
         WidgetSafeDeleteInfo *aWidgetSafeDeleteInfo = &(*anItr);
-        printf("depth: %d | widget depth: %d\n", mUpdateAppDepth, aWidgetSafeDeleteInfo->mUpdateAppDepth);
         if (mUpdateAppDepth <= aWidgetSafeDeleteInfo->mUpdateAppDepth) {
             delete aWidgetSafeDeleteInfo->mWidget;
             anItr = mSafeDeleteList.erase(anItr);
@@ -4698,14 +4700,6 @@ void SexyAppBase::DoMainLoop() {
     }
 }
 
-double gFramerate = 69420;
-static auto timer = std::chrono::high_resolution_clock::now();
-constexpr auto frame_length =
-    std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 60));
-static auto timer_then = std::chrono::steady_clock::now();
-static uint32_t frames = 0;
-constexpr int poll_frequency = 60;
-
 /*==========================================================*
  |               — WARNING HERE BE DRAGONS —                |
  | UpdateAppStep is called in a loop by dialogs. This means |
@@ -4715,6 +4709,10 @@ constexpr int poll_frequency = 60;
  |    times attempted to fix this fucked up function: 1     |
  *==========================================================*/
 bool SexyAppBase::UpdateAppStep(bool *updated) {
+    static auto timer = std::chrono::high_resolution_clock::now();
+    constexpr auto frame_length =
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 60));
+
     if (updated != NULL) *updated = false;
 
     if (mExitToTop) return false;
@@ -4723,6 +4721,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
 
     if (mUpdateAppState == UPDATESTATE_PROCESS_DONE) {
         mUpdateAppState = UPDATESTATE_PROCESS_1;
+
         mWindowInterface->PollEvents();
     } else if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
         if (updated != NULL) *updated = true;
@@ -4732,6 +4731,15 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
 
         // Make sure we're not paused
         if (!mPaused) {
+            double num_skipped_frames = (std::chrono::high_resolution_clock::now() - timer) / frame_length;
+
+            while (num_skipped_frames > 1) {
+                printf("skipped frame\n");
+                timer = timer + frame_length;
+                DoUpdateFrames();
+                num_skipped_frames -= 1;
+            }
+            timer = timer + frame_length;
             DoUpdateFrames();
             DrawDirtyStuff();
         }
@@ -4739,18 +4747,10 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
         mUpdateAppState = UPDATESTATE_PROCESS_DONE;
         ProcessSafeDeleteList();
 
-        timer = timer + frame_length;
-        if (frames % poll_frequency == 0 && frames != 0) {
-            auto timer_now = std::chrono::steady_clock::now();
-            auto Duration = duration_cast<std::chrono::duration<float>>(timer_now - timer_then);
-            gFramerate = poll_frequency / Duration.count();
-            // std::cout << poll_frequency << " frames took " << Duration.count() << " seconds. " <<
-            // poll_frequency/Duration.count() << "fps." << std::endl;
-            timer_then = timer_now;
+        if (std::chrono::high_resolution_clock::now() - timer < std::chrono::duration<double>(0)) {
+            mSleepCount += 1;
+            std::this_thread::sleep_until(timer - std::chrono::duration<double>(1 / 240.0));
         }
-        ++frames;
-
-        std::this_thread::sleep_until(timer);
     }
 
     mUpdateAppDepth--;
@@ -5187,6 +5187,9 @@ void SexyAppBase::Init() {
     }*/
 
     InitPropertiesHook();
+
+    mRegKey = "PlantsVsZombies";
+    mRegHandle = std::make_unique<RegistryEmulator>();
     ReadFromRegistry();
 
     /* TODO
@@ -5486,10 +5489,7 @@ void SexyAppBase::SetCursor(int theCursorNum) {
 
 int SexyAppBase::GetCursor() { return mCursorNum; }
 
-void SexyAppBase::EnableCustomCursors(bool enabled) {
-    mCustomCursorsEnabled = enabled;
-    mWindowInterface->EnforceCursor();
-}
+void SexyAppBase::EnableCustomCursors(bool enabled) { mCustomCursorsEnabled = enabled; }
 
 std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const std::string &theFileName) {
     std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theFileName, true);

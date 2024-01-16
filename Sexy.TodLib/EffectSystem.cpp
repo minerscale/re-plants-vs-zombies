@@ -337,7 +337,7 @@ TodTriangleGroup::TodTriangleGroup() {
 }
 
 // 0x4461F0
-void TodTriangleGroup::DrawGroup(Graphics * /*g*/) {
+void TodTriangleGroup::DrawGroup(Graphics *g) {
     if (mImage && mTriangleCount) {
         /*
         // @Patoke: do we want this? if 3D acceleration is off then blending is messed up
@@ -345,7 +345,7 @@ void TodTriangleGroup::DrawGroup(Graphics * /*g*/) {
             gTodTriangleDrawAdditive = true;*/
         TodSandImageIfNeeded(mImage);
 
-        unreachable();
+        // unreachable();
         /* FIXME
         if (DDImage::Check3D(g->mDestImage))
         {
@@ -359,6 +359,10 @@ void TodTriangleGroup::DrawGroup(Graphics * /*g*/) {
             g->mDestImage->BltTrianglesTex(mImage, mVertArray, mTriangleCount, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT),
         Color::White, mDrawMode, 0.0f, 0.0f, g->mLinearBlend);
         }*/
+        g->mDestImage->BltTrianglesTex(
+            mImage, mVertArray, mTriangleCount, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), Color::White, mDrawMode, 0.0f,
+            0.0f, g->mLinearBlend
+        );
 
         mTriangleCount = 0;
         gTodTriangleDrawAdditive = false;

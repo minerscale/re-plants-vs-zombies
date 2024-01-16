@@ -91,12 +91,12 @@ std::unique_ptr<Image> GetPNGImage(const std::string &theFileName) {
     }
     png_read_image(png_ptr, row_pointers);
     /*
-unsigned long* anAddr = aBits;
-for (unsigned int i = 0; i < height; i++)
-{
-    png_read_rows(png_ptr, (png_bytepp) &anAddr, NULL, 1);
-    anAddr += width;
-}*/
+    unsigned long* anAddr = aBits;
+    for (unsigned int i = 0; i < height; i++)
+    {
+        png_read_rows(png_ptr, (png_bytepp) &anAddr, NULL, 1);
+        anAddr += width;
+    }*/
 
     /* read rest of file, and get additional chunks in info_ptr - REQUIRED */
     png_read_end(png_ptr, info_ptr);

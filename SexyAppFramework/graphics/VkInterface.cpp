@@ -11,6 +11,7 @@
 #include <array>
 #include <chrono>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -58,49 +59,6 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
-/*===================================*
- | Struct Declarations               |
- *===================================*/
-struct Vertex {
-    glm::vec2 pos;
-    glm::vec2 texCoord;
-
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription{};
-
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 1> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 1> attributeDescriptions{};
-        /*
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, pos);*/
-
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[0].offset = offsetof(Vertex, texCoord);
-
-        return attributeDescriptions;
-    }
-};
-
-const std::vector<Vertex> vertices = {
-    {{-1.0f, -1.0f}, {1.0f, 0.0f}},
-    {{1.0f, -1.0f},  {0.0f, 0.0f}},
-    {{1.0f, 1.0f},   {0.0f, 1.0f}},
-    {{-1.0f, 1.0f},  {1.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
-
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
@@ -143,8 +101,6 @@ VkCommandBuffer beginSingleTimeCommands();
 void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-// void createIndexBuffer();
-// void createVertexBuffer();
 void createCommandBuffers();
 
 void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height);
@@ -236,7 +192,6 @@ VkRenderPass imagePass;
 
 VkDescriptorPool descriptorPool;
 std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> descriptorSets;
-std::array<VkDescriptorSet, num_image_swaps> imageDescriptors;
 VkDescriptorSetLayout descriptorSetLayout;
 
 VkPipelineLayout pipelineLayout;
@@ -245,13 +200,6 @@ VkPipeline graphicsPipeline;
 VkCommandPool commandPool;
 std::array<VkCommandBuffer, MAX_FRAMES_IN_FLIGHT> commandBuffers;
 std::array<VkCommandBuffer, num_image_swaps> imageCommandBuffers;
-
-/*
-VkBuffer vertexBuffer;
-VkDeviceMemory vertexBufferMemory;
-
-VkBuffer indexBuffer;
-VkDeviceMemory indexBufferMemory;*/
 
 VkSampler textureSampler;
 
@@ -263,6 +211,8 @@ VkFence imageFence;
 std::mutex renderMutex;
 
 VkImage *windowImage;
+glm::vec4 windowImageClipRect;
+double windowImageScale;
 
 bool framebufferResized = false;
 
@@ -391,38 +341,52 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
     renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = swapChainExtent;
+    renderPassInfo.renderArea.offset = {
+        static_cast<int32_t>(windowImageClipRect.x), static_cast<int32_t>(windowImageClipRect.y)
+    };
+    renderPassInfo.renderArea.extent = {
+        static_cast<uint32_t>(windowImageClipRect.z), static_cast<uint32_t>(windowImageClipRect.w)
+    };
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-    /*
-    VkBuffer vertexBuffers[] = {vertexBuffer};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);*/
-
     VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(swapChainExtent.width);
-    viewport.height = static_cast<float>(swapChainExtent.height);
+    viewport.x = windowImageClipRect.x;
+    viewport.y = windowImageClipRect.y;
+    viewport.width = windowImageClipRect.z;
+    viewport.height = windowImageClipRect.w;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = swapChainExtent;
+    scissor.offset = renderPassInfo.renderArea.offset;
+    scissor.extent = renderPassInfo.renderArea.extent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+    ImagePushConstants constants = {
+        {
+         glm::vec4(-1, -1, 0.0, 0.0),
+         glm::vec4(-1, 1, 0.0, 1.0),
+         glm::vec4(1, -1, 1.0, 0.0),
+         glm::vec4(1, 1, 1.0, 1.0),
+         },
+        {0, 0, 0, 0},
+        glm::vec4(1.0, 1.0, 1.0, 1.0),
+        true,
+    };
+
+    vkCmdPushConstants(
+        commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+        sizeof(ImagePushConstants), &constants
+    );
     vkCmdBindDescriptorSets(
         commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr
     );
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
@@ -587,19 +551,6 @@ void createDescriptorSets() {
         }
     }
 
-    {
-        std::vector<VkDescriptorSetLayout> layouts(num_image_swaps, descriptorSetLayout);
-        VkDescriptorSetAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = num_image_swaps;
-        allocInfo.pSetLayouts = layouts.data();
-
-        if (vkAllocateDescriptorSets(device, &allocInfo, imageDescriptors.data()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate descriptor sets!");
-        }
-    }
-
     for (size_t i = 0; i < descriptorSets.size(); i++) {
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -624,7 +575,7 @@ void createDescriptorSets() {
 void createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 1> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[0].descriptorCount = descriptorSets.size() + imageDescriptors.size();
+    poolSizes[0].descriptorCount = descriptorSets.size() + 1300;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -681,52 +632,6 @@ void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
     endSingleTimeCommands(commandBuffer);
 }
 
-/*
-void createIndexBuffer() {
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void* data;
-    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, indices.data(), (size_t) bufferSize);
-    vkUnmapMemory(device, stagingBufferMemory);
-
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
-
-    copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-    vkDestroyBuffer(device, stagingBuffer, nullptr);
-    vkFreeMemory(device, stagingBufferMemory, nullptr);
-}
-
-void createVertexBuffer() {
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-    void* data;
-    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), (size_t) bufferSize);
-    vkUnmapMemory(device, stagingBufferMemory);
-
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
-
-    copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-    vkDestroyBuffer(device, stagingBuffer, nullptr);
-    vkFreeMemory(device, stagingBufferMemory, nullptr);
-}*/
-
 void createCommandBuffers() {
     {
         VkCommandBufferAllocateInfo allocInfo{};
@@ -771,66 +676,6 @@ void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     endSingleTimeCommands(commandBuffer);
-}
-
-void transitionImageLayout(
-    VkCommandBuffer commandBuffer, ::VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout
-) {
-    VkImageMemoryBarrier barrier{};
-    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout = oldLayout;
-    barrier.newLayout = newLayout;
-
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-
-    barrier.image = image;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
-
-    VkPipelineStageFlags sourceStage;
-    VkPipelineStageFlags destinationStage;
-
-    /*
-    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout ==
-    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) { barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout ==
-    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) { barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT; barrier.dstAccessMask
-    = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout ==
-    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) { barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-    VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    } else */
-    {
-        // printf("ouchie, expensive one :(\n");
-        // throw std::invalid_argument("unsupported layout transition!");
-        barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-        destinationStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-    }
-
-    vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 }
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -1052,12 +897,17 @@ void createGraphicsPipeline() {
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
+    VkPushConstantRange pushConstant;
+    pushConstant.offset = 0;
+    pushConstant.size = sizeof(ImagePushConstants);
+    pushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-    pipelineLayoutInfo.pushConstantRangeCount = 0;    // Optional
-    pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstant;
 
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
@@ -1247,6 +1097,31 @@ void cleanupSwapChain() {
     vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
+void setWindowDimensions() {
+    glm::vec2 forceAspect = {4, 3};
+    double ratioW = swapChainExtent.width / forceAspect.x;
+    double ratioH = swapChainExtent.height / forceAspect.y;
+    bool pillarboxed = ratioW > ratioH;
+    double newWidth = pillarboxed ? swapChainExtent.height * forceAspect.x / forceAspect.y : swapChainExtent.width;
+    double newHeight = pillarboxed ? swapChainExtent.height : swapChainExtent.width * forceAspect.y / forceAspect.x;
+    windowImageClipRect.x = pillarboxed ? (swapChainExtent.width - newWidth) / 2.0 : 0;
+    windowImageClipRect.y = pillarboxed ? 0 : (swapChainExtent.height - newHeight) / 2.0;
+    windowImageClipRect.z = newWidth;
+    windowImageClipRect.w = newHeight;
+    windowImageScale = pillarboxed ? newWidth / windowImage->mWidth : newHeight / windowImage->mHeight;
+    printf(
+        "x: %f, y: %f, z: %f, w: %f, scale: %f\n", windowImageClipRect.x, windowImageClipRect.y, windowImageClipRect.z,
+        windowImageClipRect.w, windowImageScale
+    );
+}
+
+void createWindowBuffer(int intendedWidth, int intendedHeight) {
+    if (windowImage) delete windowImage;
+    windowImage = new VkImage(intendedWidth, intendedHeight);
+
+    setWindowDimensions();
+}
+
 void recreateSwapChain() {
     int width = 0, height = 0;
     glfwGetFramebufferSize(window, &width, &height);
@@ -1255,6 +1130,7 @@ void recreateSwapChain() {
         glfwWaitEvents(); // Pause the window
     }
 
+    renderMutex.lock();
     vkDeviceWaitIdle(device);
 
     cleanupSwapChain();
@@ -1262,6 +1138,8 @@ void recreateSwapChain() {
     createSwapChain();
     createImageViews();
     createFramebuffers();
+    setWindowDimensions();
+    renderMutex.unlock();
 }
 
 void createSurface() {
@@ -1524,7 +1402,9 @@ VkInterface::~VkInterface() {
     cleanupSwapChain();
 
     vkDestroySampler(device, textureSampler, nullptr);
+
     delete windowImage;
+
     vkDestroyDescriptorPool(device, descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
@@ -1597,20 +1477,6 @@ void VkInterface::EnforceCursor() {
     SetCursor(widgetManager->mApp->mCursorNum);
 }
 
-void moveMouse(glm::vec<2, double> pos) {
-    cursorPos = pos;
-
-    glm::vec<2, int> intPos = pos;
-    widgetManager->RemapMouse(intPos.x, intPos.y);
-    widgetManager->MouseMove(intPos.x, intPos.y);
-
-    if (!widgetManager->mApp->mMouseIn) {
-        widgetManager->mApp->mMouseIn = true;
-        VkInterface *theInterface = (VkInterface *)glfwGetWindowUserPointer(window);
-        theInterface->EnforceCursor();
-    }
-}
-
 static void cursorEnterCallback(GLFWwindow *w, int entered) {
     bool isMouseIn = entered;
     if (widgetManager->mApp->mMouseIn != isMouseIn) {
@@ -1626,7 +1492,19 @@ static void cursorEnterCallback(GLFWwindow *w, int entered) {
     }
 }
 
-static void cursorPositionCallback(GLFWwindow *, double xpos, double ypos) { moveMouse({xpos, ypos}); }
+static void cursorPositionCallback(GLFWwindow *w, double xpos, double ypos) {
+    cursorPos = {(xpos - windowImageClipRect.x) / windowImageScale, (ypos - windowImageClipRect.y) / windowImageScale};
+
+    glm::vec<2, int> intPos = cursorPos;
+    widgetManager->RemapMouse(intPos.x, intPos.y);
+    widgetManager->MouseMove(intPos.x, intPos.y);
+
+    if (!widgetManager->mApp->mMouseIn) {
+        widgetManager->mApp->mMouseIn = true;
+        VkInterface *theInterface = (VkInterface *)glfwGetWindowUserPointer(w);
+        theInterface->EnforceCursor();
+    }
+}
 
 static void mouseButtonCallback(GLFWwindow *, int button, int action, int /*mods*/) {
     /*=====================================*
@@ -1671,18 +1549,16 @@ void charCallback(GLFWwindow *, uint32_t codepoint) {
 
 void windowCloseCallback(GLFWwindow *) { widgetManager->mApp->CloseRequestAsync(); }
 
-void initGLFW(int width, int height) {
+void initGLFW(int width, int height, VkInterface *userPtr) {
     // Init glfw
     glfwInit();
 
-    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(width, height, "Plandts Game", nullptr, nullptr);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+    window = glfwCreateWindow(width, height, "Plandts Game", /*glfwGetPrimaryMonitor()*/ nullptr, nullptr);
+    glfwSetWindowUserPointer(window, userPtr);
+    // glfwSetWindowAspectRatio(window, 4, 3);
 
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     glfwSetWindowFocusCallback(window, windowFocusCallback);
@@ -1695,15 +1571,9 @@ void initGLFW(int width, int height) {
     glfwSetWindowCloseCallback(window, windowCloseCallback);
 }
 
-void createWindowBuffer() {
-    if (windowImage) delete windowImage;
-    windowImage = new VkImage(swapChainExtent.width, swapChainExtent.height);
-}
-
 VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
     widgetManager = mWidgetManager;
-    initGLFW(width, height);
-    glfwSetWindowUserPointer(window, this);
+    initGLFW(width, height, this);
 
     // Init vulkan
     createInstance();
@@ -1715,15 +1585,15 @@ VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
     createImageViews();
     createRenderPass();
     createCommandPool();
-    createWindowBuffer();
+    createTextureSampler();
     createDescriptorSetLayout();
+    createDescriptorPool();
+    createWindowBuffer(width, height);
+    createDescriptorSets();
     createGraphicsPipeline();
     createFramebuffers();
-    createTextureSampler();
     // createVertexBuffer();
     // createIndexBuffer();
-    createDescriptorPool();
-    createDescriptorSets();
     createCommandBuffers();
     createSyncObjects();
 }
@@ -1798,7 +1668,6 @@ void VkInterface::ReleaseMouseCapture() { glfwSetInputMode(window, GLFW_CURSOR, 
 void VkInterface::Draw() {
     renderMutex.lock();
     flushCommandBuffer();
-    cachedOtherImage = nullptr; // Force cache miss.
 
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -1808,8 +1677,8 @@ void VkInterface::Draw() {
     );
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        recreateSwapChain();
         renderMutex.unlock();
+        recreateSwapChain();
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
@@ -1853,6 +1722,7 @@ void VkInterface::Draw() {
     presentInfo.pResults = nullptr; // Optional
 
     result = vkQueuePresentKHR(presentQueue, &presentInfo);
+    renderMutex.unlock();
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
         framebufferResized = false;
@@ -1862,8 +1732,6 @@ void VkInterface::Draw() {
     }
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
-    renderMutex.unlock();
 }
 
 } // namespace Vk
