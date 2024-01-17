@@ -17,6 +17,7 @@ extern std::mutex renderMutex;
 
 extern VkQueue graphicsQueue;
 extern VkPipeline graphicsPipeline;
+extern VkPipeline graphicsPipelineAdditive;
 extern std::array<VkCommandBuffer, num_image_swaps> imageCommandBuffers;
 extern VkRenderPass imagePass;
 extern VkFence imageFence;
@@ -42,7 +43,8 @@ struct ImagePushConstants {
     glm::vec4 vertices[4];
     uint32_t vertex_colors[4];
     glm::vec4 render_color;
-    bool is_quad;
+    uint32_t is_quad;
+    uint32_t filter;
 };
 
 struct UniformBufferObject {

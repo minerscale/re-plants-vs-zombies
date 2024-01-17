@@ -1041,6 +1041,7 @@ bool TodResourceManager::TodLoadNextResource() {
         switch (aRes->mType) {
         case ResType_Image: {
             ImageRes *anImageRes = (ImageRes *)aRes;
+            anImageRes->mImageSand = true;
             if (anImageRes->mImage != nullptr) {
                 mCurResGroupListItr++;
                 continue;
@@ -1072,13 +1073,16 @@ bool TodResourceManager::TodLoadNextResource() {
 
         if (!LoadNextResource()) break;
 
-        if (aRes->mType == ResType::ResType_Image) {
-            ImageRes *anImageRes = (ImageRes *)aRes;
-            Image *aImage = (Image *)anImageRes->mImage;
-            if (aImage != nullptr) {
+        /*
+        if (aRes->mType == ResType::ResType_Image)
+        {
+            ImageRes* anImageRes = (ImageRes*)aRes;
+            Image* aImage = (Image*)anImageRes->mImage;
+            if (aImage != nullptr)
+            {
                 TodMarkImageForSanding(aImage);
             }
-        }
+        }*/
 
         // GetTickCount();
         TodHesitationTrace("Loading: '%s'", aRes->mPath.c_str());
