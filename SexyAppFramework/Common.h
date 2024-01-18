@@ -5,7 +5,6 @@
 // #pragma warning(disable:4503)
 
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 
 #define GLM_CONFIG_SWIZZLE GLM_SWIZZLE_OPERATOR
 #define GLM_FORCE_RADIANS
@@ -13,15 +12,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <cstdint>
-#undef _WIN32_WINNT
-#undef WIN32_LEAN_AND_MEAN
-
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT 0x0500
-#undef _UNICODE
-#undef UNICODE
+// #undef _WIN32_WINNT
+// #undef WIN32_LEAN_AND_MEAN
+//
+// #define WIN32_LEAN_AND_MEAN
+// #define _WIN32_WINNT 0x0500
+// #undef _UNICODE
+// #undef UNICODE
 
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <cwctype>
@@ -31,20 +31,22 @@
 #include <string>
 #include <vector>
 
-// #define NOMINMAX 1
+#define NOMINMAX 1
 // #include <windows.h>
 // #include <shellapi.h>
 // #include <mmsystem.h>
-
-// fallback if NOMINMAX fails (somehow?)
-#undef min
-#undef max
 
 // Define unreachable()
 #ifdef _MSC_VER
 #define unreachable std::unreachable
 #else
 #define unreachable __builtin_unreachable
+#endif
+
+// Define strcasecmp and strncasecmp
+#ifdef _MSC_VER
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
 #endif
 
 #define _MAX_PATH 260
@@ -82,11 +84,11 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 
-typedef unsigned char BYTE;
-typedef uint16_t WORD;
-typedef unsigned int DWORD;
-typedef int LONG;
-typedef unsigned int UINT;
+// typedef unsigned char BYTE;
+// typedef uint16_t 	 WORD;
+// typedef unsigned long DWORD;
+// typedef int LONG;
+// typedef unsigned int UINT;
 // typedef __int64 int64;
 
 typedef std::map<std::string, std::string> DefinesMap;

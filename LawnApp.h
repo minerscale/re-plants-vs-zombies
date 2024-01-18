@@ -4,6 +4,7 @@
 #include "ConstEnums.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "SexyAppFramework/SexyApp.h"
+#include <algorithm>
 #include <chrono>
 
 class Board;

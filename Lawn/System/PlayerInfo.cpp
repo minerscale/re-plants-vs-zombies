@@ -6,7 +6,7 @@
 #include "../Widget/ChallengeScreen.h"
 #include "DataSync.h"
 #include "misc/Buffer.h"
-#include <bits/chrono.h>
+#include <chrono>
 #include <ratio>
 
 static int gUserVersion = 12;

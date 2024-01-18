@@ -15,7 +15,6 @@
 #include <stdexcept>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 // #include <aclapi.h>
 
 #include "misc/PerfTimer.h"
@@ -423,10 +422,7 @@ SexyString Sexy::CommaSeperate(int theValue) {
     return aCurString;
 }
 
-std::string Sexy::GetCurDir() {
-    char aDir[256];
-    return getcwd(aDir, sizeof(aDir));
-}
+std::string Sexy::GetCurDir() { return std::filesystem::current_path().string(); }
 
 std::string Sexy::GetFullPath(const std::string &theRelPath) { return GetPathFrom(theRelPath, GetCurDir()); }
 

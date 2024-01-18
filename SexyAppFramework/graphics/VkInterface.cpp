@@ -36,11 +36,10 @@ extern "C"
 }
 
 #define DECLARE_SHADER(NAME)                                                                                           \
-    extern const char NAME##_start[];                                                                                  \
-    extern const char NAME##_end[];
+    extern const char NAME[];                                                                                          \
+    extern const size_t NAME##_size;
 
-#define BLOB_LENGTH(NAME) (NAME##_end - NAME##_start)
-#define CREATE_SHADER_MODULE(NAME) createShaderModule(NAME##_start, BLOB_LENGTH(NAME))
+#define CREATE_SHADER_MODULE(NAME) createShaderModule(NAME, NAME##_size)
 
 DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
