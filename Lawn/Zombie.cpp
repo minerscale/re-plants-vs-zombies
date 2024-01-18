@@ -1,4 +1,5 @@
-#include "Zombie.h"
+#include <limits.h>
+
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "../Sexy.TodLib/Attachment.h"
@@ -16,6 +17,7 @@
 #include "Projectile.h"
 #include "System/Music.h"
 #include "Widget/AlmanacDialog.h"
+#include "Zombie.h"
 
 ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {
   //  0x69DA80
@@ -841,7 +843,7 @@ void Zombie::ReanimIgnoreClipRect(const char *theTrackName, bool theIgnoreClipRe
     if (aBodyReanim == nullptr) return;
 
     for (int i = 0; i < aBodyReanim->mDefinition->mTracks.count; i++) {
-        if (stricmp(aBodyReanim->mDefinition->mTracks.tracks[i].mName, theTrackName) == 0) {
+        if (strcasecmp(aBodyReanim->mDefinition->mTracks.tracks[i].mName, theTrackName) == 0) {
             aBodyReanim->mTrackInstances[i].mIgnoreClipRect = theIgnoreClipRect;
         }
     }

@@ -9,7 +9,7 @@ namespace Sexy {
 ///////////////////////////////////////////////////////////////////////////////
 class PerfTimer {
 protected:
-    LARGE_INTEGER mStart;
+    int64_t mStart;
     double mDuration;
     bool mRunning;
 
@@ -22,7 +22,7 @@ public:
 
     double GetDuration();
 
-    static __int64 GetCPUSpeed(); // in Hz
+    static int64_t GetCPUSpeed(); // in Hz
     static int GetCPUSpeedMHz();
 };
 
@@ -73,9 +73,6 @@ public:
 
 #endif
 
-#pragma warning(push)
-#pragma warning(disable : 4005)
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // #define SEXY_PERF_ENABLED
@@ -111,5 +108,3 @@ public:
 #define SEXY_AUTO_PERF_COND(theName)
 
 #endif
-
-#pragma warning(pop)

@@ -8,6 +8,8 @@
 
 #include "memmgr.h"
 
+#include <cstdarg>
+
 bool gInAssert = false;
 // Seemingly unused
 // extern bool gSexyDumpLeakedMem = false;
@@ -139,14 +141,14 @@ void SexyDumpUnfreed() {
     time_t aTime = time(NULL);
     sprintf(buf, "Memory Leak Report for %s\n", asctime(localtime(&aTime)));
     fprintf(f, "%s", buf);
-    OutputDebugString("\n");
-    OutputDebugString(buf);
+    printf("\n");
+    printf("%s", buf);
     for (i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++) {
         sprintf(
             buf, "%s(%d) : Leak %d byte%s\n", i->second.file, i->second.line, i->second.size,
             i->second.size > 1 ? "s" : ""
         );
-        OutputDebugString(buf);
+        printf("%s", buf);
         fprintf(f, "%s", buf);
 
 #ifdef SEXY_DUMP_LEAKED_MEM
@@ -198,9 +200,9 @@ void SexyDumpUnfreed() {
 
     sprintf(buf, "-----------------------------------------------------------\n");
     fprintf(f, "%s", buf);
-    OutputDebugString(buf);
+    printf("%s", buf);
     sprintf(buf, "Total Unfreed: %d bytes (%dKB)\n\n", totalSize, totalSize / 1024);
-    OutputDebugString(buf);
+    printf("%s", buf);
     fprintf(f, "%s", buf);
 }
 
@@ -212,5 +214,5 @@ void OutputDebug(const SexyChar *fmt...) {
     std::string result = SexyStringToStringFast(vformat(fmt, argList));
     va_end(argList);
 
-    OutputDebugStringA(result.c_str());
+    printf("%s", result.c_str());
 }

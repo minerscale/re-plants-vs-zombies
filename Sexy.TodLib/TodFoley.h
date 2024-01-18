@@ -2,7 +2,8 @@
 #define __TODFOLEY_H__
 
 #include "../Resources.h"
-#include "sound/DSoundInstance.h"
+// #include "sound/DSoundInstance.h"
+#include "sound/SoundInstance.h"
 using namespace Sexy;
 
 #define MAX_FOLEY_TYPES 110
@@ -152,16 +153,18 @@ extern FoleyParams gLawnFoleyParamArray[(int)FoleyType::NUM_FOLEY]; // 0x69FAD0
 // ############################################################
 // ######################################################################################################################################################
 
-class TodDSoundInstance : public DSoundInstance {
-    friend class TodFoley;
-
-public:
-    TodDSoundInstance(DSoundManager *theSoundManager, LPDIRECTSOUNDBUFFER theSourceSound)
-        : DSoundInstance(theSoundManager, theSourceSound) {}
-
-    /*inline*/ int GetSoundPosition();
-    /*inline*/ void SetSoundPosition(int thePosition);
-};
+// TODO
+// class TodDSoundInstance : public DSoundInstance
+//{
+//    friend class TodFoley;
+//
+// public:
+//    //TodDSoundInstance(DSoundManager* theSoundManager, LPDIRECTSOUNDBUFFER theSourceSound) :
+//    DSoundInstance(theSoundManager, theSourceSound) { }
+//
+//    /*inline*/ int      GetSoundPosition();
+//    /*inline*/ void     SetSoundPosition(int thePosition);
+//};
 
 class FoleyInstance {
 public:

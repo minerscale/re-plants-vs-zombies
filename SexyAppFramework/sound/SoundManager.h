@@ -1,9 +1,7 @@
 #ifndef __SOUNDMANAGER_H__
 #define __SOUNDMANAGER_H__
 
-#define NOMINMAX 1
 #include "Common.h"
-#include <windows.h>
 
 namespace Sexy {
 
@@ -36,7 +34,7 @@ public:
     virtual void SetMasterVolume(double theVolume) = 0;
 
     virtual void Flush() = 0;
-    virtual void SetCooperativeWindow(HWND theHWnd) = 0;
+    //	virtual void			SetCooperativeWindow(HWND theHWnd) = 0;
     virtual void StopAllSounds() = 0;
     virtual int GetFreeSoundId() = 0;
     virtual int GetNumSounds() = 0;

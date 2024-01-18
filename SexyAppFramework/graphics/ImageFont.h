@@ -3,15 +3,16 @@
 
 #include "Font.h"
 #include "SexyAppBase.h"
-#include "SharedImage.h"
 #include "misc/DescParser.h"
+#include <unordered_map>
+// #include "SharedImage.h"
 
 namespace Sexy {
 
 class SexyAppBase;
 class Image;
 
-typedef std::map<SexyChar, int> CharIntMap;
+typedef std::map<char32_t, int> CharIntMap;
 
 class CharData {
 public:
@@ -26,7 +27,7 @@ public:
 };
 
 class FontData;
-typedef std::map<SexyChar, CharData> CharDataMap;
+typedef std::unordered_map<char32_t, CharData> CharDataMap;
 
 class FontLayer {
 public:
@@ -39,7 +40,7 @@ public:
     CharDataMap mCharDataMap;
     Color mColorMult;
     Color mColorAdd;
-    SharedImageRef mImage;
+    Image *mImage;
     int mDrawMode;
     Point mOffset;
     int mSpacing;
@@ -120,7 +121,7 @@ class RenderCommand {
 public:
     Image *mImage;
     int mDest[2];
-    int mSrc[4];
+    TRect<int> mSrc;
     int mMode;
     Color mColor;
     bool mUseAlphaCorrection;

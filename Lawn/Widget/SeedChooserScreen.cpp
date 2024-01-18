@@ -3,19 +3,19 @@
 #include "../../Lawn/Plant.h"
 #include "../../LawnApp.h"
 #include "../../Resources.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
 #include "../Board.h"
 #include "../Cutscene.h"
 #include "../SeedPacket.h"
 #include "../System/Music.h"
 #include "../System/PlayerInfo.h"
-#include "../System/PopDRMComm.h"
 #include "../ToolTipWidget.h"
 #include "../Zombie.h"
 #include "AlmanacDialog.h"
 #include "GameButton.h"
 #include "ImitaterDialog.h"
 #include "StoreScreen.h"
+// #include "../System/PopDRMComm.h"
+#include "../../Sexy.TodLib/TodStringFile.h"
 #include "misc/Debug.h"
 #include "misc/MTRand.h"
 #include "widget/Dialog.h"
@@ -902,9 +902,11 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
                         DIALOG_MESSAGE, _S("[GET_FULL_VERSION_TITLE]"), _S("[GET_FULL_VERSION_BODY]"),
                         _S("[GET_FULL_VERSION_YES_BUTTON]"), _S("[GET_FULL_VERSION_NO_BUTTON]"), Dialog::BUTTONS_YES_NO
                     ) == Dialog::ID_YES) {
-                    if (mApp->mDRM) {
+                    /*
+                    if (mApp->mDRM)
+                    {
                         mApp->mDRM->BuyGame();
-                    }
+                    }*/
                     mApp->DoBackToMain();
                 }
             } else {

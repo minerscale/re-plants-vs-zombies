@@ -23,8 +23,9 @@
 #include "Widget/SeedChooserScreen.h"
 #include "Widget/StoreScreen.h"
 #include "Zombie.h"
-#include "misc/PerfTimer.h"
+// #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
+#include <chrono>
 
 static const int TimePanRightStart = 1500;
 static const int TimePanRightEnd = 3500;         //[0x6A4FFC]
@@ -280,8 +281,10 @@ void CutScene::PreloadResources() {
     }
     mPreloaded = true;
 
+    /*
     PerfTimer aTimer;
-    aTimer.Start();
+    aTimer.Start();*/
+    auto aTimer = std::chrono::high_resolution_clock::now();
 
     for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++) {
         for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++) {
@@ -408,7 +411,8 @@ void CutScene::PreloadResources() {
 
     PlaceStreetZombies();
 
-    mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
+    // mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
+    mBoard->mPreloadTime = std::chrono::high_resolution_clock::now() - aTimer;
     TodTrace("preloading: %d ms", mBoard->mPreloadTime);
     TodHesitationTrace("CutScene::PreloadResources");
 }

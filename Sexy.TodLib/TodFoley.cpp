@@ -152,13 +152,23 @@ FoleyInstance::FoleyInstance() {
 // 0x514ED0
 FoleyTypeData::FoleyTypeData() { mLastVariationPlayed = -1; }
 
-int TodDSoundInstance::GetSoundPosition() {
+/* TODO
+int TodDSoundInstance::GetSoundPosition()
+{
+    unreachable();
+
     unsigned long dwCurrentPlayerCursor;
     mSoundBuffer->GetCurrentPosition(&dwCurrentPlayerCursor, nullptr);
     return dwCurrentPlayerCursor;
-}
+}*/
 
-void TodDSoundInstance::SetSoundPosition(int thePosition) { mSoundBuffer->SetCurrentPosition(thePosition); }
+/* TODO
+void TodDSoundInstance::SetSoundPosition(int thePosition)
+{
+    unreachable();
+
+    //mSoundBuffer->SetCurrentPosition(thePosition);
+}*/
 
 void TodFoleyInitialize(FoleyParams *theFoleyParamArray, int theFoleyParamArraySize) {
     TOD_ASSERT(gFoleyParamArray == nullptr && gFoleyParamArraySize == 0);
@@ -311,7 +321,7 @@ void TodFoley::StopFoley(FoleyType theFoleyType) {
 }
 
 // 0x5152D0
-void TodFoley::GamePause(bool theEnteringPause) {
+void TodFoley::GamePause(bool /*theEnteringPause*/) {
     SoundSystemReleaseFinishedInstances(this);
     for (int aFoleyType = 0; aFoleyType < gFoleyParamArraySize; aFoleyType++) {
         FoleyParams *aFoleyParams = LookupFoley((FoleyType)aFoleyType);
@@ -323,23 +333,33 @@ void TodFoley::GamePause(bool theEnteringPause) {
                 FoleyInstance *aFoleyInstance = &aFoleyData->mFoleyInstances[i];
                 if (aFoleyInstance->mRefCount != 0) // 如果音效实例存在引用
                 {
-                    TodDSoundInstance *aSoundInstance = (TodDSoundInstance *)aFoleyInstance->mInstance;
-                    if (theEnteringPause) {
+                    unreachable();
+                    /* TODO
+                    TodDSoundInstance* aSoundInstance = (TodDSoundInstance*)aFoleyInstance->mInstance;
+                    if (theEnteringPause)
+                    {
                         aFoleyInstance->mPaused = true;
-                        if (aSoundInstance->mSoundBuffer == nullptr) {
+
+                        if (aSoundInstance->mSoundBuffer == nullptr)
+                        {
                             aFoleyInstance->mPauseOffset = 0;
                             aSoundInstance->Stop();
-                        } else {
-                            aFoleyInstance->mPauseOffset = aSoundInstance->GetSoundPosition(); // 备份暂停时的播放进度
+                        }
+                        else
+                        {
+                            aFoleyInstance->mPauseOffset = aSoundInstance->GetSoundPosition();  // 备份暂停时的播放进度
                             aSoundInstance->Stop();
                         }
-                    } else if (aFoleyInstance->mPaused) {
+                    }
+                    else if (aFoleyInstance->mPaused)
+                    {
                         aFoleyInstance->mPaused = false;
                         bool aIsLooping = TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_LOOP);
                         aSoundInstance->Play(aIsLooping, false);
+
                         if (aSoundInstance->mSoundBuffer != nullptr)
-                            aSoundInstance->SetSoundPosition(aFoleyInstance->mPauseOffset); // 还原暂停前的播放进度
-                    }
+                            aSoundInstance->SetSoundPosition(aFoleyInstance->mPauseOffset);  // 还原暂停前的播放进度
+                    }*/
                 }
             }
         }

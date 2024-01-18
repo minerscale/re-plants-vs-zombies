@@ -13,13 +13,19 @@ Image::Image() {
     mAnimInfo = NULL;
     mDrawn = false;
 }
-
-Image::Image(const Image &theImage)
-    : mWidth(theImage.mWidth), mHeight(theImage.mHeight), mNumRows(theImage.mNumRows), mNumCols(theImage.mNumCols) {
+/*
+Image::Image(const Image& theImage) :
+    mWidth(theImage.mWidth),
+    mHeight(theImage.mHeight),
+    mNumRows(theImage.mNumRows),
+    mNumCols(theImage.mNumCols)
+{
     mDrawn = false;
-    if (theImage.mAnimInfo != NULL) mAnimInfo = new AnimInfo(*theImage.mAnimInfo);
-    else mAnimInfo = NULL;
-}
+    if (theImage.mAnimInfo != NULL)
+        mAnimInfo = new AnimInfo(*theImage.mAnimInfo);
+    else
+        mAnimInfo = NULL;
+}*/
 
 Image::~Image() { delete mAnimInfo; }
 
@@ -151,10 +157,6 @@ Graphics *Image::GetGraphics() {
     return g;
 }
 
-void Image::FillRect(const Rect &, const Color &, int) {}
-
-void Image::ClearRect(const Rect &) {}
-
 void Image::DrawRect(const Rect &theRect, const Color &theColor, int theDrawMode) {
     FillRect(Rect(theRect.mX, theRect.mY, theRect.mWidth + 1, 1), theColor, theDrawMode);
     FillRect(Rect(theRect.mX, theRect.mY + theRect.mHeight, theRect.mWidth + 1, 1), theColor, theDrawMode);
@@ -162,27 +164,9 @@ void Image::DrawRect(const Rect &theRect, const Color &theColor, int theDrawMode
     FillRect(Rect(theRect.mX + theRect.mWidth, theRect.mY + 1, 1, theRect.mHeight - 1), theColor, theDrawMode);
 }
 
-void Image::DrawLine(double, double, double, double, const Color &, int) {}
-void Image::DrawLineAA(double, double, double, double, const Color &, int) {}
-
 void Image::FillScanLines(Span *theSpans, int theSpanCount, const Color &theColor, int theDrawMode) {
     for (int i = 0; i < theSpanCount; i++) {
         Span *aSpan = &theSpans[i];
         FillRect(Rect(aSpan->mX, aSpan->mY, aSpan->mWidth, 1), theColor, theDrawMode);
     }
 }
-
-void Image::FillScanLinesWithCoverage(Span *, int, const Color &, int, const BYTE *, int, int, int, int) {}
-bool Image::PolyFill3D(const Point *, int, const Rect *, const Color &, int, int, int) { return false; }
-void Image::Blt(Image *, int, int, const Rect &, const Color &, int) {}
-void Image::BltF(Image *, float, float, const Rect &, const Rect &, const Color &, int) {}
-void Image::BltRotated(Image *, float, float, const Rect &, const Rect &, const Color &, int, double, float, float) {}
-void Image::StretchBlt(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}
-void Image::BltMatrix(
-    Image *, float, float, const SexyMatrix3 &, const Rect &, const Color &, int, const Rect &, bool
-) {}
-void Image::BltTrianglesTex(
-    Image *, const TriVertex (*)[3], int, const Rect &, const Color &, int, float, float, bool
-) {}
-void Image::BltMirror(Image *, int, int, const Rect &, const Color &, int) {}
-void Image::StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}

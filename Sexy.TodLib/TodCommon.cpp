@@ -1,224 +1,118 @@
-#include "TodCommon.h"
+#include <bits/chrono.h>
+#include <chrono>
+#include <cstdarg>
+
 #include "../GameConstants.h"
 #include "../LawnApp.h"
 #include "../Resources.h"
+#include "Common.h"
 #include "EffectSystem.h"
 #include "SexyAppBase.h"
+#include "TodCommon.h"
 #include "TodDebug.h"
 #include "TodList.h"
 #include "TodStringFile.h"
-#include "graphics/D3DInterface.h"
-#include "graphics/DDImage.h"
-#include "graphics/DDInterface.h"
 #include "graphics/Font.h"
+// #include "graphics/DDImage.h"
 #include "graphics/Graphics.h"
 #include "graphics/ImageFont.h"
-#include "misc/Debug.h"
-#include "misc/PerfTimer.h"
+// #include "misc/PerfTimer.h"
 #include "misc/SexyMatrix.h"
+// #include "graphics/DDInterface.h"
+// #include "graphics/D3DInterface.h"
 
 // 0x510BC0
-void Tod_SWTri_AddAllDrawTriFuncs() {
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4A59B0
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x48E6F0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x48F9C0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x490920
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4921A0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x493970
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x495BB0
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x497480
+/*
+void Tod_SWTri_AddAllDrawTriFuncs()
+{
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4A59B0 SWTri_AddDrawTriFunc(true, false, false, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x48E6F0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x48F9C0 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x490920
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4921A0 SWTri_AddDrawTriFunc(true, false, true, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x493970 SWTri_AddDrawTriFunc(true, false, true, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x495BB0 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x497480
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4997D0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x49A610
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x49BC90
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x49CBB0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x49E400
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x49FC10
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4A1DF0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4A3710
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4997D0 SWTri_AddDrawTriFunc(true, true, false, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x49A610 SWTri_AddDrawTriFunc(true, true, false, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x49BC90 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x49CBB0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x49E400 SWTri_AddDrawTriFunc(true, true, true, false, 0x8888, true,
+TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x49FC10 SWTri_AddDrawTriFunc(true, true, true, true,
+0x8888, false, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4A1DF0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x8888, true, TodDrawTriangle_8888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4A3710
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4A59B0
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x48E6F0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4A63C0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4A7D70
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4AAAA0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4AD590
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x4B1580
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x4B42D0
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4A59B0 SWTri_AddDrawTriFunc(true, false, false, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x48E6F0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4A63C0 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4A7D70
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4AAAA0 SWTri_AddDrawTriFunc(true, false, true, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4AD590 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x4B1580 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x4B42D0
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4B84F0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x4B9D30
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x4BC670
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x4BE040
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x4C0D60
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x4C38C0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4C77C0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4CA580
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4B84F0 SWTri_AddDrawTriFunc(true, true, false, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x4B9D30 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x4BC670 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x4BE040
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x4C0D60 SWTri_AddDrawTriFunc(true, true, true, false, 0x0888, true,
+TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x4C38C0 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0888, false, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4C77C0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0888, true, TodDrawTriangle_0888_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4CA580
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4CE700
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x4CF170
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4D0500
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4D20B0
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4D4F40
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4D7C20
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x4DBDF0
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x4DED40
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4CE700 SWTri_AddDrawTriFunc(true, false, false, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x4CF170 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4D0500 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4D20B0
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4D4F40 SWTri_AddDrawTriFunc(true, false, true, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4D7C20 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x4DBDF0 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x4DED40
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x4E3150
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x4E4B90
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x4E76C0
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x4E92B0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x4EC170
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x4EEE70
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x4F2FB0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x4F5F90
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x4E3150 SWTri_AddDrawTriFunc(true, true, false, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x4E4B90 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x4E76C0 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x4E92B0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x4EC170 SWTri_AddDrawTriFunc(true, true, true, false, 0x0565, true,
+TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x4EEE70 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0565, false, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x4F2FB0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0565, true, TodDrawTriangle_0565_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x4F5F90
 
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND0
-    ); // 0x4FA280
-    SWTri_AddDrawTriFunc(
-        true, false, false, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND1
-    ); // 0x4FACF0
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND0
-    ); // 0x4FC080
-    SWTri_AddDrawTriFunc(
-        true, false, false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND1
-    ); // 0x4FCE50
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND0
-    ); // 0x4FE560
-    SWTri_AddDrawTriFunc(
-        true, false, true, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND1
-    ); // 0x4FFB80
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND0
-    ); // 0x501C80
-    SWTri_AddDrawTriFunc(
-        true, false, true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND1
-    ); // 0x503390
+    SWTri_AddDrawTriFunc(true, false, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND0);
+//0x4FA280 SWTri_AddDrawTriFunc(true, false, false, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB0_BLEND1);		//0x4FACF0 SWTri_AddDrawTriFunc(true, false, false, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND0);		//0x4FC080 SWTri_AddDrawTriFunc(true, false,
+false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD0_GLOB1_BLEND1);		//0x4FCE50
+    SWTri_AddDrawTriFunc(true, false, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND0);
+//0x4FE560 SWTri_AddDrawTriFunc(true, false, true, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB0_BLEND1);		//0x4FFB80 SWTri_AddDrawTriFunc(true, false, true, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND0);		//0x501C80 SWTri_AddDrawTriFunc(true, false,
+true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA0_MOD1_GLOB1_BLEND1);		//0x503390
 
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND0
-    ); // 0x5054D0
-    SWTri_AddDrawTriFunc(
-        true, true, false, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND1
-    ); // 0x5061E0
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND0
-    ); // 0x507710
-    SWTri_AddDrawTriFunc(
-        true, true, false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND1
-    ); // 0x5084B0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND0
-    ); // 0x509BD0
-    SWTri_AddDrawTriFunc(
-        true, true, true, false, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND1
-    ); // 0x50B230
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND0
-    ); // 0x50D2F0
-    SWTri_AddDrawTriFunc(
-        true, true, true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND1
-    ); // 0x50EA10
-}
+    SWTri_AddDrawTriFunc(true, true, false, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND0);
+//0x5054D0 SWTri_AddDrawTriFunc(true, true, false, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB0_BLEND1);		//0x5061E0 SWTri_AddDrawTriFunc(true, true, false, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND0);		//0x507710 SWTri_AddDrawTriFunc(true, true,
+false, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD0_GLOB1_BLEND1);		//0x5084B0
+    SWTri_AddDrawTriFunc(true, true, true, false, 0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND0);
+//0x509BD0 SWTri_AddDrawTriFunc(true, true, true, false, 0x0555, true,
+TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB0_BLEND1);		//0x50B230 SWTri_AddDrawTriFunc(true, true, true, true,
+0x0555, false, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND0);		//0x50D2F0 SWTri_AddDrawTriFunc(true, true,
+true, true, 0x0555, true, TodDrawTriangle_0555_TEX1_TALPHA1_MOD1_GLOB1_BLEND1);		//0x50EA10
+}*/
 
 // 0x5114E0
 SexyString TodGetCurrentLevelName() { return _S("Unknown level"); }
@@ -523,25 +417,27 @@ void TodDrawImageCelScaled(
     g->DrawImage(theImageStrip, aSrcRect, aDestRect);
 }
 
+/*
 static const int POOL_SIZE = 4096;
 static RenderCommand gRenderCommandPool[POOL_SIZE];
-static RenderCommand *gRenderTail[256];
-static RenderCommand *gRenderHead[256];
-
+static RenderCommand* gRenderTail[256];
+static RenderCommand* gRenderHead[256];
+*/
 // 0x511E50
 void TodDrawStringMatrix(
     Graphics *g, const _Font *theFont, const SexyMatrix3 &theMatrix, const SexyString &theString, const Color &theColor
 ) {
+    std::multimap<int, RenderCommand> aRenderCommandPool;
     SexyString aFinalString = TodStringTranslate(theString);
 
+    /*
     memset(gRenderTail, 0, sizeof(gRenderTail));
-    memset(gRenderHead, 0, sizeof(gRenderHead));
+    memset(gRenderHead, 0, sizeof(gRenderHead));*/
     ImageFont *aFont = (ImageFont *)theFont;
     if (!aFont->mFontData->mInitialized) return;
 
     aFont->Prepare();
     int aCurXPos = 0;
-    int aCurPoolIdx = 0;
     for (int aCharNum = 0; aCharNum < (int)aFinalString.size(); aCharNum++) {
         SexyChar aChar = aFont->GetMappedChar(aFinalString[aCharNum]);
         SexyChar aNextChar = '\0';
@@ -601,39 +497,20 @@ void TodDrawStringMatrix(
             aColor.mAlpha = std::min(aLayer->mColorAdd.mAlpha + theColor.mAlpha * aLayer->mColorMult.mAlpha / 255, 255);
             int anOrder = aCharData->mOrder + aLayer->mBaseOrder;
 
-            if (aCurPoolIdx >= POOL_SIZE) break;
-
-            RenderCommand *aRenderCommand = &gRenderCommandPool[aCurPoolIdx++];
-            aRenderCommand->mImage = aKernItr->mScaledImage;
-            aRenderCommand->mColor = aColor;
-            aRenderCommand->mDest[0] = anImageX;
-            aRenderCommand->mDest[1] = anImageY;
-            // aRenderCommand->mSrc[0] = aKernItr->mScaledCharImageRects[aChar].mX;
-            // aRenderCommand->mSrc[1] = aKernItr->mScaledCharImageRects[aChar].mY;
-            // aRenderCommand->mSrc[2] = aKernItr->mScaledCharImageRects[aChar].mWidth;
-            // aRenderCommand->mSrc[3] = aKernItr->mScaledCharImageRects[aChar].mHeight;
-            aRenderCommand->mSrc[0] = aKernItr->mScaledCharImageRects.find(aChar)->second.mX;
-            aRenderCommand->mSrc[1] = aKernItr->mScaledCharImageRects.find(aChar)->second.mY;
-            aRenderCommand->mSrc[2] = aKernItr->mScaledCharImageRects.find(aChar)->second.mWidth;
-            aRenderCommand->mSrc[3] = aKernItr->mScaledCharImageRects.find(aChar)->second.mHeight;
-            aRenderCommand->mMode = aLayer->mDrawMode;
-            aRenderCommand->mUseAlphaCorrection = aLayer->mUseAlphaCorrection;
-            aRenderCommand->mNext = nullptr;
-
             int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
-            if (gRenderTail[anOrderIdx]) {
-                gRenderTail[anOrderIdx]->mNext = aRenderCommand;
-                gRenderTail[anOrderIdx] = aRenderCommand;
-            } else {
-                gRenderHead[anOrderIdx] = aRenderCommand;
-                gRenderTail[anOrderIdx] = aRenderCommand;
+            aRenderCommandPool.insert(std::pair<int, RenderCommand>(
+                anOrderIdx,
+                {
+                    .mImage = aKernItr->mScaledImage,
+                    .mDest = {anImageX, anImageY},
+                    .mSrc = aKernItr->mScaledCharImageRects.find(aChar)->second,
+                    .mMode = aLayer->mDrawMode,
+                    .mColor = aColor,
+                    .mUseAlphaCorrection = aLayer->mUseAlphaCorrection,
+                    .mNext = nullptr
             }
+            ));
 
-            // aCurXPos += aSpacing + aCharWidth;
-            // if (aCurXPos > aMaxXPos)
-            //{
-            //	aMaxXPos = aCurXPos;
-            // }
             if (aMaxXPos < aCurXPos + aSpacing + aCharWidth) {
                 aMaxXPos = aCurXPos + aSpacing + aCharWidth;
             }
@@ -642,30 +519,17 @@ void TodDrawStringMatrix(
         aCurXPos = aMaxXPos;
     }
 
-    for (int aPoolIdx = 0; aPoolIdx < 256; aPoolIdx++) {
-        RenderCommand *aRenderCommand = gRenderHead[aPoolIdx];
+    for (auto aRenderCommand : aRenderCommandPool) {
+        RenderCommand &cmd = aRenderCommand.second;
 
-        while (aRenderCommand) {
-            int aDrawMode = g->GetDrawMode();
-            if (aRenderCommand->mMode != -1) {
-                aDrawMode = aRenderCommand->mMode;
-            }
-
-            if (aRenderCommand->mImage) {
-                Rect aSrcRect(
-                    aRenderCommand->mSrc[0], aRenderCommand->mSrc[1], aRenderCommand->mSrc[2], aRenderCommand->mSrc[3]
-                );
-                SexyTransform2D aTransform;
-                float aPosX = aSrcRect.mWidth * 0.5f + aRenderCommand->mDest[0];
-                float aPosY = aSrcRect.mHeight * 0.5f + aRenderCommand->mDest[1];
-                SexyMatrix3Translation(aTransform, aPosX, aPosY);
-                SexyMatrix3Multiply(aTransform, theMatrix, aTransform);
-                TodBltMatrix(
-                    g, aRenderCommand->mImage, aTransform, g->mClipRect, aRenderCommand->mColor, aDrawMode, aSrcRect
-                );
-            }
-
-            aRenderCommand = aRenderCommand->mNext;
+        int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
+        if (cmd.mImage) {
+            SexyTransform2D aTransform;
+            float aPosX = cmd.mSrc.mWidth * 0.5f + cmd.mDest[0];
+            float aPosY = cmd.mSrc.mHeight * 0.5f + cmd.mDest[1];
+            SexyMatrix3Translation(aTransform, aPosX, aPosY);
+            SexyMatrix3Multiply(aTransform, theMatrix, aTransform);
+            TodBltMatrix(g, cmd.mImage, aTransform, g->mClipRect, cmd.mColor, aDrawMode, cmd.mSrc);
         }
     }
 }
@@ -728,16 +592,25 @@ void SexyMatrix3ExtractScale(const SexyMatrix3 &m, float &theScaleX, float &theS
     }
 }
 
-void TodMarkImageForSanding(Image *theImage) { ((MemoryImage *)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING; }
+void TodMarkImageForSanding(Image * /*theImage*/) {
+    static bool madeWarning = false;
+    if (!madeWarning) printf("warning:  Image Sanding is Skipped\n");
+    madeWarning = true;
+    // unreachable();
+    //((MemoryImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
+}
 
-void TodSandImageIfNeeded(Image *theImage) {
-    MemoryImage *aImage = (MemoryImage *)theImage;
-    /*if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING))*/ // UB shift by a billion
-    if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING) {
+void TodSandImageIfNeeded(Image * /*theImage*/) {
+    static bool madeWarning = false;
+    if (!madeWarning) printf("warning:  Tried to sand Image but it didn't exist!\n");
+    madeWarning = true;
+    /* TODO
+    MemoryImage* aImage = (MemoryImage*)theImage;
+    if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
+    {
         FixPixelsOnAlphaEdgeForBlending(theImage);
-        ((MemoryImage *)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
-        // SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
-    }
+        ((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
+    }*/
 }
 
 // 0x512650
@@ -745,38 +618,45 @@ void TodBltMatrix(
     Graphics *g, Image *theImage, const SexyMatrix3 &theTransform, const Rect &theClipRect, const Color &theColor,
     int theDrawMode, const Rect &theSrcRect
 ) {
-    float aOffsetX = 0.0f;
-    float aOffsetY = 0.0f;
-    if (gSexyAppBase->Is3DAccelerated()) {
-        aOffsetX -= 0.5f;
-        aOffsetY -= 0.5f;
-    } else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE) {
+    // float aOffsetX = 0.0f;
+    // float aOffsetY = 0.0f;
+    // if (gSexyAppBase->Is3DAccelerated())
+    //{
+    // aOffsetX -= 0.5f;
+    // aOffsetY -= 0.5f;
+    // }
+    /*
+    else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE)
+    {
         gTodTriangleDrawAdditive = true;
-    }
+    }*/
 
     TodSandImageIfNeeded(theImage);
 
-    if (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != BOARD_WIDTH ||
-        theClipRect.mHeight != BOARD_HEIGHT) {
-        g->mDestImage->BltMatrix(
-            theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend
-        );
-    } else if (DDImage::Check3D(g->mDestImage)) {
-        theImage->mDrawn = true;
-        D3DInterface *aInterface = ((DDImage *)g->mDestImage)->mDDInterface->mD3DInterface;
-        aInterface->BltTransformed(
-            theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend, aOffsetX, aOffsetY,
-            true
-        );
-    } else {
-        Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
-        g->mDestImage->BltMatrix(
-            theImage, aOffsetX, aOffsetY, theTransform, aBufFixClipRect, theColor, theDrawMode, theSrcRect,
-            g->mLinearBlend
-        );
-    }
+    g->mDestImage->BltMatrix(
+        theImage, 0.0f, 0.0f, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend
+    );
 
-    gTodTriangleDrawAdditive = false;
+    /*if (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != BOARD_WIDTH || theClipRect.mHeight !=
+    BOARD_HEIGHT)
+    {
+
+    }
+    else if (DDImage::Check3D(g->mDestImage))
+    {
+        theImage->mDrawn = true;
+        D3DInterface* aInterface = ((DDImage*)g->mDestImage)->mDDInterface->mD3DInterface;
+        aInterface->BltTransformed(theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend,
+    aOffsetX, aOffsetY, true);
+    }
+    else
+    {
+        Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
+        g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, aBufFixClipRect, theColor, theDrawMode,
+    theSrcRect, g->mLinearBlend);
+    }*/
+
+    // gTodTriangleDrawAdditive = false;
 }
 
 // 0x5127C0
@@ -901,25 +781,28 @@ void TodDrawImageCenterScaledF(
 }
 
 // 0x512AC0
-unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel, int x, int y) {
+/*
+uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, int y)
+{
     int aRed = 0;
     int aGreen = 0;
     int aBlue = 0;
     int aBitsCount = 0;
 
-    for (int i = -1; i <= 1; i++) // 依次循环上方、当前、下方的一行
+    for (int i = -1; i <= 1; i++)  // 依次循环上方、当前、下方的一行
     {
-        if (i == 0) // 排除当前行
+        if (i == 0)  // 排除当前行
         {
             continue;
         }
 
-        for (int j = -1; j <= 1; j++) // 依次循环左方、当前、右方的一列
+        for (int j = -1; j <= 1; j++)  // 依次循环左方、当前、右方的一列
         {
-            if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) &&
-                (y != theImage->mHeight - 1 || i != 1)) {
+            if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) && (y !=
+theImage->mHeight - 1 || i != 1))
+            {
                 unsigned long aPixel = *(thePixel + i * theImage->mWidth + j);
-                if (aPixel & 0xFF000000UL) // 如果不是透明像素
+                if (aPixel & 0xFF000000UL)  // 如果不是透明像素
                 {
                     aRed += (aPixel >> 16) & 0x000000FFUL;
                     aGreen += (aPixel >> 8) & 0x000000FFUL;
@@ -930,7 +813,8 @@ unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel
         }
     }
 
-    if (aBitsCount == 0) return 0;
+    if (aBitsCount == 0)
+        return 0;
 
     aRed /= aBitsCount;
     aRed = std::min(aRed, 255);
@@ -939,25 +823,32 @@ unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel
     aBlue /= aBitsCount;
     aBlue = std::min(aBlue, 255);
     return (aRed << 16) | (aGreen << 8) | (aBlue);
-}
+}*/
 
 // 0x512C60
-void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
-    MemoryImage *aImage = (MemoryImage *)theImage;
-    if (aImage->mBits == nullptr) return;
 
-    aImage->CommitBits(); // 分析 mHasTrans 和 mHasAlpha
-    if (!aImage->mHasTrans) return;
+void FixPixelsOnAlphaEdgeForBlending(Image * /*theImage*/) {
+    // TODO
+    /*
+    MemoryImage* aImage = (MemoryImage*)theImage;
+    if (aImage->mBits == nullptr)
+        return;
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    aImage->CommitBits();  // 分析 mHasTrans 和 mHasAlpha
+    if (!aImage->mHasTrans)
+        return;
 
-    unsigned long *aBitsPtr = aImage->mBits;
-    for (int y = 0; y < theImage->mHeight; y++) {
-        for (int x = 0; x < theImage->mWidth; x++) {
-            if ((*aBitsPtr & 0xFF000000UL) == 0) // 如果像素的不透明度为 0
+    auto aTimer = std::chrono::high_resolution_clock::now();
+
+
+    uint32_t* aBitsPtr = aImage->mBits;
+    for (int y = 0; y < theImage->mHeight; y++)
+    {
+        for (int x = 0; x < theImage->mWidth; x++)
+        {
+            if ((*aBitsPtr & 0xFF000000UL) == 0)  // 如果像素的不透明度为 0
             {
-                *aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y); // 计算该点周围非透明像素的平均颜色
+                *aBitsPtr = AverageNearByPixels(aImage, aBitsPtr, x, y);  // 计算该点周围非透明像素的平均颜色
             }
 
             aBitsPtr++;
@@ -965,13 +856,12 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage) {
     }
     aImage->mBitsChangedCount++;
 
-    int aDuration = std::max(aTimer.GetDuration(), 0.0);
-    if (aDuration > 20) {
-        TodTraceAndLog(
-            "LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
-            gGetCurrentLevelName().c_str()
-        );
-    }
+    int aDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() -
+    aTimer).count(); if (aDuration > 20)
+    {
+        TodTraceAndLog("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration,
+    gGetCurrentLevelName().c_str());
+    }*/
 }
 
 void SexyMatrix3Transpose(const SexyMatrix3 &m, SexyMatrix3 &r) {
@@ -1079,6 +969,13 @@ Color ColorsMultiply(const Color &theColor1, const Color &theColor2) {
 // 0x513120
 //  GOTY @Patoke: inlined 0x51D4C0
 bool TodLoadResources(const std::string &theGroup) {
+    // It's fixed now.. but still, wtf
+    /* For everything that is mighty, this is so not okay. This code promotes the base class
+     * ResourceManager to the derived class TodResourceManager and just yolo raw dogs it
+     * and hopes for the best. It does work but Address sanitizer is having an aneurism.
+     * Honestly I don't even know what the best way to do this is. Probably implement a
+     * constructor in TodResourceManager and use that instead?
+     */
     return ((TodResourceManager *)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
@@ -1087,8 +984,7 @@ bool TodLoadResources(const std::string &theGroup) {
 bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
     if (IsGroupLoaded(theGroup)) return true;
 
-    PerfTimer aTimer;
-    aTimer.Start();
+    auto aTimer = std::chrono::high_resolution_clock::now();
 
     StartLoadResources(theGroup);
     while (!gSexyAppBase->mShutdown && TodLoadNextResource())
@@ -1107,7 +1003,9 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 
     mLoadedGroups.insert(theGroup);
 
-    int aDuration = std::max(aTimer.GetDuration(), 0.0);
+    int aDuration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
+            .count();
     if (aDuration > 20) {
         TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
     }
@@ -1115,16 +1013,16 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
     return true;
 }
 
-void TodAddImageToMap(SharedImageRef *theImage, const std::string &thePath) {
+void TodAddImageToMap(Image *theImage, const std::string &thePath) {
     ((TodResourceManager *)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 
 // 0x513230
-void TodResourceManager::AddImageToMap(SharedImageRef *theImage, const std::string &thePath) {
+void TodResourceManager::AddImageToMap(Image *theImage, const std::string &thePath) {
     TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
 
     ImageRes *aImageRes = new ImageRes();
-    aImageRes->mImage = *theImage;
+    aImageRes->mImage = theImage;
     aImageRes->mPath = thePath;
     mImageMap.insert(ResMap::value_type(thePath, aImageRes));
 }
@@ -1133,7 +1031,7 @@ bool TodLoadNextResource() { return ((TodResourceManager *)gSexyAppBase->mResour
 
 // 0x513330
 bool TodResourceManager::TodLoadNextResource() {
-    GetTickCount();
+    // GetTickCount();
     TodHesitationTrace("preres");
 
     while (mCurResGroupListItr != mCurResGroupList->end()) {
@@ -1143,7 +1041,8 @@ bool TodResourceManager::TodLoadNextResource() {
         switch (aRes->mType) {
         case ResType_Image: {
             ImageRes *anImageRes = (ImageRes *)aRes;
-            if ((DDImage *)anImageRes->mImage != nullptr) {
+            anImageRes->mImageSand = true;
+            if (anImageRes->mImage != nullptr) {
                 mCurResGroupListItr++;
                 continue;
             }
@@ -1174,15 +1073,18 @@ bool TodResourceManager::TodLoadNextResource() {
 
         if (!LoadNextResource()) break;
 
-        if (aRes->mType == ResType::ResType_Image) {
-            ImageRes *anImageRes = (ImageRes *)aRes;
-            Image *aImage = (Image *)anImageRes->mImage;
-            if (aImage != nullptr) {
+        /*
+        if (aRes->mType == ResType::ResType_Image)
+        {
+            ImageRes* anImageRes = (ImageRes*)aRes;
+            Image* aImage = (Image*)anImageRes->mImage;
+            if (aImage != nullptr)
+            {
                 TodMarkImageForSanding(aImage);
             }
-        }
+        }*/
 
-        GetTickCount();
+        // GetTickCount();
         TodHesitationTrace("Loading: '%s'", aRes->mPath.c_str());
         TodHesitationTrace("resource '%s'", aRes->mPath.c_str());
         return true;
@@ -1203,7 +1105,7 @@ bool TodFindFontPath(_Font *theFont, std::string *thePath) {
 bool TodResourceManager::FindFontPath(_Font *theFont, std::string *thePath) {
     for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++) {
         FontRes *aFontRes = (FontRes *)anItr->second;
-        _Font *aFont = (_Font *)aFontRes->mFont;
+        _Font *aFont = aFontRes->mFont;
         if (aFont == theFont) {
             *thePath = anItr->first;
             return true;
@@ -1296,7 +1198,7 @@ bool TodIsPointInPolygon(
 
 int TodVsnprintf(char *theBuffer, int theSize, const char *theFormat, va_list theArgList) {
     try {
-        int aCount = _vsnprintf(theBuffer, theSize, theFormat, theArgList);
+        int aCount = vsnprintf(theBuffer, theSize, theFormat, theArgList);
         if (aCount == -1) {
             theBuffer[theSize - 1] = '\0';
             aCount = theSize - 1;
