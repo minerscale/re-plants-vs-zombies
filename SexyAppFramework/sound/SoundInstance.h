@@ -1,9 +1,7 @@
 #ifndef __SOUNDINSTANCE_H__
 #define __SOUNDINSTANCE_H__
 
-#define NOMINMAX 1
 #include "Common.h"
-#include <windows.h>
 
 namespace Sexy {
 

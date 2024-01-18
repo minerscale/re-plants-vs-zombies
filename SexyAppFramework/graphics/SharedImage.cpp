@@ -1,24 +1,27 @@
 #include "SharedImage.h"
+// #include "graphics/DDImage.h"
+#include "Common.h"
 #include "SexyAppBase.h"
-#include "graphics/DDImage.h"
 
 using namespace Sexy;
 
 SharedImage::SharedImage() {
-    mImage = NULL;
+    // mImage = NULL;
     mRefCount = 0;
 }
 
 SharedImageRef::SharedImageRef(const SharedImageRef &theSharedImageRef) {
     mSharedImage = theSharedImageRef.mSharedImage;
     if (mSharedImage != NULL) mSharedImage->mRefCount++;
-    mUnsharedImage = theSharedImageRef.mUnsharedImage;
+    unreachable();
+    // mUnsharedImage = theSharedImageRef.mUnsharedImage;
     mOwnsUnshared = false;
 }
 
 SharedImageRef::SharedImageRef() {
     mSharedImage = NULL;
-    mUnsharedImage = NULL;
+    unreachable();
+    // mUnsharedImage = NULL;
     mOwnsUnshared = false;
 }
 
@@ -26,15 +29,19 @@ SharedImageRef::SharedImageRef(SharedImage *theSharedImage) {
     mSharedImage = theSharedImage;
     if (theSharedImage != NULL) mSharedImage->mRefCount++;
 
-    mUnsharedImage = NULL;
+    unreachable();
+    // mUnsharedImage = NULL;
     mOwnsUnshared = false;
 }
 
 SharedImageRef::~SharedImageRef() { Release(); }
 
 void SharedImageRef::Release() {
-    if (mOwnsUnshared) delete mUnsharedImage;
-    mUnsharedImage = NULL;
+    unreachable();
+    /*
+    if (mOwnsUnshared)
+        delete mUnsharedImage;
+    mUnsharedImage = NULL;*/
     if (mSharedImage != NULL) {
         if (--mSharedImage->mRefCount == 0) gSexyAppBase->mCleanupSharedImages = true;
     }
@@ -55,22 +62,39 @@ SharedImageRef &SharedImageRef::operator=(SharedImage *theSharedImage) {
     return *this;
 }
 
-SharedImageRef &SharedImageRef::operator=(MemoryImage *theUnsharedImage) {
+/*
+SharedImageRef& SharedImageRef::operator=(MemoryImage* theUnsharedImage)
+{
     Release();
     mUnsharedImage = theUnsharedImage;
     return *this;
 }
 
-MemoryImage *SharedImageRef::operator->() { return (MemoryImage *)*this; }
+MemoryImage* SharedImageRef::operator->()
+{
+    return (MemoryImage*) *this;
+}*/
 
-SharedImageRef::operator Image *() { return (MemoryImage *)*this; }
-
-SharedImageRef::operator MemoryImage *() {
-    if (mUnsharedImage != NULL) return mUnsharedImage;
-    else return (DDImage *)*this;
+SharedImageRef::operator Image *() {
+    // FIXME
+    unreachable();
+    // return (MemoryImage*) *this;
 }
 
-SharedImageRef::operator DDImage *() {
-    if (mSharedImage != NULL) return mSharedImage->mImage;
-    else return NULL;
-}
+/*
+SharedImageRef::operator MemoryImage*()
+{
+    if (mUnsharedImage != NULL)
+        return mUnsharedImage;
+    else
+        return (DDImage*) *this;
+}*/
+
+/*
+SharedImageRef::operator DDImage*()
+{
+    if (mSharedImage != NULL)
+        return mSharedImage->mImage;
+    else
+        return NULL;
+}*/

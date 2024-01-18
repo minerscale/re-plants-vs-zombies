@@ -181,7 +181,7 @@ void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSi
 
 /*inline*/ unsigned int DefinitionGetDeepSize(DefMap *theDefMap, void *theDefinition);
 /*inline*/ unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition);
-/*inline*/ void *DefinitionAlloc(int theSize);
+/*inline*/ // void*        DefinitionAlloc(int theSize);
 void *DefinitionUncompressCompiledBuffer(
     void *theCompressedBuffer, size_t theCompressedBufferSize, size_t &theUncompressedSize,
     const SexyString &theCompiledFilePath

@@ -4,6 +4,7 @@
 #include "misc/ResourceManager.h"
 #include <cfloat>
 #include <cmath>
+#include <cstdint>
 #include <stdlib.h>
 
 struct TodAllocator;
@@ -51,17 +52,18 @@ int TodPickFromSmoothArray(TodSmoothArray *theArray, int theCount);
 // #################################################################################################### //
 
 class TodResourceManager : public ResourceManager {
+    using ResourceManager::ResourceManager; // Use base class constructor
 public:
     bool FindImagePath(Image *theImage, std::string *thePath);
     bool FindFontPath(_Font *theFont, std::string *thePath);
-    void AddImageToMap(SharedImageRef *theImage, const std::string &thePath);
+    void AddImageToMap(Image *theImage, const std::string &thePath);
     bool TodLoadNextResource();
     bool TodLoadResources(const std::string &theGroup);
 };
 
 /*inline*/ bool TodLoadResources(const std::string &theGroup);
 /*inline*/ bool TodLoadNextResource();
-void TodAddImageToMap(SharedImageRef *theImage, const std::string &thePath);
+void TodAddImageToMap(Image *theImage, const std::string &thePath);
 bool TodFindImagePath(Image *theImage, std::string *thePath);
 bool TodFindFontPath(_Font *theFont, std::string *thePath);
 
@@ -135,8 +137,8 @@ void TodBltMatrix(
 void TodMarkImageForSanding(Image *theImage);
 void TodSandImageIfNeeded(Image *theImage);
 void FixPixelsOnAlphaEdgeForBlending(Image *theImage);
-unsigned long AverageNearByPixels(MemoryImage *theImage, unsigned long *thePixel, int x, int y);
-void Tod_SWTri_AddAllDrawTriFuncs();
+// unsigned long			AverageNearByPixels(MemoryImage* theImage, unsigned long* thePixel, int x, int y);
+// void					Tod_SWTri_AddAllDrawTriFuncs();
 
 SexyString
 TodReplaceString(const SexyString &theText, const SexyChar *theStringToFind, const SexyString &theStringToSubstitute);

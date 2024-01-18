@@ -9,7 +9,7 @@ namespace Sexy {
 
 class Widget;
 class Image;
-class MemoryImage;
+// class MemoryImage;
 class SexyAppBase;
 class Graphics;
 
@@ -42,8 +42,8 @@ public:
 
     Graphics *mCurG;
     SexyAppBase *mApp;
-    MemoryImage *mImage;
-    MemoryImage *mTransientImage;
+    Image *mImage;
+    //	MemoryImage*			mTransientImage;
     bool mLastHadTransients;
     Widget *mPopupCommandWidget;
     DeferredOverlayVector mDeferredOverlayWidgets;

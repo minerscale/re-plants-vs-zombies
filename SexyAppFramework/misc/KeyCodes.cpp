@@ -1,4 +1,5 @@
 #include "KeyCodes.h"
+#include <cctype>
 
 using namespace Sexy;
 
@@ -105,7 +106,12 @@ KeyCode Sexy::GetKeyCodeFromName(const std::string &theKeyName) {
     if (theKeyName.length() >= MAX_KEYNAME_LEN - 1) return KEYCODE_UNKNOWN;
 
     strcpy(aKeyName, theKeyName.c_str());
-    strupr(aKeyName);
+
+    char *s = aKeyName;
+    while (*s) {
+        *s = toupper((unsigned char)*s);
+        s++;
+    }
 
     if (theKeyName.length() == 1) {
         unsigned char aKeyNameChar = aKeyName[0];

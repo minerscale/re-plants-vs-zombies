@@ -1085,7 +1085,7 @@ void GameSelector::ClickedAdventure() {
     mHandReanimID = mApp->ReanimationGetID(aHandReanim);
     mApp->PlayFoley(FoleyType::FOLEY_DIRT_RISE);
     for (int i = 0; i < aHandReanim->mDefinition->mTracks.count; i++)
-        if (!strnicmp(aHandReanim->mDefinition->mTracks.tracks[i].mName, "rock", 4))
+        if (!strncasecmp(aHandReanim->mDefinition->mTracks.tracks[i].mName, "rock", 4))
             aHandReanim->mTrackInstances[i].mIgnoreClipRect = true;
 }
 

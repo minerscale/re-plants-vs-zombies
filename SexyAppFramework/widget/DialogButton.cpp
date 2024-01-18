@@ -32,8 +32,10 @@ void DialogButton::Draw(Graphics *g) {
         return;
     }
 
+    /* FIXME
     if ((mFont == NULL) && (mLabel.length() > 0))
         mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 12, true);
+    */
 
     bool doTranslate = IsButtonDown();
 

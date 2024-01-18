@@ -9,14 +9,17 @@ namespace Sexy {
 
 class CritSect {
 private:
-    CRITICAL_SECTION mCriticalSection;
+    // CRITICAL_SECTION mCriticalSection;
+    // pthread_mutex_t mCriticalSection;
     friend class AutoCrit;
 
 public:
     CritSect(void);
     ~CritSect(void);
-};
 
+    void Lock();
+    void Unlock();
+};
 } // namespace Sexy
 
 #endif // _H_CritSect

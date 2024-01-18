@@ -2,6 +2,7 @@
 #define __REANIMATLAS_H__
 
 #include "misc/Rect.h"
+#include <memory>
 using namespace Sexy;
 
 #define MAX_REANIM_IMAGES 64
@@ -9,7 +10,7 @@ using namespace Sexy;
 class ReanimatorDefinition;
 namespace Sexy {
 class Image;
-class MemoryImage;
+//    class MemoryImage;
 }; // namespace Sexy
 
 class ReanimAtlasImage {
@@ -30,7 +31,7 @@ class ReanimAtlas {
 public:
     ReanimAtlasImage mImageArray[MAX_REANIM_IMAGES]; //+0x0
     int mImageCount;                                 //+0x500
-    MemoryImage *mMemoryImage;                       //+0x504
+    std::unique_ptr<Image> mMemoryImage;             //+0x504
 
 public:
     ReanimAtlas();
@@ -49,6 +50,6 @@ public:
     ReanimAtlasImage *GetEncodedReanimAtlas(Image *theImage);
 };
 
-MemoryImage *ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight);
+// MemoryImage*                        ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight);
 
 #endif

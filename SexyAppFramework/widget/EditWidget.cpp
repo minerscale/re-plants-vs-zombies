@@ -1,4 +1,5 @@
 #include "EditWidget.h"
+#include "Common.h"
 #include "EditListener.h"
 #include "SexyAppBase.h"
 #include "WidgetManager.h"
@@ -98,8 +99,10 @@ void EditWidget::SetFont(_Font *theFont, _Font *theWidthCheckFont) {
 
 void EditWidget::Draw(Graphics *g) // Already translated
 {
-    if (mFont == NULL) mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10, false);
-
+    /*
+    if (mFont == NULL)
+        mFont = new SysFont(mWidgetManager->mApp, "Arial Unicode MS", 10, false);
+    */
     SexyString &aString = GetDisplayString();
 
     g->SetColor(mColors[COLOR_BKG]);
@@ -155,17 +158,20 @@ void EditWidget::UpdateCaretPos() {
     if (aPoint.mY < 10) aPoint.mY = 10;
     else if (aPoint.mY > anApp->mHeight - 10) aPoint.mY = anApp->mHeight - 10;
 
-    SetCaretPos(aPoint.mX, aPoint.mY);
+    unreachable(); // FIXME
+                   // SetCaretPos(aPoint.mX,aPoint.mY);
 }
 
 void EditWidget::GotFocus() {
     Widget::GotFocus();
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
-        SexyAppBase *anApp = mWidgetManager->mApp;
-
-        CreateCaret(anApp->mHWnd, NULL, 0, 0);
-        UpdateCaretPos();
-        ShowCaret(anApp->mHWnd);
+        unreachable(); // FIXME
+                       /*
+                       SexyAppBase *anApp = mWidgetManager->mApp;
+                       CreateCaret(anApp->mHWnd,NULL,0,0);
+                       UpdateCaretPos();
+                       ShowCaret(anApp->mHWnd);
+                       */
     }
 
     mShowingCursor = true;
@@ -177,8 +183,11 @@ void EditWidget::LostFocus() {
     Widget::LostFocus();
 
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
+        unreachable();
+        /* FIXME
         HideCaret(mWidgetManager->mApp->mHWnd);
         DestroyCaret();
+        */
     }
 
     mShowingCursor = false;

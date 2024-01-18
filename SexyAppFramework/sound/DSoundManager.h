@@ -1,8 +1,8 @@
 #ifndef __DSOUNDMANAGER_H__
 #define __DSOUNDMANAGER_H__
 
+// #include "dsoundversion.h"
 #include "SoundManager.h"
-#include "dsoundversion.h"
 
 namespace Sexy {
 

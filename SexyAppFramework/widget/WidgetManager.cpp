@@ -1,11 +1,13 @@
 #include "WidgetManager.h"
-#include "SexyAppBase.h"
+#include "Common.h"
 #include "Widget.h"
-#include "graphics/DDImage.h"
 #include "graphics/Graphics.h"
 #include "graphics/Image.h"
-#include "misc/Debug.h"
 #include "misc/KeyCodes.h"
+// #include "graphics/DDImage.h"
+// #include "graphics/MemoryImage.h"
+#include "SexyAppBase.h"
+#include "misc/Debug.h"
 #include "misc/PerfTimer.h"
 
 using namespace Sexy;
@@ -113,8 +115,8 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
                     Graphics g(*mCurG);
                     g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
                     g.Translate(aWidget->mX, aWidget->mY);
-                    g.SetFastStretch(!g.Is3D());
-                    g.SetLinearBlend(g.Is3D());
+                    g.SetFastStretch(false);
+                    g.SetLinearBlend(true);
 
                     aWidget->DrawOverlay(&g, aPriority);
                     mDeferredOverlayWidgets[i].first = NULL;
@@ -338,14 +340,15 @@ bool WidgetManager::DrawScreen() {
     Graphics aScrG(mImage);
     mCurG = &aScrG;
 
-    DDImage *aDDImage = dynamic_cast<DDImage *>(mImage);
+    /*
+    DDImage* aDDImage = dynamic_cast<DDImage*>(mImage);
     bool surfaceLocked = false;
-    if (aDDImage != NULL) surfaceLocked = aDDImage->LockSurface();
+    if (aDDImage != NULL)
+        surfaceLocked = aDDImage->LockSurface();*/
 
     if (aDirtyCount > 0) {
         Graphics g(aScrG);
         g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
-        bool is3D = mApp->Is3DAccelerated();
 
         WidgetList::iterator anItr = mWidgets.begin();
         while (anItr != mWidgets.end()) {
@@ -355,8 +358,8 @@ bool WidgetManager::DrawScreen() {
 
             if ((aWidget->mDirty) && (aWidget->mVisible)) {
                 Graphics aClipG(g);
-                aClipG.SetFastStretch(!is3D);
-                aClipG.SetLinearBlend(is3D);
+                aClipG.SetFastStretch(false);
+                aClipG.SetLinearBlend(true);
                 aClipG.Translate(aWidget->mX, aWidget->mY);
                 aWidget->DrawAll(&aModalFlags, &aClipG);
 
@@ -371,7 +374,10 @@ bool WidgetManager::DrawScreen() {
 
     FlushDeferredOverlayWidgets(0x7FFFFFFF);
 
-    if (aDDImage != NULL && surfaceLocked) aDDImage->UnlockSurface();
+    /*
+    if (aDDImage != NULL && surfaceLocked)
+        aDDImage->UnlockSurface();
+    */
 
     mCurG = NULL;
 
@@ -416,7 +422,6 @@ void WidgetManager::RemovePopupCommandWidget() {
 }
 
 void WidgetManager::MousePosition(int x, int y) {
-
     int aLastMouseX = mLastMouseX;
     int aLastMouseY = mLastMouseY;
 
