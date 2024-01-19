@@ -6,13 +6,13 @@
 #include "PlayerInfo.h"
 #include "paklib/PakInterface.h"
 #include "sound/BassLoader.h"
-#include "sound/BassMusicInterface.h"
+#include "sound/SDLMusicInterface.h"
 
 using namespace Sexy;
 
 // 0x45A260
 Music::Music() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mMusicInterface = gSexyAppBase->mMusicInterface;
     mCurMusicTune = MusicTune::MUSIC_TUNE_NONE;
     mCurMusicFileMain = MusicFile::MUSIC_FILE_NONE;
@@ -35,13 +35,13 @@ Music::Music() {
 MusicFileData gMusicFileData[MusicFile::NUM_MUSIC_FILES]; // 0x6A9ED0
 
 // 0x45A2C0
-bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName) {
+bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName) const {
     HMUSIC aHMusic = 0;
     HSTREAM aStream = 0;
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    SDLMusicInterface *aBass = static_cast<SDLMusicInterface *>(mApp->mMusicInterface);
     std::string anExt;
 
-    size_t aDot = theFileName.rfind('.');
+    const size_t aDot = theFileName.rfind('.');
     if (aDot != std::string::npos)                           // 文件名中不含“.”（文件无扩展名）
         anExt = StringToLower(theFileName.substr(aDot + 1)); // 取得小写的文件扩展名
 
@@ -58,7 +58,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
         p_fclose(pFile);                            // 关闭文件流
 
         aHMusic = gBass->BASS_MusicLoad(true, aData, 0, aSize, aBass->mMusicLoadFlags, 0);
-        delete[] (char *)aData;
+        delete[] static_cast<char *>(aData);
 
         if (aHMusic == 0) return false;
     } else {
@@ -74,15 +74,15 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
 
         aStream = gBass->BASS_StreamCreateFile(true, aData, 0, aSize, 0);
         TOD_ASSERT(gMusicFileData[theMusicFile].mFileData == nullptr);
-        gMusicFileData[theMusicFile].mFileData = (unsigned int *)aData;
+        gMusicFileData[theMusicFile].mFileData = static_cast<unsigned int *>(aData);
 
         if (aStream == 0) return false;
     }
 
-    BassMusicInfo aMusicInfo;
+    SDLMusicInfo aMusicInfo;
     aMusicInfo.mHStream = aStream;
     aMusicInfo.mHMusic = aHMusic;
-    aBass->mMusicMap.insert(BassMusicMap::value_type(theMusicFile, aMusicInfo)
+    aBass->mMusicMap.insert(SDLMusicMap::value_type(theMusicFile, aMusicInfo)
     ); // 将目标音乐文件编号和音乐信息的对组加入音乐数据容器
     return true;
 }
@@ -268,7 +268,7 @@ void Music::StopAllMusic() {
 
 // 0x45AC20
 HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    SDLMusicInterface *aBass = (SDLMusicInterface *)mApp->mMusicInterface;
     auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
     return anItr->second.mHMusic;
@@ -276,10 +276,10 @@ HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
 
 // 0x45AC70
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume) {
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    SDLMusicInterface *aBass = (SDLMusicInterface *)mApp->mMusicInterface;
     auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
-    BassMusicInfo *aMusicInfo = &anItr->second;
+    SDLMusicInfo *aMusicInfo = &anItr->second;
 
     if (aMusicInfo->mHStream) {
         bool aNoLoop = theMusicFile == MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN; // MV 音乐不循环
@@ -438,7 +438,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 
 unsigned long Music::GetMusicOrder(MusicFile theMusicFile) {
     TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-    return ((BassMusicInterface *)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
+    return ((SDLMusicInterface *)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
 }
 
 // 0x45B1B0
@@ -665,10 +665,10 @@ void Music::StartGameMusic() {
 void Music::GameMusicPause(bool thePause) {
     if (thePause) {
         if (!mPaused && mCurMusicTune != MusicTune::MUSIC_TUNE_NONE) {
-            BassMusicInterface *aBass = (BassMusicInterface *)mMusicInterface;
+            SDLMusicInterface *aBass = (SDLMusicInterface *)mMusicInterface;
             auto anItr = aBass->mMusicMap.find(mCurMusicFileMain);
             TOD_ASSERT(anItr != aBass->mMusicMap.end());
-            BassMusicInfo *aMusicInfo = &anItr->second;
+            SDLMusicInfo *aMusicInfo = &anItr->second;
 
             if (aMusicInfo->mHStream) {
                 mPauseOffset = gBass->BASS_ChannelGetPosition(aMusicInfo->mHStream, BASS_POS_MUSIC_ORDER);

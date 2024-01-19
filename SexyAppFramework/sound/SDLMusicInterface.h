@@ -8,7 +8,7 @@ namespace Sexy {
 
 class SexyAppBase;
 
-class BassMusicInfo {
+class SDLMusicInfo {
 public:
     HMUSIC mHMusic;
     HSTREAM mHStream;
@@ -18,22 +18,22 @@ public:
     bool mStopOnFade;
 
 public:
-    BassMusicInfo();
+    SDLMusicInfo();
 
     DWORD GetHandle() { return mHMusic ? mHMusic : mHStream; }
 };
 
-typedef std::map<int, BassMusicInfo> BassMusicMap;
+typedef std::map<int, SDLMusicInfo> SDLMusicMap;
 
-class BassMusicInterface : public MusicInterface {
+class SDLMusicInterface : public MusicInterface {
 public:
-    BassMusicMap mMusicMap;
+    SDLMusicMap mMusicMap;
     int mMaxMusicVolume;
     int mMusicLoadFlags;
 
 public:
-    BassMusicInterface(HWND theHWnd);
-    virtual ~BassMusicInterface();
+    SDLMusicInterface(HWND theHWnd);
+    virtual ~SDLMusicInterface();
 
     virtual bool LoadMusic(int theSongId, const std::string &theFileName);
     virtual void PlayMusic(int theSongId, int theOffset = 0, bool noLoop = false);
