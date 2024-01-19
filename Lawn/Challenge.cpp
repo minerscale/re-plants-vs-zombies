@@ -2365,7 +2365,8 @@ void Challenge::WhackAZombieSpawning() {
 int Challenge::UpdateZombieSpawning() {
     if (mApp->IsWhackAZombieLevel()) {
         WhackAZombieSpawning();
-        return 0;
+        //@Minerscale: Need to return truthy value to prevent normal spawning
+        return true;
     } else
         return mApp->IsFinalBossLevel() || mApp->mGameMode == GAMEMODE_CHALLENGE_ICE ||
                mApp->mGameMode == GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mGameMode == GAMEMODE_TREE_OF_WISDOM ||

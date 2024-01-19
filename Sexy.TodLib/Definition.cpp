@@ -349,7 +349,6 @@ bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
         return true;
     }
 
-    // This for loops performance is HORRIBLE
     // 从可能的贴图路径中手动加载贴图
     for (const DefLoadResPath &aLoadResPath : gDefLoadResPaths) {
         int aNameLen = theName.size();
@@ -357,11 +356,11 @@ bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
         if (aPrefixLen < aNameLen) {
             SexyString aPathToTry = aLoadResPath.mDirectory + theName.substr(aPrefixLen, aNameLen);
 
-            auto aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
+            auto aImageRef = gSexyAppBase->GetSharedImage(aPathToTry, "", true);
             if (aImageRef != nullptr) {
                 TodHesitationTrace("Load Image '%s'", theName.c_str());
                 TodAddImageToMap(aImageRef, theName);
-                TodMarkImageForSanding(aImageRef);
+                // TodMarkImageForSanding(aImageRef);
                 *theImage = aImageRef;
                 return true;
             }

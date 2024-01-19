@@ -1219,7 +1219,7 @@ ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage, bool 
     // Image Sanding. We have to move it here to avoid moving the image
     // between the CPU and GPU constantly. Sand once before uploading to
     // the GPU and everyone is happy.
-    if (theDoImageSanding) {
+    if (theDoImageSanding && anImage != NULL) {
         uint32_t *aBitsPtr = anImage->mBits.get();
         for (int y = 0; y < anImage->mHeight; y++) {
             for (int x = 0; x < anImage->mWidth; x++) {

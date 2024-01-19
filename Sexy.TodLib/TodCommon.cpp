@@ -592,26 +592,30 @@ void SexyMatrix3ExtractScale(const SexyMatrix3 &m, float &theScaleX, float &theS
     }
 }
 
-void TodMarkImageForSanding(Image * /*theImage*/) {
+/*
+void TodMarkImageForSanding(Image* theImage)
+{
     static bool madeWarning = false;
-    if (!madeWarning) printf("warning:  Image Sanding is Skipped\n");
+    if(!madeWarning) printf("warning:  Image Sanding is Skipped\n");
     madeWarning = true;
-    // unreachable();
+    //unreachable();
     //((MemoryImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
-}
+}*/
 
-void TodSandImageIfNeeded(Image * /*theImage*/) {
+/*
+void TodSandImageIfNeeded(Image* theImage)
+{
     static bool madeWarning = false;
-    if (!madeWarning) printf("warning:  Tried to sand Image but it didn't exist!\n");
+    if(!madeWarning) printf("warning:  Tried to sand Image but it didn't exist!\n");
     madeWarning = true;
-    /* TODO
+
     MemoryImage* aImage = (MemoryImage*)theImage;
     if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
     {
         FixPixelsOnAlphaEdgeForBlending(theImage);
         ((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
-    }*/
-}
+    }
+}*/
 
 // 0x512650
 void TodBltMatrix(
@@ -631,7 +635,7 @@ void TodBltMatrix(
         gTodTriangleDrawAdditive = true;
     }*/
 
-    TodSandImageIfNeeded(theImage);
+    // TodSandImageIfNeeded(theImage);
 
     g->mDestImage->BltMatrix(
         theImage, 0.0f, 0.0f, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend

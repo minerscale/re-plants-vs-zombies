@@ -134,8 +134,8 @@ void TodBltMatrix(
     Graphics *g, Image *theImage, const SexyMatrix3 &theTransform, const Rect &theClipRect, const Color &theColor,
     int theDrawMode, const Rect &theSrcRect
 );
-void TodMarkImageForSanding(Image *theImage);
-void TodSandImageIfNeeded(Image *theImage);
+// void					TodMarkImageForSanding(Image* theImage);
+// void					TodSandImageIfNeeded(Image* theImage);
 void FixPixelsOnAlphaEdgeForBlending(Image *theImage);
 // unsigned long			AverageNearByPixels(MemoryImage* theImage, unsigned long* thePixel, int x, int y);
 // void					Tod_SWTri_AddAllDrawTriFuncs();

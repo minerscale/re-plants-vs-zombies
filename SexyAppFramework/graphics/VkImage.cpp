@@ -429,6 +429,7 @@ void VkImage::BltTrianglesTex(
     std::vector<glm::vec4> vertices;
     std::vector<uint32_t> colors;
     vertices.reserve(theNumTriangles * 3);
+    colors.reserve(theNumTriangles * 3);
     for (int i = 0; i < theNumTriangles; ++i) {
         auto &triangle = theVertices[i];
 
