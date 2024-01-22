@@ -1,5 +1,5 @@
 #include "Resources.h"
-#include "misc/ResourceManager.h"
+#include "framework/misc/ResourceManager.h"
 #include <map>
 
 using namespace Sexy;
