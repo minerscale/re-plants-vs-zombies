@@ -187,16 +187,36 @@ VkImage::~VkImage() {
  | GRAPHICS FUNCTIONS |
  *====================*/
 
-const std::unordered_map<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>> accessMaskMap = {
-    {VK_IMAGE_LAYOUT_UNDEFINED,                {0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT}                            },
-    {VK_IMAGE_LAYOUT_GENERAL,
-     {VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT}              },
-    {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,     {VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT}    },
-    {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, {VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT}},
-    {VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-     {VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}                                                             },
-};
+template <decltype(auto) arr> static constexpr auto const_generate_layout_map() {
+    using T = decltype(arr)::value_type::second_type;
+
+    constexpr auto max_key = std::max_element(arr.begin(), arr.end(), [](const auto &left, const auto &right) {
+                                 return left.first < right.first;
+                             })->first;
+
+    std::array<T, max_key + 1> sparse_array{};
+
+    for (auto it : arr) {
+        sparse_array[it.first] = it.second;
+    }
+
+    return sparse_array;
+}
+
+constexpr auto accessMaskMap =
+    const_generate_layout_map<std::array<std::pair<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>>, 5>{
+        {
+         {VK_IMAGE_LAYOUT_UNDEFINED, {0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT}},
+         {VK_IMAGE_LAYOUT_GENERAL,
+             {VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT}},
+         {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT}},
+         {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+             {VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT}},
+         {VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+             {VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+              VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}},
+         }
+}>();
 
 void deferredDelete(size_t idx) {
     for (auto &i : deleteList[idx]) {
@@ -232,8 +252,8 @@ void transitionImageLayouts(VkCommandBuffer commandBuffer, std::vector<std::pair
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount = 1;
 
-        auto srcAccess = accessMaskMap.find(image.first->layout)->second;
-        auto dstAccess = accessMaskMap.find(image.second)->second;
+        auto srcAccess = accessMaskMap[image.first->layout];
+        auto dstAccess = accessMaskMap[image.second];
 
         barrier.srcAccessMask = srcAccess.first;
         barrier.dstAccessMask = dstAccess.first;
@@ -253,6 +273,14 @@ void transitionImageLayouts(VkCommandBuffer commandBuffer, std::vector<std::pair
 bool inRecording = false;
 void beginCommandBuffer() {
     if (!inRecording) { // Start recording the command buffer
+        vkWaitForFences(device, 1, &imageFences[imageBufferIdx], VK_TRUE, UINT64_MAX);
+        vkResetFences(device, 1, &imageFences[imageBufferIdx]);
+
+        vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
+
+        // Delete the oldest buffer's delete list.
+        deferredDelete(imageBufferIdx);
+
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         vkBeginCommandBuffer(imageCommandBuffers[imageBufferIdx], &beginInfo);
@@ -292,15 +320,9 @@ void flushCommandBuffer() {
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &imageCommandBuffers[imageBufferIdx];
 
-        vkWaitForFences(device, 1, &imageFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(device, 1, &imageFence);
-        vkQueueSubmit(graphicsQueue, 1, &submitInfo, imageFence);
+        vkQueueSubmit(graphicsQueue, 1, &submitInfo, imageFences[imageBufferIdx]);
 
         imageBufferIdx = (imageBufferIdx + 1) % NUM_IMAGE_SWAPS;
-
-        // Delete the oldest buffer's delete list.
-        deferredDelete(imageBufferIdx);
-        vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
     }
 }
 
@@ -319,8 +341,8 @@ void VkImage::applyEffects(bool theDoSanding, bool thePremultiply, bool theAlrea
     { // Transition the newly created image to general
         constexpr auto oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         constexpr auto newLayout = VK_IMAGE_LAYOUT_GENERAL;
-        const auto srcAccess = accessMaskMap.find(oldLayout)->second;
-        const auto dstAccess = accessMaskMap.find(newLayout)->second;
+        const auto srcAccess = accessMaskMap[oldLayout];
+        const auto dstAccess = accessMaskMap[newLayout];
         VkImageMemoryBarrier barrier{
             VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
             nullptr,

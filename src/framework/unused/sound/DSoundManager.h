@@ -38,6 +38,7 @@ public:
     LPDIRECTSOUND mDirectSound;
     bool mHaveFMod;
 
+    static bool gBassLoaded;
     DSoundManager(HWND theHWnd, bool haveFMod);
     virtual ~DSoundManager();
 

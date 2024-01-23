@@ -186,6 +186,7 @@ void AchievementsWidget::MouseWheel(int theDelta) {
     else if (theDelta < 0) mScrollDirection = -1;
 }
 
+bool ReportAchievement::mAchievementToShow = false;
 // GOTY @Patoke: 0x459670
 void ReportAchievement::GiveAchievement(LawnApp *theApp, int theAchievement, bool theForceGive) {
     // todo @Patoke: finish adding the achievement give events
@@ -202,6 +203,8 @@ void ReportAchievement::GiveAchievement(LawnApp *theApp, int theAchievement, boo
 
     theApp->mBoard->DisplayAdvice(aAchievementName, MESSAGE_STYLE_ACHIEVEMENT, AdviceType::ADVICE_NONE);
     theApp->PlaySample(SOUND_ACHIEVEMENT);
+
+    mAchievementToShow = true;
 }
 
 // GOTY @Patoke: 0x44D5B0
