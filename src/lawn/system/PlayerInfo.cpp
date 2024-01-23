@@ -6,7 +6,7 @@
 #include "misc/Buffer.h"
 #include "todlib/TodCommon.h"
 #include "todlib/TodDebug.h"
-#include <bits/chrono.h>
+#include <chrono>
 #include <ratio>
 
 static int gUserVersion = 12;

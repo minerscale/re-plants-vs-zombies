@@ -25,9 +25,7 @@
 #include "widget/StoreScreen.h"
 #include "widget/WidgetManager.h"
 #include <chrono>
-#include <time.h>
-
-#include "sound/BassLoader.h"
+#include <ctime>
 
 // #define SEXY_PERF_ENABLED
 #include "misc/PerfTimer.h"
@@ -113,7 +111,7 @@ Board::Board(LawnApp *theApp) {
     mIntervalDrawTime = 0;
     mIntervalDrawCountStart = 0;
     mPreloadTime = std::chrono::milliseconds(0);
-    mGameID = intptr_t(0);
+    mGameID = time_t(0);
     mMinFPS = 1000.0f;
     mGravesCleared = 0;
     mPlantsEaten = 0;
@@ -6022,9 +6020,9 @@ void Board::DrawDebugText(Graphics *g) {
                 float bpm1;
                 float bpm2;
                 float bpm3;
-                gBass->BASS_ChannelGetAttribute(aMusicHandle1, BASS_ATTRIB_MUSIC_BPM, &bpm1);
-                gBass->BASS_ChannelGetAttribute(aMusicHandle2, BASS_ATTRIB_MUSIC_BPM, &bpm2);
-                gBass->BASS_ChannelGetAttribute(aMusicHandle3, BASS_ATTRIB_MUSIC_BPM, &bpm3);
+                BASS_ChannelGetAttribute(aMusicHandle1, BASS_ATTRIB_MUSIC_BPM, &bpm1);
+                BASS_ChannelGetAttribute(aMusicHandle2, BASS_ATTRIB_MUSIC_BPM, &bpm2);
+                BASS_ChannelGetAttribute(aMusicHandle3, BASS_ATTRIB_MUSIC_BPM, &bpm3);
                 aText += StrFormat(_S("bpm1 %f bmp2 %f bpm3 %f\n"), bpm1, bpm2, bpm3);
             } else if (mApp->mMusic->mCurMusicTune == MusicTune::MUSIC_TUNE_NIGHT_MOONGRAINS) {
                 int aPackedOrderDrums = mApp->mMusic->GetMusicOrder(mApp->mMusic->mCurMusicFileDrums);

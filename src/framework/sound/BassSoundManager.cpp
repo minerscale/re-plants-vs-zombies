@@ -220,7 +220,7 @@ int BassSoundManager::LoadSound(const std::string &theFilename) {
 
 void BassSoundManager::ReleaseSound(unsigned int theSfxID) {
     if (Exists(theSfxID)) {
-        gBass->BASS_SampleFree(mSourceSounds[theSfxID].value());
+        BASS_SampleFree(mSourceSounds[theSfxID].value());
         mSourceSounds[theSfxID].reset();
         mSourceFileNames[theSfxID] = "";
     }

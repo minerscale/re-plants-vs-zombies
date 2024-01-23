@@ -6,7 +6,7 @@
 #include "Trail.h"
 #include "misc/fcaseopen.h"
 #include "paklib/PakInterface.h"
-#include "zlib/zlib.h"
+#include "zlib.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <chrono>

@@ -11,9 +11,7 @@
 #include "todlib/TodStringFile.h"
 #include "widget/HyperlinkWidget.h"
 #include "widget/WidgetManager.h"
-#include <bits/chrono.h>
 #include <chrono>
-#include <ctime>
 
 // 0x48D4B0
 //  GOTY @Patoke: 0x498220
