@@ -27,6 +27,9 @@ typedef std::map<int, BassMusicInfo> BassMusicMap;
 
 class BassMusicInterface : public MusicInterface {
 public:
+    static bool gBassLoaded;
+    static void InitBass(void *theHWnd);
+
     BassMusicMap mMusicMap;
     int mMaxMusicVolume;
     int mMusicLoadFlags;

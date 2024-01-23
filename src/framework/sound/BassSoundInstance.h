@@ -1,24 +1,49 @@
 #ifndef __BASS_SOUND_INSTANCE_H__
 #define __BASS_SOUND_INSTANCE_H__
 
-#include "sound/SoundInstance.h"
+#include "SoundInstance.h"
+#include "bass.h"
+
+namespace Sexy {
+
+class BassSoundManager;
+
 class BassSoundInstance : public Sexy::SoundInstance {
 public:
-    virtual void Release() {}
+    BassSoundInstance(HSAMPLE theSourceSound);
+    virtual ~BassSoundInstance();
+    virtual void Release();
 
-    virtual void SetBaseVolume(double) {}
-    virtual void SetBasePan(int) {}
+    virtual void SetBaseVolume(double /*theBaseVolume*/) {}
+    virtual void SetBasePan(int /*theBasePan*/) {}
 
-    virtual void AdjustPitch(double) {}
+    virtual void SetVolume(double theVolume);
+    virtual void SetPan(int thePosition); //-hundredth db to +hundredth db = left to right
+    virtual void AdjustPitch(double theNumSteps);
 
-    virtual void SetVolume(double) {}
-    virtual void SetPan(int) {} //-hundredth db to +hundredth db = left to right
+    virtual bool Play(bool looping, bool autoRelease);
+    virtual void Stop();
+    virtual bool IsPlaying();
+    virtual bool IsReleased();
+    virtual double GetVolume();
 
-    virtual bool Play(bool, bool) { return true; }
-    virtual void Stop() {}
-    virtual bool IsPlaying() { return false; }
-    virtual bool IsReleased() { return true; }
-    virtual double GetVolume() { return 0; }
+private:
+    void RehupVolume();
+    void RehupPan();
+
+    HSAMPLE mSample;
+    HCHANNEL mChannel;
+
+    bool mAutoRelease = false;
+    bool mHasPlayed = false;
+    bool mReleased = false;
+
+    int mPan = 0;
+    double mVolume = 1.0;
+
+    DWORD mDefaultFrequency = 44100;
 };
+
+} // namespace Sexy
 
 #endif // __BASS_SOUND_INSTANCE_H__
