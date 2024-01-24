@@ -24,10 +24,8 @@
 #include "widget/SeedChooserScreen.h"
 #include "widget/StoreScreen.h"
 #include "widget/WidgetManager.h"
-#include <bits/types/clock_t.h>
 #include <chrono>
 #include <ctime>
-#include <time.h>
 
 // #define SEXY_PERF_ENABLED
 #include "misc/PerfTimer.h"
@@ -113,7 +111,7 @@ Board::Board(LawnApp *theApp) {
     mIntervalDrawTime = 0;
     mIntervalDrawCountStart = 0;
     mPreloadTime = std::chrono::milliseconds(0);
-    mGameID = time_t(nullptr);
+    mGameID = time_t(0);
     mMinFPS = 1000.0f;
     mGravesCleared = 0;
     mPlantsEaten = 0;

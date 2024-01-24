@@ -1138,11 +1138,10 @@ void ImageFont::DrawStringEx(
     g->SetColorizeImages(true);
 
     int aCurXPos = theX;
-    for (auto it(theString.begin()), nextit(std::next(it)); it != theString.end(); it = nextit++) {
-        SexyChar aChar = GetMappedChar(*it);
+    for (size_t idx = 0; idx < theString.length(); ++idx) {
+        SexyChar aChar = GetMappedChar(theString[idx]);
         SexyChar aNextChar = 0;
-        if (nextit != theString.end()) aNextChar = GetMappedChar(*nextit);
-
+        if (idx + 1 < theString.length()) aNextChar = GetMappedChar(theString[idx + 1]);
         int aMaxXPos = aCurXPos;
 
         int layerOrderOffset = 0;

@@ -4,6 +4,7 @@
 #include "Font.h"
 #include "SexyAppBase.h"
 #include "misc/DescParser.h"
+#include <array>
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>

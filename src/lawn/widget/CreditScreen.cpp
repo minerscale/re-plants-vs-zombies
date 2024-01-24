@@ -13,7 +13,6 @@
 #include "todlib/TodParticle.h"
 #include "todlib/TodStringFile.h"
 #include "widget/Dialog.h"
-#include <bits/chrono.h>
 #include <chrono>
 
 static CreditsTiming gCreditsTiming[] = {

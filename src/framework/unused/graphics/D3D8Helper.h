@@ -20,7 +20,7 @@ bool GetD3D8AdapterInfo(GUID &theGUID, std::string &theDriver, std::string &theD
 
 #endif
 
-#ifdef MSVC
+#ifdef _MSC_VER
 // @Patoke todo: remove this
 /*==========================================================================;
  *

@@ -13,7 +13,7 @@
 #include "todlib/Reanimator.h"
 #include "todlib/TodParticle.h"
 #include "todlib/Trail.h"
-#include "zlib/zlib.h"
+#include "zlib.h"
 
 static const char *FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
 static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;

@@ -11,7 +11,6 @@
 #include "graphics/Font.h"
 #include "misc/PerfTimer.h"
 // #include "graphics/MemoryImage.h"
-#include <bits/chrono.h>
 #include <chrono>
 #include <string>
 
