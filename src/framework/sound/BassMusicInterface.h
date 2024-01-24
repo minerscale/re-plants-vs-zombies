@@ -6,6 +6,10 @@
 
 namespace Sexy {
 
+#ifndef _WIN32
+#define HWND void *
+#endif
+
 class SexyAppBase;
 
 class BassMusicInfo {
@@ -28,14 +32,14 @@ typedef std::map<int, BassMusicInfo> BassMusicMap;
 class BassMusicInterface : public MusicInterface {
 public:
     static bool gBassLoaded;
-    static void InitBass(void *theHWnd);
+    static void InitBass(HWND theHWnd);
 
     BassMusicMap mMusicMap;
     int mMaxMusicVolume;
     int mMusicLoadFlags;
 
 public:
-    BassMusicInterface(void *theHWnd);
+    BassMusicInterface(HWND theHWnd);
     virtual ~BassMusicInterface();
 
     virtual bool LoadMusic(int theSongId, const std::string &theFileName);

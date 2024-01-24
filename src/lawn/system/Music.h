@@ -1,7 +1,7 @@
 #ifndef __MUSIC_H__
 #define __MUSIC_H__
 
-#include "framework/sound/bass.h"
+#include <bass.h>
 #include <string>
 
 class LawnApp;
