@@ -10,7 +10,7 @@
 
 namespace Sexy {
 
-BassSoundManager::BassSoundManager(void *theHWnd) { BassMusicInterface::InitBass(theHWnd); }
+BassSoundManager::BassSoundManager(HWND theHWnd) { BassMusicInterface::InitBass(theHWnd); }
 
 bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename) {
     PFILE *aFile = p_fopen(theFilename.c_str(), "rb");
