@@ -1,5 +1,8 @@
 #include "VkInterface.h"
-#include "GLFW/glfw3.h"
+#include "SDL.h"
+#include "SDL_keycode.h"
+#include "SDL_video.h"
+#include "SDL_vulkan.h"
 #include "SexyAppBase.h"
 #include "VkCommon.h"
 #include "graphics/VkImage.h"
@@ -7,6 +10,8 @@
 #include "misc/KeyCodes.h"
 #include "widget/WidgetManager.h"
 
+#include <SDL_events.h>
+#include <SDL_mouse.h>
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -25,7 +30,6 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -103,7 +107,6 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 void createCommandBuffers();
 
-void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height);
 void createTextureImage(int width, int height, uint32_t const *imdata);
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
@@ -153,15 +156,12 @@ bool checkValidationLayerSupport();
 std::vector<const char *> getRequiredExtensions();
 void createInstance();
 
-static void framebufferResizeCallback(GLFWwindow *, int, int);
-static void windowFocusCallback(GLFWwindow *, int focused);
-
 void SetCursor(int idx);
 
 /*===================================*
  | File scope declarations           |
  *===================================*/
-GLFWwindow *window;
+SDL_Window *window;
 WidgetManager *widgetManager;
 glm::vec<2, double> cursorPos;
 
@@ -222,29 +222,31 @@ bool framebufferResized = false;
 
 uint32_t currentFrame = 0;
 
-class glfwCursor {
+class sdlCursor {
 public:
-    GLFWcursor *cursor;
-    glfwCursor(GLFWimage *image, int xhot, int yhot) { cursor = glfwCreateCursor(image, xhot, yhot); }
-    glfwCursor(int shape) {
-        cursor = glfwCreateStandardCursor(shape);
-        standard = true;
+    SDL_Cursor *cursor;
+    sdlCursor(const uint8_t *data, const uint8_t *mask, int w, int h, int hot_x, int hot_y) {
+        cursor = SDL_CreateCursor(data, mask, w, h, hot_x, hot_y);
     }
-    ~glfwCursor() {
-        if (!standard) glfwDestroyCursor(cursor);
-    }
-
-private:
-    bool standard = false;
+    sdlCursor(SDL_SystemCursor shape) { cursor = SDL_CreateSystemCursor(shape); }
+    ~sdlCursor() { SDL_FreeCursor(cursor); }
 };
-std::map<int, std::unique_ptr<glfwCursor>> cursorMap;
+std::map<int, std::unique_ptr<sdlCursor>> cursorMap;
 
 template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
     using T = decltype(arr)::value_type::second_type;
 
+    for (auto &it : arr) { // unset the keycode flag
+        it.first = it.first & (~(1 << 30));
+    }
+
     constexpr auto max_key = std::max_element(arr.begin(), arr.end(), [](const auto &left, const auto &right) {
                                  return left.first < right.first;
                              })->first;
+
+    if (max_key > 512) {
+        throw std::runtime_error("max value of keymap is too large.");
+    }
 
     std::array<T, max_key + 1> sparse_array{};
 
@@ -255,10 +257,10 @@ template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
     for (size_t key = 0; key < arr.size(); ++key) {
         if (!sparse_array[key]) {
             int offset = key;
-            if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) offset = 0;
-            else if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) offset = 0;
-            else if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_9) offset = GLFW_KEY_KP_0 - KEYCODE_NUMPAD0;
-            else if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F24) offset = GLFW_KEY_F1 - KEYCODE_F1;
+            if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
+            else if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
+            else if (key >= SDLK_KP_0 && key <= SDLK_KP_9) offset = (int)SDLK_KP_0 - KEYCODE_NUMPAD0;
+            else if (key >= SDLK_F1 && key <= SDLK_F24) offset = (int)SDLK_F1 - KEYCODE_F1;
             sparse_array[key] = (KeyCode)(key - offset); // if we didn't find it the resulting keycode is key - key == 0
         }
     }
@@ -266,41 +268,45 @@ template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
     return sparse_array;
 }
 
-constexpr auto keymap = const_generate_keymap<std::array<std::pair<uint16_t, KeyCode>, 33>{
+constexpr auto keymap = const_generate_sparse_array<std::array<std::pair<uint16_t, KeyCode>, 37>{
     {
-     {GLFW_KEY_BACKSPACE, KEYCODE_BACK},
-     {GLFW_KEY_TAB, KEYCODE_TAB},
-     {GLFW_KEY_ENTER, KEYCODE_RETURN},
-     {GLFW_KEY_PAUSE, KEYCODE_PAUSE},
-     {GLFW_KEY_CAPS_LOCK, KEYCODE_CAPITAL},
-     {GLFW_KEY_ESCAPE, KEYCODE_ESCAPE},
-     {GLFW_KEY_SPACE, KEYCODE_SPACE},
-     {GLFW_KEY_PAGE_UP, KEYCODE_PRIOR},
-     {GLFW_KEY_PAGE_DOWN, KEYCODE_NEXT},
-     {GLFW_KEY_END, KEYCODE_END},
-     {GLFW_KEY_HOME, KEYCODE_HOME},
-     {GLFW_KEY_LEFT, KEYCODE_LEFT},
-     {GLFW_KEY_UP, KEYCODE_UP},
-     {GLFW_KEY_RIGHT, KEYCODE_RIGHT},
-     {GLFW_KEY_DOWN, KEYCODE_DOWN},
-     {GLFW_KEY_PRINT_SCREEN, KEYCODE_SNAPSHOT},
-     {GLFW_KEY_INSERT, KEYCODE_INSERT},
-     {GLFW_KEY_DELETE, KEYCODE_DELETE},
-     {GLFW_KEY_LEFT_SUPER, KEYCODE_LWIN},
-     {GLFW_KEY_RIGHT_SUPER, KEYCODE_RWIN},
-     {GLFW_KEY_KP_MULTIPLY, KEYCODE_MULTIPLY},
-     {GLFW_KEY_KP_ADD, KEYCODE_ADD},
-     {GLFW_KEY_KP_SUBTRACT, KEYCODE_SUBTRACT},
-     {GLFW_KEY_KP_DECIMAL, KEYCODE_DECIMAL},
-     {GLFW_KEY_KP_DIVIDE, KEYCODE_DIVIDE},
-     {GLFW_KEY_NUM_LOCK, KEYCODE_NUMLOCK},
-     {GLFW_KEY_SCROLL_LOCK, KEYCODE_SCROLL},
-     {GLFW_KEY_LEFT_SHIFT, KEYCODE_LSHIFT},
-     {GLFW_KEY_RIGHT_SHIFT, KEYCODE_RSHIFT},
-     {GLFW_KEY_LEFT_CONTROL, KEYCODE_LCONTROL},
-     {GLFW_KEY_RIGHT_CONTROL, KEYCODE_RCONTROL},
-     {GLFW_KEY_LEFT_ALT, KEYCODE_LMENU},
-     {GLFW_KEY_RIGHT_ALT, KEYCODE_RMENU},
+     {SDLK_BACKSPACE, KEYCODE_BACK},
+     {SDLK_TAB, KEYCODE_TAB},
+     {SDLK_CLEAR, KEYCODE_CLEAR},
+     {SDLK_RETURN, KEYCODE_RETURN},
+     {SDLK_PAUSE, KEYCODE_PAUSE},
+     {SDLK_CAPSLOCK, KEYCODE_CAPITAL},
+     {SDLK_ESCAPE, KEYCODE_ESCAPE},
+     {SDLK_SPACE, KEYCODE_SPACE},
+     {SDLK_PRIOR, KEYCODE_PRIOR},
+     {SDLK_END, KEYCODE_END},
+     {SDLK_HOME, KEYCODE_HOME},
+     {SDLK_LEFT, KEYCODE_LEFT},
+     {SDLK_UP, KEYCODE_UP},
+     {SDLK_RIGHT, KEYCODE_RIGHT},
+     {SDLK_DOWN, KEYCODE_DOWN},
+     {SDLK_SELECT, KEYCODE_SELECT},
+     {SDLK_EXECUTE, KEYCODE_EXECUTE},
+     {SDLK_PRINTSCREEN, KEYCODE_SNAPSHOT},
+     {SDLK_INSERT, KEYCODE_INSERT},
+     {SDLK_DELETE, KEYCODE_DELETE},
+     {SDLK_HELP, KEYCODE_HELP},
+     {SDLK_LGUI, KEYCODE_LWIN},
+     {SDLK_RGUI, KEYCODE_RWIN},
+     {SDLK_KP_MULTIPLY, KEYCODE_MULTIPLY},
+     {SDLK_KP_PLUS, KEYCODE_ADD},
+     {SDLK_KP_VERTICALBAR, KEYCODE_SEPARATOR},
+     {SDLK_KP_MINUS, KEYCODE_SUBTRACT},
+     {SDLK_KP_DECIMAL, KEYCODE_DECIMAL},
+     {SDLK_KP_DIVIDE, KEYCODE_DIVIDE},
+     {SDLK_NUMLOCKCLEAR, KEYCODE_NUMLOCK},
+     {SDLK_SCROLLLOCK, KEYCODE_SCROLL},
+     {SDLK_LSHIFT, KEYCODE_LSHIFT},
+     {SDLK_RSHIFT, KEYCODE_RSHIFT},
+     {SDLK_LCTRL, KEYCODE_LCONTROL},
+     {SDLK_RCTRL, KEYCODE_RCONTROL},
+     {SDLK_LALT, KEYCODE_LMENU},
+     {SDLK_RALT, KEYCODE_RMENU},
      }
 }>();
 
@@ -347,12 +353,8 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
     renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
-    renderPassInfo.renderArea.offset = {
-        static_cast<int32_t>(windowImageClipRect.x), static_cast<int32_t>(windowImageClipRect.y)
-    };
-    renderPassInfo.renderArea.extent = {
-        static_cast<uint32_t>(windowImageClipRect.z), static_cast<uint32_t>(windowImageClipRect.w)
-    };
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = {swapChainExtent.width, swapChainExtent.height};
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
@@ -705,9 +707,9 @@ void createCommandBuffers() {
     }
 }
 
-void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
+void copyBufferToImage(
+    VkCommandBuffer commandBuffer, VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height
+) {
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
     region.bufferRowLength = 0;
@@ -722,8 +724,6 @@ void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_
     region.imageExtent = {width, height, 1};
 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-
-    endSingleTimeCommands(commandBuffer);
 }
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -1121,7 +1121,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
         return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
+        SDL_Vulkan_GetDrawableSize(window, &width, &height);
 
         VkExtent2D actualExtent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 
@@ -1228,10 +1228,11 @@ void createWindowBuffer(int intendedWidth, int intendedHeight) {
 
 void recreateSwapChain() {
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window, &width, &height);
+
+    SDL_Vulkan_GetDrawableSize(window, &width, &height);
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(window, &width, &height);
-        glfwWaitEvents(); // Pause the window
+        SDL_Vulkan_GetDrawableSize(window, &width, &height);
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.01));
     }
 
     vkDeviceWaitIdle(device);
@@ -1245,7 +1246,7 @@ void recreateSwapChain() {
 }
 
 void createSurface() {
-    if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
+    if (SDL_Vulkan_CreateSurface(window, instance, &surface) != SDL_TRUE) {
         throw std::runtime_error("failed to create window surface!");
     }
 }
@@ -1437,12 +1438,12 @@ bool checkValidationLayerSupport() {
 }
 
 std::vector<const char *> getRequiredExtensions() {
-    uint32_t glfwExtensionCount = 0;
-    const char **glfwExtensions;
+    uint32_t sdlExtensionCount = 0;
 
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    SDL_Vulkan_GetInstanceExtensions(window, &sdlExtensionCount, nullptr);
+    std::vector<const char *> extensions(sdlExtensionCount);
 
-    std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    SDL_Vulkan_GetInstanceExtensions(window, &sdlExtensionCount, extensions.data());
 
     if (enableValidationLayers) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -1458,7 +1459,7 @@ void createInstance() {
 
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.pApplicationName = "Plants Vs Zombies";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -1494,7 +1495,7 @@ void createInstance() {
     for (uint32_t i = 0; i < extensions.size(); ++i) {
         for (const auto &vk_extension : vk_extensions)
             if (strcmp(vk_extension.extensionName, extensions[i]) == 0) goto ext_found;
-        throw std::runtime_error("Could not find extension required for glfw.");
+        throw std::runtime_error("Could not find extension required for SDL.");
     ext_found:;
     }
 
@@ -1544,18 +1545,17 @@ VkInterface::~VkInterface() {
 
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
-static void framebufferResizeCallback(GLFWwindow *, int, int) { framebufferResized = true; }
+void VkInterface::framebufferResizeCallback() { framebufferResized = true; }
 
-static void windowFocusCallback(GLFWwindow *w, int focused) {
+void VkInterface::windowFocusCallback(bool focused) {
     widgetManager->mApp->mActive = focused;
 
     if (focused) {
-        VkInterface *interface = (VkInterface *)glfwGetWindowUserPointer(w);
-        interface->RehupFocus();
+        RehupFocus();
 
         // Potentially not required
         if ((widgetManager->mApp->mActive) && (!widgetManager->mApp->mIsWindowed)) widgetManager->MarkAllDirty();
@@ -1596,7 +1596,7 @@ void VkInterface::EnforceCursor() {
     SetCursor(widgetManager->mApp->mCursorNum);
 }
 
-static void cursorEnterCallback(GLFWwindow *w, int entered) {
+void VkInterface::cursorEnterCallback(int entered) {
     bool isMouseIn = entered;
     if (widgetManager->mApp->mMouseIn != isMouseIn) {
         if (!isMouseIn) {
@@ -1607,11 +1607,11 @@ static void cursorEnterCallback(GLFWwindow *w, int entered) {
         }
 
         widgetManager->mApp->mMouseIn = isMouseIn;
-        ((VkInterface *)glfwGetWindowUserPointer(w))->EnforceCursor();
+        EnforceCursor();
     }
 }
 
-static void cursorPositionCallback(GLFWwindow *w, double xpos, double ypos) {
+void VkInterface::cursorPositionCallback(double xpos, double ypos) {
     cursorPos = {(xpos - windowImageClipRect.x) / windowImageScale, (ypos - windowImageClipRect.y) / windowImageScale};
 
     glm::vec<2, int> intPos = cursorPos;
@@ -1620,81 +1620,89 @@ static void cursorPositionCallback(GLFWwindow *w, double xpos, double ypos) {
 
     if (!widgetManager->mApp->mMouseIn) {
         widgetManager->mApp->mMouseIn = true;
-        VkInterface *theInterface = (VkInterface *)glfwGetWindowUserPointer(w);
-        theInterface->EnforceCursor();
+        EnforceCursor();
     }
 }
 
-static void mouseButtonCallback(GLFWwindow *, int button, int action, int /*mods*/) {
-    /*=====================================*
-     | This table maps a GLFW_MOUSE_BUTTON |
-     |    to what WidgetManager expects    |
-     *=====================================*/
-    constexpr int mouseButtonTranslationTable[] = {
-        1,  // GLFW_MOUSE_BUTTON_LEFT
-        -1, // GLFW_MOUSE_BUTTON_RIGHT
-        3,  // GLFW_MOUSE_BUTTON_MIDDLE
-    };
-    /*=====================================*
-     |   These are currently unavailable:  |
-     |       Double click left:   2        |
-     |       Double click right: -2        |
-     *=====================================*/
+void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
+    constexpr auto mouseButtonTranslationTable = const_generate_sparse_array<std::array<std::pair<int, int>, 3>{
+        {
+         {SDL_BUTTON_LEFT, 1},
+         {SDL_BUTTON_RIGHT, -1},
+         {SDL_BUTTON_MIDDLE, 3},
+         }
+    }>();
 
     int wmButton = mouseButtonTranslationTable[button];
-    switch (action) {
-    case GLFW_RELEASE: widgetManager->MouseUp(cursorPos.x, cursorPos.y, wmButton); break;
-    case GLFW_PRESS:   widgetManager->MouseDown(cursorPos.x, cursorPos.y, wmButton); break;
+    if (clicks == 2 && wmButton != 3) wmButton *= 2; // create double click
+    if (state == SDL_PRESSED) {
+        widgetManager->MouseDown(cursorPos.x, cursorPos.y, wmButton);
+    } else {
+        widgetManager->MouseUp(cursorPos.x, cursorPos.y, wmButton);
     }
 }
 
-void keyCallback(GLFWwindow *, int key, int /*scancode*/, int action, int /*mods*/) {
-    if (key == GLFW_KEY_UNKNOWN) return;
+void VkInterface::keyCallback(uint32_t key, uint8_t state) {
+    if (key == SDLK_UNKNOWN) return;
 
-    auto code = keymap[key];
+    auto code = keymap[key & (~(1 << 30))];
 
-    if (action == GLFW_PRESS) {
+    if (state == SDL_PRESSED) {
         widgetManager->KeyDown(code);
-    } else if (action == GLFW_RELEASE) {
+    } else {
         widgetManager->KeyUp(code);
     }
 }
 
-void charCallback(GLFWwindow *, uint32_t codepoint) {
-    char chr[] = {
-        static_cast<char>(codepoint), static_cast<char>(codepoint >> 8), static_cast<char>(codepoint >> 16),
-        static_cast<char>(codepoint >> 24), 0
-    };
-    widgetManager->KeyChar(std::string(chr)[0]); // broken, but one day utf8
+void VkInterface::charCallback(char codepoint[32]) {
+    widgetManager->KeyChar(std::string(codepoint)[0]); // broken, but one day utf8
 }
 
-void windowCloseCallback(GLFWwindow *) { widgetManager->mApp->CloseRequestAsync(); }
+void VkInterface::windowCloseCallback() {
+    widgetManager->mApp->CloseRequestAsync();
+    windowShouldClose = true;
+}
 
-void initGLFW(int width, int height, VkInterface *userPtr) {
-    // Init glfw
-    glfwInit();
+void VkInterface::PollEvents() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+        case SDL_MOUSEMOTION: cursorPositionCallback(event.motion.x, event.motion.y); break;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            mouseButtonCallback(event.button.button, event.button.state, event.button.clicks);
+            break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:     keyCallback(event.key.keysym.sym, event.key.state); break;
+        case SDL_TEXTINPUT: charCallback(event.text.text); break;
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        case SDL_WINDOWEVENT:
+            switch (event.window.event) {
+            case SDL_WINDOWEVENT_RESIZED:      framebufferResizeCallback(); break;
+            case SDL_WINDOWEVENT_CLOSE:        windowCloseCallback(); break;
+            case SDL_WINDOWEVENT_FOCUS_GAINED: windowFocusCallback(true); break;
+            case SDL_WINDOWEVENT_FOCUS_LOST:   windowFocusCallback(false); break;
+            case SDL_WINDOWEVENT_ENTER:        cursorEnterCallback(true); break;
+            case SDL_WINDOWEVENT_LEAVE:        cursorEnterCallback(false); break;
+            }
+            break;
+        }
+    }
+}
 
-    window = glfwCreateWindow(width, height, "Plants Vs Zombies", /*glfwGetPrimaryMonitor()*/ nullptr, nullptr);
-    glfwSetWindowUserPointer(window, userPtr);
-    // glfwSetWindowAspectRatio(window, 4, 3);
+void initSDL(int width, int height) {
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-    glfwSetWindowFocusCallback(window, windowFocusCallback);
+    window = SDL_CreateWindow(
+        "SDL Vulkan Sample", 0, 0, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN
+    );
 
-    glfwSetCursorPosCallback(window, cursorPositionCallback);
-    glfwSetMouseButtonCallback(window, mouseButtonCallback);
-    glfwSetKeyCallback(window, keyCallback);
-    glfwSetCharCallback(window, charCallback);
-    glfwSetCursorEnterCallback(window, cursorEnterCallback);
-    glfwSetWindowCloseCallback(window, windowCloseCallback);
+    SDL_SetWindowTitle(window, "Plants Vs Zombies");
 }
 
 VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
     widgetManager = mWidgetManager;
-    initGLFW(width, height, this);
+    initSDL(width, height);
 
     // Init vulkan
     createInstance();
@@ -1709,42 +1717,40 @@ VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
     createTextureSampler();
     createDescriptorSetLayouts();
     createDescriptorPool();
+    createSyncObjects();
+    createCommandBuffers();
     createWindowBuffer(width, height);
     createDescriptorSets();
     createComputePipeline();
     createGraphicsPipelines();
     createFramebuffers();
-    // createVertexBuffer();
-    // createIndexBuffer();
-    createCommandBuffers();
-    createSyncObjects();
 }
 
 void SetCursor(int idx) {
-    constexpr int standardCursorLut[] = {
-        GLFW_ARROW_CURSOR,       // CURSOR_POINTER,
-        GLFW_HAND_CURSOR,        // CURSOR_HAND,
-        GLFW_CROSSHAIR_CURSOR,   // CURSOR_DRAGGING,
-        GLFW_IBEAM_CURSOR,       // CURSOR_TEXT,
-        GLFW_NOT_ALLOWED_CURSOR, // CURSOR_CIRCLE_SLASH,
-        GLFW_RESIZE_ALL_CURSOR,  // CURSOR_SIZEALL,
-        GLFW_RESIZE_NESW_CURSOR, // CURSOR_SIZENESW,
-        GLFW_RESIZE_NS_CURSOR,   // CURSOR_SIZENS,
-        GLFW_RESIZE_NWSE_CURSOR, // CURSOR_SIZENWSE,
-        GLFW_RESIZE_EW_CURSOR,   // CURSOR_SIZEWE,
-        0,                       // CURSOR_WAIT,
-        0,                       // CURSOR_NONE,
-        GLFW_ARROW_CURSOR,       // CURSOR_DEFAULT,
-        0,                       // CURSOR_CUSTOM,
+    constexpr std::optional<SDL_SystemCursor> standardCursorLut[] = {
+        SDL_SYSTEM_CURSOR_ARROW,     // CURSOR_POINTER,
+        SDL_SYSTEM_CURSOR_HAND,      // CURSOR_HAND,
+        SDL_SYSTEM_CURSOR_CROSSHAIR, // CURSOR_DRAGGING,
+        SDL_SYSTEM_CURSOR_IBEAM,     // CURSOR_TEXT,
+        SDL_SYSTEM_CURSOR_NO,        // CURSOR_CIRCLE_SLASH,
+        SDL_SYSTEM_CURSOR_SIZEALL,   // CURSOR_SIZEALL,
+        SDL_SYSTEM_CURSOR_SIZENESW,  // CURSOR_SIZENESW,
+        SDL_SYSTEM_CURSOR_SIZENS,    // CURSOR_SIZENS,
+        SDL_SYSTEM_CURSOR_SIZENWSE,  // CURSOR_SIZENWSE,
+        SDL_SYSTEM_CURSOR_SIZEWE,    // CURSOR_SIZEWE,
+        SDL_SYSTEM_CURSOR_WAIT,      // CURSOR_WAIT,
+        {},                          // CURSOR_NONE,
+        SDL_SYSTEM_CURSOR_ARROW,     // CURSOR_DEFAULT,
+        {},                          // CURSOR_CUSTOM,
     };
 
-    if (standardCursorLut[idx] == 0) glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    else glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-    glfwSetCursor(
-        window,
-        cursorMap.insert(std::pair(idx, std::make_unique<glfwCursor>(standardCursorLut[idx]))).first->second->cursor
-    );
+    if (standardCursorLut[idx].has_value()) {
+        SDL_ShowCursor(SDL_ENABLE);
+        SDL_SetCursor(cursorMap.insert(std::pair(idx, std::make_unique<sdlCursor>(standardCursorLut[idx].value())))
+                          .first->second->cursor);
+    } else {
+        SDL_ShowCursor(SDL_DISABLE);
+    }
 }
 
 int VkInterface::CreateCursor(
@@ -1752,40 +1758,21 @@ int VkInterface::CreateCursor(
 ) {
     static int cursorMapNewKey = NUM_POINTER_TYPES;
 
-    GLFWimage image{};
-    image.width = nWidth;
-    image.height = nHeight;
-    auto pixels = std::make_unique<uint32_t[]>(nWidth * nHeight);
-
-    for (int i = 0; i < nHeight; ++i) {
-        for (int j = 0; j < nWidth; ++j) {
-            bool andPixel = (((uint8_t *)pvANDPlane)[(i * nWidth + j) / 8] >> ((i * nWidth + j) % 8)) & 1;
-            bool xorPixel = (((uint8_t *)pvXORPlane)[(i * nWidth + j) / 8] >> ((i * nWidth + j) % 8)) & 1;
-            constexpr uint32_t colorIndex[] = {
-                0x000000FF,
-                0xFFFFFFFF,
-                0x00000000,
-                0x00000000,
-            };
-            pixels[i * nWidth + j] = colorIndex[(andPixel << 1) | xorPixel];
-        }
-    }
-
-    image.pixels = (unsigned char *)pixels.get();
-    cursorMap.insert(std::pair(cursorMapNewKey, std::make_unique<glfwCursor>(&image, xHotSpot, yHotSpot)));
+    cursorMap.insert(std::pair(
+        cursorMapNewKey,
+        std::make_unique<sdlCursor>((uint8_t *)pvANDPlane, (uint8_t *)pvXORPlane, nWidth, nHeight, xHotSpot, yHotSpot)
+    ));
 
     return cursorMapNewKey++;
 }
 
 Image *VkInterface::GetScreenImage() { return windowImage; }
 
-void VkInterface::PollEvents() { glfwPollEvents(); }
+void VkInterface::ShowWindow() { SDL_ShowWindow(window); }
 
-void VkInterface::ShowWindow() { glfwShowWindow(window); }
+bool VkInterface::ShouldClose() { return windowShouldClose; }
 
-bool VkInterface::ShouldClose() { return glfwWindowShouldClose(window); }
-
-void VkInterface::ReleaseMouseCapture() { glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+void VkInterface::ReleaseMouseCapture() { SDL_ShowCursor(SDL_ENABLE); }
 
 void VkInterface::Draw() {
     renderMutex.lock();

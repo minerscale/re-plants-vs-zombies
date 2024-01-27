@@ -64,6 +64,22 @@ struct UniformBufferObject {
     glm::mat4 proj;
 };
 
+template <decltype(auto) arr> static constexpr auto const_generate_sparse_array() {
+    using T = decltype(arr)::value_type::second_type;
+
+    constexpr auto max_key = std::max_element(arr.begin(), arr.end(), [](const auto &left, const auto &right) {
+                                 return left.first < right.first;
+                             })->first;
+
+    std::array<T, max_key + 1> sparse_array{};
+
+    for (auto it : arr) {
+        sparse_array[it.first] = it.second;
+    }
+
+    return sparse_array;
+}
+
 void createBuffer(
     VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer,
     VkDeviceMemory &bufferMemory
@@ -74,7 +90,9 @@ uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 VkCommandBuffer beginSingleTimeCommands();
 void flushCommandBuffer();
 void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-void copyBufferToImage(VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height);
+void copyBufferToImage(
+    VkCommandBuffer commandBuffer, VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height
+);
 
 } // namespace Vk
 

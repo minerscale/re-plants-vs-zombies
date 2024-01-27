@@ -6,7 +6,6 @@
 #include "TriVertex.h"
 #include "misc/SexyMatrix.h"
 
-// TODO: remove this argument when 0.9.9.9 drops
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_transform_2d.hpp>
 
@@ -98,6 +97,58 @@ VkFramebuffer VkImage::CreateFramebuffer() {
     return fb;
 }
 
+struct deleteInfo {
+    std::optional<::VkImage> image;
+    std::optional<VkImageView> view;
+    std::optional<VkFramebuffer> framebuffer;
+    std::optional<VkDeviceMemory> memory;
+    std::optional<VkDescriptorSet> set;
+    std::optional<VkBuffer> buffer;
+};
+
+int imageBufferIdx = 0;
+std::array<std::vector<deleteInfo>, NUM_IMAGE_SWAPS> deleteList;
+
+void deferredDelete(size_t idx) {
+    for (auto &i : deleteList[idx]) {
+        if (i.view.has_value()) vkDestroyImageView(device, i.view.value(), nullptr);
+        if (i.image.has_value()) vkDestroyImage(device, i.image.value(), nullptr);
+        if (i.framebuffer.has_value()) vkDestroyFramebuffer(device, i.framebuffer.value(), nullptr);
+        if (i.memory.has_value()) vkFreeMemory(device, i.memory.value(), nullptr);
+        if (i.set.has_value()) vkFreeDescriptorSets(device, descriptorPool, 1, &i.set.value());
+        if (i.buffer.has_value()) vkDestroyBuffer(device, i.buffer.value(), nullptr);
+    }
+
+    deleteList[idx].clear();
+}
+
+bool inRecording = false;
+void beginCommandBuffer() {
+    if (!inRecording) { // Start recording the command buffer
+        vkWaitForFences(device, 1, &imageFences[imageBufferIdx], VK_TRUE, UINT64_MAX);
+        vkResetFences(device, 1, &imageFences[imageBufferIdx]);
+
+        vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
+
+        // Delete the oldest buffer's delete list.
+        deferredDelete(imageBufferIdx);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(imageCommandBuffers[imageBufferIdx], &beginInfo);
+        inRecording = true;
+    }
+}
+
+bool inRenderpass = false;
+int cachedDrawMode = -1;
+void endRenderPass() {
+    if (inRenderpass) {
+        vkCmdEndRenderPass(imageCommandBuffers[imageBufferIdx]);
+        inRenderpass = false;
+    }
+}
+
 int descriptorPoolSize = 0;
 VkImage::VkImage(ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
@@ -128,22 +179,16 @@ VkImage::VkImage(ImageLib::Image &theImage) {
             VK_IMAGE_USAGE_STORAGE_BIT
     );
 
-    {
-        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-        TransitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        endSingleTimeCommands(commandBuffer);
-    }
+    beginCommandBuffer();
+    endRenderPass();
 
-    copyBufferToImage(stagingBuffer, image, mWidth, mHeight);
+    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    {
-        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-        TransitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        endSingleTimeCommands(commandBuffer);
-    }
+    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
 
-    vkDestroyBuffer(device, stagingBuffer, nullptr);
-    vkFreeMemory(device, stagingBufferMemory, nullptr);
+    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, stagingBuffer});
 
     view = createImageView(image, pixelFormat);
 
@@ -163,22 +208,12 @@ VkImage::VkImage(ImageLib::Image &theImage) {
     renderMutex.unlock();
 }
 
-struct deleteInfo {
-    std::optional<::VkImage> image;
-    std::optional<VkImageView> view;
-    std::optional<VkFramebuffer> framebuffer;
-    std::optional<VkDeviceMemory> memory;
-    std::optional<VkDescriptorSet> set;
-};
-
-int imageBufferIdx = 0;
-std::array<std::vector<deleteInfo>, NUM_IMAGE_SWAPS> deleteList;
 VkImage::~VkImage() {
     // renderMutex.lock();
     // flushCommandBuffer();
     // vkDeviceWaitIdle(device);
 
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor});
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
 
     /*
      */
@@ -189,24 +224,8 @@ VkImage::~VkImage() {
  | GRAPHICS FUNCTIONS |
  *====================*/
 
-template <decltype(auto) arr> static constexpr auto const_generate_layout_map() {
-    using T = decltype(arr)::value_type::second_type;
-
-    constexpr auto max_key = std::max_element(arr.begin(), arr.end(), [](const auto &left, const auto &right) {
-                                 return left.first < right.first;
-                             })->first;
-
-    std::array<T, max_key + 1> sparse_array{};
-
-    for (auto it : arr) {
-        sparse_array[it.first] = it.second;
-    }
-
-    return sparse_array;
-}
-
 constexpr auto accessMaskMap =
-    const_generate_layout_map<std::array<std::pair<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>>, 5>{
+    const_generate_sparse_array<std::array<std::pair<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>>, 5>{
         {
          {VK_IMAGE_LAYOUT_UNDEFINED, {0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT}},
          {VK_IMAGE_LAYOUT_GENERAL,
@@ -219,18 +238,6 @@ constexpr auto accessMaskMap =
               VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}},
          }
 }>();
-
-void deferredDelete(size_t idx) {
-    for (auto &i : deleteList[idx]) {
-        if (i.view.has_value()) vkDestroyImageView(device, i.view.value(), nullptr);
-        if (i.image.has_value()) vkDestroyImage(device, i.image.value(), nullptr);
-        if (i.framebuffer.has_value()) vkDestroyFramebuffer(device, i.framebuffer.value(), nullptr);
-        if (i.memory.has_value()) vkFreeMemory(device, i.memory.value(), nullptr);
-        if (i.set.has_value()) vkFreeDescriptorSets(device, descriptorPool, 1, &i.set.value());
-    }
-
-    deleteList[idx].clear();
-}
 
 void transitionImageLayouts(VkCommandBuffer commandBuffer, std::vector<std::pair<VkImage *, VkImageLayout>> images) {
     std::vector<VkImageMemoryBarrier> barriers;
@@ -272,24 +279,6 @@ void transitionImageLayouts(VkCommandBuffer commandBuffer, std::vector<std::pair
     );
 }
 
-bool inRecording = false;
-void beginCommandBuffer() {
-    if (!inRecording) { // Start recording the command buffer
-        vkWaitForFences(device, 1, &imageFences[imageBufferIdx], VK_TRUE, UINT64_MAX);
-        vkResetFences(device, 1, &imageFences[imageBufferIdx]);
-
-        vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
-
-        // Delete the oldest buffer's delete list.
-        deferredDelete(imageBufferIdx);
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        vkBeginCommandBuffer(imageCommandBuffers[imageBufferIdx], &beginInfo);
-        inRecording = true;
-    }
-}
-
 void VkImage::TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout) {
     transitionImageLayouts(
         commandBuffer,
@@ -297,15 +286,6 @@ void VkImage::TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newL
             {this, newLayout}
     }
     );
-}
-
-bool inRenderpass = false;
-int cachedDrawMode = -1;
-void endRenderPass() {
-    if (inRenderpass) {
-        vkCmdEndRenderPass(imageCommandBuffers[imageBufferIdx]);
-        inRenderpass = false;
-    }
 }
 
 auto begin_time = std::chrono::high_resolution_clock::now();
@@ -411,7 +391,7 @@ void VkImage::applyEffects(bool theDoSanding, bool thePremultiply, bool theAlrea
 
     layout = VK_IMAGE_LAYOUT_GENERAL;
 
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{newImage, newView, newFramebuffer, newMemory, {}});
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{newImage, newView, newFramebuffer, newMemory, {}, {}});
 
     UpdateDescriptorSets();
 

@@ -24,6 +24,17 @@ public:
     bool ShouldClose();
     void ReleaseMouseCapture();
     void Draw();
+
+private:
+    bool windowShouldClose = false;
+    void framebufferResizeCallback();
+    void windowFocusCallback(bool focused);
+    void cursorPositionCallback(double xpos, double ypos);
+    void mouseButtonCallback(int button, int state, int clicks);
+    void keyCallback(uint32_t key, uint8_t state);
+    void charCallback(char codepoint[32]);
+    void cursorEnterCallback(int entered);
+    void windowCloseCallback();
 };
 
 } // namespace Vk
