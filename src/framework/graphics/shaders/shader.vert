@@ -5,7 +5,7 @@ layout(location = 1) out vec4 fragColor;
 
 layout(push_constant) uniform constants {
     vec4 vertices[4];
-    vec4 colors[4];
+    uint colors[4];
     bool isQuad;
     bool toFilter;
 } PushConstants;
@@ -13,6 +13,11 @@ layout(push_constant) uniform constants {
 int indexBuffer[6] = {
     0, 1, 2, 2, 1, 3
 };
+
+vec4 unpackColor(uint color) {
+    vec4 c = vec4((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, (color >> 24) & 0xFF)/255.0;
+    return vec4(c.a * c.rgb, c.a);
+}
 
 void main() {
     //fragTexCoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
@@ -24,7 +29,7 @@ void main() {
     }
 
     vec4 vertex  = PushConstants.vertices[index];
-    fragColor    = PushConstants.colors[index];
+    fragColor    = unpackColor(PushConstants.colors[index]);
     
     fragTexCoord = vertex.zw;
     gl_Position  = vec4(vertex.xy, 0.0, 1.0);

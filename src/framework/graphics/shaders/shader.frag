@@ -10,7 +10,6 @@ layout(location = 0) out vec4 outColor;
 layout(push_constant) uniform constants {
     vec4 vertices[4];
     uint colors[4];
-    vec4 renderColor;
     bool isQuad;
     bool toFilter;
 } PushConstants;

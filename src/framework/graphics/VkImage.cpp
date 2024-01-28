@@ -4,6 +4,7 @@
 #include "VkCommon.h"
 
 #include "TriVertex.h"
+#include "graphics/Color.h"
 #include "misc/SexyMatrix.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -150,7 +151,7 @@ void endRenderPass() {
 }
 
 int descriptorPoolSize = 0;
-VkImage::VkImage(ImageLib::Image &theImage) {
+VkImage::VkImage(const ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
     mHeight = theImage.mHeight;
 
@@ -588,11 +589,6 @@ void VkImage::BltMatrix(
     BltEx(theImage, vertices, RectToVec4(theClipRect), theColor, theDrawMode, blend);
 }
 
-glm::vec4 colorToVec4(const Color &theColor) {
-    float a = theColor.mAlpha / 255.0;
-    return glm::vec4(a * theColor.mRed / 255.0, a * theColor.mGreen / 255.0, a * theColor.mBlue / 255.0, a);
-}
-
 void VkImage::BltEx(
     Image *theImage, const std::array<glm::vec4, 4> theVertices, const glm::vec4 &theClipRect, const Color &theColor,
     int theDrawMode, bool blend
@@ -604,7 +600,7 @@ void VkImage::BltEx(
 
     SetViewportAndScissor(theClipRect);
 
-    auto color = colorToVec4(theColor);
+    SexyRGBA color = theColor.ToRGBA();
     ImagePushConstants constants = {
         {theVertices[0], theVertices[1], theVertices[2], theVertices[3]},
         {color,          color,          color,          color         },
@@ -639,12 +635,11 @@ void VkImage::BltTrianglesTex(
             return glm::vec4(2 * (v.x + tx) / mWidth - 1, 2 * (v.y + ty) / mHeight - 1, v.u, v.v);
         };
 
-        auto colorFromInt = [theColor](uint32_t c) { return colorToVec4(c ? Color(c) : theColor); };
+        auto colorFromInt = [theColor](uint32_t c) { return c ? Color(c).ToRGBA() : theColor.ToRGBA(); };
 
         ImagePushConstants constants = {
             {vertexToNative(triangle[0]),     vertexToNative(triangle[1]),     vertexToNative(triangle[2]),     glm::vec4(0)},
-            {colorFromInt(triangle[0].color), colorFromInt(triangle[1].color), colorFromInt(triangle[2].color),
-             glm::vec4(0)                                                                                                   },
+            {colorFromInt(triangle[0].color), colorFromInt(triangle[1].color), colorFromInt(triangle[2].color), {}          },
             false,
             blend
         };

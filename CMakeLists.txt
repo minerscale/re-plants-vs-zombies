@@ -60,8 +60,14 @@ else()
         "-Wall"
         "-Wextra"
         "-Werror"
-        "-fsanitize=address,undefined"
     )
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(warn_flags
+            ${warn_flags}
+            "-fsanitize=address,undefined"
+        )
+    endif()
 endif()
 
 add_compile_options(${universal_compiler_flags})

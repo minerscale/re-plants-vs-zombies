@@ -15,7 +15,7 @@ namespace Vk {
 
 class VkImage : public Image {
 public:
-    VkImage(ImageLib::Image &theImage);
+    VkImage(const ImageLib::Image &theImage);
     VkImage(int width, int height) : VkImage(*std::make_unique<ImageLib::Image>(width, height)) {}
     VkImage(const Image &theImage) = delete;
     VkImage &operator=(const Image &) = delete;
@@ -34,6 +34,7 @@ public:
 
     // glm::vec4 clipRect{};
     // double scale = 1.0;
+    static VkDeviceMemory AllocVkMemor();
 
     void TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 

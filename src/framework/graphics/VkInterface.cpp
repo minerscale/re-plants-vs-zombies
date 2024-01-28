@@ -5,6 +5,7 @@
 #include "SDL_vulkan.h"
 #include "SexyAppBase.h"
 #include "VkCommon.h"
+#include "graphics/Color.h"
 #include "graphics/VkImage.h"
 #include "graphics/WindowInterface.h"
 #include "misc/KeyCodes.h"
@@ -375,14 +376,15 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     scissor.extent = renderPassInfo.renderArea.extent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    ImagePushConstants constants = {
+    const SexyRGBA color = Color(255, 255, 255, 255).ToRGBA();
+    const ImagePushConstants constants = {
         {
          glm::vec4(-1, -1, 0.0, 0.0),
          glm::vec4(-1, 1, 0.0, 1.0),
          glm::vec4(1, -1, 1.0, 0.0),
          glm::vec4(1, 1, 1.0, 1.0),
          },
-        {glm::vec4(1.0), glm::vec4(1.0), glm::vec4(1.0), glm::vec4(1.0)},
+        {color, color, color, color},
         true,
         true,
     };
@@ -1364,6 +1366,8 @@ void pickPhysicalDevice() {
     } else {
         throw std::runtime_error("failed to find a suitable GPU!");
     }
+
+    printf("%s\n", physicalDeviceProperties.deviceName);
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(

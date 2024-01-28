@@ -1,6 +1,7 @@
 #ifndef VK_COMMON_H
 #define VK_COMMON_H
 
+#include "Color.h"
 #include <memory>
 #include <vector>
 #include <vulkan/vulkan_core.h>
@@ -42,11 +43,13 @@ extern uint32_t currentFrame;
 
 extern const std::vector<uint16_t> indices;
 
+extern VkPhysicalDeviceProperties physicalDeviceProperties;
+
 VkImageView createImageView(::VkImage image, VkFormat format);
 
 struct ImagePushConstants {
     glm::vec4 vertices[4];
-    glm::vec4 vertex_colors[4];
+    Sexy::SexyRGBA vertex_colors[4];
     uint32_t is_quad;
     uint32_t filter;
     glm::vec2 filterOffset = glm::vec2();
