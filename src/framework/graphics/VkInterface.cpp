@@ -46,7 +46,7 @@ extern "C"
 
 #define CREATE_SHADER_MODULE(NAME) createShaderModule(NAME, NAME##_size)
 
-DECLARE_SHADER(_binary_sanding_comp_spv)
+DECLARE_SHADER(_binary_effects_comp_spv)
 DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
 
@@ -192,7 +192,6 @@ VkRenderPass imagePass;
 
 VkDescriptorPool descriptorPool;
 std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> descriptorSets;
-VkDescriptorSet computeDescriptorSet;
 VkDescriptorSetLayout descriptorSetLayout;
 VkDescriptorSetLayout computeDescriptorSetLayout;
 
@@ -594,14 +593,6 @@ void createDescriptorSets() {
         }
     }
 
-    {
-        VkDescriptorSetAllocateInfo allocInfo{
-            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, descriptorPool, 1, &computeDescriptorSetLayout
-        };
-
-        vkAllocateDescriptorSets(device, &allocInfo, &computeDescriptorSet);
-    }
-
     for (size_t i = 0; i < descriptorSets.size(); i++) {
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -628,7 +619,7 @@ void createDescriptorPool() {
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[0].descriptorCount = descriptorSets.size() + 2000;
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-    poolSizes[1].descriptorCount = 2;
+    poolSizes[1].descriptorCount = 200;
 
     VkDescriptorPoolCreateInfo poolInfo{
         VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,     nullptr,
@@ -863,7 +854,7 @@ VkShaderModule createShaderModule(const uint8_t *code, const size_t length) {
 }
 
 void createComputePipeline() {
-    VkShaderModule computeShaderModule = CREATE_SHADER_MODULE(_binary_sanding_comp_spv);
+    VkShaderModule computeShaderModule = CREATE_SHADER_MODULE(_binary_effects_comp_spv);
 
     VkPipelineShaderStageCreateInfo computeShaderStageInfo{
         VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
@@ -1731,6 +1722,8 @@ VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
 }
 
 void SetCursor(int idx) {
+    static int currentCursor = -1;
+    static bool isShown = true;
     constexpr std::optional<SDL_SystemCursor> standardCursorLut[] = {
         SDL_SYSTEM_CURSOR_ARROW,     // CURSOR_POINTER,
         SDL_SYSTEM_CURSOR_HAND,      // CURSOR_HAND,
@@ -1748,12 +1741,17 @@ void SetCursor(int idx) {
         {},                          // CURSOR_CUSTOM,
     };
 
+    if (idx == currentCursor) return; // Already the correct cursor.
+    currentCursor = idx;
+
     if (standardCursorLut[idx].has_value()) {
-        SDL_ShowCursor(SDL_ENABLE);
-        SDL_SetCursor(cursorMap.insert(std::pair(idx, std::make_unique<sdlCursor>(standardCursorLut[idx].value())))
+        if (!isShown) SDL_ShowCursor(SDL_ENABLE);
+        isShown = true;
+        SDL_SetCursor(cursorMap.try_emplace(idx, std::make_unique<sdlCursor>(standardCursorLut[idx].value()))
                           .first->second->cursor);
     } else {
-        SDL_ShowCursor(SDL_DISABLE);
+        if (isShown) SDL_ShowCursor(SDL_DISABLE);
+        isShown = false;
     }
 }
 

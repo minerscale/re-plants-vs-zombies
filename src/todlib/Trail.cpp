@@ -151,7 +151,8 @@ void Trail::Draw(Graphics *g) {
     int aTriangleCount = (mNumTrailPoints - 1) * 2;
     TOD_ASSERT(aTriangleCount < MAX_TRAIL_TRIANGLES);
 
-    TriVertex aVertArray[MAX_TRAIL_TRIANGLES][3];
+    std::array<std::array<TriVertex, 3>, MAX_TRAIL_TRIANGLES> aVertArray;
+    // TriVertex aVertArray[MAX_TRAIL_TRIANGLES][3];
 
     bool aHavePrev = false;
     SexyVector2 aNormalPrev;
@@ -254,7 +255,7 @@ void Trail::Draw(Graphics *g) {
         aVertArray[aVertNext][2].color = aColorNext.ToInt();
     }
 
-    g->DrawTrianglesTex(mDefinition->mImage, aVertArray, aTriangleCount);
+    g->DrawTrianglesTex(mDefinition->mImage, aVertArray.data(), aTriangleCount);
 }
 
 void TrailHolder::InitializeHolder() { mTrails.DataArrayInitialize(1024U, "trails"); }

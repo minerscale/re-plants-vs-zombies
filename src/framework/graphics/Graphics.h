@@ -150,7 +150,7 @@ public:
         Image *theImage, const Transform &theTransform, const Rect &theSrcRect, float x = 0, float y = 0
     );
     void DrawTriangleTex(Image *theTexture, const TriVertex &v1, const TriVertex &v2, const TriVertex &v3);
-    void DrawTrianglesTex(Image *theTexture, const TriVertex theVertices[][3], int theNumTriangles);
+    void DrawTrianglesTex(Image *theTexture, const std::array<TriVertex, 3> *theVertices, int theNumTriangles);
 
     void DrawImageCel(Image *theImageStrip, int theX, int theY, int theCel);
     void DrawImageCel(Image *theImageStrip, const Rect &theDestRect, int theCel);

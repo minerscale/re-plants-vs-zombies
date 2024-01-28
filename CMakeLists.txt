@@ -26,27 +26,34 @@ if(MSVC)
     else()
         set(universal_compiler_flags "")
     endif()
+    set(universal_link_flags "")
 else()
     set(universal_compiler_flags
-        "-fuse-ld=lld"
         "-Wno-unused-command-line-argument"
         "-march=native"
+        "-fdiagnostics-color=always"
+        "-pipe"
+        "-pthread"
+        # Remove these for proper release build
+        "-g"
         "-fno-omit-frame-pointer"
         "-fstack-protector-all"
-        "-fdiagnostics-color=always"
-        "-g"
-        "-pipe"
+        "-fno-inline"
+    )
+
+    set(universal_link_flags
+        "-fuse-ld=lld"
     )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O3"
+            "-O1"
         )
     else()
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O3"
+            "-O1"
         )
     endif()
 endif()
@@ -71,7 +78,7 @@ else()
 endif()
 
 add_compile_options(${universal_compiler_flags})
-add_link_options(${universal_compiler_flags})
+add_link_options(${universal_compiler_flags} ${universal_link_flags})
 #set(CMAKE_CXX_FLAGS "${universal_compiler_flags}")
 #set(CMAKE_C_FLAGS   "${universal_compiler_flags}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)

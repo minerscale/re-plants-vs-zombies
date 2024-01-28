@@ -14,13 +14,14 @@ public:
     float y;
     float u;
     float v;
-    unsigned long color;
+    uint32_t color;
 };
 
 class TodTriangleGroup {
 public:
     Image *mImage;
-    TriVertex mVertArray[MAX_TRIANGLES][3];
+    // TriVertex                   mVertArray[MAX_TRIANGLES][3];
+    std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> mVertArray{};
     int mTriangleCount;
     int mDrawMode;
 

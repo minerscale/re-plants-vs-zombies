@@ -15,6 +15,7 @@
 #include <chrono>
 #include <memory>
 #include <thread>
+#include <unordered_map>
 
 // extern HMODULE gDDrawDLL;
 // extern HMODULE gDSoundDLL;
@@ -55,13 +56,13 @@ typedef std::list<Dialog *> DialogList;
 typedef std::vector<std::string> StringVector;
 // typedef std::basic_string<TCHAR> tstring; // string of TCHARs
 
-typedef std::map<std::string, SexyString> StringSexyStringMap;
-typedef std::map<std::string, std::string> StringStringMap;
-typedef std::map<std::string, std::wstring> StringWStringMap;
-typedef std::map<std::string, bool> StringBoolMap;
-typedef std::map<std::string, int> StringIntMap;
-typedef std::map<std::string, double> StringDoubleMap;
-typedef std::map<std::string, StringVector> StringStringVectorMap;
+typedef std::unordered_map<std::string, SexyString> StringSexyStringMap;
+typedef std::unordered_map<std::string, std::string> StringStringMap;
+typedef std::unordered_map<std::string, std::wstring> StringWStringMap;
+typedef std::unordered_map<std::string, bool> StringBoolMap;
+typedef std::unordered_map<std::string, int> StringIntMap;
+typedef std::unordered_map<std::string, double> StringDoubleMap;
+typedef std::unordered_map<std::string, StringVector> StringStringVectorMap;
 
 enum {
     DEMO_MOUSE_POSITION,

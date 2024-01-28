@@ -2,6 +2,7 @@
 #include "Common.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include "graphics/VkImage.h"
 // #include "graphics/MemoryImage.h"
 
 // 0x446B80
@@ -89,10 +90,13 @@ void FilterEffectDisposeForApp() {
     for (int i = 0; i < (int)FilterEffect::NUM_FILTER_EFFECTS; i++) {
         ImageFilterMap &aFilterMap = gFilterMap[i];
 
-        for (ImageFilterMap::iterator it = aFilterMap.begin(); it != aFilterMap.end(); it++) {
-            Image *aImage = it->second;
-            if (aImage != nullptr) delete aImage;
-        }
+        /*
+        for (ImageFilterMap::iterator it = aFilterMap.begin(); it != aFilterMap.end(); it++)
+        {
+            Image* aImage = it->second;
+            if (aImage != nullptr)
+                delete aImage;
+        }*/
 
         aFilterMap.clear();
     }
@@ -183,11 +187,9 @@ Image *FilterEffectGetImage(Image *theImage, FilterEffect theFilterEffect) {
 
     ImageFilterMap &aFilterMap = gFilterMap[(int)theFilterEffect];
     ImageFilterMap::iterator it = aFilterMap.find(theImage);
-    if (it != aFilterMap.end()) return it->second;
+    if (it != aFilterMap.end()) return it->second.get();
 
-    unreachable();
-    /* TODO
-    MemoryImage* aImage = FilterEffectCreateImage(theImage, theFilterEffect);
-    aFilterMap.insert(ImageFilterMap::value_type(theImage, aImage));
-    return aImage;*/
+    auto aImage = ((Vk::VkImage *)theImage)->applyEffectsToNewImage(theFilterEffect);
+
+    return aFilterMap.insert(ImageFilterMap::value_type(theImage, std::move(aImage))).first->second.get();
 }

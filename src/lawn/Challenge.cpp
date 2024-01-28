@@ -3443,7 +3443,8 @@ void Challenge::ScaryPotterMalletPot(GridItem *theScaryPot) {
     int aXPos = mBoard->GridToPixelX(theScaryPot->mGridX, theScaryPot->mGridY);
     int aYPos = mBoard->GridToPixelY(theScaryPot->mGridX, theScaryPot->mGridY);
     Reanimation *aMalletReanim = mApp->AddReanimation(aXPos, aYPos, RENDER_LAYER_TOP, REANIM_HAMMER);
-    aMalletReanim->PlayReanim("anim_pot_open", REANIM_PLAY_ONCE_AND_HOLD, 0, 40.0f);
+    // @Minerscale, seems that the anim_pot_open was supposed to be anim_open_pot?
+    aMalletReanim->PlayReanim("anim_open_pot", REANIM_PLAY_ONCE_AND_HOLD, 0, 40.0f);
     mReanimChallenge = mApp->ReanimationGetID(aMalletReanim);
     mChallengeState = STATECHALLENGE_SCARY_POTTER_MALLETING;
     mApp->PlayFoley(FOLEY_SWING);

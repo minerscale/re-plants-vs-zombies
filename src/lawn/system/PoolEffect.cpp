@@ -176,7 +176,9 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics *g, bool theIsNight) {
 
     int aIndexOffsetX[6] = {0, 0, 1, 0, 1, 1};
     int aIndexOffsetY[6] = {0, 1, 1, 0, 1, 0};
-    TriVertex aVertArray[3][150][3];
+    // TriVertex aVertArray[3][150][3];
+
+    std::array<std::array<std::array<TriVertex, 3>, 150>, 3> aVertArray;
 
     for (int x = 0; x < 15; x++) {
         for (int y = 0; y < 5; y++) {
@@ -216,11 +218,11 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics *g, bool theIsNight) {
     }
 
     if (theIsNight) {
-        g->DrawTrianglesTex(IMAGE_POOL_BASE_NIGHT, aVertArray[0], 150);
-        g->DrawTrianglesTex(IMAGE_POOL_SHADING_NIGHT, aVertArray[1], 150);
+        g->DrawTrianglesTex(IMAGE_POOL_BASE_NIGHT, aVertArray[0].data(), 150);
+        g->DrawTrianglesTex(IMAGE_POOL_SHADING_NIGHT, aVertArray[1].data(), 150);
     } else {
-        g->DrawTrianglesTex(IMAGE_POOL_BASE, aVertArray[0], 150);
-        g->DrawTrianglesTex(IMAGE_POOL_SHADING, aVertArray[1], 150);
+        g->DrawTrianglesTex(IMAGE_POOL_BASE, aVertArray[0].data(), 150);
+        g->DrawTrianglesTex(IMAGE_POOL_SHADING, aVertArray[1].data(), 150);
     }
 
     UpdateWaterEffect();

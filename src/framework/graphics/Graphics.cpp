@@ -6,6 +6,7 @@
 #include "misc/Debug.h"
 #include "misc/Rect.h"
 #include "misc/SexyMatrix.h"
+#include <array>
 #include <math.h>
 
 using namespace Sexy;
@@ -796,15 +797,14 @@ void Graphics::DrawImageTransformF(
 }
 
 void Graphics::DrawTriangleTex(Image *theTexture, const TriVertex &v1, const TriVertex &v2, const TriVertex &v3) {
-    TriVertex v[1][3] = {
-        {v1, v2, v3}
-    };
+    // TriVertex v[1][3] = {{v1,v2,v3}};
+    std::array<TriVertex, 3> v{v1, v2, v3};
     mDestImage->BltTrianglesTex(
-        theTexture, v, 1, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mTransX, mTransY, mLinearBlend
+        theTexture, &v, 1, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mTransX, mTransY, mLinearBlend
     );
 }
 
-void Graphics::DrawTrianglesTex(Image *theTexture, const TriVertex theVertices[][3], int theNumTriangles) {
+void Graphics::DrawTrianglesTex(Image *theTexture, const std::array<TriVertex, 3> *theVertices, int theNumTriangles) {
     mDestImage->BltTrianglesTex(
         theTexture, theVertices, theNumTriangles, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode,
         mTransX, mTransY, mLinearBlend

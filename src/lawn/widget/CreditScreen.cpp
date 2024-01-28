@@ -579,7 +579,8 @@ void DrawDisco(Graphics *g, float aCenterX, float aCenterY, float theTime) {
     float x4 = cos(theTime + PI + PI / 2) * 600.0f;
     float y4 = sin(theTime + PI + PI / 2) * 200.0f;
 
-    TriVertex aVerts[2][3];
+    // TriVertex aVerts[2][3];
+    std::array<std::array<TriVertex, 3>, 2> aVerts;
     int aColor = Color(255, 255, 255, 128).ToInt();
     aVerts[0][0].x = x1 + aCenterX;
     aVerts[0][0].y = y1 + aCenterY;
@@ -613,8 +614,8 @@ void DrawDisco(Graphics *g, float aCenterX, float aCenterY, float theTime) {
     aVerts[1][2].color = aColor;
 
     g->mDestImage->BltTrianglesTex(
-        IMAGE_REANIM_CREDITS_DISCOLIGHTS, aVerts, 2, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), Color::White, g->mDrawMode,
-        0.0f, 0.0f, g->mLinearBlend
+        IMAGE_REANIM_CREDITS_DISCOLIGHTS, aVerts.data(), 2, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), Color::White,
+        g->mDrawMode, 0.0f, 0.0f, g->mLinearBlend
     );
 }
 

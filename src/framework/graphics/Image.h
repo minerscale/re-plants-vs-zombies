@@ -109,7 +109,7 @@ public:
         int theDrawMode, const Rect &theSrcRect, bool blend
     ) = 0;
     virtual void BltTrianglesTex(
-        Image *theTexture, const TriVertex theVertices[][3], int theNumTriangles, const Rect &theClipRect,
+        Image *theTexture, const std::array<TriVertex, 3> *theVertices, int theNumTriangles, const Rect &theClipRect,
         const Color &theColor, int theDrawMode, float tx, float ty, bool blend
     ) = 0;
     virtual void
@@ -133,7 +133,9 @@ class DummyImage : public Image {
     void BltRotated(Image *, float, float, const Rect &, const Rect &, const Color &, int, double, float, float) {}
     void StretchBlt(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}
     void BltMatrix(Image *, float, float, const SexyMatrix3 &, const Rect &, const Color &, int, const Rect &, bool) {}
-    void BltTrianglesTex(Image *, const TriVertex (*)[3], int, const Rect &, const Color &, int, float, float, bool) {}
+    void BltTrianglesTex(
+        Image *, const std::array<TriVertex, 3> *, int, const Rect &, const Color &, int, float, float, bool
+    ) {}
     void BltMirror(Image *, int, int, const Rect &, const Color &, int) {}
     void StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}
 };

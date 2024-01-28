@@ -28,7 +28,7 @@ extern std::array<VkFence, NUM_IMAGE_SWAPS> imageFences;
 
 extern VkDescriptorPool descriptorPool;
 extern VkDescriptorSetLayout descriptorSetLayout;
-extern VkDescriptorSet computeDescriptorSet;
+extern VkDescriptorSetLayout computeDescriptorSetLayout;
 
 // extern std::vector<VkBuffer> uniformBuffers;
 // extern VkBuffer vertexBuffer;
@@ -56,9 +56,7 @@ struct ImagePushConstants {
 };
 
 struct ComputePushConstants {
-    uint32_t sand;
-    uint32_t premultiply;
-    uint32_t already_premultiplied;
+    int32_t type;
 };
 
 struct UniformBufferObject {
