@@ -333,16 +333,15 @@ bool gTodTriangleDrawAdditive = false;
 // #include "TodDrawTriangleInc.cpp"
 
 size_t TodTriangleGroup::gNumVertArraysInUse = 0;
-TodTriangleGroup::VertexArrayPool TodTriangleGroup::gVertArrays{};
+// Reserve and pre-initialise two vertex arrays.
+TodTriangleGroup::VertexArrayPool TodTriangleGroup::gVertArrays{{}, {}};
 
 // 0x4461B0
 TodTriangleGroup::TodTriangleGroup() : mVertArray(gVertArrays[gNumVertArraysInUse]) {
     gNumVertArraysInUse += 1;
-    if (gNumVertArraysInUse > MAX_VERTEX_ARRAYS) {
-        throw std::runtime_error(
-            "Too many TodTriangleGroups at once, increase TodTriangleGroup::MAX_VERTEX_ARRAYS by one.\n"
-            "Doing it this way avoids reallocating a 256 item array which is certainly a good thing."
-        );
+
+    if (gNumVertArraysInUse > gVertArrays.size()) {
+        gVertArrays.push_back({});
     }
 }
 

@@ -3604,7 +3604,7 @@ void Challenge::PuzzleNextStageClear() {
     mSurvivalStage++;
     mBoard->ClearAdviceImmediately();
     mBoard->mBoardData.mLevelAwardSpawned = false;
-    mApp->AddTodParticle(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
+    mApp->AddTodParticle(BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
 }
 
 // 0x42A040

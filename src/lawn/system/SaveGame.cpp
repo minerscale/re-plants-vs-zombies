@@ -52,7 +52,7 @@ void SaveGameContext::SyncBytes(void *theDest, int theReadSize) {
 // 0x481470
 void SaveGameContext::SyncInt(int &theInt) {
     if (mReading) {
-        if ((unsigned long)ByteLeftToRead() < 4) {
+        if (ByteLeftToRead() < 4) {
             mFailed = true;
         }
 
@@ -63,29 +63,31 @@ void SaveGameContext::SyncInt(int &theInt) {
 }
 
 // 0x4814C0
-void SaveGameContext::SyncReanimationDef(ReanimatorDefinition *&theDefinition) {
+ReanimationType SaveGameContext::SyncReanimationDef(ReanimatorDefinition *&theDefinition) {
+    ReanimationType aReanimType;
     if (mReading) {
-        int aReanimType;
-        SyncInt(aReanimType);
-        if (aReanimType == (int)ReanimationType::REANIM_NONE) {
+        SyncInt((int &)aReanimType);
+        if (aReanimType == ReanimationType::REANIM_NONE) {
             theDefinition = nullptr;
-        } else if (aReanimType >= 0 && aReanimType < (int)ReanimationType::NUM_REANIMS) {
+        } else if (aReanimType >= 0 && aReanimType < ReanimationType::NUM_REANIMS) {
             ReanimatorEnsureDefinitionLoaded((ReanimationType)aReanimType, true);
             theDefinition = &gReanimatorDefArray[aReanimType];
         } else {
             mFailed = true;
         }
     } else {
-        int aReanimType = (int)ReanimationType::REANIM_NONE;
-        for (int i = 0; i < (int)ReanimationType::NUM_REANIMS; i++) {
+        aReanimType = ReanimationType::REANIM_NONE;
+        for (int i = 0; i < ReanimationType::NUM_REANIMS; i++) {
             ReanimatorDefinition *aDef = &gReanimatorDefArray[i];
             if (theDefinition == aDef) {
-                aReanimType = i;
+                aReanimType = (ReanimationType)i;
                 break;
             }
         }
-        SyncInt(aReanimType);
+        SyncInt((int &)aReanimType);
     }
+
+    return aReanimType;
 }
 
 // 0x481560
@@ -242,9 +244,19 @@ void SyncParticleSystem(Board *theBoard, TodParticleSystem *theParticleSystem, S
 
 // 0x4818F0
 void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameContext &theContext) {
-    theContext.SyncReanimationDef(theReanimation->mDefinition);
+    // @ Minerscale, ensure Reanimation reloaded in same configuration as before.
+    theContext.SyncBytes(&theReanimation->mIsAtlased, sizeof(bool));
+
+    ReanimationType aType = theContext.SyncReanimationDef(theReanimation->mDefinition);
+
     if (theContext.mReading) {
         theReanimation->mReanimationHolder = theBoard->mApp->mEffectSystem->mReanimationHolder;
+
+        // Was this reanimation in an atlas?
+        if (theReanimation->mIsAtlased) {
+            // Re-atlas it
+            ReanimationCreateAtlas(theReanimation->mDefinition, aType);
+        }
     }
 
     if (theReanimation->mDefinition->mTracks.count != 0) {
@@ -279,9 +291,9 @@ void SyncTrail(Board *theBoard, Trail *theTrail, SaveGameContext &theContext) {
 }
 
 template <typename T> inline static void SyncDataArray(SaveGameContext &theContext, DataArray<T> &theDataArray) {
-    theContext.SyncUint(theDataArray.mFreeListHead);
-    theContext.SyncUint(theDataArray.mMaxUsedCount);
-    theContext.SyncUint(theDataArray.mSize);
+    theContext.SyncSizeT(theDataArray.mFreeListHead);
+    theContext.SyncSizeT(theDataArray.mMaxUsedCount);
+    theContext.SyncSizeT(theDataArray.mSize);
     theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
 }
 

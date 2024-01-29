@@ -94,6 +94,7 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 void copyBufferToImage(
     VkCommandBuffer commandBuffer, VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height
 );
+void beginCommandBuffer();
 
 } // namespace Vk
 

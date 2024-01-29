@@ -1,6 +1,7 @@
 #ifndef __SAVEGAMECONTEXT_H__
 #define __SAVEGAMECONTEXT_H__
 
+#include "ConstEnums.h"
 #include "framework/misc/Buffer.h"
 #include "todlib/TodList.h"
 #include <string>
@@ -35,8 +36,8 @@ public:
     inline int ByteLeftToRead() { return (mBuffer.mDataBitSize - mBuffer.mReadBitPos + 7) / 8; }
     void SyncBytes(void *theDest, int theReadSize);
     void SyncInt(int &theInt);
-    inline void SyncUint(unsigned int &theInt) { SyncInt((signed int &)theInt); }
-    void SyncReanimationDef(ReanimatorDefinition *&theDefinition);
+    inline void SyncSizeT(size_t &theInt) { SyncBytes(&theInt, sizeof(size_t)); }
+    ReanimationType SyncReanimationDef(ReanimatorDefinition *&theDefinition);
     void SyncParticleDef(TodParticleDefinition *&theDefinition);
     void SyncTrailDef(TrailDefinition *&theDefinition);
     void SyncImage(Image *&theImage);

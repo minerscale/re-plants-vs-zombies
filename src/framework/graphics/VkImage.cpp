@@ -131,22 +131,18 @@ void deferredDelete(size_t idx) {
     deleteList[idx].clear();
 }
 
-bool inRecording = false;
 void beginCommandBuffer() {
-    if (!inRecording) { // Start recording the command buffer
-        vkWaitForFences(device, 1, &imageFences[imageBufferIdx], VK_TRUE, UINT64_MAX);
-        vkResetFences(device, 1, &imageFences[imageBufferIdx]);
+    vkWaitForFences(device, 1, &imageFences[imageBufferIdx], VK_TRUE, UINT64_MAX);
+    vkResetFences(device, 1, &imageFences[imageBufferIdx]);
 
-        vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
+    vkResetCommandBuffer(imageCommandBuffers[imageBufferIdx], 0);
 
-        // Delete the oldest buffer's delete list.
-        deferredDelete(imageBufferIdx);
+    // Delete the oldest buffer's delete list.
+    deferredDelete(imageBufferIdx);
 
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        vkBeginCommandBuffer(imageCommandBuffers[imageBufferIdx], &beginInfo);
-        inRecording = true;
-    }
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    vkBeginCommandBuffer(imageCommandBuffers[imageBufferIdx], &beginInfo);
 }
 
 bool inRenderpass = false;
@@ -187,7 +183,6 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
             VK_IMAGE_USAGE_STORAGE_BIT
     );
 
-    beginCommandBuffer();
     endRenderPass();
 
     TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -209,9 +204,6 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 }
 
 VkImage::~VkImage() {
-    // renderMutex.lock();
-    // flushCommandBuffer();
-    // vkDeviceWaitIdle(device);
     renderMutex.lock();
 
     deleteList[imageBufferIdx].emplace_back(
@@ -219,10 +211,6 @@ VkImage::~VkImage() {
     );
 
     renderMutex.unlock();
-
-    /*
-     */
-    // renderMutex.unlock();
 }
 
 /*====================*
@@ -295,23 +283,20 @@ void VkImage::TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newL
 
 auto begin_time = std::chrono::high_resolution_clock::now();
 void flushCommandBuffer() {
-    if (inRecording) {
-        endRenderPass();
+    endRenderPass();
 
-        vkEndCommandBuffer(imageCommandBuffers[imageBufferIdx]);
-        cachedDrawMode = -1;
-        inRecording = false;
+    vkEndCommandBuffer(imageCommandBuffers[imageBufferIdx]);
+    cachedDrawMode = -1;
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &imageCommandBuffers[imageBufferIdx];
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &imageCommandBuffers[imageBufferIdx];
 
-        vkQueueSubmit(graphicsQueue, 1, &submitInfo, imageFences[imageBufferIdx]);
+    vkQueueSubmit(graphicsQueue, 1, &submitInfo, imageFences[imageBufferIdx]);
 
-        imageBufferIdx = (imageBufferIdx + 1) % NUM_IMAGE_SWAPS;
-        beginCommandBuffer();
-    }
+    imageBufferIdx = (imageBufferIdx + 1) % NUM_IMAGE_SWAPS;
+    beginCommandBuffer();
 }
 
 std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> VkImage::applyEffects(FilterEffect theFilterEffect) {

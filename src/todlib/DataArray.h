@@ -19,16 +19,16 @@ public:
     class DataArrayItem {
     public:
         T mItem;
-        unsigned int mID;
+        size_t mID;
     };
 
 public:
     DataArrayItem *mBlock;
-    unsigned int mMaxUsedCount;
-    unsigned int mMaxSize;
-    unsigned int mFreeListHead;
-    unsigned int mSize;
-    unsigned int mNextKey;
+    size_t mMaxUsedCount;
+    size_t mMaxSize;
+    size_t mFreeListHead;
+    size_t mSize;
+    size_t mNextKey;
     const char *mName;
 
 public:
@@ -96,7 +96,7 @@ public:
         else aItem++;
 
         DataArray<T>::DataArrayItem *aLast = &mBlock[mMaxUsedCount];
-        while ((intptr_t)aItem < (intptr_t)aLast) {
+        while (aItem < aLast) {
             if (aItem->mID & DATA_ARRAY_KEY_MASK) {
                 theItem = (T *)aItem;
                 return true;

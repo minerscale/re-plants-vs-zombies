@@ -190,6 +190,9 @@ public:
     float mLastFrameTime;
     FilterEffect mFilterEffect;
 
+    // @ Minerscale, ensure reanimation reloaded with atlas if it originally came with one.
+    bool mIsAtlased;
+
 public:
     Reanimation();
     ~Reanimation();

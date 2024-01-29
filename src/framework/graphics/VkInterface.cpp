@@ -1714,6 +1714,7 @@ VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
     createDescriptorPool();
     createSyncObjects();
     createCommandBuffers();
+    beginCommandBuffer();
     createWindowBuffer(width, height);
     createDescriptorSets();
     createComputePipeline();

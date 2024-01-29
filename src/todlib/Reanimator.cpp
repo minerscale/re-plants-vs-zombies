@@ -286,6 +286,7 @@ Reanimation::Reanimation() {
     mTrackInstances = nullptr;
     mFilterEffect = FilterEffect::FILTER_EFFECT_NONE;
     mReanimationType = ReanimationType::REANIM_NONE;
+    mIsAtlased = false;
 }
 
 // 0x471A20
@@ -305,7 +306,7 @@ void Reanimation::ReanimationDelete() {
 
 // 0x471A60
 void Reanimation::ReanimationInitializeType(float theX, float theY, ReanimationType theReanimType) {
-    TOD_ASSERT(theReanimType >= 0 && theReanimType < gReanimatorDefCount);
+    TOD_ASSERT(theReanimType >= 0 && (uint)theReanimType < gReanimatorDefCount);
     ReanimatorEnsureDefinitionLoaded(theReanimType, false);
     mReanimationType = theReanimType;
     ReanimationInitialize(theX, theY, &gReanimatorDefArray[(int)theReanimType]);
@@ -336,7 +337,7 @@ void ReanimationCreateAtlas(ReanimatorDefinition *theDefinition, ReanimationType
 }
 
 void ReanimationPreload(ReanimationType theReanimationType) {
-    TOD_ASSERT(theReanimationType >= 0 && theReanimationType < gReanimatorDefCount);
+    TOD_ASSERT(theReanimationType >= 0 && (uint)theReanimationType < gReanimatorDefCount);
 
     ReanimatorDefinition *aReanimDef = &gReanimatorDefArray[(int)theReanimationType];
     ReanimationCreateAtlas(aReanimDef, theReanimationType);
@@ -350,7 +351,9 @@ void ReanimationPreload(ReanimationType theReanimationType) {
 void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefinition *theDefinition) {
     TOD_ASSERT(mTrackInstances == nullptr);
     ReanimationCreateAtlas(theDefinition, mReanimationType);
+    mIsAtlased = true;
     mDead = false;
+
     SetPosition(theX, theY);
     mDefinition = theDefinition;
     mAnimRate = theDefinition->mFPS;
@@ -1033,11 +1036,11 @@ ReanimationHolder::AllocReanimation(float theX, float theY, int theRenderOrder, 
 
 // 0x4735E0
 void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsPreloading) {
-    TOD_ASSERT(theReanimType >= 0 && theReanimType < gReanimatorDefCount);
-    ReanimatorDefinition *aReanimDef = &gReanimatorDefArray[(int)theReanimType];
+    TOD_ASSERT(theReanimType >= 0 && theReanimType < (int)gReanimatorDefCount);
+    ReanimatorDefinition *aReanimDef = &gReanimatorDefArray[theReanimType];
     if (aReanimDef->mTracks.tracks != nullptr) // 如果轨道指针不为空指针，说明定义数据已经加载
         return;
-    ReanimationParams *aReanimParams = &gReanimationParamArray[(int)theReanimType];
+    ReanimationParams *aReanimParams = &gReanimationParamArray[theReanimType];
     std::string aFileName = "reanim/" + std::string(aReanimParams->mReanimFileName);
     if (theIsPreloading) {
         if (gSexyAppBase->mShutdown || gAppCloseRequest()) // 预加载时若程序退出，则取消加载
@@ -1078,7 +1081,7 @@ void ReanimatorLoadDefinitions(ReanimationParams *theReanimationParamArray, int 
     gReanimatorDefCount = theReanimationParamArraySize;
     gReanimatorDefArray = new ReanimatorDefinition[theReanimationParamArraySize];
 
-    for (unsigned int i = 0; i < gReanimationParamArraySize; i++) {
+    for (int i = 0; i < (int)gReanimationParamArraySize; i++) {
         ReanimationParams *aReanimationParams = &theReanimationParamArray[i];
         TOD_ASSERT(aReanimationParams->mReanimationType == i);
         if (DefinitionIsCompiled("reanim/" + StringToSexyString(aReanimationParams->mReanimFileName)))

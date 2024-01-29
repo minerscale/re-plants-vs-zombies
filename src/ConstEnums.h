@@ -713,8 +713,8 @@ enum ProjectileType {
     PROJECTILE_ZOMBIE_PEA = 13, // 僵尸豌豆
     NUM_PROJECTILES = 14
 };
-enum ReanimationType : unsigned int {
-    REANIM_NONE = (unsigned int)-1,
+enum ReanimationType : int {
+    REANIM_NONE = -1,
     REANIM_LOADBAR_SPROUT = 0,
     REANIM_LOADBAR_ZOMBIEHEAD,
     REANIM_SODROLL,

@@ -19,9 +19,8 @@ public:
 
 class TodTriangleGroup {
 public:
-    static constexpr size_t MAX_VERTEX_ARRAYS = 2;
     typedef std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> VertexArray;
-    typedef std::array<VertexArray, MAX_VERTEX_ARRAYS> VertexArrayPool;
+    typedef std::vector<VertexArray> VertexArrayPool;
 
     static size_t gNumVertArraysInUse;
     static VertexArrayPool gVertArrays;
