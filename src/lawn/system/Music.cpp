@@ -625,7 +625,7 @@ void Music::MusicUpdate() {
         }
     }
 
-    if (mApp->mBoard == nullptr || !mApp->mBoard->mPaused) {
+    if (mApp->mBoard == nullptr || !mApp->mBoard->mBoardData.mPaused) {
         UpdateMusicBurst();
         MusicResync();
     }

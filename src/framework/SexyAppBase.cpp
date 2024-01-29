@@ -6107,12 +6107,13 @@ SexyAppBase::GetSharedImage(const std::string &theFileName, const std::string &t
     std::string anUpperFileName = StringToUpper(theFileName);
     std::string anUpperVariant = StringToUpper(theVariant);
 
-    std::pair<SharedImageMap::iterator, bool> aResultPair;
-
     // Get the image and add it to the map if it doesn't exist.
-    aResultPair = mSharedImageMap.insert(SharedImageMap::value_type(
-        SharedImageMap::key_type(anUpperFileName, anUpperVariant), GetImage(theFileName, theDoImageSanding)
-    ));
+    std::unique_ptr<Image> &aResult =
+        mSharedImageMap
+            .try_emplace(
+                SharedImageMap::key_type(anUpperFileName, anUpperVariant), GetImage(theFileName, theDoImageSanding)
+            )
+            .first->second;
 
     // This represents an old path which is not implemented.
     // Pass in a '!' as the first char of the file name to create a new image
@@ -6132,7 +6133,7 @@ SexyAppBase::GetSharedImage(const std::string &theFileName, const std::string &t
         }
     }*/
 
-    return aResultPair.first->second.get();
+    return aResult.get();
 }
 
 void SexyAppBase::CleanSharedImages() {

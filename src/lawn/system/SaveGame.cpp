@@ -288,8 +288,9 @@ template <typename T> inline static void SyncDataArray(SaveGameContext &theConte
 // 0x4819D0
 void SyncBoard(SaveGameContext &theContext, Board *theBoard) {
     // TODO test if gives sane results
-    size_t offset = size_t(&theBoard->mPaused) - size_t(theBoard);
-    theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offset);
+    // size_t offset = (size_t)(&theBoard->mPaused) - (size_t)(theBoard);
+    // theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offset);
+    theContext.SyncBytes(&theBoard->mBoardData, sizeof(BoardData));
 
     SyncDataArray(theContext, theBoard->mZombies);                                               // 0x482190
     SyncDataArray(theContext, theBoard->mPlants);                                                // 0x482280

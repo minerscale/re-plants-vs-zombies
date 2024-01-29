@@ -105,8 +105,8 @@ void GridItem::DrawIZombieBrain(Graphics *g) {
         return;
     }
 
-    if (mBoard->mAdvice->mDuration > 0 && mBoard->mHelpIndex == AdviceType::ADVICE_I_ZOMBIE_EAT_ALL_BRAINS) {
-        Color aFlashingColor = GetFlashingColor(mBoard->mMainCounter, 75);
+    if (mBoard->mAdvice->mDuration > 0 && mBoard->mBoardData.mHelpIndex == AdviceType::ADVICE_I_ZOMBIE_EAT_ALL_BRAINS) {
+        Color aFlashingColor = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75);
         g->SetColorizeImages(true);
         g->SetColor(aFlashingColor);
     }
@@ -130,9 +130,9 @@ void GridItem::DrawGraveStone(Graphics *g) {
     if (mGridItemCounter <= 0) return;
 
     int aHeightPosition = TodAnimateCurve(0, 100, mGridItemCounter, 1000, 0, TodCurves::CURVE_EASE_IN_OUT);
-    int aGridCelLook = mBoard->mGridCelLook[mGridX][mGridY];
-    int aGridCelOffsetX = mBoard->mGridCelOffset[mGridX][mGridY][0];
-    int aGridCelOffsetY = mBoard->mGridCelOffset[mGridX][mGridY][1];
+    int aGridCelLook = mBoard->mBoardData.mGridCelLook[mGridX][mGridY];
+    int aGridCelOffsetX = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
+    int aGridCelOffsetY = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
     int aCelWidth = IMAGE_TOMBSTONES->GetCelWidth();
     int aCelHeight = IMAGE_TOMBSTONES->GetCelHeight();
     int aGraveCol = aGridCelLook % 5;
@@ -228,7 +228,7 @@ void GridItem::DrawCrater(Graphics *g) {
         }
 
         float aPos = mGridY * PI + mGridX * PI * 0.25f;
-        float aTime = mBoard->mMainCounter * PI * 2.0f / 200.0f;
+        float aTime = mBoard->mBoardData.mMainCounter * PI * 2.0f / 200.0f;
         aYPos += sin(aPos + aTime) * 2.0f;
     } else if (mBoard->StageHasRoof()) {
         if (mGridX < 5) {
@@ -387,8 +387,8 @@ void GridItem::DrawSquirrel(Graphics* g)
 
 // 0x44E090
 void GridItem::AddGraveStoneParticles() {
-    int aXOffset = mBoard->mGridCelOffset[mGridX][mGridY][0];
-    int aYOffset = mBoard->mGridCelOffset[mGridX][mGridY][1];
+    int aXOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
+    int aYOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
     int aXPos = mBoard->GridToPixelX(mGridX, mGridY) + 14 + aXOffset;
     int aYPos = mBoard->GridToPixelY(mGridX, mGridY) + 78 + aYOffset;
     mApp->AddTodParticle(aXPos, aYPos, mRenderOrder + 1, ParticleEffect::PARTICLE_GRAVE_STONE_RISE);

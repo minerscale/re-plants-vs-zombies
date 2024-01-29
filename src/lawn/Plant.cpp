@@ -580,7 +580,7 @@ int Plant::GetDamageRangeFlags(PlantWeapon thePlantWeapon) {
 
 // 0x45EBD0
 bool Plant::IsOnHighGround() {
-    return mBoard && mBoard->mGridSquareType[mPlantCol][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
+    return mBoard && mBoard->mBoardData.mGridSquareType[mPlantCol][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
 }
 
 // 0x45EC00
@@ -893,7 +893,7 @@ void Plant::UpdateProductionPlant() {
 
     if (mBoard->HasLevelAwardDropped()) return;
 
-    if (mSeedType == SeedType::SEED_MARIGOLD && mBoard->mCurrentWave == mBoard->mNumWaves) {
+    if (mSeedType == SeedType::SEED_MARIGOLD && mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves) {
         if (mState != PlantState::STATE_MARIGOLD_ENDING) {
             mState = PlantState::STATE_MARIGOLD_ENDING;
             mStateCountdown = 6000;
@@ -975,7 +975,7 @@ void Plant::UpdateGraveBuster() {
         GridItem *aGraveStone = mBoard->GetGraveStoneAt(mPlantCol, mRow);
         if (aGraveStone) {
             aGraveStone->GridItemDie();
-            mBoard->mGravesCleared++;
+            mBoard->mBoardData.mGravesCleared++;
         }
 
         mApp->AddTodParticle(mX + 40, mY + 40, mRenderOrder + 4, ParticleEffect::PARTICLE_GRAVE_BUSTER_DIE);
@@ -1004,7 +1004,7 @@ void Plant::UpdatePotato() {
     if (mState == PlantState::STATE_NOTREADY) {
         if (mStateCountdown == 0) {
             mApp->AddTodParticle(
-                mX + mWidth / 2, mY + mHeight / 2, mRenderOrder, ParticleEffect::PARTICLE_POTATO_MINE_RISE
+                mX + mWidth / 2.0, mY + mHeight / 2.0, mRenderOrder, ParticleEffect::PARTICLE_POTATO_MINE_RISE
             );
             PlayBodyReanim("anim_rise", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 18.0f);
             mState = PlantState::STATE_POTATO_RISING;
@@ -1283,7 +1283,7 @@ void Plant::UpdateSquash() {
         Zombie *aZombie = FindSquashTarget();
         if (aZombie) {
             mTargetZombieID = mBoard->ZombieGetID(aZombie);
-            mTargetX = aZombie->ZombieTargetLeadX(0.0f) - mWidth / 2;
+            mTargetX = aZombie->ZombieTargetLeadX(0.0f) - mWidth / 2.0;
             mState = PlantState::STATE_SQUASH_LOOK;
             mStateCountdown = 80;
             PlayBodyReanim(
@@ -1301,7 +1301,7 @@ void Plant::UpdateSquash() {
         if (mStateCountdown <= 0) {
             Zombie *aZombie = FindSquashTarget();
             if (aZombie) {
-                mTargetX = aZombie->ZombieTargetLeadX(30.0f) - mWidth / 2;
+                mTargetX = aZombie->ZombieTargetLeadX(30.0f) - mWidth / 2.0;
             }
 
             mState = PlantState::STATE_SQUASH_RISING;
@@ -1455,7 +1455,7 @@ void Plant::UpdateCobCannon() {
     } else if (mState == PlantState::STATE_COBCANNON_READY) {
         Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
         ReanimatorTrackInstance *aCobTrack = aBodyReanim->GetTrackInstanceByName("CobCannon_cob");
-        aCobTrack->mTrackColor = GetFlashingColor(mBoard->mMainCounter, 75);
+        aCobTrack->mTrackColor = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75);
     } else if (mState == PlantState::STATE_COBCANNON_FIRING) {
         Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
         if (aBodyReanim->ShouldTriggerTimedEvent(0.48f)) {
@@ -1594,8 +1594,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         theZombie->ReanimShowPrefix("anim_bucket", RENDER_GROUP_HIDDEN);
         theZombie->ReanimShowPrefix("anim_hair", RENDER_GROUP_NORMAL);
 
-        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetWidth() / 2;
-        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetHeight() / 2;
+        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetWidth() / 2.0;
+        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 25.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
         aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_PAIL_1 + aDamageIndex);
@@ -1624,8 +1624,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         }
         theZombie->GetTrackPosition("anim_screendoor", aMagnetItem->mPosX, aMagnetItem->mPosY);
 
-        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetWidth() / 2;
-        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetHeight() / 2;
+        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetWidth() / 2.0;
+        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
         aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_DOOR_1 + aDamageIndex);
@@ -1636,8 +1636,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
 
         aMagnetItem->mPosX = theZombie->mPosX + 31.0f;
         aMagnetItem->mPosY = theZombie->mPosY + 20.0f;
-        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetWidth() / 2;
-        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2;
+        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetWidth() / 2.0;
+        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
         aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_LADDER_1 + aDamageIndex);
@@ -1647,8 +1647,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         // theZombie->GetDrawPos(aDrawPos);
         theZombie->GetTrackPosition("Zombie_pogo_stick", aMagnetItem->mPosX, aMagnetItem->mPosY);
 
-        aMagnetItem->mPosX += 40.0f - IMAGE_REANIM_ZOMBIE_LADDER_5->GetWidth() / 2;
-        aMagnetItem->mPosY += 84.0f - IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2;
+        aMagnetItem->mPosX += 40.0f - IMAGE_REANIM_ZOMBIE_LADDER_5->GetWidth() / 2.0;
+        aMagnetItem->mPosY += 84.0f - IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
         aMagnetItem->mItemType =
@@ -1661,8 +1661,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         theZombie->ReanimShowPrefix("Zombie_jackbox_handle", RENDER_GROUP_HIDDEN);
         theZombie->GetTrackPosition("Zombie_jackbox_box", aMagnetItem->mPosX, aMagnetItem->mPosY);
 
-        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_JACKBOX_BOX->GetWidth() / 2;
-        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_JACKBOX_BOX->GetHeight() / 2;
+        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_JACKBOX_BOX->GetWidth() / 2.0;
+        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_JACKBOX_BOX->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 15.0f;
         aMagnetItem->mItemType = MagnetItemType::MAGNET_ITEM_JACK_IN_THE_BOX;
@@ -1670,8 +1670,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         theZombie->DiggerLoseAxe();
         theZombie->GetTrackPosition("Zombie_digger_pickaxe", aMagnetItem->mPosX, aMagnetItem->mPosY);
 
-        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_DIGGER_PICKAXE->GetWidth() / 2;
-        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_DIGGER_PICKAXE->GetHeight() / 2;
+        aMagnetItem->mPosX -= IMAGE_REANIM_ZOMBIE_DIGGER_PICKAXE->GetWidth() / 2.0;
+        aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_DIGGER_PICKAXE->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 45.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 15.0f;
         aMagnetItem->mItemType = MagnetItemType::MAGNET_ITEM_PICK_AXE;
@@ -1849,7 +1849,8 @@ Coin *Plant::FindGoldMagnetTarget() {
         if (aCoin->IsMoney() && aCoin->mCoinMotion != CoinMotion::COIN_MOTION_FROM_PRESENT &&
             !aCoin->mIsBeingCollected && aCoin->mCoinAge >= 50) {
             float aDistance = Distance2D(
-                mX + mWidth / 2, mY + mHeight / 2, aCoin->mPosX + aCoin->mWidth / 2, aCoin->mPosY + aCoin->mHeight / 2
+                mX + mWidth / 2.0, mY + mHeight / 2.0, aCoin->mPosX + aCoin->mWidth / 2.0,
+                aCoin->mPosY + aCoin->mHeight / 2.0
             );
             if (aClosestCoin == nullptr || aDistance < aClosestDistance) {
                 aClosestCoin = aCoin;
@@ -1930,7 +1931,7 @@ void Plant::UpdateGoldMagnetShroom() {
 
                 int aValue = Coin::GetCoinValue(aCoinType);
                 mApp->mPlayerInfo->AddCoins(aValue);
-                mBoard->mCoinsCollected += aValue;
+                mBoard->mBoardData.mCoinsCollected += aValue;
                 mApp->PlayFoley(FoleyType::FOLEY_COIN);
 
                 aMagnetItem->mItemType = MagnetItemType::MAGNET_ITEM_NONE;
@@ -2252,9 +2253,9 @@ void Plant::UpdateReanimColor() {
     if (isOnGlove) {
         aColorOverride = Color(128, 128, 128);
     } else if (IsPartOfUpgradableTo(aSeedType) && mBoard->CanPlantAt(mPlantCol, mRow, aSeedType) == PLANTING_OK) {
-        aColorOverride = GetFlashingColor(mBoard->mMainCounter, 90);
+        aColorOverride = GetFlashingColor(mBoard->mBoardData.mMainCounter, 90);
     } else if (aSeedType == SeedType::SEED_COBCANNON && mSeedType == SeedType::SEED_KERNELPULT && mBoard->CanPlantAt(mPlantCol - 1, mRow, aSeedType) == PLANTING_OK) {
-        aColorOverride = GetFlashingColor(mBoard->mMainCounter, 90);
+        aColorOverride = GetFlashingColor(mBoard->mBoardData.mMainCounter, 90);
     } else if (mSeedType == SeedType::SEED_EXPLODE_O_NUT) {
         aColorOverride = Color(255, 64, 64);
     } else {
@@ -2954,7 +2955,7 @@ float PlantDrawHeightOffset(Board *theBoard, Plant *thePlant, SeedType theSeedTy
     if (doFloating) {
         int aCounter;
         if (theBoard) {
-            aCounter = theBoard->mMainCounter;
+            aCounter = theBoard->mBoardData.mMainCounter;
         } else {
             aCounter = gLawnApp->mAppCounter;
         }
@@ -3277,7 +3278,7 @@ void Plant::Draw(Graphics *g) {
         if (Plant::IsFlying(mSeedType)) {
             int aCounter;
             if (IsOnBoard()) {
-                aCounter = mBoard->mMainCounter;
+                aCounter = mBoard->mBoardData.mMainCounter;
             } else {
                 aCounter = mApp->mAppCounter;
             }
@@ -3324,13 +3325,13 @@ void Plant::Draw(Graphics *g) {
             if (IsPartOfUpgradableTo(aSeedType) &&
                 mBoard->CanPlantAt(mPlantCol, mRow, aSeedType) == PlantingReason::PLANTING_OK) {
                 g->SetColorizeImages(true);
-                g->SetColor(GetFlashingColor(mBoard->mMainCounter, 90));
+                g->SetColor(GetFlashingColor(mBoard->mBoardData.mMainCounter, 90));
             } else if (aSeedType == SeedType::SEED_COBCANNON && mBoard->CanPlantAt(mPlantCol - 1, mRow, aSeedType) == PlantingReason::PLANTING_OK) {
                 g->SetColorizeImages(true);
-                g->SetColor(GetFlashingColor(mBoard->mMainCounter, 90));
-            } else if (mBoard && mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG) {
+                g->SetColor(GetFlashingColor(mBoard->mBoardData.mMainCounter, 90));
+            } else if (mBoard && mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG) {
                 g->SetColorizeImages(true);
-                g->SetColor(GetFlashingColor(mBoard->mMainCounter, 90));
+                g->SetColor(GetFlashingColor(mBoard->mBoardData.mMainCounter, 90));
             }
 
             TodDrawImageCelF(g, aPlantImage, aOffsetX, aOffsetY, aImageIndex, 0);
@@ -3443,9 +3444,9 @@ void Plant::MouseDown(int x, int y, int theClickCount) {
         mBoard->mCursorObject->mSeedBankIndex = -1;
         mBoard->mCursorObject->mCoinID = CoinID::COINID_NULL;
         mBoard->mCursorObject->mCobCannonPlantID = (PlantID)mBoard->mPlants.DataArrayGetID(this);
-        mBoard->mCobCannonCursorDelayCounter = 30;
-        mBoard->mCobCannonMouseX = x;
-        mBoard->mCobCannonMouseY = y;
+        mBoard->mBoardData.mCobCannonCursorDelayCounter = 30;
+        mBoard->mBoardData.mCobCannonMouseX = x;
+        mBoard->mBoardData.mCobCannonMouseY = y;
     }
 }
 
@@ -3456,8 +3457,8 @@ void Plant::IceZombies() {
         aZombie->HitIceTrap();
     }
 
-    mBoard->mIceTrapCounter = 300;
-    TodParticleSystem *aPoolSparklyParticle = mApp->ParticleTryToGet(mBoard->mPoolSparklyParticleID);
+    mBoard->mBoardData.mIceTrapCounter = 300;
+    TodParticleSystem *aPoolSparklyParticle = mApp->ParticleTryToGet(mBoard->mBoardData.mPoolSparklyParticleID);
     if (aPoolSparklyParticle) {
         aPoolSparklyParticle->mDontUpdate = false;
     }
@@ -3510,7 +3511,7 @@ void Plant::BlowAwayFliers() {
     }
 
     mApp->PlaySample(SOUND_BLOVER);
-    mBoard->mFogBlownCountDown = 4000;
+    mBoard->mBoardData.mFogBlownCountDown = 4000;
 }
 
 // 0x466650
@@ -3572,7 +3573,7 @@ void Plant::DoSpecial() {
         mBoard->ShakeBoard(3, -4);
 
         BurnRow(mRow);
-        mBoard->mIceTimer[mRow] = 20;
+        mBoard->mBoardData.mIceTimer[mRow] = 20;
 
         Die();
         break;
@@ -3989,8 +3990,8 @@ Zombie *Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon) {
             int aWeight = -aZombieRect.mX;
             if (mSeedType == SeedType::SEED_CATTAIL) {
                 aWeight = -Distance2D(
-                    mX + 40.0f, mY + 40.0f, aZombieRect.mX + aZombieRect.mWidth / 2,
-                    aZombieRect.mY + aZombieRect.mHeight / 2
+                    mX + 40.0f, mY + 40.0f, aZombieRect.mX + aZombieRect.mWidth / 2.0,
+                    aZombieRect.mY + aZombieRect.mHeight / 2.0
                 );
                 if (aZombie->IsFlying()) {
                     aWeight += 10000; // 优先攻击飞行单位

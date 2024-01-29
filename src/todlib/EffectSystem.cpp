@@ -8,6 +8,7 @@
 #include "framework/Common.h"
 #include "graphics/Graphics.h"
 #include "graphics/TriVertex.h"
+#include <stdexcept>
 // #include "graphics/DDImage.h"
 // #include "graphics/DDInterface.h"
 // #include "graphics/D3DInterface.h"
@@ -331,16 +332,26 @@ bool gTodTriangleDrawAdditive = false;
 
 // #include "TodDrawTriangleInc.cpp"
 
-// 0x4461B0
-TodTriangleGroup::TodTriangleGroup() {
-    /*
-    for (int i = 0; i < 256; i++)
-        for (int j = 0; j < 3; j++)
-            mVertArray[i][j].color = 0;*/
+size_t TodTriangleGroup::gNumVertArraysInUse = 0;
+TodTriangleGroup::VertexArrayPool TodTriangleGroup::gVertArrays{};
 
-    mImage = nullptr;
-    mTriangleCount = 0;
-    mDrawMode = Graphics::DRAWMODE_NORMAL;
+// 0x4461B0
+TodTriangleGroup::TodTriangleGroup() : mVertArray(gVertArrays[gNumVertArraysInUse]) {
+    gNumVertArraysInUse += 1;
+    if (gNumVertArraysInUse > MAX_VERTEX_ARRAYS) {
+        throw std::runtime_error(
+            "Too many TodTriangleGroups at once, increase TodTriangleGroup::MAX_VERTEX_ARRAYS by one.\n"
+            "Doing it this way avoids reallocating a 256 item array which is certainly a good thing."
+        );
+    }
+}
+
+TodTriangleGroup::~TodTriangleGroup() {
+    for (int i = 0; i < mMaxTriangleCount; i++)
+        for (int j = 0; j < 3; j++)
+            mVertArray[i][j].color = 0;
+
+    gNumVertArraysInUse -= 1;
 }
 
 // 0x4461F0
@@ -370,6 +381,8 @@ void TodTriangleGroup::DrawGroup(Graphics *g) {
             mImage, mVertArray.data(), mTriangleCount, Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), Color::White, mDrawMode,
             0.0f, 0.0f, g->mLinearBlend
         );
+
+        if (mTriangleCount > mMaxTriangleCount) mMaxTriangleCount = mTriangleCount;
 
         mTriangleCount = 0;
         gTodTriangleDrawAdditive = false;
@@ -434,7 +447,7 @@ void TodTriangleGroup::AddTriangle(
              theClipRect.mY + theClipRect.mHeight >= tp[2].y && theClipRect.mY <= tp[3].y &&
              theClipRect.mY + theClipRect.mHeight >= tp[3].y)) {
             aNoClipping = true;
-            // mVertArray.resize(mVertArray.size() + 2);
+
             aTriRef = &mVertArray[mTriangleCount];
             mTriangleCount += 2;
         }
@@ -482,7 +495,6 @@ void TodTriangleGroup::AddTriangle(
 
         for (int i = 0; i < 2; i++) {
             int vCount = Tod_clipShape(clipped, aTriRef[i].data(), clipX0, clipX1, clipY0, clipY1);
-            // mVertArray.resize(mVertArray.size() + vCount - 2);
             for (int j = 0; j < vCount - 2; j++) {
                 std::array<TriVertex, 3> &pVert = mVertArray[mTriangleCount];
                 pVert[0].x = clipped[0]->x;

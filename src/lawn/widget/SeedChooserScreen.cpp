@@ -207,10 +207,10 @@ void SeedChooserScreen::CrazyDavePickSeeds() {
             aSeedArray[aSeedType].mWeight = 1;
         }
     }
-    if (mBoard->mZombieAllowed[ZOMBIE_BUNGEE] || mBoard->mZombieAllowed[ZOMBIE_CATAPULT]) {
+    if (mBoard->mBoardData.mZombieAllowed[ZOMBIE_BUNGEE] || mBoard->mBoardData.mZombieAllowed[ZOMBIE_CATAPULT]) {
         aSeedArray[SEED_UMBRELLA].mWeight = 1;
     }
-    if (mBoard->mZombieAllowed[ZOMBIE_BALLOON] || mBoard->StageHasFog()) {
+    if (mBoard->mBoardData.mZombieAllowed[ZOMBIE_BALLOON] || mBoard->StageHasFog()) {
         aSeedArray[SEED_BLOVER].mWeight = 1;
     }
     if (mBoard->StageHasRoof()) {
@@ -518,9 +518,9 @@ bool SeedChooserScreen::DisplayRepickWarningDialog(const SexyChar *theMessage) {
 
 // 0x485370
 bool SeedChooserScreen::FlyersAreComming() {
-    for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++) {
+    for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int anIndex = 0; anIndex < MAX_ZOMBIES_IN_WAVE; anIndex++) {
-            ZombieType aZombieType = mBoard->mZombiesInWave[aWave][anIndex];
+            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][anIndex];
             if (aZombieType == ZOMBIE_INVALID) break;
 
             if (aZombieType == ZOMBIE_BALLOON) return true;
@@ -558,14 +558,14 @@ void SeedChooserScreen::OnStartButton() {
         }
     }
 
-    if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 11 && !PickedPlantType(SEED_PUFFSHROOM)) {
+    if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 11 && !PickedPlantType(SEED_PUFFSHROOM)) {
         if (!DisplayRepickWarningDialog(_S("SEED_CHOOSER_PUFFSHROOM_WARNING"))) {
             return;
         }
     }
     if (!PickedPlantType(SEED_SUNFLOWER) && !PickedPlantType(SEED_TWINSUNFLOWER) && !PickedPlantType(SEED_SUNSHROOM) &&
         !mBoard->mCutScene->IsSurvivalRepick() && mApp->mGameMode != GAMEMODE_CHALLENGE_LAST_STAND) {
-        if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 11) {
+        if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 11) {
             if (!DisplayRepickWarningDialog(_S("[SEED_CHOOSER_NIGHT_SUN_WARNING]"))) {
                 return;
             }
@@ -575,7 +575,7 @@ void SeedChooserScreen::OnStartButton() {
     }
     if (mBoard->StageHasPool() && !PickedPlantType(SEED_LILYPAD) && !PickedPlantType(SEED_SEASHROOM) &&
         !PickedPlantType(SEED_TANGLEKELP) && !mBoard->mCutScene->IsSurvivalRepick()) {
-        if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 21) {
+        if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 21) {
             if (!DisplayRepickWarningDialog(_S("[SEED_CHOOSER_LILY_WARNING]"))) {
                 return;
             }

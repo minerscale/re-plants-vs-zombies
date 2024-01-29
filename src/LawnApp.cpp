@@ -324,7 +324,7 @@ bool LawnApp::CanPauseNow() {
     if (mSeedChooserScreen && mSeedChooserScreen->mMouseVisible) // 处于选卡界面
         return false;
 
-    if (mBoard->mBoardFadeOutCounter >= 0) // 退出关卡过程中
+    if (mBoard->mBoardData.mBoardFadeOutCounter >= 0) // 退出关卡过程中
         return false;
 
     if (mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_OFF) // 存在戴夫
@@ -935,7 +935,7 @@ void LawnApp::FinishNameError(int theId) {
 
 // 0x4514D0
 void LawnApp::FinishRestartConfirmDialog() {
-    mSawYeti = mBoard->mKilledYeti;
+    mSawYeti = mBoard->mBoardData.mKilledYeti;
 
     KillDialog(Dialogs::DIALOG_CONTINUE);
     KillDialog(Dialogs::DIALOG_RESTARTCONFIRM);
@@ -1240,7 +1240,7 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
     bool aUnlockedNewChallenge = false;
 
     if (IsAdventureMode()) {
-        if (mBoard->mLevel == FINAL_LEVEL) {
+        if (mBoard->mBoardData.mLevel == FINAL_LEVEL) {
             mPlayerInfo->SetLevel(1);          // 存档回到第 1-1 关
             mPlayerInfo->mFinishedAdventure++; // 完成冒险模式周目数增加 1 次
             if (mPlayerInfo->mFinishedAdventure == 1) {
@@ -1248,24 +1248,24 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
             }
             ReportAchievement::GiveAchievement(this, HomeSecurity, false); // @Patoke: add achievement
         } else {
-            mPlayerInfo->SetLevel(mBoard->mLevel + 1); // 存档进入下一关
+            mPlayerInfo->SetLevel(mBoard->mBoardData.mLevel + 1); // 存档进入下一关
         }
 
-        if (!HasFinishedAdventure() && mBoard->mLevel == 34) {
+        if (!HasFinishedAdventure() && mBoard->mBoardData.mLevel == 34) {
             mPlayerInfo->mNeedsMagicTacoReward = 1;
         }
 
         // @Patoke: implemented
-        if (mBoard->StageIsDayWithPool() && !mBoard->mPeaShooterUsed) {
+        if (mBoard->StageIsDayWithPool() && !mBoard->mBoardData.mPeaShooterUsed) {
             ReportAchievement::GiveAchievement(this, DontPea, false);
         }
-        if (mBoard->StageHasRoof() && !mBoard->HasConveyorBeltSeedBank() && !mBoard->mCatapultPlantsUsed) {
+        if (mBoard->StageHasRoof() && !mBoard->HasConveyorBeltSeedBank() && !mBoard->mBoardData.mCatapultPlantsUsed) {
             ReportAchievement::GiveAchievement(this, Grounded, false);
         }
-        if (mBoard->StageIsNight() && !mBoard->mMushroomsUsed) {
+        if (mBoard->StageIsNight() && !mBoard->mBoardData.mMushroomsUsed) {
             ReportAchievement::GiveAchievement(this, NoFungusAmongUs, false);
         }
-        if (mBoard->StageIsDayWithoutPool() && mBoard->mMushroomAndCoffeeBeansOnly) {
+        if (mBoard->StageIsDayWithoutPool() && mBoard->mBoardData.mMushroomAndCoffeeBeansOnly) {
             ReportAchievement::GiveAchievement(this, GoodMorning, false);
         }
     } else if (IsSurvivalMode()) {
@@ -1320,12 +1320,12 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
 // 0x4524F0
 //  GOTY @Patoke: 0x4558E0
 void LawnApp::CheckForGameEnd() {
-    if (mBoard == nullptr || !mBoard->mLevelComplete) return;
+    if (mBoard == nullptr || !mBoard->mBoardData.mLevelComplete) return;
 
     bool aUnlockedNewChallenge = UpdatePlayerProfileForFinishingLevel();
 
     if (IsAdventureMode()) {
-        int aLevel = mBoard->mLevel;
+        int aLevel = mBoard->mBoardData.mLevel;
         KillBoard();
 
         if (IsFirstTimeAdventureMode() && aLevel < 50) {
@@ -1392,12 +1392,12 @@ void LawnApp::UpdatePlayTimeStats() {
     if (aSession > std::chrono::milliseconds(0)) {
         aLastTime = aTickCount;
 
-        if ((mBoard == nullptr || !mBoard->mPaused) && mHasFocus &&
+        if ((mBoard == nullptr || !mBoard->mBoardData.mPaused) && mHasFocus &&
             mLastTimerTime - mLastUserInputTick <= std::chrono::milliseconds(10000)) {
             mPlayTimeActiveSession += aSession;
 
             if (mBoard) {
-                mBoard->mPlayTimeActiveLevel += aSession;
+                mBoard->mBoardData.mPlayTimeActiveLevel += aSession;
             }
 
             if (mPlayerInfo) {
@@ -1407,7 +1407,7 @@ void LawnApp::UpdatePlayTimeStats() {
             mPlayTimeInactiveSession += aSession;
 
             if (mBoard) {
-                mBoard->mPlayTimeInactiveLevel += aSession;
+                mBoard->mBoardData.mPlayTimeInactiveLevel += aSession;
             }
 
             if (mPlayerInfo) {
@@ -2812,10 +2812,10 @@ SexyString LawnGetCurrentLevelName() {
     }
 
     if (gLawnApp->IsFirstTimeAdventureMode()) {
-        return gLawnApp->GetStageString(gLawnApp->mBoard->mLevel);
+        return gLawnApp->GetStageString(gLawnApp->mBoard->mBoardData.mLevel);
     }
     if (gLawnApp->IsAdventureMode()) {
-        return StrFormat(_S("F%d"), gLawnApp->GetStageString(gLawnApp->mBoard->mLevel).c_str());
+        return StrFormat(_S("F%d"), gLawnApp->GetStageString(gLawnApp->mBoard->mBoardData.mLevel).c_str());
     }
 
     return gLawnApp->GetCurrentChallengeDef().mChallengeName;

@@ -93,26 +93,7 @@ struct BungeeDropGrid {
     int mGridArrayCount;
 };
 
-class Board : public Widget, public ButtonListener {
-public:
-    LawnApp *mApp;                                                       //+0x8C
-    DataArray<Zombie> mZombies;                                          //+0x90
-    DataArray<Plant> mPlants;                                            //+0xAC
-    DataArray<Projectile> mProjectiles;                                  //+0xC8
-    DataArray<Coin> mCoins;                                              //+0xE4
-    DataArray<LawnMower> mLawnMowers;                                    //+0x100
-    DataArray<GridItem> mGridItems;                                      //+0x11C
-    CursorObject *mCursorObject;                                         //+0x138
-    CursorPreview *mCursorPreview;                                       //+0x13C
-    MessageWidget *mAdvice;                                              //+0x140
-    SeedBank *mSeedBank;                                                 //+0x144
-    GameButton *mMenuButton;                                             //+0x148
-    GameButton *mStoreButton;                                            //+0x14C
-    bool mIgnoreMouseUp;                                                 //+0x150
-    ToolTipWidget *mToolTip;                                             //+0x154
-    _Font *mDebugFont;                                                   //+0x158
-    CutScene *mCutScene;                                                 //+0x15C
-    Challenge *mChallenge;                                               //+0x160
+struct BoardData {
     bool mPaused;                                                        //+0x164
     GridSquareType mGridSquareType[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];    //+0x168
     int mGridCelLook[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];                  //+0x240
@@ -197,8 +178,8 @@ public:
     std::chrono::high_resolution_clock::duration mPlayTimeActiveLevel;   //+0x5770
     std::chrono::high_resolution_clock::duration mPlayTimeInactiveLevel; //+0x5774
     int mMaxSunPlants;                                                   //+0x5778
-    unsigned long mStartDrawTime;                                        //+0x577C
-    unsigned long mIntervalDrawTime;                                     //+0x5780
+    uint32_t mStartDrawTime;                                             //+0x577C
+    uint32_t mIntervalDrawTime;                                          //+0x5780
     int mIntervalDrawCountStart;                                         //+0x5784
     float mMinFPS;                                                       //+0x5788
     std::chrono::high_resolution_clock::duration mPreloadTime;           //+0x578C
@@ -216,6 +197,29 @@ public:
     int mDiamondsCollected;                                              //+0x57A4 GOTY @Patoke: 0x57CC
     int mPottedPlantsCollected;                                          //+0x57A8
     int mChocolateCollected;                                             //+0x57AC
+};
+
+class Board : public Widget, public ButtonListener {
+public:
+    LawnApp *mApp;                      //+0x8C
+    DataArray<Zombie> mZombies;         //+0x90
+    DataArray<Plant> mPlants;           //+0xAC
+    DataArray<Projectile> mProjectiles; //+0xC8
+    DataArray<Coin> mCoins;             //+0xE4
+    DataArray<LawnMower> mLawnMowers;   //+0x100
+    DataArray<GridItem> mGridItems;     //+0x11C
+    CursorObject *mCursorObject;        //+0x138
+    CursorPreview *mCursorPreview;      //+0x13C
+    MessageWidget *mAdvice;             //+0x140
+    SeedBank *mSeedBank;                //+0x144
+    GameButton *mMenuButton;            //+0x148
+    GameButton *mStoreButton;           //+0x14C
+    bool mIgnoreMouseUp;                //+0x150
+    ToolTipWidget *mToolTip;            //+0x154
+    _Font *mDebugFont;                  //+0x158
+    CutScene *mCutScene;                //+0x15C
+    Challenge *mChallenge;              //+0x160
+    BoardData mBoardData;               //+0x164-0x57AC
 
 public:
     Board(LawnApp *theApp);

@@ -59,7 +59,7 @@ void Projectile::ProjectileInitialize(
     mAttachmentID = AttachmentID::ATTACHMENTID_NULL;
     mCobTargetRow = 0;
     mTargetZombieID = ZombieID::ZOMBIEID_NULL;
-    mOnHighGround = mBoard->mGridSquareType[aGridX][theRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
+    mOnHighGround = mBoard->mBoardData.mGridSquareType[aGridX][theRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND;
     if (mBoard->StageHasRoof()) {
         mShadowY -= 12.0f;
     }
@@ -299,7 +299,7 @@ void Projectile::CheckForHighGround() {
 
     if (CantHitHighGround()) {
         int aGridX = mBoard->PixelToGridXKeepOnBoard(mPosX + 30, mPosY);
-        if (mBoard->mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
+        if (mBoard->mBoardData.mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
             DoImpact(nullptr);
         }
     }
@@ -443,7 +443,7 @@ void Projectile::UpdateLobMotion() {
         } else if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
             aMinCollisionZ = -60.0f;
         }
-        if (mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) {
+        if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) {
             aMinCollisionZ += 40.0f;
         }
 
@@ -495,8 +495,9 @@ void Projectile::UpdateLobMotion() {
         int aBeforeGargantuarCount = mBoard->GetLiveGargantuarCount();
         mBoard->KillAllZombiesInRadius(mRow, mPosX + 80, mPosY + 40, 115, 1, true, mDamageRangeFlags);
         int aAfterGargantuarCount = mBoard->GetLiveGargantuarCount();
-        mBoard->mGargantuarsKillsByCornCob += aBeforeGargantuarCount - aAfterGargantuarCount;
-        if (mBoard->mGargantuarsKillsByCornCob >= 2) ReportAchievement::GiveAchievement(mApp, PopcornParty, true);
+        mBoard->mBoardData.mGargantuarsKillsByCornCob += aBeforeGargantuarCount - aAfterGargantuarCount;
+        if (mBoard->mBoardData.mGargantuarsKillsByCornCob >= 2)
+            ReportAchievement::GiveAchievement(mApp, PopcornParty, true);
 
         DoImpact(nullptr);
     } else {
@@ -512,8 +513,8 @@ void Projectile::UpdateNormalMotion() {
         Zombie *aZombie = mBoard->ZombieTryToGet(mTargetZombieID);
         if (aZombie && aZombie->EffectedByDamage((unsigned int)mDamageRangeFlags)) {
             Rect aZombieRect = aZombie->GetZombieRect();
-            SexyVector2 aTargetCenter(aZombie->ZombieTargetLeadX(0.0f), aZombieRect.mY + aZombieRect.mHeight / 2);
-            SexyVector2 aProjectileCenter(mPosX + mWidth / 2, mPosY + mHeight / 2);
+            SexyVector2 aTargetCenter(aZombie->ZombieTargetLeadX(0.0f), aZombieRect.mY + aZombieRect.mHeight / 2.0);
+            SexyVector2 aProjectileCenter(mPosX + mWidth / 2.0, mPosY + mHeight / 2.0);
             SexyVector2 aToTarget = (aTargetCenter - aProjectileCenter).Normalize();
             SexyVector2 aMotion(mVelX, mVelY);
 
@@ -853,7 +854,7 @@ void Projectile::DrawShadow(Graphics *g) {
 
     int aGridX = mBoard->PixelToGridXKeepOnBoard(mX, mY);
     bool isHighGround = false;
-    if (mBoard->mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
+    if (mBoard->mBoardData.mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
         isHighGround = true;
     }
     if (mOnHighGround && !isHighGround) {

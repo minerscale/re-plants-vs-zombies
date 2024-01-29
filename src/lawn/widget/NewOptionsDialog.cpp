@@ -333,7 +333,7 @@ void NewOptionsDialog::ButtonDepress(int theId) {
                 mApp->mSoundSystem->CancelPausedFoley();
                 mApp->KillNewOptionsDialog();
                 mApp->mBoardResult = BoardResult::BOARDRESULT_RESTART;
-                mApp->mSawYeti = mApp->mBoard->mKilledYeti;
+                mApp->mSawYeti = mApp->mBoard->mBoardData.mKilledYeti;
                 mApp->PreNewGame(mApp->mGameMode, false);
             }
         }

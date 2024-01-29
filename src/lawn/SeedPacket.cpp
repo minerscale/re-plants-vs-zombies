@@ -81,11 +81,11 @@ void SeedPacket::FlashIfReady() {
         );
     }
 
-    if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_1_REFRESH_PEASHOOTER) {
+    if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_1_REFRESH_PEASHOOTER) {
         mBoard->SetTutorialState(TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER);
-    } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_2_REFRESH_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
+    } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_2_REFRESH_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
         mBoard->SetTutorialState(TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER);
-    } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_MORESUN_REFRESH_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
+    } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_MORESUN_REFRESH_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
         mBoard->SetTutorialState(TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER);
     }
 }
@@ -116,7 +116,7 @@ void SeedPacket::Update() {
         return;
     }
 
-    if (mBoard->mMainCounter == 0) {
+    if (mBoard->mBoardData.mMainCounter == 0) {
         FlashIfReady();
     }
 
@@ -537,14 +537,16 @@ void SeedPacket::Draw(Graphics *g) {
         } else if (mApp->mGameScene != GameScenes::SCENE_PLAYING) {
             aGrayness = mBoard->mSeedBank->mCutSceneDarken;
             aPercentDark = 0.0f;
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER && mBoard->mTutorialTimer == -1 && mPacketType == SeedType::SEED_PEASHOOTER) {
-            aGrayness = GetFlashingColor(mBoard->mMainCounter, 75).mRed;
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
-            aGrayness = GetFlashingColor(mBoard->mMainCounter, 75).mRed;
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
-            aGrayness = GetFlashingColor(mBoard->mMainCounter, 75).mRed;
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED) {
-            aGrayness = GetFlashingColor(mBoard->mMainCounter, 75).mRed;
+        }
+		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER && mBoard->mBoardData.mTutorialTimer == -1 && mPacketType == SeedType::SEED_PEASHOOTER)
+		{
+            aGrayness = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75).mRed;
+        } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
+            aGrayness = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75).mRed;
+        } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
+            aGrayness = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75).mRed;
+        } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED) {
+            aGrayness = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75).mRed;
         } else if (mApp->mEasyPlantingCheat) {
             aPercentDark = 0.0f;
         } else if ((!mBoard->CanTakeSunMoney(aCost) && aDrawCost) || aPercentDark > 1.0f || !mBoard->PlantingRequirementsMet(aUseSeedType)) {
@@ -557,7 +559,8 @@ void SeedPacket::Draw(Graphics *g) {
 
 // 0x488500
 bool SeedPacket::CanPickUp() {
-    if (mBoard->mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING || mPacketType == SeedType::SEED_NONE) {
+    if (mBoard->mBoardData.mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING ||
+        mPacketType == SeedType::SEED_NONE) {
         return false;
     }
 
@@ -594,7 +597,8 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
     (void)x;
     (void)y;
     (void)theClickCount;
-    if (mBoard->mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING || mPacketType == SeedType::SEED_NONE) {
+    if (mBoard->mBoardData.mPaused || mApp->mGameScene != GameScenes::SCENE_PLAYING ||
+        mPacketType == SeedType::SEED_NONE) {
         return;
     }
 
@@ -616,8 +620,8 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
     if (!mApp->mEasyPlantingCheat) {
         if (!mActive) {
             mApp->PlaySample(SOUND_BUZZER);
-            if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 1 &&
-                mBoard->mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
+            if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 1 &&
+                mBoard->mBoardData.mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
                 mBoard->DisplayAdvice(
                     _S("[ADVICE_SEED_REFRESH]"), MessageStyle::MESSAGE_STYLE_TUTORIAL_LEVEL1,
                     AdviceType::ADVICE_SEED_REFRESH
@@ -629,9 +633,9 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
         int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
         if (!mBoard->CanTakeSunMoney(aCost) && !mBoard->HasConveyorBeltSeedBank()) {
             mApp->PlaySample(SOUND_BUZZER);
-            mBoard->mOutOfMoneyCounter = 70;
-            if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 1 &&
-                mBoard->mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
+            mBoard->mBoardData.mOutOfMoneyCounter = 70;
+            if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 1 &&
+                mBoard->mBoardData.mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
                 mBoard->DisplayAdvice(
                     _S("[ADVICE_CANT_AFFORD_PLANT]"), MessageStyle::MESSAGE_STYLE_TUTORIAL_LEVEL1,
                     AdviceType::ADVICE_CANT_AFFORD_PLANT
@@ -712,21 +716,23 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
         mBoard->mCursorObject->mSeedBankIndex = mIndex;
         mApp->PlaySample(SOUND_SEEDLIFT);
 
-        if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER) {
+        if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER) {
             mBoard->SetTutorialState(TutorialState::TUTORIAL_LEVEL_1_PLANT_PEASHOOTER);
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER) {
+        } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER) {
             if (mPacketType == SeedType::SEED_SUNFLOWER) {
                 mBoard->SetTutorialState(TutorialState::TUTORIAL_LEVEL_2_PLANT_SUNFLOWER);
             } else {
                 mBoard->SetTutorialState(TutorialState::TUTORIAL_LEVEL_2_REFRESH_SUNFLOWER);
             }
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER) {
+        } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER) {
             if (mPacketType == SeedType::SEED_SUNFLOWER) {
                 mBoard->SetTutorialState(TutorialState::TUTORIAL_MORESUN_PLANT_SUNFLOWER);
             } else {
                 mBoard->SetTutorialState(TutorialState::TUTORIAL_MORESUN_REFRESH_SUNFLOWER);
             }
-        } else if (mBoard->mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED || mBoard->mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED) {
+        }
+		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED || mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED)
+		{
             mBoard->SetTutorialState(TutorialState::TUTORIAL_WHACK_A_ZOMBIE_COMPLETED);
         }
 
@@ -820,9 +826,9 @@ void SeedBank::Draw(Graphics *g) {
     }
 
     if (!mBoard->HasConveyorBeltSeedBank()) {
-        SexyString aMoneyLabel = StrFormat(_S("%d"), std::max(mBoard->mSunMoney, 0));
+        SexyString aMoneyLabel = StrFormat(_S("%d"), std::max(mBoard->mBoardData.mSunMoney, 0));
         Color aMoneyColor(0, 0, 0);
-        if (mBoard->mOutOfMoneyCounter > 0 && mBoard->mOutOfMoneyCounter % 20 < 10) {
+        if (mBoard->mBoardData.mOutOfMoneyCounter > 0 && mBoard->mBoardData.mOutOfMoneyCounter % 20 < 10) {
             aMoneyColor = Color(255, 0, 0);
         }
 

@@ -1778,7 +1778,6 @@ void VkInterface::ReleaseMouseCapture() { SDL_ShowCursor(SDL_ENABLE); }
 
 void VkInterface::Draw() {
     renderMutex.lock();
-    flushCommandBuffer();
 
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -1797,6 +1796,7 @@ void VkInterface::Draw() {
 
     // Only reset the fence if we are submitting work
     vkResetFences(device, 1, &inFlightFences[currentFrame]);
+    flushCommandBuffer();
 
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
     recordCommandBuffer(commandBuffers[currentFrame], imageIndex);

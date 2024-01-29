@@ -286,9 +286,9 @@ void CutScene::PreloadResources() {
     aTimer.Start();*/
     auto aTimer = std::chrono::high_resolution_clock::now();
 
-    for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++) {
+    for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++) {
-            ZombieType aZombieType = mBoard->mZombiesInWave[aWave][aZombieIndex];
+            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
             if (aZombieType == ZombieType::ZOMBIE_INVALID) {
                 break;
             }
@@ -303,8 +303,8 @@ void CutScene::PreloadResources() {
         }
     }
 
-    if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel <= 50) {
-        Plant::PreloadPlantResources(mApp->GetAwardSeedForLevel(mBoard->mLevel));
+    if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel <= 50) {
+        Plant::PreloadPlantResources(mApp->GetAwardSeedForLevel(mBoard->mBoardData.mLevel));
     }
 
     if (mCrazyDaveDialogStart != -1) {
@@ -412,8 +412,8 @@ void CutScene::PreloadResources() {
     PlaceStreetZombies();
 
     // mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
-    mBoard->mPreloadTime = std::chrono::high_resolution_clock::now() - aTimer;
-    TodTrace("preloading: %d ms", mBoard->mPreloadTime);
+    mBoard->mBoardData.mPreloadTime = std::chrono::high_resolution_clock::now() - aTimer;
+    TodTrace("preloading: %d ms", mBoard->mBoardData.mPreloadTime);
     TodHesitationTrace("CutScene::PreloadResources");
 }
 
@@ -428,11 +428,11 @@ void CutScene::PlaceStreetZombies() {
     // int aZombieValueTotal = 0;
     int aTotalZombieCount = 0;
     int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES] = {0};
-    TOD_ASSERT(mBoard->mNumWaves <= MAX_ZOMBIE_WAVES);
+    TOD_ASSERT(mBoard->mBoardData.mNumWaves <= MAX_ZOMBIE_WAVES);
 
-    for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++) {
+    for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++) {
-            ZombieType aZombieType = mBoard->mZombiesInWave[aWave][aZombieIndex];
+            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
             if (aZombieType == ZombieType::ZOMBIE_INVALID) {
                 break;
             }
@@ -464,7 +464,7 @@ void CutScene::PlaceStreetZombies() {
     // 谁笑到最后关卡，除雪人僵尸外，所有允许出怪的僵尸类型至少计入 1 只僵尸
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND) {
         for (int aZombieType = 0; aZombieType < (int)ZombieType::NUM_ZOMBIE_TYPES; aZombieType++) {
-            if (aZombieType != ZombieType::ZOMBIE_YETI && mBoard->mZombieAllowed[aZombieType]) {
+            if (aZombieType != ZombieType::ZOMBIE_YETI && mBoard->mBoardData.mZombieAllowed[aZombieType]) {
                 aZombieTypeCount[aZombieType] = std::max(aZombieTypeCount[aZombieType], 1);
             }
         }
@@ -580,24 +580,24 @@ void CutScene::StartLevelIntro() {
     mApp->mSeedChooserScreen->mMouseVisible = false;
     mApp->mSeedChooserScreen->Move(0, SEED_CHOOSER_OFFSET_Y);
     mApp->mSeedChooserScreen->mMenuButton->mBtnNoDraw = true;
-    mBoard->mShowShovel = false;
+    mBoard->mBoardData.mShowShovel = false;
     mBoard->mSeedBank->mCutSceneDarken = 255;
     mPlacedZombies = false;
     mPreloaded = false;
     mPlacedLawnItems = false;
     mApp->mWidgetManager->SetFocus(mBoard);
 
-    int aLevel = mBoard->mLevel;
+    int aLevel = mBoard->mBoardData.mLevel;
     if (mApp->IsFirstTimeAdventureMode() && (aLevel == 1 || aLevel == 2 || aLevel == 4)) {
         mSodTime = TimeRollSodEnd - TimeRollSodStart;
-        mBoard->mSodPosition = 0;
+        mBoard->mBoardData.mSodPosition = 0;
     } else {
         mSodTime = 0;
-        mBoard->mSodPosition = 1000;
+        mBoard->mBoardData.mSodPosition = 1000;
     }
 
     mGraveStoneTime = 0;
-    mBoard->mEnableGraveStones = false;
+    mBoard->mBoardData.mEnableGraveStones = false;
     if (mBoard->StageHasGraveStones()) {
         if (mApp->IsAdventureMode() && mApp->IsWhackAZombieLevel()) {
             mGraveStoneTime = 0;
@@ -620,8 +620,8 @@ void CutScene::StartLevelIntro() {
     }
 
     bool isRestart = false;
-    if (mBoard->mPrevBoardResult == BoardResult::BOARDRESULT_LOST ||
-        mBoard->mPrevBoardResult == BoardResult::BOARDRESULT_RESTART) {
+    if (mBoard->mBoardData.mPrevBoardResult == BoardResult::BOARDRESULT_LOST ||
+        mBoard->mBoardData.mPrevBoardResult == BoardResult::BOARDRESULT_RESTART) {
         isRestart = true;
     }
 
@@ -640,7 +640,7 @@ void CutScene::StartLevelIntro() {
             mCrazyDaveDialogStart = 2411;
             mBoard->mChallenge->mShowBowlingLine = true;
         }
-        mBoard->mShowShovel = true;
+        mBoard->mBoardData.mShowShovel = true;
     } else if (mApp->IsFirstTimeAdventureMode() && aLevel == 21) {
         mCrazyDaveDialogStart = 501;
     } else if (mApp->IsWhackAZombieLevel() && mApp->IsAdventureMode()) {
@@ -712,12 +712,12 @@ void CutScene::StartLevelIntro() {
         if (mApp->IsSurvivalMode()) {
             aHouseMessage = mApp->GetCurrentChallengeDef().mChallengeName;
         } else if (mApp->IsAdventureMode()) {
-            if (mBoard->mBackground == BackgroundType::BACKGROUND_1_DAY ||
-                mBoard->mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
+            if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_1_DAY ||
+                mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
                 aHouseMessage = TodStringTranslate(_S("[PLAYERS_HOUSE]"));
-            } else if (mBoard->mBackground == BackgroundType::BACKGROUND_3_POOL || mBoard->mBackground == BackgroundType::BACKGROUND_4_FOG) {
+            } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL || mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
                 aHouseMessage = TodStringTranslate(_S("[PLAYERS_BACKYARD]"));
-            } else if (mBoard->mBackground == BackgroundType::BACKGROUND_5_ROOF || mBoard->mBackground == BackgroundType::BACKGROUND_6_BOSS) {
+            } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF || mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_6_BOSS) {
                 aHouseMessage = TodStringTranslate(_S("[PLAYERS_ROOF]"));
             } else {
                 TOD_ASSERT();
@@ -773,7 +773,7 @@ void CutScene::CancelIntro() {
             AdvanceCrazyDaveDialog(true);
         }
 
-        if (mBoard->mLevel == 5) {
+        if (mBoard->mBoardData.mLevel == 5) {
             Plant *aPlant = nullptr;
             while (mBoard->IteratePlants(aPlant)) {
                 aPlant->Die();
@@ -799,19 +799,19 @@ void CutScene::CancelIntro() {
             mBoard->mSeedBank->Move(SEED_BANK_OFFSET_X_END, 0);
         }
 
-        mBoard->mEnableGraveStones = true;
+        mBoard->mBoardData.mEnableGraveStones = true;
         ShowShovel();
 
         if (mApp->IsFinalBossLevel()) {
             mApp->mMusic->StartGameMusic();
         }
 
-        if (mBoard->mFogBlownCountDown > 0) {
-            mBoard->mFogBlownCountDown = 0;
-            mBoard->mFogOffset = 0;
+        if (mBoard->mBoardData.mFogBlownCountDown > 0) {
+            mBoard->mBoardData.mFogBlownCountDown = 0;
+            mBoard->mBoardData.mFogOffset = 0;
         }
 
-        if (mBoard->mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER) {
+        if (mBoard->mBoardData.mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER) {
             mBoard->mMenuButton->mBtnNoDraw = false;
         }
         mApp->mSoundSystem->StopFoley(FoleyType::FOLEY_DIGGER);
@@ -831,11 +831,11 @@ void CutScene::AddGraveStoneParticles() {
 // 0x43B6F0
 void CutScene::AddFlowerPots() {
     int aPotColumns = 0;
-    if (mBoard->mLevel == 41) {
+    if (mBoard->mBoardData.mLevel == 41) {
         aPotColumns = 5;
-    } else if (mBoard->mLevel == 42) {
+    } else if (mBoard->mBoardData.mLevel == 42) {
         aPotColumns = 4;
-    } else if (mBoard->mLevel >= 43 && mBoard->mLevel <= 50) {
+    } else if (mBoard->mBoardData.mLevel >= 43 && mBoard->mBoardData.mLevel <= 50) {
         aPotColumns = 3;
     } else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_COLUMN) {
         aPotColumns = 8;
@@ -973,12 +973,12 @@ void CutScene::AnimateBoard() {
     if (mSodTime > 0) {
         int aTimeRollSodStart = TimeRollSodStart + mCrazyDaveTime;
         int aTimeRollSodEnd = TimeRollSodEnd + mCrazyDaveTime;
-        mBoard->mSodPosition =
+        mBoard->mBoardData.mSodPosition =
             TodAnimateCurve(aTimeRollSodStart, aTimeRollSodEnd, mCutsceneTime, 0, 1000, TodCurves::CURVE_LINEAR);
 
         if (mCutsceneTime == aTimeRollSodStart) {
             mApp->PlayFoley(FoleyType::FOLEY_DIGGER);
-            if (mBoard->mLevel == 1) {
+            if (mBoard->mBoardData.mLevel == 1) {
                 mApp->AddReanimation(
                     0, 0, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0), ReanimationType::REANIM_SODROLL
                 );
@@ -986,7 +986,7 @@ void CutScene::AnimateBoard() {
                     35, 348, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 1),
                     ParticleEffect::PARTICLE_SOD_ROLL
                 );
-            } else if (mBoard->mLevel == 2) {
+            } else if (mBoard->mBoardData.mLevel == 2) {
                 mApp->AddReanimation(
                     0, -102, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0),
                     ReanimationType::REANIM_SODROLL
@@ -1002,7 +1002,7 @@ void CutScene::AnimateBoard() {
                     35, 459, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 1),
                     ParticleEffect::PARTICLE_SOD_ROLL
                 );
-            } else if (mBoard->mLevel == 4) {
+            } else if (mBoard->mBoardData.mLevel == 4) {
                 mApp->AddReanimation(
                     -3, -198, Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0),
                     ReanimationType::REANIM_SODROLL
@@ -1033,7 +1033,7 @@ void CutScene::AnimateBoard() {
     if (mGraveStoneTime > 0) {
         int aTimeGraveStoneStart = mSodTime + TimeGraveStoneStart + mCrazyDaveTime;
         if (mCutsceneTime == aTimeGraveStoneStart) {
-            mBoard->mEnableGraveStones = true;
+            mBoard->mBoardData.mEnableGraveStones = true;
             AddGraveStoneParticles();
         }
     }
@@ -1065,13 +1065,13 @@ void CutScene::AnimateBoard() {
     // ====================================================================================================
     // ▲ 浓雾的更新
     // ====================================================================================================
-    if (mBoard->mFogBlownCountDown > 0) {
+    if (mBoard->mBoardData.mFogBlownCountDown > 0) {
         int aTimeFogRollIn = TimeFogRollIn + mSodTime + mGraveStoneTime + mCrazyDaveTime;
         if (mCutsceneTime > aTimeFogRollIn) {
-            if (mBoard->mFogBlownCountDown > 200) {
-                mBoard->mFogBlownCountDown = 200;
+            if (mBoard->mBoardData.mFogBlownCountDown > 200) {
+                mBoard->mBoardData.mFogBlownCountDown = 200;
             }
-            mBoard->mFogBlownCountDown--;
+            mBoard->mBoardData.mFogBlownCountDown--;
         }
     }
 
@@ -1136,16 +1136,16 @@ void CutScene::ShowShovel() {
         mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || mApp->IsIZombieLevel())
         return;
 
-    if (!mApp->IsFirstTimeAdventureMode() || mBoard->mLevel > 4) {
-        mBoard->mShowShovel = true;
+    if (!mApp->IsFirstTimeAdventureMode() || mBoard->mBoardData.mLevel > 4) {
+        mBoard->mBoardData.mShowShovel = true;
     }
 }
 
 // 0x43C1E0
 bool CutScene::IsInShovelTutorial() {
-    return mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_PICKUP ||
-           mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG ||
-           mBoard->mTutorialState == TutorialState::TUTORIAL_SHOVEL_KEEP_DIGGING;
+    return mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_SHOVEL_PICKUP ||
+           mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_SHOVEL_DIG ||
+           mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_SHOVEL_KEEP_DIGGING;
 }
 
 void CutScene::StartSeedChooser() {
@@ -1172,11 +1172,11 @@ void CutScene::Update() {
     if (mPreUpdatingBoard) return;
 
     // 更新疯狂戴夫
-    if (IsShowingCrazyDave() && (!mBoard->mPaused || mApp->mGameMode != GameMode::GAMEMODE_UPSELL)) {
+    if (IsShowingCrazyDave() && (!mBoard->mBoardData.mPaused || mApp->mGameMode != GameMode::GAMEMODE_UPSELL)) {
         mApp->UpdateCrazyDave();
     }
 
-    if (mBoard->mPaused) return;
+    if (mBoard->mBoardData.mPaused) return;
 
     // 僵尸进家过场的更新
     if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON) {
@@ -1185,7 +1185,7 @@ void CutScene::Update() {
         return;
     }
 
-    if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mDrawCount == 0) return;
+    if (mApp->mGameScene != GameScenes::SCENE_LEVEL_INTRO || mBoard->mBoardData.mDrawCount == 0) return;
 
     // 进行预加载
     if (!mPreloaded) {
@@ -1229,7 +1229,7 @@ void CutScene::Update() {
                      mBossTime + mReadySetPlantTime;
     if (mCutsceneTime >= aTimeStart) {
         mBoard->RemoveCutsceneZombies();
-        if (mBoard->mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER) {
+        if (mBoard->mBoardData.mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER) {
             mBoard->mMenuButton->mBtnNoDraw = false;
         }
 
@@ -1245,7 +1245,7 @@ void CutScene::Update() {
 void CutScene::StartZombiesWon() {
     mCutsceneTime = 0;
     mBoard->mMenuButton->mBtnNoDraw = true;
-    mBoard->mShowShovel = false;
+    mBoard->mBoardData.mShowShovel = false;
     mApp->mMusic->StopAllMusic();
     mBoard->StopAllZombieSounds();
     mApp->PlaySample(SOUND_LOSEMUSIC);
@@ -1404,7 +1404,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     }
     // “当然不是我，是你！”
     if (aMessageIndex == 406) {
-        mBoard->mEnableGraveStones = true;
+        mBoard->mBoardData.mEnableGraveStones = true;
         AddGraveStoneParticles();
     }
 }
@@ -1484,8 +1484,8 @@ int CutScene::ParseTalkTimeFromMessage() {
 // 0x43DA50
 void CutScene::ClearUpsellBoard() {
     for (int i = 0; i < MAX_GRID_SIZE_Y; i++) {
-        mBoard->mIceTimer[i] = 0;
-        mBoard->mIceMinX[i] = BOARD_WIDTH;
+        mBoard->mBoardData.mIceTimer[i] = 0;
+        mBoard->mBoardData.mIceMinX[i] = BOARD_WIDTH;
     }
 
     mBoard->mZombies.DataArrayFreeAll();
@@ -1503,7 +1503,7 @@ void CutScene::ClearUpsellBoard() {
     while (mBoard->IterateReanimations(aReanim)) {
         aReanim->ReanimationDie();
     }
-    mBoard->mPoolSparklyParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
+    mBoard->mBoardData.mPoolSparklyParticleID = ParticleSystemID::PARTICLESYSTEMID_NULL;
 
     if (mUpsellChallengeScreen) {
         delete mUpsellChallengeScreen;
@@ -1637,7 +1637,7 @@ void CutScene::LoadUpsellBoardFog() {
     ClearUpsellBoard();
     mApp->mMuteSoundsForCutscene = true;
 
-    mBoard->mBackground = BackgroundType::BACKGROUND_4_FOG;
+    mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_4_FOG;
     mBoard->LoadBackgroundImages();
 
     mBoard->NewPlant(0, 1, SeedType::SEED_SUNSHROOM, SeedType::SEED_NONE);
@@ -1697,20 +1697,20 @@ void CutScene::LoadUpsellBoardRoof() {
     ClearUpsellBoard();
     mApp->mMuteSoundsForCutscene = true;
 
-    mBoard->mBackground = BackgroundType::BACKGROUND_5_ROOF;
+    mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_5_ROOF;
     mBoard->LoadBackgroundImages();
-    mBoard->mPlantRow[0] = PlantRowType::PLANTROW_NORMAL;
-    mBoard->mPlantRow[1] = PlantRowType::PLANTROW_NORMAL;
-    mBoard->mPlantRow[2] = PlantRowType::PLANTROW_NORMAL;
-    mBoard->mPlantRow[3] = PlantRowType::PLANTROW_NORMAL;
-    mBoard->mPlantRow[4] = PlantRowType::PLANTROW_NORMAL;
-    mBoard->mPlantRow[5] = PlantRowType::PLANTROW_DIRT;
+    mBoard->mBoardData.mPlantRow[0] = PlantRowType::PLANTROW_NORMAL;
+    mBoard->mBoardData.mPlantRow[1] = PlantRowType::PLANTROW_NORMAL;
+    mBoard->mBoardData.mPlantRow[2] = PlantRowType::PLANTROW_NORMAL;
+    mBoard->mBoardData.mPlantRow[3] = PlantRowType::PLANTROW_NORMAL;
+    mBoard->mBoardData.mPlantRow[4] = PlantRowType::PLANTROW_NORMAL;
+    mBoard->mBoardData.mPlantRow[5] = PlantRowType::PLANTROW_DIRT;
     for (int x = 0; x < MAX_GRID_SIZE_X; x++) {
         for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
-            if (mBoard->mPlantRow[y] == PlantRowType::PLANTROW_DIRT) {
-                mBoard->mGridSquareType[x][y] = GridSquareType::GRIDSQUARE_DIRT;
+            if (mBoard->mBoardData.mPlantRow[y] == PlantRowType::PLANTROW_DIRT) {
+                mBoard->mBoardData.mGridSquareType[x][y] = GridSquareType::GRIDSQUARE_DIRT;
             } else {
-                mBoard->mGridSquareType[x][y] = GridSquareType::GRIDSQUARE_GRASS;
+                mBoard->mBoardData.mGridSquareType[x][y] = GridSquareType::GRIDSQUARE_GRASS;
             }
         }
     }

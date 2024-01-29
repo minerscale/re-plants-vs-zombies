@@ -211,7 +211,7 @@ long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo)
 
 void TodAssertInitForApp() {
     MkDir(GetAppDataFolder() + "userdata");
-    std::string aRelativeUserPath = GetAppDataFolder() + "userdata\\";
+    std::string aRelativeUserPath = GetAppDataFolder() + "userdata/";
     strcpy(gDebugDataFolder, GetFullPath(aRelativeUserPath).c_str());
     strcpy(gLogFileName, gDebugDataFolder);
     strcpy(gLogFileName + strlen(gLogFileName), "log.txt");

@@ -145,7 +145,7 @@ void MessageWidget::LayoutReanimText() {
 
 // 0x4594B0
 void MessageWidget::Update() {
-    if (!mApp->mBoard || mApp->mBoard->mPaused) return;
+    if (!mApp->mBoard || mApp->mBoard->mBoardData.mPaused) return;
 
     // 更新字幕的剩余时间倒计时和下一轮字幕的切换
     if (mDuration < 10000 && mDuration > 0) {
@@ -210,7 +210,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
         aFinalColor.mAlpha = anAlpha;
 
         aTransform.mTransX += aTextReanim->mOverlayMatrix.m02;
-        aTransform.mTransY += aTextReanim->mOverlayMatrix.m12 + thePosY - BOARD_HEIGHT / 2;
+        aTransform.mTransY += aTextReanim->mOverlayMatrix.m12 + thePosY - BOARD_HEIGHT / 2.0;
         if (mReanimType == ReanimationType::REANIM_TEXT_FADE_ON && mDisplayTime - mDuration < mSlideOffTime) {
             float aStretch = 1.0f - aTextReanim->mAnimTime;
             aTransform.mTransX += aStretch * aTextReanim->mOverlayMatrix.m02;
@@ -352,7 +352,7 @@ void MessageWidget::Draw(Graphics *g) {
     } else {
         if (aMinAlpha != 255) {
             aColor.mAlpha = TodAnimateCurve(
-                75, 0, mApp->mBoard->mMainCounter % 75, aMinAlpha, 255, TodCurves::CURVE_BOUNCE_SLOW_MIDDLE
+                75, 0, mApp->mBoard->mBoardData.mMainCounter % 75, aMinAlpha, 255, TodCurves::CURVE_BOUNCE_SLOW_MIDDLE
             );
             aOutlineColor.mAlpha = aColor.mAlpha;
         }

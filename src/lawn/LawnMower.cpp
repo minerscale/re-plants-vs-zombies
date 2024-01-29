@@ -26,7 +26,7 @@ void LawnMower::LawnMowerInitialize(int theRow) {
     if (mBoard->StageHasRoof()) {
         mMowerType = LawnMowerType::LAWNMOWER_ROOF;
         aReanimType = ReanimationType::REANIM_ROOF_CLEANER;
-    } else if (mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL && mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_POOL_CLEANER]) {
+    } else if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL && mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_POOL_CLEANER]) {
         mMowerType = LawnMowerType::LAWNMOWER_POOL;
         aReanimType = ReanimationType::REANIM_POOL_CLEANER;
     } else {
@@ -49,7 +49,7 @@ void LawnMower::LawnMowerInitialize(int theRow) {
         aMowerReanim->SetTruncateDisappearingFrames(nullptr, false);
     }
 
-    if (mBoard->mSuperMowerMode && mMowerType == LawnMowerType::LAWNMOWER_LAWN) {
+    if (mBoard->mBoardData.mSuperMowerMode && mMowerType == LawnMowerType::LAWNMOWER_LAWN) {
         EnableSuperMower(true);
     }
 }
@@ -194,8 +194,8 @@ void LawnMower::Update() {
     if (mMowerType == LawnMowerType::LAWNMOWER_POOL) {
         UpdatePool();
     }
-    if (mMowerType == LawnMowerType::LAWNMOWER_LAWN && mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL &&
-        mPosX > 50.0f) {
+    if (mMowerType == LawnMowerType::LAWNMOWER_LAWN &&
+        mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL && mPosX > 50.0f) {
         Reanimation *aSplashReanim =
             mApp->AddReanimation(mPosX, mPosY + 25.0f, mRenderOrder + 1, ReanimationType::REANIM_SPLASH);
         aSplashReanim->OverrideScale(1.2f, 0.8f);
@@ -275,7 +275,7 @@ void LawnMower::Draw(Graphics *g) {
         mApp->ReanimationGet(mReanimID)->Draw(&aMowerGraphics);
     } else {
         LawnMowerType aMowerType = mMowerType;
-        if (mMowerType == LawnMowerType::LAWNMOWER_LAWN && mBoard->mSuperMowerMode) {
+        if (mMowerType == LawnMowerType::LAWNMOWER_LAWN && mBoard->mBoardData.mSuperMowerMode) {
             aMowerType = LawnMowerType::LAWNMOWER_SUPER_MOWER;
         }
         mApp->mReanimatorCache->DrawCachedMower(&aMowerGraphics, 0.0f, 19.0f, aMowerType);
@@ -286,11 +286,11 @@ void LawnMower::Draw(Graphics *g) {
 void LawnMower::Die() {
     mDead = true;
     mApp->RemoveReanimation(mReanimID);
-    if (mBoard->mBonusLawnMowersRemaining > 0 && !mBoard->HasLevelAwardDropped()) {
+    if (mBoard->mBoardData.mBonusLawnMowersRemaining > 0 && !mBoard->HasLevelAwardDropped()) {
         LawnMower *aLawnMower = mBoard->mLawnMowers.DataArrayAlloc();
         aLawnMower->LawnMowerInitialize(mRow);
         aLawnMower->mMowerState = LawnMowerState::MOWER_ROLLING_IN;
-        mBoard->mBonusLawnMowersRemaining--;
+        mBoard->mBoardData.mBonusLawnMowersRemaining--;
     }
 }
 
@@ -309,8 +309,8 @@ void LawnMower::StartMower() {
         mApp->PlayFoley(FoleyType::FOLEY_LAWNMOWER);
     }
 
-    mBoard->mWaveRowGotLawnMowered[mRow] = mBoard->mCurrentWave;
-    mBoard->mTriggeredLawnMowers++;
+    mBoard->mBoardData.mWaveRowGotLawnMowered[mRow] = mBoard->mBoardData.mCurrentWave;
+    mBoard->mBoardData.mTriggeredLawnMowers++;
     mMowerState = LawnMowerState::MOWER_TRIGGERED;
 }
 

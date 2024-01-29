@@ -38,7 +38,7 @@ else()
         "-g"
         "-fno-omit-frame-pointer"
         "-fstack-protector-all"
-        "-fno-inline"
+        #"-fno-inline"
     )
 
     set(universal_link_flags
@@ -48,12 +48,12 @@ else()
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O1"
+            "-O3"
         )
     else()
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O1"
+            "-O0"
         )
     endif()
 endif()

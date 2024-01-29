@@ -341,7 +341,7 @@ void Zombie::ZombieInitialize(
 
         int aPoleHit = Rand(100);
         int aPoleVariant;
-        if (!IsOnBoard() || mBoard->mLevel == 48) {
+        if (!IsOnBoard() || mBoard->mBoardData.mLevel == 48) {
             aPoleVariant = 0;
         } else {
             aPoleVariant = aPoleHit < 10 ? 2 : aPoleHit < 35 ? 1 : 0;
@@ -867,11 +867,11 @@ void Zombie::LoadPlainZombieReanim() {
 
     SetupReanimLayers(aBodyReanim, mZombieType);
     if (mBoard) {
-        EnableMustache(mBoard->mMustacheMode);
-        EnableFuture(mBoard->mFutureMode);
+        EnableMustache(mBoard->mBoardData.mMustacheMode);
+        EnableFuture(mBoard->mBoardData.mFutureMode);
     }
 
-    if ((mBoard && mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) ||
+    if ((mBoard && mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) ||
         mZombieType == ZombieType::ZOMBIE_DUCKY_TUBE) {
         ReanimShowPrefix("zombie_duckytube", RENDER_GROUP_NORMAL);
         ReanimIgnoreClipRect("Zombie_duckytube", true);
@@ -940,7 +940,8 @@ void Zombie::PickBungeeZombieTarget(int theColumn) {
         {
             for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
                 int aWeight = 1;
-                if (mBoard->GetGraveStoneAt(x, y) || mBoard->mGridSquareType[x][y] == GridSquareType::GRIDSQUARE_DIRT) {
+                if (mBoard->GetGraveStoneAt(x, y) ||
+                    mBoard->mBoardData.mGridSquareType[x][y] == GridSquareType::GRIDSQUARE_DIRT) {
                     continue;
                 }
 
@@ -1387,7 +1388,7 @@ void Zombie::LandFlyer(unsigned int theDamageFlags) {
         PlayZombieReanim("anim_pop", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 24.0f);
     }
 
-    if (mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) {
+    if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) {
         DieWithLoot();
     } else {
         mZombieHeight = ZombieHeight::HEIGHT_FALLING;
@@ -2033,7 +2034,7 @@ void Zombie::UpdateZombieJalapenoHead() {
         while (mBoard->IteratePlants(aPlant)) {
             // Rect aPlantRect = aPlant->GetPlantRect();
             if (aPlant->mRow == mRow && !aPlant->NotOnGround()) {
-                mBoard->mPlantsEaten++;
+                mBoard->mBoardData.mPlantsEaten++;
                 aPlant->Die();
             }
         }
@@ -2252,8 +2253,8 @@ void Zombie::UpdateZombieBobsled() {
         }
     }
 
-    mBoard->mIceTimer[mRow] = std::max(500, mBoard->mIceTimer[mRow]);
-    if (mPosX + 10.0f < mBoard->mIceMinX[mRow] && GetBobsledPosition() == 0) {
+    mBoard->mBoardData.mIceTimer[mRow] = std::max(500, mBoard->mBoardData.mIceTimer[mRow]);
+    if (mPosX + 10.0f < mBoard->mBoardData.mIceMinX[mRow] && GetBobsledPosition() == 0) {
         TakeDamage(6, 8U);
     }
 }
@@ -2966,7 +2967,7 @@ void Zombie::DropHead(unsigned int theDamageFlags) {
     }
 
     Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
-    if (mBoard->mMustacheMode && aBodyReanim->TrackExists("Zombie_mustache")) {
+    if (mBoard->mBoardData.mMustacheMode && aBodyReanim->TrackExists("Zombie_mustache")) {
         ReanimShowPrefix("Zombie_mustache", RENDER_GROUP_HIDDEN);
 
         TodParticleSystem *aMustacheParticle =
@@ -2979,7 +2980,7 @@ void Zombie::DropHead(unsigned int theDamageFlags) {
             aMustacheParticle->OverrideImage(nullptr, aMustacheImage);
         }
     }
-    if (mBoard->mFutureMode) {
+    if (mBoard->mBoardData.mFutureMode) {
         Image *aHeadImage = aBodyReanim->GetImageOverride("anim_head1");
         int aFrame = -1;
         if (aHeadImage) {
@@ -3004,7 +3005,7 @@ void Zombie::DropHead(unsigned int theDamageFlags) {
             }
         }
     }
-    if (mBoard->mPinataMode && mZombiePhase != ZombiePhase::PHASE_ZOMBIE_MOWERED) {
+    if (mBoard->mBoardData.mPinataMode && mZombiePhase != ZombiePhase::PHASE_ZOMBIE_MOWERED) {
         TodParticleSystem *aPinataParticle =
             mApp->AddTodParticle(aPosX, aPosY, aRenderOrder, ParticleEffect::PARTICLE_ZOMBIE_PINATA);
         (void)aPinataParticle;            // Unused
@@ -3325,13 +3326,13 @@ void Zombie::UpdateZamboni() {
     } else {
         anIceX = std::max(anIceX, 25);
     }
-    if (anIceX < mBoard->mIceMinX[mRow]) {
-        mBoard->mIceMinX[mRow] = anIceX;
+    if (anIceX < mBoard->mBoardData.mIceMinX[mRow]) {
+        mBoard->mBoardData.mIceMinX[mRow] = anIceX;
     }
     if (anIceX < 800) {
-        mBoard->mIceTimer[mRow] = 3000;
+        mBoard->mBoardData.mIceTimer[mRow] = 3000;
         if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BOBSLED_BONANZA) {
-            mBoard->mIceTimer[mRow] = INT_MAX;
+            mBoard->mBoardData.mIceTimer[mRow] = INT_MAX;
         }
     }
 }
@@ -3821,7 +3822,7 @@ void Zombie::UpdatePlaying() {
 
 // 0x52B560
 bool Zombie::HasYuckyFaceImage() {
-    if (mBoard->mFutureMode) return false;
+    if (mBoard->mBoardData.mFutureMode) return false;
 
     return mZombieType == ZombieType::ZOMBIE_NORMAL || mZombieType == ZombieType::ZOMBIE_TRAFFIC_CONE ||
            mZombieType == ZombieType::ZOMBIE_PAIL || mZombieType == ZombieType::ZOMBIE_FLAG ||
@@ -3886,19 +3887,19 @@ void Zombie::UpdateYuckyFace() {
 
         bool aCanGoUp = true;
         bool aCanGoDown = true;
-        bool aIsPool = mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL;
+        bool aIsPool = mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL;
         if (!mBoard->RowCanHaveZombies(mRow - 1)) {
             aCanGoUp = false;
-        } else if (mBoard->mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
+        } else if (mBoard->mBoardData.mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
             aCanGoUp = false;
-        } else if (mBoard->mPlantRow[mRow - 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
+        } else if (mBoard->mBoardData.mPlantRow[mRow - 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoUp = false;
         }
         if (!mBoard->RowCanHaveZombies(mRow + 1)) {
             aCanGoDown = false;
-        } else if (mBoard->mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
+        } else if (mBoard->mBoardData.mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
             aCanGoDown = false;
-        } else if (mBoard->mPlantRow[mRow + 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
+        } else if (mBoard->mBoardData.mPlantRow[mRow + 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoDown = false;
         }
 
@@ -4647,9 +4648,10 @@ void Zombie::DrawReanim(Graphics *g, const ZombieDrawPosition &theDrawPos, int t
         aExtraAdditiveColor = Color::Black;
         aEnableExtraAdditiveDraw = false;
     } else if (mZombieType == ZombieType::ZOMBIE_BOSS && mZombiePhase != ZombiePhase::PHASE_ZOMBIE_DYING && mBodyHealth < mBodyMaxHealth / BOSS_FLASH_HEALTH_FRACTION) {
-        int aGrayness = TodAnimateCurve(0, 39, mBoard->mMainCounter % 40, 155, 255, TodCurves::CURVE_BOUNCE);
+        int aGrayness = TodAnimateCurve(0, 39, mBoard->mBoardData.mMainCounter % 40, 155, 255, TodCurves::CURVE_BOUNCE);
         if (mChilledCounter > 0 || mIceTrapCounter > 0) {
-            int aColdColor = TodAnimateCurve(0, 39, mBoard->mMainCounter % 40, 65, 75, TodCurves::CURVE_BOUNCE);
+            int aColdColor =
+                TodAnimateCurve(0, 39, mBoard->mBoardData.mMainCounter % 40, 65, 75, TodCurves::CURVE_BOUNCE);
             aColorOverride = Color(aColdColor, aColdColor, aGrayness, aFadeAlpha);
         } else {
             aColorOverride = Color(aGrayness, aGrayness, aGrayness, aFadeAlpha);
@@ -5290,7 +5292,7 @@ void Zombie::SquishAllInSquare(int theX, int theY, ZombieAttackType theAttackTyp
             }
 
             if (aPlant->mSeedType != SeedType::SEED_SPIKEROCK) {
-                mBoard->mPlantsEaten++;
+                mBoard->mBoardData.mPlantsEaten++;
                 aPlant->Squish();
             }
         }
@@ -5519,7 +5521,7 @@ void Zombie::StartWalkAnim(int theBlendTime) {
     {
         PlayZombieReanim("anim_swim", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
     }
-    else if ((mZombieType == ZombieType::ZOMBIE_NORMAL || mZombieType == ZombieType::ZOMBIE_TRAFFIC_CONE || mZombieType == ZombieType::ZOMBIE_PAIL) && mBoard->mDanceMode)
+    else if ((mZombieType == ZombieType::ZOMBIE_NORMAL || mZombieType == ZombieType::ZOMBIE_TRAFFIC_CONE || mZombieType == ZombieType::ZOMBIE_PAIL) && mBoard->mBoardData.mDanceMode)
     {
         PlayZombieReanim("anim_dance", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
     } else {
@@ -5655,8 +5657,8 @@ void Zombie::CheckForPool() {
                          mBoard->IsPoolSquare(mBoard->PixelToGridX(mX + 45, mY), mRow) && mX < 680;
 
     if (!mInPool && aIsPoolSquare) {
-        if (mBoard->mIceTrapCounter > 0) {
-            mIceTrapCounter = mBoard->mIceTrapCounter;
+        if (mBoard->mBoardData.mIceTrapCounter > 0) {
+            mIceTrapCounter = mBoard->mBoardData.mIceTrapCounter;
             ApplyChill(true);
         } else {
             mZombieHeight = ZombieHeight::HEIGHT_IN_TO_POOL;
@@ -5673,7 +5675,7 @@ void Zombie::CheckForPool() {
 // 0x52F9C0
 //  GOTY @Patoke: 0x540350
 bool Zombie::IsOnHighGround() {
-    return IsOnBoard() && mBoard->mGridSquareType[mBoard->PixelToGridXKeepOnBoard(mX + 75, mY)][mRow] ==
+    return IsOnBoard() && mBoard->mBoardData.mGridSquareType[mBoard->PixelToGridXKeepOnBoard(mX + 75, mY)][mRow] ==
                               GridSquareType::GRIDSQUARE_HIGH_GROUND;
 }
 
@@ -5795,11 +5797,11 @@ void Zombie::EatPlant(Plant *thePlant) {
     if (thePlant->mPlantHealth <= 0) {
         mApp->PlaySample(SOUND_GULP);
 
-        mBoard->mPlantsEaten++;
+        mBoard->mBoardData.mPlantsEaten++;
         thePlant->Die();
         mBoard->mChallenge->ZombieAtePlant(thePlant);
 
-        if (mBoard->mLevel >= 2 && mBoard->mLevel <= 4 && mApp->IsFirstTimeAdventureMode()) {
+        if (mBoard->mBoardData.mLevel >= 2 && mBoard->mBoardData.mLevel <= 4 && mApp->IsFirstTimeAdventureMode()) {
             if (thePlant->mPlantCol > 4 && mBoard->mPlants.mSize < 15 &&
                 thePlant->mSeedType == SeedType::SEED_PEASHOOTER) {
                 mBoard->DisplayAdvice(
@@ -5822,7 +5824,7 @@ void Zombie::EatZombie(Zombie *theZombie) {
 
 // 0x52FE50
 bool Zombie::TrySpawnLevelAward() {
-    if (!IsOnBoard() || mBoard->HasLevelAwardDropped() || mBoard->mLevelComplete || mDroppedLoot) {
+    if (!IsOnBoard() || mBoard->HasLevelAwardDropped() || mBoard->mBoardData.mLevelComplete || mDroppedLoot) {
         return false;
     }
 
@@ -5834,15 +5836,15 @@ bool Zombie::TrySpawnLevelAward() {
         if (!mBoard->mChallenge->ScaryPotterIsCompleted()) {
             return false;
         }
-    } else if (mApp->IsContinuousChallenge() || mBoard->mCurrentWave < mBoard->mNumWaves || mBoard->AreEnemyZombiesOnScreen()) {
+    } else if (mApp->IsContinuousChallenge() || mBoard->mBoardData.mCurrentWave < mBoard->mBoardData.mNumWaves || mBoard->AreEnemyZombiesOnScreen()) {
         return false;
     }
 
-    if (mApp->IsWhackAZombieLevel() && mBoard->mZombieCountDown > 0) {
+    if (mApp->IsWhackAZombieLevel() && mBoard->mBoardData.mZombieCountDown > 0) {
         return false;
     }
 
-    mBoard->mLevelAwardSpawned = true;
+    mBoard->mBoardData.mLevelAwardSpawned = true;
     mApp->mBoardResult = BoardResult::BOARDRESULT_WON;
 
     Rect aZombieRect = GetZombieRect();
@@ -5854,27 +5856,27 @@ bool Zombie::TrySpawnLevelAward() {
     }
 
     CoinType aCoinType;
+    int aLevel = mBoard->mBoardData.mLevel;
     if (mApp->IsScaryPotterLevel() && !mBoard->IsFinalScaryPotterStage()) {
         aCoinType = CoinType::COIN_NONE;
         mBoard->mChallenge->PuzzlePhaseComplete(mBoard->PixelToGridXKeepOnBoard(mPosX + 75, mPosY), mRow);
-    } else if (mApp->IsAdventureMode() && mBoard->mLevel <= 50) {
-        if (mBoard->mLevel == 9 || mBoard->mLevel == 19 || mBoard->mLevel == 29 || mBoard->mLevel == 39 ||
-            mBoard->mLevel == 49) {
+    } else if (mApp->IsAdventureMode() && aLevel <= 50) {
+        if (aLevel == 9 || aLevel == 19 || aLevel == 29 || aLevel == 39 || aLevel == 49) {
             aCoinType = CoinType::COIN_NOTE;
-        } else if (mBoard->mLevel == 50) {
+        } else if (aLevel == 50) {
             aCoinType =
                 mApp->HasFinishedAdventure() ? CoinType::COIN_AWARD_MONEY_BAG : CoinType::COIN_AWARD_SILVER_SUNFLOWER;
         } else if (mApp->HasFinishedAdventure()) {
             aCoinType = CoinType::COIN_AWARD_MONEY_BAG;
-        } else if (mBoard->mLevel == 4) {
+        } else if (aLevel == 4) {
             aCoinType = CoinType::COIN_SHOVEL;
-        } else if (mBoard->mLevel == 14) {
+        } else if (aLevel == 14) {
             aCoinType = CoinType::COIN_ALMANAC;
-        } else if (mBoard->mLevel == 24) {
+        } else if (aLevel == 24) {
             aCoinType = CoinType::COIN_CARKEYS;
-        } else if (mBoard->mLevel == 34) {
+        } else if (aLevel == 34) {
             aCoinType = CoinType::COIN_TACO;
-        } else if (mBoard->mLevel == 44) {
+        } else if (aLevel == 44) {
             aCoinType = CoinType::COIN_WATERING_CAN;
         } else {
             aCoinType = CoinType::COIN_FINAL_SEED_PACKET;
@@ -5922,7 +5924,7 @@ void Zombie::DropLoot() {
 
     AlmanacPlayerDefeatedZombie(mZombieType);
     if (mZombieType == ZombieType::ZOMBIE_YETI) {
-        mBoard->mKilledYeti = true;
+        mBoard->mBoardData.mKilledYeti = true;
     }
 
     TrySpawnLevelAward();
@@ -6021,7 +6023,7 @@ void Zombie::BungeeDie() {
     {
         Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
         if (aPlant) {
-            mBoard->mPlantsEaten++;
+            mBoard->mBoardData.mPlantsEaten++;
             aPlant->Die();
         }
     }
@@ -6964,7 +6966,7 @@ void Zombie::MowDown() {
         aPuffReanim->SetFramesForLayer("anim_puff");
         mApp->AddTodParticle(mPosX + 110.0f, mPosY + 0.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_MOWER_CLOUD);
 
-        if (mBoard->mPlantRow[mRow] != PlantRowType::PLANTROW_POOL) {
+        if (mBoard->mBoardData.mPlantRow[mRow] != PlantRowType::PLANTROW_POOL) {
             DropHead(0U);
             DropArm(0U);
             DropHelm(0U);
@@ -7292,7 +7294,7 @@ void Zombie::PlayDeathAnim(unsigned int theDamageFlags) {
 
     const char *aDeathTrackName = "anim_death";
     int aDeathAnimHit = Rand(100);
-    bool aCanDoSuperLongDeath = mApp->HasFinishedAdventure() || mBoard->mLevel > 5;
+    bool aCanDoSuperLongDeath = mApp->HasFinishedAdventure() || mBoard->mBoardData.mLevel > 5;
     if (mInPool && aBodyReanim->TrackExists("anim_waterdeath")) {
         aDeathTrackName = "anim_waterdeath";
         ReanimIgnoreClipRect("Zombie_duckytube", false);
@@ -7311,7 +7313,7 @@ void Zombie::PlayDeathAnim(unsigned int theDamageFlags) {
 void Zombie::DoDaisies() {
     if (IsWalkingBackwards()) return;
 
-    if (mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) return;
+    if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) return;
 
     if (mZombieType == ZombieType::ZOMBIE_BOBSLED || mZombieType == ZombieType::ZOMBIE_ZAMBONI ||
         mZombieType == ZombieType::ZOMBIE_CATAPULT)
@@ -7424,7 +7426,7 @@ void Zombie::UpdateDeath() {
                 mApp->PlayFoley(FoleyType::FOLEY_THUMP);
             }
 
-            if (mBoard->mDaisyMode) {
+            if (mBoard->mBoardData.mDaisyMode) {
                 DoDaisies();
             }
         }
@@ -7544,7 +7546,7 @@ bool Zombie::SetupDrawZombieWon(Graphics *g) {
 
     if (!mBoard->mCutScene->ShowZombieWalking()) return false;
 
-    switch (mBoard->mBackground) {
+    switch (mBoard->mBoardData.mBackground) {
     case BackgroundType::BACKGROUND_1_DAY:
     case BackgroundType::BACKGROUND_2_NIGHT: g->ClipRect(-123 - mX, -mY, BOARD_WIDTH, BOARD_HEIGHT); break;
     case BackgroundType::BACKGROUND_3_POOL:
@@ -7742,8 +7744,8 @@ bool Zombie::IsDeadOrDying() {
 
 // 0x534730
 void Zombie::UpdateZombieChimney() {
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_5_ROOF ||
-        mBoard->mBackground == BackgroundType::BACKGROUND_6_BOSS) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF ||
+        mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_6_BOSS) {
         mAltitude = TodAnimateCurve(4000, 5000, mBoard->mCutScene->mCutsceneTime, 200, 0, TodCurves::CURVE_EASE_IN);
     }
 }
@@ -7759,10 +7761,10 @@ void Zombie::WalkIntoHouse() {
         StartWalkAnim(0);
     }
 
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_1_DAY ||
-        mBoard->mBackground == BackgroundType::BACKGROUND_2_NIGHT ||
-        mBoard->mBackground == BackgroundType::BACKGROUND_3_POOL ||
-        mBoard->mBackground == BackgroundType::BACKGROUND_4_FOG) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_1_DAY ||
+        mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT ||
+        mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL ||
+        mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
         mPosY = 290.0f;
         mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_ZOMBIE, 2, 0);
 
@@ -7781,7 +7783,7 @@ void Zombie::WalkIntoHouse() {
                 mPosX -= 80.0f;
             }
         }
-    } else if (mBoard->mBackground == BackgroundType::BACKGROUND_5_ROOF || mBoard->mBackground == BackgroundType::BACKGROUND_6_BOSS) {
+    } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF || mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_6_BOSS) {
         mPosX = -180.0f;
         mPosY = 250.0f;
         mZombieHeight = ZombieHeight::HEIGHT_IN_TO_CHIMNEY;

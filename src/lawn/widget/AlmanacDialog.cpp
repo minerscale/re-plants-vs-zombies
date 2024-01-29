@@ -79,7 +79,8 @@ AlmanacDialog::AlmanacDialog(LawnApp *theApp)
     mZombieButton->mParentWidget = this;
 
     SetPage(ALMANAC_PAGE_INDEX);
-    if (!mApp->mBoard || !mApp->mBoard->mPaused) mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_CHOOSE_YOUR_SEEDS);
+    if (!mApp->mBoard || !mApp->mBoard->mBoardData.mPaused)
+        mApp->mMusic->MakeSureMusicIsPlaying(MUSIC_TUNE_CHOOSE_YOUR_SEEDS);
 }
 
 // 0x401880 & 0x4018A0

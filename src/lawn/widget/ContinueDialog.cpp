@@ -97,7 +97,7 @@ void ContinueDialog::RestartLoopingSounds() {
 // 0x4336C0
 void ContinueDialog::ButtonDepress(int theId) {
     if (theId == ContinueDialog::ContinueDialog_Continue) {
-        if (mApp->mBoard->mNextSurvivalStageCounter != 1) {
+        if (mApp->mBoard->mBoardData.mNextSurvivalStageCounter != 1) {
             std::string aFileName = GetSavedGameName(mApp->mGameMode, mApp->mPlayerInfo->mId);
             mApp->EraseFile(aFileName);
         }

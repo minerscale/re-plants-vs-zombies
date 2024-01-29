@@ -9,10 +9,8 @@
 #include "todlib/FilterEffect.h"
 #include <tuple>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/matrix_transform_2d.hpp>
-
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -82,7 +80,6 @@ void VkImage::UpdateDescriptorSet() {
     vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 }
 
-int descriptorPoolSize = 0;
 void VkImage::AllocateDescriptorSets() {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -91,7 +88,6 @@ void VkImage::AllocateDescriptorSets() {
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
     vkAllocateDescriptorSets(device, &allocInfo, &descriptor);
-    ++descriptorPoolSize;
 }
 
 void VkImage::UpdateFramebuffer() {
@@ -119,7 +115,7 @@ struct deleteInfo {
     std::optional<VkBuffer> buffer;
 };
 
-int imageBufferIdx = 0;
+std::atomic<int> imageBufferIdx = 0;
 std::array<std::vector<deleteInfo>, NUM_IMAGE_SWAPS> deleteList;
 
 void deferredDelete(size_t idx) {
@@ -216,10 +212,13 @@ VkImage::~VkImage() {
     // renderMutex.lock();
     // flushCommandBuffer();
     // vkDeviceWaitIdle(device);
+    renderMutex.lock();
 
     deleteList[imageBufferIdx].emplace_back(
         deleteInfo{image, view, framebuffer, memory, descriptor, computeDescriptorSet, {}}
     );
+
+    renderMutex.unlock();
 
     /*
      */
@@ -311,6 +310,7 @@ void flushCommandBuffer() {
         vkQueueSubmit(graphicsQueue, 1, &submitInfo, imageFences[imageBufferIdx]);
 
         imageBufferIdx = (imageBufferIdx + 1) % NUM_IMAGE_SWAPS;
+        beginCommandBuffer();
     }
 }
 
@@ -394,8 +394,6 @@ std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> VkImage::apply
 
     vkCmdDispatch(imageCommandBuffers[imageBufferIdx], mWidth / 16, mHeight / 16, 1);
 
-    flushCommandBuffer();
-
     return std::make_tuple(newLayout, newImage, newView, newMemory);
 }
 
@@ -468,8 +466,6 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
 
     // bool thisLayoutSuboptimal =  (layout != VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-    beginCommandBuffer();
-
     if (drawModeMiss) {
         if (theDrawMode == 1) {
             vkCmdBindPipeline(
@@ -495,6 +491,7 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
     if (!inRenderpass) {
         // Memory barriers prevent out of order frames, we always need them.
         std::vector<std::pair<VkImage *, VkImageLayout>> transitions;
+        transitions.reserve(2);
         transitions.push_back({this, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
         transitions.push_back({otherImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL});
 
@@ -540,7 +537,7 @@ void VkImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMo
 }
 
 void VkImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode) {
-    Rect theClipRect = {0, 0, mWidth, mHeight};
+    Rect theClipRect = {theX, theY, theSrcRect.mWidth, theSrcRect.mHeight};
 
     BltF(theImage, theX, theY, theSrcRect, theClipRect, theColor, theDrawMode);
 }
@@ -595,14 +592,6 @@ void VkImage::BltMatrix(
     Image *theImage, float x, float y, const SexyMatrix3 &theMatrix, const Rect &theClipRect, const Color &theColor,
     int theDrawMode, const Rect &theSrcRect, bool blend
 ) {
-    glm::mat3 matrix = glm::translate(
-        glm::mat3(
-            theMatrix.m00, theMatrix.m10, theMatrix.m20, theMatrix.m01, theMatrix.m11, theMatrix.m21, theMatrix.m02,
-            theMatrix.m12, theMatrix.m22
-        ),
-        glm::vec2(x, y)
-    );
-
     float w2 = theSrcRect.mWidth / 2.0;
     float h2 = theSrcRect.mHeight / 2.0;
 
@@ -618,10 +607,10 @@ void VkImage::BltMatrix(
     };
 
     for (auto &vert : vertices) {
-        glm::vec3 v(vert.x, vert.y, 1);
-        v = matrix * v;
-        vert.x = 2 * (v.x / mWidth) - 1;
-        vert.y = 2 * (v.y / mHeight) - 1;
+        SexyVector3 v(vert.x, vert.y, 1);
+        v = theMatrix * v;
+        vert.x = 2 * ((v.x + x - 0.5) / mWidth) - 1;
+        vert.y = 2 * ((v.y + y - 0.5) / mHeight) - 1;
     }
 
     BltEx(theImage, vertices, RectToVec4(theClipRect), theColor, theDrawMode, blend);

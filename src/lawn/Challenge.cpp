@@ -288,7 +288,7 @@ void Challenge::InitLevel() {
     if (mApp->IsScaryPotterLevel()) {
         ScaryPotterPopulate();
     }
-    if (mApp->IsFirstTimeAdventureMode() && mBoard->mLevel == 5) {
+    if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 5) {
         mBoard->NewPlant(5, 1, SEED_PEASHOOTER, SEED_NONE);
         mBoard->NewPlant(7, 2, SEED_PEASHOOTER, SEED_NONE);
         mBoard->NewPlant(6, 3, SEED_PEASHOOTER, SEED_NONE);
@@ -306,8 +306,8 @@ void Challenge::InitLevel() {
 void Challenge::StartLevel() {
     if (mApp->IsWhackAZombieLevel()) {
         mBoard->mCursorObject->mCursorType = CURSOR_TYPE_HAMMER;
-        mBoard->mZombieCountDown = 200;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+        mBoard->mBoardData.mZombieCountDown = 200;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
     }
     if (mApp->IsStormyNightLevel()) {
         mChallengeState = STATECHALLENGE_STORM_FLASH_1;
@@ -316,15 +316,15 @@ void Challenge::StartLevel() {
     GameMode aGameMode = mApp->mGameMode;
     if (aGameMode == GAMEMODE_CHALLENGE_BOBSLED_BONANZA) {
         for (int i = 0; i < MAX_GRID_SIZE_Y; i++) {
-            if (mBoard->mPlantRow[i] != PLANTROW_POOL) {
-                mBoard->mIceMinX[i] = 400;
-                mBoard->mIceTimer[i] = 0x7FFFFFFF;
+            if (mBoard->mBoardData.mPlantRow[i] != PLANTROW_POOL) {
+                mBoard->mBoardData.mIceMinX[i] = 400;
+                mBoard->mBoardData.mIceTimer[i] = 0x7FFFFFFF;
             }
         }
     }
     if (mApp->IsWallnutBowlingLevel()) {
-        mBoard->mZombieCountDown = 200;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+        mBoard->mBoardData.mZombieCountDown = 200;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
         mBoard->mSeedBank->AddSeed(SEED_WALLNUT);
         mConveyorBeltCounter = 400;
         mShowBowlingLine = true;
@@ -337,8 +337,8 @@ void Challenge::StartLevel() {
     }
     if (mApp->IsLittleTroubleLevel() || mApp->IsStormyNightLevel() || mApp->IsBungeeBlitzLevel() ||
         aGameMode == GAMEMODE_CHALLENGE_INVISIGHOUL) {
-        mBoard->mZombieCountDown = 200;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+        mBoard->mBoardData.mZombieCountDown = 200;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
         mConveyorBeltCounter = 200;
     }
     if (mApp->IsSurvivalMode() && mSurvivalStage == 0) {
@@ -369,8 +369,8 @@ void Challenge::StartLevel() {
         mBoard->SetTutorialState(TUTORIAL_SLOT_MACHINE_PULL);
     }
     if (aGameMode == GAMEMODE_CHALLENGE_BEGHOULED || aGameMode == GAMEMODE_CHALLENGE_BEGHOULED_TWIST) {
-        mBoard->mZombieCountDown = 200;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+        mBoard->mBoardData.mZombieCountDown = 200;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
         mChallengeStateCounter = 1500;
         BeghouledMakeStartBoard();
         BeghouledUpdateCraters();
@@ -382,22 +382,22 @@ void Challenge::StartLevel() {
         }
     }
     if (mApp->IsMiniBossLevel()) {
-        mBoard->mZombieCountDown = 100;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+        mBoard->mBoardData.mZombieCountDown = 100;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
         mConveyorBeltCounter = 200;
     }
     if (aGameMode == GAMEMODE_CHALLENGE_PORTAL_COMBAT) {
         PortalStart();
     }
     if (aGameMode == GAMEMODE_CHALLENGE_COLUMN) {
-        mBoard->mCurrentWave = 9;
-        mBoard->mZombieCountDown = 2400;
+        mBoard->mBoardData.mCurrentWave = 9;
+        mBoard->mBoardData.mZombieCountDown = 2400;
     }
     if (aGameMode == GAMEMODE_CHALLENGE_AIR_RAID || aGameMode == GAMEMODE_CHALLENGE_BOBSLED_BONANZA) {
-        mBoard->mZombieCountDown = 4500;
+        mBoard->mBoardData.mZombieCountDown = 4500;
     }
     if (aGameMode == GAMEMODE_CHALLENGE_POGO_PARTY) {
-        mBoard->mZombieCountDown = 5500;
+        mBoard->mBoardData.mZombieCountDown = 5500;
     }
     if (aGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
         mBoard->DisplayAdvice(
@@ -1241,7 +1241,7 @@ void Challenge::BeghouledFlashAMatch() {
 
 // 0x4229F0
 void Challenge::UpdateBeghouled() {
-    mBoard->mProgressMeterWidth =
+    mBoard->mBoardData.mProgressMeterWidth =
         TodAnimateCurve(0, BEGHOULED_WINNING_SCORE, mChallengeScore, 0, PROGRESS_METER_COUNTER, CURVE_LINEAR);
 
     int aMovingPlant = false;
@@ -1253,7 +1253,7 @@ void Challenge::UpdateBeghouled() {
     }
 
     if (mBoard->mSeedBank->mNumPackets > 4 && !mBoard->mAdvice->IsBeingDisplayed() &&
-        !mBoard->mHelpDisplayed[ADVICE_BEGHOULED_USE_CRATER_2]) {
+        !mBoard->mBoardData.mHelpDisplayed[ADVICE_BEGHOULED_USE_CRATER_2]) {
         int aCost = mBoard->GetCurrentPlantCost(SEED_BEGHOULED_BUTTON_CRATER, SEED_NONE);
         if (mBoard->CanTakeSunMoney(aCost) && BeghouledCanClearCrater() && !mBoard->HasLevelAwardDropped()) {
             mBoard->DisplayAdvice(
@@ -1337,7 +1337,7 @@ void Challenge::UpdateConveyorBelt() {
 
     TodWeightedArray aSeedPickArray[20];
     int aSeedPickCount = 0;
-    if (mBoard->mLevel == 10) {
+    if (mBoard->mBoardData.mLevel == 10) {
         aSeedPickCount = 7;
         aSeedPickArray[0].mItem = SEED_PEASHOOTER;
         aSeedPickArray[0].mWeight = 20;
@@ -1353,7 +1353,7 @@ void Challenge::UpdateConveyorBelt() {
         aSeedPickArray[5].mWeight = 5;
         aSeedPickArray[6].mItem = SEED_POTATOMINE;
         aSeedPickArray[6].mWeight = 10;
-    } else if (mBoard->mLevel == 20) {
+    } else if (mBoard->mBoardData.mLevel == 20) {
         aSeedPickCount = 7;
         aSeedPickArray[0].mItem = SEED_GRAVEBUSTER;
         aSeedPickArray[0].mWeight = 20;
@@ -1369,7 +1369,7 @@ void Challenge::UpdateConveyorBelt() {
         aSeedPickArray[5].mWeight = 15;
         aSeedPickArray[6].mItem = SEED_PUFFSHROOM;
         aSeedPickArray[6].mWeight = 10;
-    } else if (mBoard->mLevel == 30) {
+    } else if (mBoard->mBoardData.mLevel == 30) {
         aSeedPickCount = 8;
         aSeedPickArray[0].mItem = SEED_LILYPAD;
         aSeedPickArray[0].mWeight = 25;
@@ -1387,7 +1387,7 @@ void Challenge::UpdateConveyorBelt() {
         aSeedPickArray[6].mWeight = 10;
         aSeedPickArray[7].mItem = SEED_TALLNUT;
         aSeedPickArray[7].mWeight = 10;
-    } else if (mBoard->mLevel == 40) {
+    } else if (mBoard->mBoardData.mLevel == 40) {
         aSeedPickCount = 8;
         aSeedPickArray[0].mItem = SEED_LILYPAD;
         aSeedPickArray[0].mWeight = 25;
@@ -1587,7 +1587,7 @@ void Challenge::UpdateRainingSeeds() {
 
 // 0x423670
 void Challenge::UpdateStormyNight() {
-    if (mBoard->mPaused) {
+    if (mBoard->mBoardData.mPaused) {
         if (mChallengeStateCounter == 1) return;
 
         if (mChallengeStateCounter == 150 && mChallengeState == ChallengeState::STATECHALLENGE_STORM_FLASH_1) {
@@ -1630,7 +1630,7 @@ void Challenge::UpdateStormyNight() {
 // 0x423800
 //  GOTY @Patoke: 0x426320
 void Challenge::UpdateSlotMachine() {
-    int aSunMoney = ClampInt(mBoard->mSunMoney, 0, 2000);
+    int aSunMoney = ClampInt(mBoard->mBoardData.mSunMoney, 0, 2000);
     if (aSunMoney >= SLOT_MACHINE_WINNING_SCORE - 100) {
         mBoard->DisplayAdvice(_S("[ADVICE_ALMOST_THERE]"), MESSAGE_STYLE_HINT_FAST, ADVICE_ALMOST_THERE);
     }
@@ -1638,7 +1638,7 @@ void Challenge::UpdateSlotMachine() {
         SpawnLevelAward(4, 2);
         mBoard->ClearAdvice(ADVICE_NONE);
     }
-    mBoard->mProgressMeterWidth =
+    mBoard->mBoardData.mProgressMeterWidth =
         TodAnimateCurve(0, SLOT_MACHINE_WINNING_SCORE, aSunMoney, 0, PROGRESS_METER_COUNTER, CURVE_LINEAR);
 
     if (!mBoard->mAdvice->IsBeingDisplayed()) {
@@ -1743,7 +1743,7 @@ void Challenge::ZombieAtePlant(/*Zombie* theZombie,*/ Plant *thePlant) {
 void Challenge::Update() {
     if (mApp->IsStormyNightLevel()) UpdateStormyNight();
 
-    if (mBoard->mPaused) {
+    if (mBoard->mBoardData.mPaused) {
         if (mApp->mGameMode == GAMEMODE_CHALLENGE_BEGHOULED_TWIST) {
             mChallengeGridX = -1;
             mChallengeGridY = -1;
@@ -1767,7 +1767,7 @@ void Challenge::Update() {
         ScaryPotterUpdate();
     }
     if ((mApp->IsScaryPotterLevel() || mApp->IsWhackAZombieLevel()) && mBoard->mSeedBank->mY < 0) {
-        if (mBoard->mSunMoney + mBoard->CountSunBeingCollected() > 0 ||
+        if (mBoard->mBoardData.mSunMoney + mBoard->CountSunBeingCollected() > 0 ||
             mBoard->mSeedBank->mY > Sexy::IMAGE_SEEDBANK->mWidth) {
             mBoard->mSeedBank->mY += 2;
             if (mBoard->mSeedBank->mY > 0) {
@@ -1805,7 +1805,7 @@ void Challenge::Update() {
     if (mApp->mGameMode == GAMEMODE_TREE_OF_WISDOM) {
         TreeOfWisdomUpdate();
     }
-    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ICE && mBoard->mMainCounter == 3000) {
+    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ICE && mBoard->mBoardData.mMainCounter == 3000) {
         mApp->PlayFoley(FOLEY_FLOOP);
         mApp->PlaySample(Sexy::SOUND_LOSEMUSIC);
     }
@@ -1842,7 +1842,7 @@ void Challenge::SpawnLevelAward(int theGridX, int theGridY) {
                          : mApp->IsAdventureMode() || mApp->HasBeatenChallenge(mApp->mGameMode) ? COIN_AWARD_MONEY_BAG
                                                                                                 : COIN_TROPHY;
 
-    mBoard->mLevelAwardSpawned = true;
+    mBoard->mBoardData.mLevelAwardSpawned = true;
     mApp->mBoardResult = BOARDRESULT_WON;
     mApp->PlayFoley(FOLEY_SPAWN_SUN);
     Coin *aCoin = mBoard->AddCoin(aPosX, aPosY, aCoinType, COIN_MOTION_COIN);
@@ -1925,7 +1925,9 @@ void Challenge::DrawBeghouled(Graphics *g) {
             float aPixelY = mBoard->GridToPixelY(mChallengeGridX, mChallengeGridY) + 100;
 
             SexyTransform2D aTransform;
-            TodScaleRotateTransformMatrix(aTransform, aPixelX, aPixelY, -mBoard->mMainCounter * 2 * PI * 0.01f, 1, 1);
+            TodScaleRotateTransformMatrix(
+                aTransform, aPixelX, aPixelY, -mBoard->mBoardData.mMainCounter * 2 * PI * 0.01f, 1, 1
+            );
 
             Image *aImageOverlay = Sexy::IMAGE_BEGHOULED_TWIST_OVERLAY;
             Rect aSrcRect = Rect(0, 0, aImageOverlay->mWidth, aImageOverlay->mHeight);
@@ -1941,7 +1943,7 @@ void Challenge::DrawSlotMachine(Graphics *g) {
     Graphics gBoardParent = Graphics(*g);
     if (mSlotMachineRollCount < 3 && mBoard->mCursorObject->mCursorType == CURSOR_TYPE_NORMAL &&
         mChallengeState != STATECHALLENGE_SLOT_MACHINE_ROLLING && !mBoard->HasLevelAwardDropped()) {
-        gBoardParent.SetColor(GetFlashingColor(mBoard->mMainCounter, 75));
+        gBoardParent.SetColor(GetFlashingColor(mBoard->mBoardData.mMainCounter, 75));
         gBoardParent.SetColorizeImages(true);
     }
     gBoardParent.mTransX = mBoard->mSeedBank->mX - mBoard->mX;
@@ -2039,19 +2041,19 @@ PlantingReason Challenge::CanPlantAt(int theGridX, int theGridY, SeedType theSee
 
 // 0x425690
 void Challenge::InitZombieWavesSurvival() {
-    mBoard->mZombieAllowed[ZOMBIE_NORMAL] = true;
+    mBoard->mBoardData.mZombieAllowed[ZOMBIE_NORMAL] = true;
     MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
 
     if (aLevelRNG.Next((unsigned long)5) == 0) {
-        mBoard->mZombieAllowed[ZOMBIE_NEWSPAPER] = true;
+        mBoard->mBoardData.mZombieAllowed[ZOMBIE_NEWSPAPER] = true;
     } else {
-        mBoard->mZombieAllowed[ZOMBIE_TRAFFIC_CONE] = true;
+        mBoard->mBoardData.mZombieAllowed[ZOMBIE_TRAFFIC_CONE] = true;
     }
 
     int aCapacity = std::min(mSurvivalStage + 1, 9);
     while (aCapacity > 0) {
         ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((unsigned long)NUM_ZOMBIE_TYPES);
-        if (mBoard->mZombieAllowed[aRandZombie]) continue;
+        if (mBoard->mBoardData.mZombieAllowed[aRandZombie]) continue;
         if (mBoard->IsZombieTypePoolOnly(aRandZombie) && !mBoard->StageHasPool()) continue;
         if (mBoard->StageHasRoof() && (aRandZombie == ZOMBIE_DIGGER || aRandZombie == ZOMBIE_DANCER)) continue;
         if (mBoard->StageHasGraveStones() && aRandZombie == ZOMBIE_ZAMBONI) continue;
@@ -2063,21 +2065,21 @@ void Challenge::InitZombieWavesSurvival() {
             aRandZombie == ZOMBIE_DUCKY_TUBE || aRandZombie == ZOMBIE_YETI)
             continue;
 
-        mBoard->mZombieAllowed[aRandZombie] = true;
+        mBoard->mBoardData.mZombieAllowed[aRandZombie] = true;
         aCapacity--;
     }
 }
 
 void Challenge::InitZombieWavesFromList(ZombieType *theZombieList, int theListLength) {
     for (int i = 0; i < theListLength; i++) {
-        mBoard->mZombieAllowed[(int)theZombieList[i]] = true;
+        mBoard->mBoardData.mZombieAllowed[(int)theZombieList[i]] = true;
     }
 }
 
 // 0x425840
 void Challenge::InitZombieWaves() {
     GameMode aGameMode = mApp->mGameMode;
-    bool *aList = mBoard->mZombieAllowed;
+    bool *aList = mBoard->mBoardData.mZombieAllowed;
     if (mApp->IsSurvivalMode()) {
         if (mSurvivalStage == 0) {
             if (mApp->IsSurvivalNormal(mApp->mGameMode)) {
@@ -2260,28 +2262,29 @@ void Challenge::WhackAZombiePlaceGraves(int theGraveCount) {
 
 // 0x425FF0
 void Challenge::WhackAZombieSpawning() {
-    if (mBoard->mCurrentWave == mBoard->mNumWaves && mBoard->mZombieCountDown == 0) return;
+    if (mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves && mBoard->mBoardData.mZombieCountDown == 0)
+        return;
 
-    mBoard->mZombieCountDown--;
-    if (mBoard->mZombieCountDown == 100 && mBoard->mCurrentWave > 0) {
+    mBoard->mBoardData.mZombieCountDown--;
+    if (mBoard->mBoardData.mZombieCountDown == 100 && mBoard->mBoardData.mCurrentWave > 0) {
         int aNumGraves = 5 - mBoard->GetGraveStonesCount();
         WhackAZombiePlaceGraves(std::max(1, aNumGraves));
     }
-    if (mBoard->mZombieCountDown == 5) {
+    if (mBoard->mBoardData.mZombieCountDown == 5) {
         mBoard->NextWaveComing();
     }
-    if (mBoard->mZombieCountDown == 0) {
-        mBoard->mZombieCountDown = 2000;
-        mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
-        mBoard->mCurrentWave++;
-        mChallengeStateCounter = mBoard->mCurrentWave == mBoard->mNumWaves ? 300 : 1;
-    } else if (mBoard->mZombieCountDown < 300) {
+    if (mBoard->mBoardData.mZombieCountDown == 0) {
+        mBoard->mBoardData.mZombieCountDown = 2000;
+        mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
+        mBoard->mBoardData.mCurrentWave++;
+        mChallengeStateCounter = mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves ? 300 : 1;
+    } else if (mBoard->mBoardData.mZombieCountDown < 300) {
         return;
     }
 
     if (--mChallengeStateCounter == 0) {
         // 根据当前波数计算当前处于的阶段
-        int aPhase = ClampInt((mBoard->mCurrentWave - 1) * 6 / 12, 0, 5);
+        int aPhase = ClampInt((mBoard->mBoardData.mCurrentWave - 1) * 6 / 12, 0, 5);
         // 在不同阶段下出现路障、铁桶僵尸及出现二、三只僵尸的权重
         const int aDoubleChance[6] = {0, 30, 10, 10, 15, 18};
         const int aTripleChance[6] = {0, 0, 0, 0, 10, 13};
@@ -2295,7 +2298,7 @@ void Challenge::WhackAZombieSpawning() {
         int aNumHit = Rand(100);
         int aTypeHit = Rand(100);
         // 判断是否为最后一波
-        int aIsFinalWave = mBoard->mCurrentWave == mBoard->mNumWaves;
+        int aIsFinalWave = mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves;
 
         // 确定僵尸数量
         if (aIsFinalWave) {
@@ -2328,7 +2331,7 @@ void Challenge::WhackAZombieSpawning() {
                 }
             }
         }
-        float aMaxSpeed = TodAnimateCurve(1, 12, mBoard->mCurrentWave, 1, 3, CURVE_EASE_IN);
+        float aMaxSpeed = TodAnimateCurve(1, 12, mBoard->mBoardData.mCurrentWave, 1, 3, CURVE_EASE_IN);
         if (aZombieCount > aGridPicksCount) {
             aZombieCount = aGridPicksCount;
         }
@@ -2343,7 +2346,7 @@ void Challenge::WhackAZombieSpawning() {
                 aMaxSpeed = 2;
             }
 
-            Zombie *aZombie = mBoard->AddZombie(aZombieType, mBoard->mCurrentWave);
+            Zombie *aZombie = mBoard->AddZombie(aZombieType, mBoard->mBoardData.mCurrentWave);
             if (aZombie == nullptr) break;
 
             aZombie->RiseFromGrave(aGraveStone->mGridX, aGraveStone->mGridY);
@@ -2352,11 +2355,11 @@ void Challenge::WhackAZombieSpawning() {
             aZombie->UpdateAnimSpeed();
         }
 
-        int aStateCounterMin = TodAnimateCurve(1, 12, mBoard->mCurrentWave, 100, 30, CURVE_LINEAR);
-        int aStateCounterMax = TodAnimateCurve(1, 12, mBoard->mCurrentWave, 200, 60, CURVE_LINEAR);
+        int aStateCounterMin = TodAnimateCurve(1, 12, mBoard->mBoardData.mCurrentWave, 100, 30, CURVE_LINEAR);
+        int aStateCounterMax = TodAnimateCurve(1, 12, mBoard->mBoardData.mCurrentWave, 200, 60, CURVE_LINEAR);
         mChallengeStateCounter = RandRangeInt(aStateCounterMin, aStateCounterMax);
         if (aIsFinalWave) {
-            mBoard->mZombieCountDown = 0;
+            mBoard->mBoardData.mZombieCountDown = 0;
             mChallengeStateCounter = 0;
         }
     }
@@ -2386,7 +2389,7 @@ void Challenge::GraveDangerSpawnGraveAt(int theGridX, int theGridY) {
         }
     }
 
-    mBoard->mEnableGraveStones = true;
+    mBoard->mBoardData.mEnableGraveStones = true;
     GridItem *aGraveStone = mBoard->AddAGraveStone(theGridX, theGridY);
     if (aGraveStone) {
         aGraveStone->AddGraveStoneParticles();
@@ -2417,29 +2420,30 @@ void Challenge::GraveDangerSpawnRandomGrave() {
 
 // 0x426850
 void Challenge::SpawnZombieWave() {
-    if (mApp->IsContinuousChallenge() && mBoard->mCurrentWave == mBoard->mNumWaves) {
-        mBoard->mCurrentWave = mBoard->mNumWaves - 1;
+    if (mApp->IsContinuousChallenge() && mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves) {
+        mBoard->mBoardData.mCurrentWave = mBoard->mBoardData.mNumWaves - 1;
         for (int i = 0; i < MAX_ZOMBIES_IN_WAVE; i++) {
-            ZombieType aWaveZombie = mBoard->mZombiesInWave[mBoard->mCurrentWave][i];
+            ZombieType aWaveZombie = mBoard->mBoardData.mZombiesInWave[mBoard->mBoardData.mCurrentWave][i];
             if (aWaveZombie == ZOMBIE_INVALID) {
                 break;
             }
             if (aWaveZombie == ZOMBIE_FLAG) {
-                mBoard->mZombiesInWave[mBoard->mCurrentWave][i] = ZOMBIE_NORMAL;
+                mBoard->mBoardData.mZombiesInWave[mBoard->mBoardData.mCurrentWave][i] = ZOMBIE_NORMAL;
             }
         }
     }
 
-    int aIsFlagWave = mBoard->IsFlagWave(mBoard->mCurrentWave);
-    if (mApp->mGameMode == GAMEMODE_CHALLENGE_GRAVE_DANGER && mBoard->mCurrentWave != mBoard->mNumWaves - 1) {
+    int aIsFlagWave = mBoard->IsFlagWave(mBoard->mBoardData.mCurrentWave);
+    if (mApp->mGameMode == GAMEMODE_CHALLENGE_GRAVE_DANGER &&
+        mBoard->mBoardData.mCurrentWave != mBoard->mBoardData.mNumWaves - 1) {
         if (aIsFlagWave) {
             mBoard->SpawnZombiesFromGraves();
-        } else if (mBoard->mCurrentWave > 5) {
+        } else if (mBoard->mBoardData.mCurrentWave > 5) {
             GraveDangerSpawnRandomGrave();
         }
     }
-    if (mApp->IsSurvivalMode() && mBoard->mBackground == BACKGROUND_2_NIGHT &&
-        mBoard->mCurrentWave == mBoard->mNumWaves - 1) {
+    if (mApp->IsSurvivalMode() && mBoard->mBoardData.mBackground == BACKGROUND_2_NIGHT &&
+        mBoard->mBoardData.mCurrentWave == mBoard->mBoardData.mNumWaves - 1) {
         int aNumGraves = mBoard->GetGraveStonesCount();
         if ((mApp->IsSurvivalNormal(mApp->mGameMode) && aNumGraves < 8) || aNumGraves < 12) {
             GraveDangerSpawnRandomGrave();
@@ -2452,7 +2456,7 @@ void Challenge::SpawnZombieWave() {
 
 // 0x426A20
 void Challenge::DrawStormFlash(Graphics *g, int theTime, int theMaxAmount) {
-    MTRand aDrawRand = MTRand(mBoard->mMainCounter / 6);
+    MTRand aDrawRand = MTRand(mBoard->mBoardData.mMainCounter / 6);
     int aDarkness = TodAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) +
                     aDrawRand.NextNoAssert((unsigned long)64) - 32;
     // 设置暴风雨阴暗的颜色
@@ -2492,7 +2496,7 @@ void Challenge::DrawRain(Graphics *g) {
 
     aBoardOffsetX = mBoard->mX / 100 * -100;
 
-    int aTime = mBoard->mEffectCounter % 100;
+    int aTime = mBoard->mBoardData.mEffectCounter % 100;
     int aTimeOffsetXEst = TodAnimateCurve(0, 100, aTime, 0, -100, CURVE_LINEAR);
     int aTimeOffsetYEst = TodAnimateCurve(0, 20, aTime, -100, 0, CURVE_LINEAR);
 
@@ -2507,7 +2511,7 @@ void Challenge::DrawRain(Graphics *g) {
         }
     }
 
-    aTime = mBoard->mEffectCounter;
+    aTime = mBoard->mBoardData.mEffectCounter;
     float aTimeOffsetXCls = TodAnimateCurve(0, 161, aTime % 161, 0, -100, CURVE_LINEAR);
     float aTimeOffsetYCls = TodAnimateCurve(0, 33, aTime % 33, -100, 0, CURVE_LINEAR);
     // 绘制近景的雨
@@ -2578,8 +2582,8 @@ void Challenge::PortalStart() {
     aPortal->mRenderOrder = mBoard->MakeRenderOrder(RENDER_LAYER_PARTICLE, aPortal->mGridY, 0);
     aPortal->OpenPortal();
 
-    mBoard->mZombieCountDown = 200;
-    mBoard->mZombieCountDownStart = mBoard->mZombieCountDown;
+    mBoard->mBoardData.mZombieCountDown = 200;
+    mBoard->mBoardData.mZombieCountDownStart = mBoard->mBoardData.mZombieCountDown;
     mConveyorBeltCounter = 200;
 }
 
@@ -2988,10 +2992,10 @@ void Challenge::ZombiquariumPacketClicked(SeedPacket *theSeedPacket) {
         if (theSeedPacket->mPacketType == SEED_ZOMBIQUARIUM_SNORKLE) {
             if (mBoard->CountZombiesOnScreen() > 100) return;
 
-            if (mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL) {
+            if (mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL) {
                 mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_BUY_SNORKEL);
                 mBoard->TutorialArrowRemove();
-                mBoard->mTutorialState = TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL;
+                mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL;
             }
 
             Zombie *aZombie = ZombiquariumSpawnSnorkle();
@@ -3044,43 +3048,44 @@ void Challenge::ZombiquariumUpdate() {
         mBoard->ZombiesWon(nullptr);
         return;
     }
-    if (!mBoard->mAdvice->IsBeingDisplayed() && !mBoard->mHelpDisplayed[ADVICE_ZOMBIQUARIUM_COLLECT_SUN]) {
+    if (!mBoard->mAdvice->IsBeingDisplayed() && !mBoard->mBoardData.mHelpDisplayed[ADVICE_ZOMBIQUARIUM_COLLECT_SUN]) {
         SexyString aMsg =
             TodReplaceNumberString(_S("[ADVICE_ZOMBIQUARIUM_COLLECT_SUN]"), _S("{SCORE}"), ZOMBIQUARIUM_WINNING_SCORE);
         mBoard->DisplayAdvice(aMsg, MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ZOMBIQUARIUM_COLLECT_SUN);
     }
 
-    int aScore = ClampInt(mBoard->mSunMoney, 0, ZOMBIQUARIUM_WINNING_SCORE);
-    mBoard->mProgressMeterWidth =
+    int aScore = ClampInt(mBoard->mBoardData.mSunMoney, 0, ZOMBIQUARIUM_WINNING_SCORE);
+    mBoard->mBoardData.mProgressMeterWidth =
         TodAnimateCurve(0, ZOMBIQUARIUM_WINNING_SCORE, aScore, 0, PROGRESS_METER_COUNTER, CURVE_LINEAR);
     if (aScore >= ZOMBIQUARIUM_WINNING_SCORE - 100) {
         mBoard->DisplayAdvice("[ADVICE_ALMOST_THERE]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ALMOST_THERE);
     }
-    if (aScore >= 110 && mBoard->mTutorialState == TUTORIAL_OFF) {
-        mBoard->mTutorialState = TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL;
+    if (aScore >= 110 && mBoard->mBoardData.mTutorialState == TUTORIAL_OFF) {
+        mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL;
         float aPosX = mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[0].mX;
         float aPosY = mBoard->mSeedBank->mY + mBoard->mSeedBank->mSeedPackets[0].mY;
         mBoard->TutorialArrowShow(aPosX, aPosY);
         mBoard->DisplayAdvice(
             "[ADVICE_ZOMBIQUARIUM_BUY_SNORKEL]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ZOMBIQUARIUM_BUY_SNORKEL
         );
-    } else if (aScore < 100 && mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL) {
+    } else if (aScore < 100 && mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL) {
         mBoard->TutorialArrowRemove();
         mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_BUY_SNORKEL);
-        mBoard->mTutorialState = TUTORIAL_OFF;
+        mBoard->mBoardData.mTutorialState = TUTORIAL_OFF;
     }
-    if (aScore >= ZOMBIQUARIUM_WINNING_SCORE && mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL) {
-        mBoard->mTutorialState = TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY;
+    if (aScore >= ZOMBIQUARIUM_WINNING_SCORE &&
+        mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL) {
+        mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY;
         float aPosX = mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[1].mX;
         float aPosY = mBoard->mSeedBank->mY + mBoard->mSeedBank->mSeedPackets[1].mY;
         mBoard->TutorialArrowShow(aPosX, aPosY);
         mBoard->DisplayAdvice(
             "[ADVICE_ZOMBIQUARIUM_CLICK_TROPHY]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ZOMBIQUARIUM_CLICK_TROPHY
         );
-    } else if (aScore <= ZOMBIQUARIUM_WINNING_SCORE && mBoard->mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY) {
+    } else if (aScore <= ZOMBIQUARIUM_WINNING_SCORE && mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY) {
         mBoard->TutorialArrowRemove();
         mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_CLICK_TROPHY);
-        mBoard->mTutorialState = TUTORIAL_OFF;
+        mBoard->mBoardData.mTutorialState = TUTORIAL_OFF;
     }
 
     GridItem *aGridItem = nullptr;
@@ -3196,7 +3201,7 @@ void Challenge::ScaryPotterPopulate() {
         }
     }
 
-    if (mApp->IsAdventureMode() && mBoard->mLevel == 35) {
+    if (mApp->IsAdventureMode() && mBoard->mBoardData.mLevel == 35) {
         switch (mSurvivalStage) {
         case 0:
             ScaryPotterDontPlaceInCol(0, aGridArray, aGridArrayCount);
@@ -3519,7 +3524,7 @@ void Challenge::ScaryPotterOpenPot(GridItem *theScaryPot) {
 
     theScaryPot->GridItemDie();
 
-    if (mBoard->mHelpIndex == ADVICE_USE_SHOVEL_ON_POTS) {
+    if (mBoard->mBoardData.mHelpIndex == ADVICE_USE_SHOVEL_ON_POTS) {
         mBoard->DisplayAdvice(
             "[ADVICE_DESTROY_POTS_TO_FINISH_LEVEL]", MESSAGE_STYLE_HINT_FAST, ADVICE_DESTORY_POTS_TO_FINISIH_LEVEL
         );
@@ -3559,8 +3564,8 @@ void Challenge::ScaryPotterJackExplode(int thePosX, int thePosY) {
 //  GOTY @Patoke: 0x42C9F0
 void Challenge::PuzzleNextStageClear() {
     mApp->PlaySample(Sexy::SOUND_HUGE_WAVE);
-    mBoard->mNextSurvivalStageCounter = 0;
-    mBoard->mProgressMeterWidth = 0;
+    mBoard->mBoardData.mNextSurvivalStageCounter = 0;
+    mBoard->mBoardData.mProgressMeterWidth = 0;
 
     {
         Zombie *aZombie = nullptr;
@@ -3598,7 +3603,7 @@ void Challenge::PuzzleNextStageClear() {
 
     mSurvivalStage++;
     mBoard->ClearAdviceImmediately();
-    mBoard->mLevelAwardSpawned = false;
+    mBoard->mBoardData.mLevelAwardSpawned = false;
     mApp->AddTodParticle(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
 }
 
@@ -3977,7 +3982,7 @@ void Challenge::IZombieInitLevel() {
     default: TOD_ASSERT();
     }
 
-    mBoard->mBonusLawnMowersRemaining = 0;
+    mBoard->mBoardData.mBonusLawnMowersRemaining = 0;
 }
 
 // 0x42B290
@@ -3987,7 +3992,7 @@ void Challenge::IZombieStart() {
 
 // 0x42B340
 void Challenge::IZombieUpdate() {
-    int aSunMoney = mBoard->mSunMoney + mBoard->CountSunBeingCollected();
+    int aSunMoney = mBoard->mBoardData.mSunMoney + mBoard->CountSunBeingCollected();
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
@@ -4107,7 +4112,7 @@ GridItem *Challenge::IZombieGetBrainTarget(Zombie *theZombie) {
 // 0x42B8B0
 void Challenge::IZombieScoreBrain(GridItem *theBrain) {
     mBoard->mChallenge->mChallengeScore++;
-    mBoard->mProgressMeterWidth = TodAnimateCurve(
+    mBoard->mBoardData.mProgressMeterWidth = TodAnimateCurve(
         0, I_ZOMBIE_WINNING_SCORE, mBoard->mChallenge->mChallengeScore, 0, PROGRESS_METER_COUNTER, CURVE_LINEAR
     );
 
@@ -4407,7 +4412,7 @@ void Challenge::UpdateRain() {
 
 // 0x42C5C0
 void Challenge::LastStandUpdate() {
-    if (mBoard->mNextSurvivalStageCounter == 0 && mChallengeState == STATECHALLENGE_NORMAL &&
+    if (mBoard->mBoardData.mNextSurvivalStageCounter == 0 && mChallengeState == STATECHALLENGE_NORMAL &&
         mBoard->mStoreButton->mBtnNoDraw) {
         GameButton *aButton = mBoard->mStoreButton;
         aButton->mBtnNoDraw = false;
@@ -4445,21 +4450,23 @@ void Challenge::LastStandCompletedStage() {
     mBoard->DisplayAdvice(aMsg, MESSAGE_STYLE_BIG_MIDDLE_FAST, ADVICE_NONE);
 
     mSurvivalStage++;
-    mBoard->mLevelComplete = false;
+    mBoard->mBoardData.mLevelComplete = false;
     mBoard->InitZombieWaves();
 }
 
 // 0x42C9B0
 void Challenge::WhackAZombieUpdate() {
-    if (mBoard->mSunMoney > 0 && mBoard->mTutorialState == TUTORIAL_OFF) {
+    if (mBoard->mBoardData.mSunMoney > 0 && mBoard->mBoardData.mTutorialState == TUTORIAL_OFF) {
         mBoard->SetTutorialState(TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED);
-        mBoard->mTutorialTimer = 1500;
+        mBoard->mBoardData.mTutorialTimer = 1500;
     }
-    if (mBoard->mTutorialState == TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED && mBoard->mTutorialTimer == 0) {
+    if (mBoard->mBoardData.mTutorialState == TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED &&
+        mBoard->mBoardData.mTutorialTimer == 0) {
         mBoard->SetTutorialState(TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED);
-        mBoard->mTutorialTimer = 400;
+        mBoard->mBoardData.mTutorialTimer = 400;
     }
-    if (mBoard->mTutorialState == TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED && mBoard->mTutorialTimer == 0) {
+    if (mBoard->mBoardData.mTutorialState == TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED &&
+        mBoard->mBoardData.mTutorialTimer == 0) {
         mBoard->SetTutorialState(TUTORIAL_WHACK_A_ZOMBIE_COMPLETED);
     }
 }

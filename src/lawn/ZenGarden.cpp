@@ -404,7 +404,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant *thePlant) {
 
     if (aResult == Dialog::ID_YES) {
         mApp->mPlayerInfo->AddCoins(aPrice);
-        mBoard->mCoinsCollected += aPrice;
+        mBoard->mBoardData.mCoinsCollected += aPrice;
 
         int aNumPlantsAfterThis = mApp->mPlayerInfo->mNumPottedPlants - thePlant->mPottedPlantIndex - 1;
         if (aNumPlantsAfterThis > 0) {
@@ -523,8 +523,8 @@ void ZenGarden::PlantWatered(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
     aPottedPlant->mTimesFed++;
     int aTimeSpan = RandRangeInt(0, 8);
-    if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_WATER_PLANT ||
-        mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING) {
+    if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_WATER_PLANT ||
+        mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING) {
         aTimeSpan = 9;
     }
     aPottedPlant->mLastWateredTime = time(nullptr) - (time_t)aTimeSpan;
@@ -537,8 +537,8 @@ void ZenGarden::PlantWatered(Plant *thePlant) {
         )RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH);
     }
 
-    if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_WATER_PLANT) {
-        mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING;
+    if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_WATER_PLANT) {
+        mBoard->mBoardData.mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING;
         mBoard->DisplayAdvice(
             _S("[ADVICE_ZEN_GARDEN_KEEP_WATERING]"), MessageStyle::MESSAGE_STYLE_ZEN_GARDEN_LONG,
             AdviceType::ADVICE_NONE
@@ -881,10 +881,10 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType) {
             PlantFulfillNeed(aPlant);
         }
 
-        if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS &&
+        if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS &&
             theToolType == GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER) {
             if (AllPlantsHaveBeenFertilized()) {
-                mApp->mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_COMPLETED;
+                mApp->mBoard->mBoardData.mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_COMPLETED;
                 mApp->mBoard->DisplayAdvice(
                     _S("[ADVICE_ZEN_GARDEN_CONTINUE_ADVENTURE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST,
                     AdviceType::ADVICE_NONE
@@ -1454,7 +1454,7 @@ void ZenGarden::ZenGardenUpdate() {
     if (mBoard->mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL) {
         mBoard->mChallenge->mChallengeState = ChallengeState::STATECHALLENGE_NORMAL;
         mBoard->mChallenge->mChallengeStateCounter = 3000;
-    } else if (mApp->mBoard->mTutorialState == TutorialState::TUTORIAL_OFF) {
+    } else if (mApp->mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_OFF) {
         if (mBoard->mChallenge->mChallengeStateCounter > 0) {
             mBoard->mChallenge->mChallengeStateCounter--;
         }
@@ -1485,12 +1485,12 @@ void ZenGarden::ZenGardenUpdate() {
         }
     }
 
-    if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING &&
+    if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING &&
         CountPlantsNeedingFertilizer() > 0) {
         mBoard->DisplayAdvice(
             _S("[ADVICE_ZEN_GARDEN_VISIT_STORE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_LONG, AdviceType::ADVICE_NONE
         );
-        mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE;
+        mBoard->mBoardData.mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE;
         mBoard->mStoreButton->mDisabled = false;
         mBoard->mStoreButton->mBtnNoDraw = false;
     }
@@ -1519,29 +1519,29 @@ void ZenGarden::GotoNextGarden() {
     if (mGardenType == GardenType::GARDEN_MAIN) {
         if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_MUSHROOM_GARDEN]) {
             mGardenType = GardenType::GARDEN_MUSHROOM;
-            mBoard->mBackground = BackgroundType::BACKGROUND_MUSHROOM_GARDEN;
+            mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_MUSHROOM_GARDEN;
         } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_AQUARIUM_GARDEN]) {
             mGardenType = GardenType::GARDEN_AQUARIUM;
-            mBoard->mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
+            mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
         } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
             aGoToTree = true;
         }
     } else if (mGardenType == GardenType::GARDEN_MUSHROOM) {
         if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_AQUARIUM_GARDEN]) {
             mGardenType = GardenType::GARDEN_AQUARIUM;
-            mBoard->mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
+            mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
         } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
             aGoToTree = true;
         } else {
             mGardenType = GardenType::GARDEN_MAIN;
-            mBoard->mBackground = BackgroundType::BACKGROUND_GREENHOUSE;
+            mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_GREENHOUSE;
         }
     } else if (mGardenType == GardenType::GARDEN_AQUARIUM) {
         if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
             aGoToTree = true;
         } else {
             mGardenType = GardenType::GARDEN_MAIN;
-            mBoard->mBackground = BackgroundType::BACKGROUND_GREENHOUSE;
+            mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_GREENHOUSE;
         }
     }
     if (aGoToTree) {
@@ -1550,20 +1550,20 @@ void ZenGarden::GotoNextGarden() {
         return;
     }
 
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN) {
         TodLoadResources("DelayLoad_MushroomGarden");
-    } else if (mBoard->mBackground == BackgroundType::BACKGROUND_GREENHOUSE) {
+    } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_GREENHOUSE) {
         TodLoadResources("DelayLoad_GreenHouseGarden");
         TodLoadResources("DelayLoad_GreenHouseOverlay");
-    } else if (mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
+    } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
         TodLoadResources("DelayLoad_Zombiquarium");
         TodLoadResources("DelayLoad_GreenHouseOverlay");
     } else {
         TOD_ASSERT();
     }
 
-    if ((mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
-         mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)) {
+    if ((mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
+         mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)) {
         if (!mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_WHEEL_BARROW]) {
             mBoard->DisplayAdvice(
                 _S("[ADVICE_NEED_WHEELBARROW]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST,
@@ -1625,15 +1625,15 @@ PottedPlant *ZenGarden::GetPottedPlantInWheelbarrow() {
 }
 
 SpecialGridPlacement *ZenGarden::GetSpecialGridPlacements(int &theCount) {
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN) {
         theCount = LENGTH(gMushroomGridPlacement);
         return gMushroomGridPlacement;
     }
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
         theCount = LENGTH(gAquariumGridPlacement);
         return gAquariumGridPlacement;
     }
-    if (mBoard->mBackground == BackgroundType::BACKGROUND_GREENHOUSE) {
+    if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_GREENHOUSE) {
         theCount = LENGTH(gGreenhouseGridPlacement);
         return gGreenhouseGridPlacement;
     }
@@ -1723,7 +1723,7 @@ void ZenGarden::ShowTutorialArrowOnWateringCan() {
     mBoard->DisplayAdvice(
         _S("[ADVICE_ZEN_GARDEN_PICK_UP_WATER]"), MessageStyle::MESSAGE_STYLE_ZEN_GARDEN_LONG, AdviceType::ADVICE_NONE
     );
-    mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER;
+    mBoard->mBoardData.mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER;
 }
 
 // 0x5217A0
@@ -1967,7 +1967,7 @@ bool ZenGarden::ShouldStinkyBeAwake() {
 void ZenGarden::OpenStore() {
     LeaveGarden();
     StoreScreen *aStore = mApp->ShowStoreScreen();
-    if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE) {
+    if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE) {
         aStore->SetupForIntro(2600);
         mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
     }
@@ -1980,12 +1980,12 @@ void ZenGarden::OpenStore() {
         mApp->PreNewGame(GameMode::GAMEMODE_TREE_OF_WISDOM, false);
     } else {
         mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_ZEN_GARDEN);
-        if (mBoard->mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE) {
+        if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE) {
             mBoard->DisplayAdvice(
                 _S("[ADVICE_ZEN_GARDEN_FERTILIZE]"), MessageStyle::MESSAGE_STYLE_ZEN_GARDEN_LONG,
                 AdviceType::ADVICE_NONE
             );
-            mBoard->mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS;
+            mBoard->mBoardData.mTutorialState = TutorialState::TUTORIAL_ZEN_GARDEN_FERTILIZE_PLANTS;
         }
         AddStinky();
     }

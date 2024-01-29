@@ -19,13 +19,23 @@ public:
 
 class TodTriangleGroup {
 public:
-    Image *mImage;
+    static constexpr size_t MAX_VERTEX_ARRAYS = 2;
+    typedef std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> VertexArray;
+    typedef std::array<VertexArray, MAX_VERTEX_ARRAYS> VertexArrayPool;
+
+    static size_t gNumVertArraysInUse;
+    static VertexArrayPool gVertArrays;
+
+    VertexArray &mVertArray;
+    Image *mImage = nullptr;
     // TriVertex                   mVertArray[MAX_TRIANGLES][3];
-    std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> mVertArray{};
-    int mTriangleCount;
-    int mDrawMode;
+
+    int mTriangleCount = 0;
+    int mMaxTriangleCount = 0;
+    int mDrawMode = Graphics::DRAWMODE_NORMAL;
 
     TodTriangleGroup();
+    ~TodTriangleGroup();
     void DrawGroup(Graphics *g);
     void AddTriangle(
         Graphics *g, Image *theImage, const SexyMatrix3 &theMatrix, const Rect &theClipRect, const Color &theColor,

@@ -107,8 +107,8 @@ void CursorObject::Draw(Graphics *g) {
     case CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE: {
         Plant *aPlant = mBoard->mPlants.DataArrayGet((unsigned int)mGlovePlantID);
         PottedPlant *aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPlant->mPottedPlantIndex];
-        if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
-            mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
+        if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
+            mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
             mApp->mZenGarden->DrawPottedPlant(g, -10.0f, -10.0f, aPottedPlant, 1.0f, false);
         } else {
             mApp->mZenGarden->DrawPottedPlant(g, -22.0f, -38.0f, aPottedPlant, 1.0f, true);
@@ -119,8 +119,8 @@ void CursorObject::Draw(Graphics *g) {
 
     case CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW: {
         PottedPlant *aPottedPlant = mApp->mZenGarden->GetPottedPlantInWheelbarrow();
-        if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
-            mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
+        if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
+            mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
             mApp->mZenGarden->DrawPottedPlant(g, -10.0f, -10.0f, aPottedPlant, 1.0f, false);
         } else {
             mApp->mZenGarden->DrawPottedPlant(g, -22.0f, -38.0f, aPottedPlant, 1.0f, true);
@@ -151,8 +151,8 @@ void CursorObject::Draw(Graphics *g) {
 
     case CursorType::CURSOR_TYPE_COBCANNON_TARGET: {
         HitResult aHitResult;
-        mBoard->MouseHitTest(mBoard->mPrevMouseX, mBoard->mPrevMouseY, &aHitResult);
-        if (aHitResult.mObjectType == GameObjectType::OBJECT_TYPE_NONE && mBoard->mPrevMouseY >= 80) {
+        mBoard->MouseHitTest(mBoard->mBoardData.mPrevMouseX, mBoard->mBoardData.mPrevMouseY, &aHitResult);
+        if (aHitResult.mObjectType == GameObjectType::OBJECT_TYPE_NONE && mBoard->mBoardData.mPrevMouseY >= 80) {
             g->DrawImageCel(IMAGE_COBCANNON_TARGET, -11, 7, 0);
         }
 
@@ -227,8 +227,8 @@ void CursorPreview::Draw(Graphics *g) {
 
     if (aPottedPlant) {
         bool aDrawPot = true;
-        if (mBoard->mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
-            mBoard->mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
+        if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
+            mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
             aDrawPot = false;
         }
         mApp->mZenGarden->DrawPottedPlant(g, 0.0f, 0.0f, aPottedPlant, 1.0f, aDrawPot);

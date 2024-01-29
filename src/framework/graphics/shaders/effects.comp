@@ -8,12 +8,106 @@ layout(push_constant) uniform constants {
     int type;
 } PushConstants;
 
+#define FILTER_EFFECT_WASHED_OUT      0
+#define FILTER_EFFECT_LESS_WASHED_OUT 1
+#define FILTER_EFFECT_WHITE           2
+
+// The three functions here were found at https://www.shadertoy.com/view/wt23Rt
+//RGB to HSL (hue, saturation, lightness/luminance).
+//Source: https://gist.github.com/yiwenl/745bfea7f04c456e0101
+vec3 rgb2hsl(vec3 c){
+    float cMin=min(min(c.r,c.g),c.b),
+          cMax=max(max(c.r,c.g),c.b),
+          delta=cMax-cMin;
+    vec3 hsl=vec3(0.,0.,(cMax+cMin)/2.);
+    if(delta!=0.0){ //If it has chroma and isn't gray.
+        if(hsl.z<.5){
+            hsl.y=delta/(cMax+cMin); //Saturation.
+        }else{
+            hsl.y=delta/(2.-cMax-cMin); //Saturation.
+        }
+        float deltaR=(((cMax-c.r)/6.)+(delta/2.))/delta,
+              deltaG=(((cMax-c.g)/6.)+(delta/2.))/delta,
+              deltaB=(((cMax-c.b)/6.)+(delta/2.))/delta;
+        //Hue.
+        if(c.r==cMax){
+            hsl.x=deltaB-deltaG;
+        }else if(c.g==cMax){
+            hsl.x=(1./3.)+deltaR-deltaB;
+        }else{ //if(c.b==cMax){
+            hsl.x=(2./3.)+deltaG-deltaR;
+        }
+        hsl.x=fract(hsl.x);
+    }
+    return hsl;
+}
+
+vec3 hue2rgb(float hue){
+    hue=fract(hue);
+    return clamp(vec3(
+        abs(hue*6.-3.)-1.,
+        2.-abs(hue*6.-2.),
+        2.-abs(hue*6.-4.)
+    ), 0.0, 1.0);
+}
+
+//HSL to RGB.
+//Source: https://github.com/Jam3/glsl-hsl2rgb/blob/master/index.glsl
+vec3 hsl2rgb(vec3 hsl){
+    if(hsl.y==0.){
+        return vec3(hsl.z); //Luminance.
+    }else{
+        float b;
+        if(hsl.z<.5){
+            b=hsl.z*(1.+hsl.y);
+        }else{
+            b=hsl.z+hsl.y-hsl.y*hsl.z;
+        }
+        float a=2.*hsl.z-b;
+        return a+hue2rgb(hsl.x)*(b-a);
+    }
+}
+
+vec4 FilterEffectDoLumSat(vec4 pixel, float theLum, float theSat)
+{
+    vec3 hsl = rgb2hsl(pixel.rgb);
+    hsl.y *= theSat;
+    hsl.z *= theLum;
+    vec3 rgb = hsl2rgb(hsl);
+
+    return vec4(rgb, pixel.a);
+}
+
+vec4 FilterEffectDoWashedOut(vec4 pixel)
+{
+    return FilterEffectDoLumSat(pixel, 1.8f, 0.2f);
+}
+
+vec4 FilterEffectDoLessWashedOut(vec4 pixel)
+{
+    return FilterEffectDoLumSat(pixel, 1.2f, 0.3f);
+}
+
+//0x447190
+vec4 FilterEffectDoWhite(vec4 pixel)
+{
+    return vec4(vec3(1), pixel.a);
+}
+
 void main() {
-	ivec2 idx = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 idx = ivec2(gl_GlobalInvocationID.xy);
 
-	vec4 pixel = imageLoad(inputImage, idx);
-	
-    vec4 outPixel = pixel.brga;
+    vec4 pixel = imageLoad(inputImage, idx);
+    pixel = vec4(pixel.rgb/pixel.a, pixel.a);
 
-	imageStore(outputImage, idx, outPixel);
+    vec4 outPixel;
+    switch (PushConstants.type) {
+        case FILTER_EFFECT_WASHED_OUT:      outPixel = FilterEffectDoWashedOut(pixel); break;
+        case FILTER_EFFECT_LESS_WASHED_OUT: outPixel = FilterEffectDoLessWashedOut(pixel); break;
+        case FILTER_EFFECT_WHITE:           outPixel = FilterEffectDoWhite(pixel); break;
+    }
+
+    outPixel = vec4(outPixel.rgb * outPixel.a, outPixel.a);
+
+    imageStore(outputImage, idx, outPixel);
 }
