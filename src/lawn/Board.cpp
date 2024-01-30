@@ -1,5 +1,6 @@
 #include "BoardInclude.h"
 #include "Common.h"
+#include "ConstEnums.h"
 #include "ZenGarden.h"
 #include "lawn/LawnCommon.h"
 #include "misc/MTRand.h"
@@ -25,7 +26,6 @@
 #include "widget/StoreScreen.h"
 #include "widget/WidgetManager.h"
 #include <chrono>
-#include <ctime>
 
 // #define SEXY_PERF_ENABLED
 #include "misc/PerfTimer.h"
@@ -1332,7 +1332,7 @@ void Board::PlaceRake() {
     }
 
     int aPickCount = 0;
-    TodWeightedArray aPickArray[MAX_GRID_SIZE_Y];
+    TodWeightedArray<int> aPickArray[MAX_GRID_SIZE_Y];
     for (int aRow = 0; aRow < MAX_GRID_SIZE_Y; aRow++) {
         if (aRow != 5 && mBoardData.mPlantRow[aRow] == PlantRowType::PLANTROW_NORMAL) {
             aPickArray[aPickCount].mWeight = 1;
@@ -2029,7 +2029,7 @@ ZombieType Board::GetIntroducedZombieType() {
 
 // 0x40D770
 ZombieType Board::PickGraveRisingZombieType() {
-    TodWeightedArray aZombieWeightArray[(int)ZombieType::NUM_ZOMBIE_TYPES];
+    TodWeightedArray<ZombieType> aZombieWeightArray[ZombieType::NUM_ZOMBIE_TYPES];
     int aCount = 2;
     aZombieWeightArray[0].mItem = ZombieType::ZOMBIE_NORMAL;
     aZombieWeightArray[0].mWeight = GetZombieDefinition(ZombieType::ZOMBIE_NORMAL).mPickWeight;
@@ -2042,7 +2042,7 @@ ZombieType Board::PickGraveRisingZombieType() {
     }
 
     for (int i = 0; i < aCount; i++) {
-        ZombieType aZombieType = (ZombieType)aZombieWeightArray[i].mItem;
+        ZombieType aZombieType = aZombieWeightArray[i].mItem;
         const ZombieDefinition &aZombieDef = GetZombieDefinition(aZombieType);
         if ((mApp->IsFirstTimeAdventureMode() && mBoardData.mLevel < aZombieDef.mStartingLevel) ||
             (!mBoardData.mZombieAllowed[aZombieType] && aZombieType != ZombieType::ZOMBIE_NORMAL)) {
@@ -2050,14 +2050,16 @@ ZombieType Board::PickGraveRisingZombieType() {
         }
     }
 
-    return (ZombieType)TodPickFromWeightedArray(aZombieWeightArray, aCount);
+    return TodPickFromWeightedArray(aZombieWeightArray, aCount);
 }
 
 // 0x40D8A0
 ZombieType Board::PickZombieType(int theZombiePoints, int theWaveIndex, ZombiePicker *theZombiePicker) {
     int aPickCount = 0;
-    TodWeightedArray aZombieWeightArray[ZombieType::NUM_ZOMBIE_TYPES];
-    for (int aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES; aZombieType++) {
+    TodWeightedArray<ZombieType> aZombieWeightArray[ZombieType::NUM_ZOMBIE_TYPES];
+    for (int aZombieTypeInt = ZombieType::ZOMBIE_NORMAL; aZombieTypeInt < ZombieType::NUM_ZOMBIE_TYPES;
+         aZombieTypeInt++) {
+        ZombieType aZombieType = (ZombieType)aZombieTypeInt;
         if (!mBoardData.mZombieAllowed[aZombieType]) continue;
 
         const ZombieDefinition &aZombieDef = GetZombieDefinition((ZombieType)aZombieType);
@@ -4012,8 +4014,7 @@ void Board::PickSpecialGraveStone() {
     }
 
     if (aPickCount > 0) {
-        ((GridItem *)TodPickFromArray((intptr_t *)aPicks, aPickCount))->mGridItemState =
-            GridItemState::GRIDITEM_STATE_GRAVESTONE_SPECIAL;
+        TodPickFromArray(aPicks, aPickCount)->mGridItemState = GridItemState::GRIDITEM_STATE_GRAVESTONE_SPECIAL;
     }
 }
 

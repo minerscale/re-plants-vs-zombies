@@ -1,5 +1,6 @@
 #include "SeedChooserScreen.h"
 #include "AlmanacDialog.h"
+#include "ConstEnums.h"
 #include "GameButton.h"
 #include "GameConstants.h"
 #include "ImitaterDialog.h"
@@ -173,8 +174,9 @@ SeedChooserScreen::SeedChooserScreen() {
     UpdateImitaterButton();
 }
 
-int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(
-    TodWeightedArray *theArray, int theCount, MTRand &theLevelRNG
+template <typename T>
+T SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(
+    TodWeightedArray<T> theArray[], int theCount, MTRand &theLevelRNG
 ) {
     int aTotalWeight = 0;
     for (int i = 0; i < theCount; i++)
@@ -193,7 +195,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(
 
 // 0x483F70
 void SeedChooserScreen::CrazyDavePickSeeds() {
-    TodWeightedArray aSeedArray[NUM_SEED_TYPES];
+    TodWeightedArray<SeedType> aSeedArray[NUM_SEED_TYPES];
     for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
          aSeedType = (SeedType)(aSeedType + 1)) {
         aSeedArray[aSeedType].mItem = aSeedType;
@@ -219,8 +221,7 @@ void SeedChooserScreen::CrazyDavePickSeeds() {
 
     MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
     for (int i = 0; i < 3; i++) {
-        SeedType aPickedSeed =
-            (SeedType)PickFromWeightedArrayUsingSpecialRandSeed(aSeedArray, NUM_SEEDS_IN_CHOOSER, aLevelRNG);
+        SeedType aPickedSeed = PickFromWeightedArrayUsingSpecialRandSeed(aSeedArray, NUM_SEEDS_IN_CHOOSER, aLevelRNG);
         aSeedArray[aPickedSeed].mWeight = 0;
         ChosenSeed &aChosenSeed = mChosenSeeds[aPickedSeed];
 

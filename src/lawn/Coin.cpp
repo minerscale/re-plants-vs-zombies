@@ -152,7 +152,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
                                     SeedType::SEED_WALLNUT,    SeedType::SEED_REPEATER,  SeedType::SEED_POTATOMINE,
                                     SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
 
-            SeedType aSeedType = (SeedType)TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList));
+            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
             SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
@@ -160,21 +160,21 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
                                     SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
                                     SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
 
-            SeedType aSeedType = (SeedType)TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList));
+            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL) {
             SeedType aSeedList[] = {SeedType::SEED_LILYPAD,    SeedType::SEED_SQUASH,   SeedType::SEED_THREEPEATER,
                                     SeedType::SEED_TANGLEKELP, SeedType::SEED_JALAPENO, SeedType::SEED_SPIKEWEED,
                                     SeedType::SEED_TORCHWOOD,  SeedType::SEED_TALLNUT};
 
-            SeedType aSeedType = (SeedType)TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList));
+            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
             SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,    SeedType::SEED_CACTUS,
                                     SeedType::SEED_BLOVER,       SeedType::SEED_SPLITPEA,    SeedType::SEED_STARFRUIT,
                                     SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
 
-            SeedType aSeedType = (SeedType)TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList));
+            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF) {
             SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
@@ -378,8 +378,8 @@ void Coin::UpdateFall() {
         }
     } else {
         if (mNeedsBouncyArrow && !mHasBouncyArrow) {
-            float aParticleOffsetX = mWidth / 2;
-            float aParticleOffsetY = mHeight / 2 - 60;
+            float aParticleOffsetX = mWidth / 2.0;
+            float aParticleOffsetY = mHeight / 2.0 - 60;
             if (mType == CoinType::COIN_TROPHY) {
                 aParticleOffsetX += 2.0f;
             } else if (mType == CoinType::COIN_AWARD_MONEY_BAG || mType == CoinType::COIN_AWARD_BAG_DIAMOND) {

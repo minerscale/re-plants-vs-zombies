@@ -28,7 +28,6 @@ extern std::array<VkFence, NUM_IMAGE_SWAPS> imageFences;
 
 extern VkDescriptorPool descriptorPool;
 extern VkDescriptorSetLayout descriptorSetLayout;
-extern VkDescriptorSetLayout computeDescriptorSetLayout;
 
 // extern std::vector<VkBuffer> uniformBuffers;
 // extern VkBuffer vertexBuffer;

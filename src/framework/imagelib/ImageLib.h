@@ -36,8 +36,7 @@ extern int gAlphaComposeColor;
 extern bool gAutoLoadAlpha;
 extern bool gIgnoreJPEG2000Alpha; // I've noticed alpha in jpeg2000's that shouldn't have alpha so this defaults to true
 
-std::unique_ptr<Image>
-GetImage(const std::string &theFileName, bool lookForAlphaImage = true, bool theDoImageSanding = false);
+std::unique_ptr<Image> GetImage(const std::string &theFilename, bool lookForAlphaImage);
 
 // void InitJPEG2000();
 // void CloseJPEG2000();

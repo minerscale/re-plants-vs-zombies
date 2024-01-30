@@ -9,7 +9,7 @@
 #include "todlib/TodCommon.h"
 #include "widget/Checkbox.h"
 #include "widget/Dialog.h"
-#include <time.h>
+#include <chrono>
 
 int gLawnEditWidgetColors[][4] = {
     {0,   0,   0,   0  },
@@ -109,10 +109,11 @@ std::string GetSavedGameName(GameMode theGameMode, int theProfileId) {
 
 // 0x456980
 int GetCurrentDaysSince2000() {
-    time_t aNow = time(nullptr);
-    tm *aNowTM;
-    aNowTM = localtime(&aNow);
+    auto aLocalNow = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
 
-    int dy = aNowTM->tm_year - 100;
-    return dy * 365 + (dy - 1) / 400 - (dy - 1) / 100 + (dy - 1) / 4 + aNowTM->tm_yday + 1;
+    auto Jan1st2000 = std::chrono::current_zone()->to_local(std::chrono::sys_days(
+        std::chrono::year_month_day(std::chrono::year(2000), std::chrono::month(1), std::chrono::day(1))
+    ));
+
+    return std::chrono::duration_cast<std::chrono::days>(aLocalNow - Jan1st2000).count();
 }

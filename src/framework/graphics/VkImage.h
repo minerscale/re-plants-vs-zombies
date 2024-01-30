@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <memory>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "Image.h"
 #include "imagelib/ImageLib.h"
@@ -16,7 +17,7 @@ namespace Vk {
 class VkImage : public Image {
 public:
     VkImage(const ImageLib::Image &theImage);
-    VkImage(int width, int height) : VkImage(*std::make_unique<ImageLib::Image>(width, height)) {}
+    VkImage(int width, int height);
     VkImage(const Image &theImage) = delete;
     VkImage &operator=(const Image &) = delete;
     ~VkImage();
@@ -30,7 +31,6 @@ public:
     VkDeviceMemory memory = nullptr;
     VkFramebuffer framebuffer = nullptr;
     VkDescriptorSet descriptor = nullptr;
-    std::optional<VkDescriptorSet> computeDescriptorSet{};
 
     void TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
@@ -54,16 +54,17 @@ public:
     void BltMirror(Image *, int, int, const Rect &, const Color &, int);
     void StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool);
 
-    VkImage(const Image *src, VkImageLayout layout, ::VkImage image, VkImageView view, VkDeviceMemory memory)
-        : layout(layout), image(image), view(view), memory(memory) {
+    VkImage(
+        const Image *src, VkImageLayout layout, ::VkImage image, VkImageView view, VkDeviceMemory memory,
+        VkDescriptorSet descriptor
+    )
+        : layout(layout), image(image), view(view), memory(memory), descriptor(descriptor) {
         mWidth = src->mWidth, mHeight = src->mHeight, mNumRows = src->mNumRows, mNumCols = src->mNumCols,
         mDrawn = false;
         if (src->mAnimInfo != nullptr) mAnimInfo = new AnimInfo(*src->mAnimInfo);
         else mAnimInfo = nullptr;
 
         UpdateFramebuffer();
-        AllocateDescriptorSets();
-        UpdateDescriptorSet();
     }
 
 private:
@@ -77,9 +78,9 @@ private:
     );
     void BeginDraw(Image *theImage, int theDrawMode);
     void SetViewportAndScissor(const glm::vec4 &theClipRect);
-    void AllocateDescriptorSets();
-    void UpdateDescriptorSet();
-    std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> applyEffects(FilterEffect theFilterEffect);
+    VkDescriptorSet AllocateDescriptorSet(VkImageView theView);
+    std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory, VkDescriptorSet>
+    applyEffects(FilterEffect theFilterEffect);
     void UpdateFramebuffer();
 };
 

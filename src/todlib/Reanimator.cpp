@@ -202,8 +202,8 @@ bool ReanimationLoadDefinition(const SexyString &theFileName, ReanimatorDefiniti
         const char *aPrevText = "";
 
         // 遍历每一帧，依次用前一帧的数据填充后一帧的未定义数据，并重新记录前一帧的数据
-        for (int i = 0; i < aTrack->mTransforms.count; i++) {
-            ReanimatorTransform &aTransform = aTrack->mTransforms.mTransforms[i];
+        for (int i = 0; i < aTrack->mCount; i++) {
+            ReanimatorTransform &aTransform = aTrack->mTransforms[i];
             ReanimationFillInMissingData(aPrevTransX, aTransform.mTransX);
             ReanimationFillInMissingData(aPrevTransY, aTransform.mTransY);
             ReanimationFillInMissingData(aPrevSkewX, aTransform.mSkewX);
@@ -234,8 +234,8 @@ void ReanimationFreeDefinition(ReanimatorDefinition *theDefinition) {
     for (int aTrackIndex = 0; aTrackIndex < theDefinition->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &theDefinition->mTracks.tracks[aTrackIndex];
         const char *aPrevText = nullptr;
-        for (int i = 0; i < aTrack->mTransforms.count; i++) {
-            ReanimatorTransform &aTransform = aTrack->mTransforms.mTransforms[i];
+        for (int i = 0; i < aTrack->mCount; i++) {
+            ReanimatorTransform &aTransform = aTrack->mTransforms[i];
             if (*aTransform.mText != '\0' && aTransform.mText == aPrevText) aTransform.mText = "";
             else aPrevText = aTransform.mText;
         }
@@ -341,10 +341,6 @@ void ReanimationPreload(ReanimationType theReanimationType) {
 
     ReanimatorDefinition *aReanimDef = &gReanimatorDefArray[(int)theReanimationType];
     ReanimationCreateAtlas(aReanimDef, theReanimationType);
-    if (aReanimDef->mReanimAtlas) {
-        unreachable();
-        // TodSandImageIfNeeded(aReanimDef->mReanimAtlas->mMemoryImage);
-    }
 }
 
 // 0x471B00
@@ -360,7 +356,7 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
     mLastFrameTime = -1.0f;
 
     if (theDefinition->mTracks.count != 0) {
-        mFrameCount = mDefinition->mTracks.tracks[0].mTransforms.count;
+        mFrameCount = mDefinition->mTracks.tracks[0].mCount;
         int aItemSize = theDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
         mTrackInstances = (ReanimatorTrackInstance *)FindGlobalAllocator(aItemSize)->Calloc(aItemSize
         ); // 申请动画轨道实例数组所需的内存
@@ -446,8 +442,16 @@ void Reanimation::Update() {
             aTrack->mShakeY = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
         }
 
-        if (strncasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0) // IsAttacher
+        ReanimatorTrack &aDefTrack = mDefinition->mTracks.tracks[aTrackIndex];
+        if (aDefTrack.mNameStartsWithAttacher == ReanimatorTrack::ATTACHER_UNKNOWN) {
+            if (strncasecmp(aDefTrack.mName, "attacher__", 10) == 0) { // IsAttacher
+                aDefTrack.mNameStartsWithAttacher = ReanimatorTrack::ATTACHER_YES;
+            }
+        }
+
+        if (aDefTrack.mNameStartsWithAttacher == ReanimatorTrack::ATTACHER_YES) {
             UpdateAttacherTrack(aTrackIndex);
+        }
 
         if (aTrack->mAttachmentID != AttachmentID::ATTACHMENTID_NULL) {
             SexyTransform2D aOverlayMatrix;
@@ -491,10 +495,13 @@ void BlendTransform(
 
 // 0x471F90
 //  GOTY @Patoke: 0x476580
-void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent) {
-    ReanimatorFrameTime aFrameTime;
-    GetFrameTime(&aFrameTime);
-    GetTransformAtTime(theTrackIndex, theTransformCurrent, &aFrameTime); // 结合两帧之间的自然补间取得基础变换
+bool Reanimation::GetCurrentTransform(
+    int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn
+) {
+    ReanimatorFrameTime aFrameTime = GetFrameTime();
+
+    // 结合两帧之间的自然补间取得基础变换
+    if (!GetTransformAtTime(theTrackIndex, theTransformCurrent, aFrameTime, theEarlyReturn)) return false;
 
     ReanimatorTrackInstance *aTrack = &mTrackInstances[theTrackIndex];
     if (FloatRoundToInt(theTransformCurrent->mFrame) >= 0 &&
@@ -505,21 +512,31 @@ void Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform *th
             theTransformCurrent, *theTransformCurrent, aTrack->mBlendTransform, aBlendFactor
         ); // 结合覆写变换计算混合后的实际变换
     }
+
+    return true;
 }
 
 // 0x472020
-void Reanimation::GetTransformAtTime(
-    int theTrackIndex, ReanimatorTransform *theTransform, ReanimatorFrameTime *theFrameTime
+bool Reanimation::GetTransformAtTime(
+    int theTrackIndex, ReanimatorTransform *theTransform, const ReanimatorFrameTime theFrameTime,
+    const bool theEarlyReturn
 ) {
     TOD_ASSERT(theTrackIndex >= 0 && theTrackIndex < mDefinition->mTracks.count);
     ReanimatorTrack *aTrack = &mDefinition->mTracks.tracks[theTrackIndex];
-    TOD_ASSERT(aTrack->mTransforms.count == mDefinition->mTracks.tracks[0].mTransforms.count);
-    ReanimatorTransform &aTransBefore =
-        aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameBeforeInt]; // 前一帧的变换定义
-    ReanimatorTransform &aTransAfter =
-        aTrack->mTransforms.mTransforms[theFrameTime->mAnimFrameAfterInt]; // 后一帧的变换定义
+    TOD_ASSERT(aTrack->mCount == mDefinition->mTracks.tracks[0].mCount);
+    ReanimatorTransform &aTransBefore = aTrack->mTransforms[theFrameTime.mAnimFrameBeforeInt]; // 前一帧的变换定义
+    ReanimatorTransform &aTransAfter = aTrack->mTransforms[theFrameTime.mAnimFrameAfterInt]; // 后一帧的变换定义
 
-    auto theFactor = theFrameTime->mFraction;
+    auto theFactor = theFrameTime.mFraction;
+    if (aTransBefore.mFrame != -1.0f && aTransAfter.mFrame == -1.0f && theFactor > 0.0f &&
+        mTrackInstances[theTrackIndex].mTruncateDisappearingFrames)
+        theTransform->mFrame = -1.0f; // 当从一个非空白帧过渡至空白帧时，若轨道设置了截断消失帧，则删去过渡的过程
+    else theTransform->mFrame = aTransBefore.mFrame;
+
+    if (theEarlyReturn && theTransform->mFrame <= -0.5f) {
+        return false;
+    }
+
     theTransform->mTransX = FloatLerp(aTransBefore.mTransX, aTransAfter.mTransX, theFactor);
     theTransform->mTransY = FloatLerp(aTransBefore.mTransY, aTransAfter.mTransY, theFactor);
     theTransform->mSkewX = FloatLerp(aTransBefore.mSkewX, aTransAfter.mSkewX, theFactor);
@@ -531,10 +548,7 @@ void Reanimation::GetTransformAtTime(
     theTransform->mFont = aTransBefore.mFont;
     theTransform->mText = aTransBefore.mText;
 
-    if (aTransBefore.mFrame != -1.0f && aTransAfter.mFrame == -1.0f && theFrameTime->mFraction > 0.0f &&
-        mTrackInstances[theTrackIndex].mTruncateDisappearingFrames)
-        theTransform->mFrame = -1.0f; // 当从一个非空白帧过渡至空白帧时，若轨道设置了截断消失帧，则删去过渡的过程
-    else theTransform->mFrame = aTransBefore.mFrame;
+    return true;
 }
 
 // 0x4720F0
@@ -597,10 +611,13 @@ bool Reanimation::DrawTrack(Graphics *g, int theTrackIndex, int theRenderGroup, 
     (void)theRenderGroup;
     ReanimatorTransform aTransform;
     ReanimatorTrackInstance *aTrackInstance = &mTrackInstances[theTrackIndex]; // 目标轨道的指针
-    GetCurrentTransform(theTrackIndex, &aTransform);                           // 取得当前动画变换
-    int aImageFrame = FloatRoundToInt(aTransform.mFrame);                      // 图像在贴图中所处的份数
-    if (aImageFrame < 0)                                                       // 不存在图像时，返回
+    // We can avoid most of the heavy lifting in GetCurrentTransform by returning as soon as we find out that
+    // aImageFrame is < 0.
+    // 取得当前动画变换
+    if (!GetCurrentTransform(theTrackIndex, &aTransform, true)) {
         return false;
+    }
+    int aImageFrame = FloatRoundToInt(aTransform.mFrame); // 图像在贴图中所处的份数
 
     Color aColor = aTrackInstance->mTrackColor;
     if (!aTrackInstance->mIgnoreColorOverride) // 除非轨道无视动画的覆写颜色
@@ -799,8 +816,8 @@ void Reanimation::GetTrackMatrix(int theTrackIndex, SexyTransform2D &theMatrix) 
 }
 
 // 0x472D90
-void Reanimation::GetFrameTime(ReanimatorFrameTime *theFrameTime) {
-    TOD_ASSERT(mFrameStart + mFrameCount <= mDefinition->mTracks.tracks[0].mTransforms.count);
+ReanimatorFrameTime Reanimation::GetFrameTime() {
+    TOD_ASSERT(mFrameStart + mFrameCount <= mDefinition->mTracks.tracks[0].mCount);
     int aFrameCount;
     if (mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_FULL_LAST_FRAME ||
         mLoopType == ReanimLoopType::REANIM_LOOP_FULL_LAST_FRAME ||
@@ -809,17 +826,18 @@ void Reanimation::GetFrameTime(ReanimatorFrameTime *theFrameTime) {
     else aFrameCount = mFrameCount - 1;
     float aAnimPosition = mFrameStart + mAnimTime * aFrameCount;
     float aAnimFrameBefore = floor(aAnimPosition);
-    theFrameTime->mFraction = aAnimPosition - aAnimFrameBefore;
-    theFrameTime->mAnimFrameBeforeInt = FloatRoundToInt(aAnimFrameBefore);
-    if (theFrameTime->mAnimFrameBeforeInt >= mFrameStart + mFrameCount - 1) // 如果当前处于结束的一帧
+
+    ReanimatorFrameTime ret;
+    ret.mFraction = aAnimPosition - aAnimFrameBefore;
+    ret.mAnimFrameBeforeInt = FloatRoundToInt(aAnimFrameBefore);
+    if (ret.mAnimFrameBeforeInt >= mFrameStart + mFrameCount - 1) // 如果当前处于结束的一帧
     {
-        theFrameTime->mAnimFrameBeforeInt = mFrameStart + mFrameCount - 1;
-        theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt; // 将前、后的整数帧均赋值为最后一帧
-    } else theFrameTime->mAnimFrameAfterInt = theFrameTime->mAnimFrameBeforeInt + 1; // 后一整数帧等于前一整数帧的后一帧
-    TOD_ASSERT(
-        theFrameTime->mAnimFrameBeforeInt >= 0 &&
-        theFrameTime->mAnimFrameAfterInt < mDefinition->mTracks.tracks[0].mTransforms.count
-    );
+        ret.mAnimFrameBeforeInt = mFrameStart + mFrameCount - 1;
+        ret.mAnimFrameAfterInt = ret.mAnimFrameBeforeInt;        // 将前、后的整数帧均赋值为最后一帧
+    } else ret.mAnimFrameAfterInt = ret.mAnimFrameBeforeInt + 1; // 后一整数帧等于前一整数帧的后一帧
+    TOD_ASSERT(ret.mAnimFrameBeforeInt >= 0 && ret.mAnimFrameAfterInt < mDefinition->mTracks.tracks[0].mCount);
+
+    return ret;
 }
 
 // 0x472E40
@@ -882,7 +900,7 @@ void Reanimation::GetTrackBasePoseMatrix(int theTrackIndex, SexyTransform2D &the
     int aBasePos = mFrameBasePose == -1 ? mFrameStart : mFrameBasePose;
     ReanimatorFrameTime aStartTime = {0.0f, aBasePos, aBasePos + 1};
     ReanimatorTransform aTransformStart;
-    GetTransformAtTime(theTrackIndex, &aTransformStart, &aStartTime);
+    GetTransformAtTime(theTrackIndex, &aTransformStart, aStartTime);
     MatrixFromTransform(aTransformStart, theBasePosMatrix);
 }
 
@@ -928,13 +946,13 @@ void Reanimation::GetFramesForLayer(const char *theTrackName, int &theFrameStart
     ReanimatorTrack *aTrack = &mDefinition->mTracks.tracks[aTrackIndex];
     theFrameStart = 0;
     theFrameCount = 1;
-    for (int i = 0; i < aTrack->mTransforms.count; i++)
-        if (aTrack->mTransforms.mTransforms[i].mFrame >= 0.0f) {
+    for (int i = 0; i < aTrack->mCount; i++)
+        if (aTrack->mTransforms[i].mFrame >= 0.0f) {
             theFrameStart = i; // 取轨道上的首个非空白帧作为起始帧
             break;
         }
-    for (int j = theFrameStart; j < aTrack->mTransforms.count; j++)
-        if (aTrack->mTransforms.mTransforms[j].mFrame >= 0.0f)
+    for (int j = theFrameStart; j < aTrack->mCount; j++)
+        if (aTrack->mTransforms[j].mFrame >= 0.0f)
             theFrameCount = j - theFrameStart + 1; // 取从起始帧至轨道最后一个非空白帧之间为帧数量
 }
 
@@ -1103,25 +1121,23 @@ void ReanimatorFreeDefinitions() {
 
 // 0x4738D0
 float Reanimation::GetTrackVelocity(const char *theTrackName) {
-    ReanimatorFrameTime aFrameTime;
-    GetFrameTime(&aFrameTime);
+    ReanimatorFrameTime aFrameTime = GetFrameTime();
     int aTrackIndex = FindTrackIndex(theTrackName);
     TOD_ASSERT(aTrackIndex >= 0 && aTrackIndex < mDefinition->mTracks.count);
 
     ReanimatorTrack *aTrack = &mDefinition->mTracks.tracks[aTrackIndex];
-    float aDis = aTrack->mTransforms.mTransforms[aFrameTime.mAnimFrameAfterInt].mTransX -
-                 aTrack->mTransforms.mTransforms[aFrameTime.mAnimFrameBeforeInt].mTransX;
+    float aDis = aTrack->mTransforms[aFrameTime.mAnimFrameAfterInt].mTransX -
+                 aTrack->mTransforms[aFrameTime.mAnimFrameBeforeInt].mTransX;
     return aDis * SECONDS_PER_UPDATE * mAnimRate; // 瞬时速率 = 两帧间的横坐标之差 * 一帧的时长 * 动画速率
 }
 
 // 0x473930
 bool Reanimation::IsTrackShowing(const char *theTrackName) {
-    ReanimatorFrameTime aFrameTime;
-    GetFrameTime(&aFrameTime);
+    ReanimatorFrameTime aFrameTime = GetFrameTime();
     int aTrackIndex = FindTrackIndex(theTrackName);
     TOD_ASSERT(aTrackIndex >= 0 && aTrackIndex < mDefinition->mTracks.count);
 
-    return mDefinition->mTracks.tracks[aTrackIndex].mTransforms.mTransforms[aFrameTime.mAnimFrameAfterInt].mFrame >=
+    return mDefinition->mTracks.tracks[aTrackIndex].mTransforms[aFrameTime.mAnimFrameAfterInt].mFrame >=
            0.0f; // 返回下一整数帧是否存在图像
 }
 
@@ -1248,21 +1264,19 @@ void Reanimation::AttacherSynchWalkSpeed(
 ) {
     (void)theAttacherInfo;
     ReanimatorTrack *aTrack = &mDefinition->mTracks.tracks[theTrackIndex];
-    ReanimatorFrameTime aFrameTime;
-    GetFrameTime(&aFrameTime);
+    ReanimatorFrameTime aFrameTime = GetFrameTime();
 
     int aPlaceHolderFrameStart = aFrameTime.mAnimFrameBeforeInt;
-    while (aPlaceHolderFrameStart > mFrameStart && aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart - 1].mText ==
-                                                       aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart].mText)
+    while (aPlaceHolderFrameStart > mFrameStart &&
+           aTrack->mTransforms[aPlaceHolderFrameStart - 1].mText == aTrack->mTransforms[aPlaceHolderFrameStart].mText)
         aPlaceHolderFrameStart--; // 取当前所在区间的第一帧
     int aPlaceHolderFrameEnd = aFrameTime.mAnimFrameBeforeInt;
     while (aPlaceHolderFrameEnd < mFrameStart + mFrameCount - 1 &&
-           aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd + 1].mText ==
-               aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd].mText)
+           aTrack->mTransforms[aPlaceHolderFrameEnd + 1].mText == aTrack->mTransforms[aPlaceHolderFrameEnd].mText)
         aPlaceHolderFrameEnd++; // 取当前所在区间的最后一帧
     int aPlaceHolderFrameCount = aPlaceHolderFrameEnd - aPlaceHolderFrameStart;
-    ReanimatorTransform &aPlaceHolderStartTrans = aTrack->mTransforms.mTransforms[aPlaceHolderFrameStart];
-    ReanimatorTransform &aPlaceHolderEndTrans = aTrack->mTransforms.mTransforms[aPlaceHolderFrameEnd];
+    ReanimatorTransform &aPlaceHolderStartTrans = aTrack->mTransforms[aPlaceHolderFrameStart];
+    ReanimatorTransform &aPlaceHolderEndTrans = aTrack->mTransforms[aPlaceHolderFrameEnd];
     if (FloatApproxEqual(mAnimRate, 0.0f)) // 如果动画自身的速率为 0
     {
         theAttachReanim->mAnimRate = 0.0f; // 附属动画的速率也为 0
@@ -1279,9 +1293,9 @@ void Reanimation::AttacherSynchWalkSpeed(
 
     int aGroundTrackIndex = theAttachReanim->FindTrackIndex("_ground");
     ReanimatorTrack *aGroundTrack = &theAttachReanim->mDefinition->mTracks.tracks[aGroundTrackIndex];
-    ReanimatorTransform &aTransformGuyStart = aGroundTrack->mTransforms.mTransforms[theAttachReanim->mFrameStart];
+    ReanimatorTransform &aTransformGuyStart = aGroundTrack->mTransforms[theAttachReanim->mFrameStart];
     ReanimatorTransform &aTransformGuyEnd =
-        aGroundTrack->mTransforms.mTransforms[theAttachReanim->mFrameStart + theAttachReanim->mFrameCount - 1];
+        aGroundTrack->mTransforms[theAttachReanim->mFrameStart + theAttachReanim->mFrameCount - 1];
     float aGuyDistance = aTransformGuyEnd.mTransX - aTransformGuyStart.mTransX; // 实际动画在完整动作周期内的位移
     if (aGuyDistance < FLT_EPSILON ||
         aPlaceHolderDistance < FLT_EPSILON) // 如果占位位移为 0 或实际动画周期位移为 0，则附属动画无法移动

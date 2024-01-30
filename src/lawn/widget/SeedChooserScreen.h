@@ -3,6 +3,7 @@
 
 #include "ConstEnums.h"
 #include "framework/widget/Widget.h"
+#include "todlib/TodCommon.h"
 using namespace Sexy;
 
 class Board;
@@ -70,8 +71,9 @@ public:
     SeedChooserScreen();
     ~SeedChooserScreen();
 
-    static /*inline*/ int
-    PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArray *theArray, int theCount, MTRand &theLevelRNG);
+    template <typename T>
+    static T
+    PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArray<T> theArray[], int theCount, MTRand &theLevelRNG);
     void CrazyDavePickSeeds();
     bool Has7Rows();
     void GetSeedPositionInChooser(int theIndex, int &x, int &y);

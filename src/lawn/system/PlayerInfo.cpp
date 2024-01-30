@@ -40,16 +40,14 @@ void PlayerInfo::SyncDetails(DataSync &theSync) {
         theSync.SyncLong(mChallengeRecords[i]);
     }
     for (int i = 0; i < 80; i++) {
-        theSync.SyncLong(mPurchases[i]);
+        theSync.SyncBytes(&mPurchases[i], sizeof(mPurchases[i]));
     }
-    int aDurationMSec = (int)std::chrono::duration_cast<std::chrono::milliseconds>(mPlayTimeActivePlayer).count();
-    theSync.SyncLong(aDurationMSec);
-    aDurationMSec = (int)std::chrono::duration_cast<std::chrono::milliseconds>(mPlayTimeInactivePlayer).count();
-    theSync.SyncLong(aDurationMSec);
+    theSync.SyncTime<std::chrono::milliseconds>(mPlayTimeActivePlayer);
+    theSync.SyncTime<std::chrono::milliseconds>(mPlayTimeInactivePlayer);
     theSync.SyncLong(mHasUsedCheatKeys);
     theSync.SyncLong(mHasWokenStinky);
     theSync.SyncLong(mDidntPurchasePacketUpgrade);
-    theSync.SyncLong(mLastStinkyChocolateTime);
+    theSync.SyncTime<std::chrono::seconds>(mLastStinkyChocolateTime);
     theSync.SyncLong(mStinkyPosX);
     theSync.SyncLong(mStinkyPosY);
     theSync.SyncLong(mHasUnlockedMinigames);
@@ -136,7 +134,7 @@ void PlayerInfo::Reset() {
     mHasUsedCheatKeys = 0;
     mHasWokenStinky = 0;
     mDidntPurchasePacketUpgrade = 0;
-    mLastStinkyChocolateTime = 0;
+    mLastStinkyChocolateTime = {};
     mStinkyPosX = 0;
     mStinkyPosY = 0;
     mHasUnlockedMinigames = 0;
@@ -177,14 +175,14 @@ void PottedPlant::InitializePottedPlant(SeedType theSeedType) {
     memset(this, 0, sizeof(PottedPlant));
     mSeedType = theSeedType;
     mDrawVariation = DrawVariation::VARIATION_NORMAL;
-    mLastWateredTime = 0;
+    mLastWateredTime = {};
     mFacing = (FacingDirection)RandRangeInt((int)FacingDirection::FACING_RIGHT, (int)FacingDirection::FACING_LEFT);
     mPlantAge = PottedPlantAge::PLANTAGE_SPROUT;
     mTimesFed = 0;
     mWhichZenGarden = GardenType::GARDEN_MAIN;
     mFeedingsPerGrow = RandRangeInt(3, 5);
     mPlantNeed = PottedPlantNeed::PLANTNEED_NONE;
-    mLastNeedFulfilledTime = 0;
-    mLastFertilizedTime = 0;
-    mLastChocolateTime = 0;
+    mLastNeedFulfilledTime = {};
+    mLastFertilizedTime = {};
+    mLastChocolateTime = {};
 }

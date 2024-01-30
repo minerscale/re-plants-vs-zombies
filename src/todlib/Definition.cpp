@@ -6,6 +6,7 @@
 #include "Trail.h"
 #include "misc/fcaseopen.h"
 #include "paklib/PakInterface.h"
+#include "todlib/Reanimator.h"
 #include "zlib.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
@@ -268,8 +269,7 @@ void *ReanimatorTransformConstructor(void *thePointer) {
 // 0x4715B0
 void *ReanimatorTrackConstructor(void *thePointer) {
     if (thePointer) {
-        ((ReanimatorTrack *)thePointer)->mName = "";
-        ((ReanimatorTrack *)thePointer)->mTransforms = {nullptr, 0};
+        *((ReanimatorTrack *)thePointer) = ReanimatorTrack();
     }
     return thePointer;
 }
@@ -356,7 +356,7 @@ bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
         if (aPrefixLen < aNameLen) {
             SexyString aPathToTry = aLoadResPath.mDirectory + theName.substr(aPrefixLen, aNameLen);
 
-            auto aImageRef = gSexyAppBase->GetSharedImage(aPathToTry, "", true);
+            auto aImageRef = gSexyAppBase->GetSharedImage(aPathToTry);
             if (aImageRef != nullptr) {
                 TodHesitationTrace("Load Image '%s'", theName.c_str());
                 TodAddImageToMap(aImageRef, theName);

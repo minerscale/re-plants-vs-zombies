@@ -3,8 +3,6 @@
 
 // #include "CritSect.h"
 
-#include <time.h>
-
 #include "memmgr.h"
 
 #include <cstdarg>

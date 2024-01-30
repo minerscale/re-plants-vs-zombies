@@ -243,8 +243,7 @@ template <typename T, size_t N> constexpr std::array<T, N> createLUT(auto fn) {
 const auto sRGBToLinearLut = createLUT<uint16_t, 256>(sRGBToLinear);
 const auto linearToSRGBLut = createLUT<uint8_t, 1024>(linearToSRGB);
 
-std::unique_ptr<Image>
-ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage, bool /*theDoImageSanding*/) {
+std::unique_ptr<Image> ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage) {
     if (!gAutoLoadAlpha) lookForAlphaImage = false;
 
     int aLastDotPos = theFilename.rfind('.');

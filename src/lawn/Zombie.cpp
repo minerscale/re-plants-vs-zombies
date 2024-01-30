@@ -5454,9 +5454,8 @@ void Zombie::UpdateAnimSpeed() {
             ApplyAnimRate(mOriginalAnimRate);
         } else if (aBodyReanim->TrackExists("_ground")) {
             ReanimatorTrack *aTrack = &aBodyReanim->mDefinition->mTracks.tracks[aBodyReanim->FindTrackIndex("_ground")];
-            float aDistance =
-                aTrack->mTransforms.mTransforms[aBodyReanim->mFrameStart + aBodyReanim->mFrameCount - 1].mTransX -
-                aTrack->mTransforms.mTransforms[aBodyReanim->mFrameStart].mTransX;
+            float aDistance = aTrack->mTransforms[aBodyReanim->mFrameStart + aBodyReanim->mFrameCount - 1].mTransX -
+                              aTrack->mTransforms[aBodyReanim->mFrameStart].mTransX;
             if (aDistance >= 1e-6f) {
                 float aOneOverSpeed = aBodyReanim->mFrameCount / aDistance;
                 float aAnimRate = mVelX * aOneOverSpeed * 47.0f / mScaleZombie;
@@ -7945,7 +7944,7 @@ void Zombie::BossStompAttack() {
     mBossStompCounter = RandRangeInt(5500, 6500);
 
     int aRowsCount = 0;
-    intptr_t aRowArray[4];
+    int aRowArray[4];
     for (int i = 0; i < 4; i++) {
         if (BossCanStompRow(i)) {
             aRowArray[aRowsCount] = i;

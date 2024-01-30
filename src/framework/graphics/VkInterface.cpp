@@ -31,6 +31,7 @@
 #include <thread>
 #include <type_traits>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -193,7 +194,6 @@ VkRenderPass imagePass;
 VkDescriptorPool descriptorPool;
 std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> descriptorSets;
 VkDescriptorSetLayout descriptorSetLayout;
-VkDescriptorSetLayout computeDescriptorSetLayout;
 
 VkPipelineLayout pipelineLayout;
 VkPipelineLayout computePipelineLayout;
@@ -429,42 +429,28 @@ uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
 }
 
 void createDescriptorSetLayouts() {
-    {
-        VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-        samplerLayoutBinding.binding = 0;
-        samplerLayoutBinding.descriptorCount = 1;
-        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        samplerLayoutBinding.pImmutableSamplers = nullptr;
-        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    std::array<VkDescriptorSetLayoutBinding, 2> samplerLayoutBindings{
+        {{
+             0,
+             VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+             1,
+             VK_SHADER_STAGE_FRAGMENT_BIT,
+             nullptr,
+         }, {
+             1,
+             VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+             1,
+             VK_SHADER_STAGE_COMPUTE_BIT,
+             nullptr,
+         }}
+    };
 
-        std::array<VkDescriptorSetLayoutBinding, 1> bindings = {samplerLayoutBinding};
+    VkDescriptorSetLayoutCreateInfo layoutInfo{
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0, 2, samplerLayoutBindings.data()
+    };
 
-        VkDescriptorSetLayoutCreateInfo layoutInfo{};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-        layoutInfo.pBindings = bindings.data();
-
-        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
-    }
-
-    {
-        std::array<VkDescriptorSetLayoutBinding, 2> computeLayoutBindings{
-            {
-             {0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr},
-             {1, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr},
-             }
-        };
-
-        VkDescriptorSetLayoutCreateInfo layoutInfo{
-            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0, computeLayoutBindings.size(),
-            computeLayoutBindings.data()
-        };
-
-        if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &computeDescriptorSetLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
 
@@ -617,15 +603,13 @@ void createDescriptorSets() {
 void createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[0].descriptorCount = descriptorSets.size() + 2000;
+    poolSizes[0].descriptorCount = descriptorSets.size() + 4096;
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-    poolSizes[1].descriptorCount = 200;
+    poolSizes[1].descriptorCount = poolSizes[0].descriptorCount;
 
-    VkDescriptorPoolCreateInfo poolInfo{
-        VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,     nullptr,
-        VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, poolSizes[0].descriptorCount + poolSizes[1].descriptorCount,
-        static_cast<uint32_t>(poolSizes.size()),           poolSizes.data()
-    };
+    VkDescriptorPoolCreateInfo poolInfo{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,     nullptr,
+                                        VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, poolSizes[0].descriptorCount,
+                                        static_cast<uint32_t>(poolSizes.size()),           poolSizes.data()};
 
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
@@ -871,8 +855,9 @@ void createComputePipeline() {
     pushConstant.size = sizeof(ComputePushConstants);
     pushConstant.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
+    std::array<VkDescriptorSetLayout, 2> sets = {descriptorSetLayout, descriptorSetLayout};
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{
-        VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 1, &computeDescriptorSetLayout, 1, &pushConstant
+        VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 2, sets.data(), 1, &pushConstant
     };
 
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &computePipelineLayout) != VK_SUCCESS) {
@@ -1367,7 +1352,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, [[maybe_unused]] void *pUserData
 ) {
 
-    std::cerr << "\033[0;31m" << pCallbackData->pMessage << "\033[0m" << std::endl;
+    std::cerr << "\033[0;31m" << pCallbackData->pMessage << "\033[0m" << std::endl << std::endl;
 
     return VK_FALSE;
 }
@@ -1500,6 +1485,8 @@ void createInstance() {
 }
 
 VkInterface::~VkInterface() {
+    renderMutex.lock();
+
     flushCommandBuffer();
     vkDeviceWaitIdle(device);
 
@@ -1511,7 +1498,6 @@ VkInterface::~VkInterface() {
 
     vkDestroyDescriptorPool(device, descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-    vkDestroyDescriptorSetLayout(device, computeDescriptorSetLayout, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -1542,6 +1528,8 @@ VkInterface::~VkInterface() {
     vkDestroyInstance(instance, nullptr);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    renderMutex.unlock();
 }
 
 void VkInterface::framebufferResizeCallback() { framebufferResized = true; }

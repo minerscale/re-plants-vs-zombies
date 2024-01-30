@@ -142,6 +142,29 @@ public:
     void SyncFloat(float &theFloat);
     void SyncDouble(double &theDouble);
     void SyncString(SexyString &theStr);
+
+    template <typename Unit, typename R, typename P> void SyncTime(std::chrono::duration<R, P> &theDuration) {
+        uint32_t aTimeMsec = 0;
+        if (mReader) {
+            aTimeMsec = mReader->ReadLong();
+            theDuration = std::chrono::duration<R, P>(Unit(aTimeMsec));
+        } else {
+            aTimeMsec = std::chrono::duration_cast<Unit>(theDuration).count();
+            mWriter->WriteLong(aTimeMsec);
+        }
+    }
+
+    template <typename Unit, typename C, typename D> void SyncTime(std::chrono::time_point<C, D> &theTime) {
+        uint32_t aTimeMsec = 0;
+        if (mReader) {
+            aTimeMsec = mReader->ReadLong();
+            theTime = std::chrono::time_point<C, D>(Unit(aTimeMsec));
+        } else {
+            aTimeMsec = std::chrono::duration_cast<Unit>(theTime.time_since_epoch()).count();
+            mWriter->WriteLong(aTimeMsec);
+        }
+    }
+
     inline void SyncPointer(void **) { /* 未找到 */
     }
     inline void RegisterPointer(void *) { /* 未找到 */

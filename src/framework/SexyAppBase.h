@@ -101,7 +101,7 @@ enum {
 };
 
 // typedef std::map<HANDLE, int> HandleToIntMap;
-typedef std::map<std::pair<std::string, std::string>, std::unique_ptr<Image>> SharedImageMap;
+typedef std::map<std::string, std::unique_ptr<Image>> SharedImageMap;
 
 class SexyAppBase : public ButtonListener, public DialogListener {
 public:
@@ -426,11 +426,10 @@ public:
     void SetCursor(int theCursorNum);
     int GetCursor();
     void EnableCustomCursors(bool enabled);
-    virtual std::unique_ptr<Image> GetImage(const std::string &theFileName, bool theDoImageSanding = false);
+    virtual std::unique_ptr<Image> GetImage(const std::string &theFileName);
     //	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, DDImage*
     //theImage, bool* isNew);
-    virtual Image *
-    GetSharedImage(const std::string &theFileName, const std::string &theVariant = "", bool theDoImageSanding = false);
+    virtual Image *GetSharedImage(const std::string &theFileName);
 
     void CleanSharedImages();
     //	void					PrecacheAdditive(MemoryImage* theImage);

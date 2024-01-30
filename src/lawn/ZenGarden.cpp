@@ -11,12 +11,13 @@
 #include "todlib/Attachment.h"
 #include "todlib/EffectSystem.h"
 #include "todlib/Reanimator.h"
+#include "todlib/TodCommon.h"
 #include "todlib/TodFoley.h"
 #include "todlib/TodParticle.h"
 #include "todlib/TodStringFile.h"
 #include "widget/GameButton.h"
 #include "widget/StoreScreen.h"
-#include <time.h>
+#include <chrono>
 
 static SpecialGridPlacement gGreenhouseGridPlacement[] = // 0x69DE50
     {
@@ -317,7 +318,7 @@ void ZenGarden::AddPottedPlant(PottedPlant *thePottedPlant) {
     PottedPlant *aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPottedPlantIndex];
     *aPottedPlant = *thePottedPlant;
     aPottedPlant->mWhichZenGarden = GardenType::GARDEN_MAIN;
-    aPottedPlant->mLastWateredTime = 0;
+    aPottedPlant->mLastWateredTime = {};
     FindOpenZenGardenSpot(aPottedPlant->mX, aPottedPlant->mY);
     mApp->mPlayerInfo->mNumPottedPlants++;
 
@@ -381,7 +382,11 @@ void ZenGarden::MouseDownWithMoneySign(Plant *thePlant) {
 
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
     SexyString aMessageText = mApp->GetCrazyDaveText(1700);
-    aMessageText = TodReplaceNumberString(aMessageText, _S("{SELL_PRICE}"), aPrice);
+
+    // @ Minerscale: Fixed Crazy Dave looking like he's low ballin' you by a factor of ten.
+    // TODO: Matching for the $ out the front is not locale invariant. Proper handling would be wise.
+    aMessageText = TodReplaceString(aMessageText, _S("${SELL_PRICE}"), LawnApp::GetMoneyString(aPrice));
+    // aMessageText = TodReplaceNumberString(aMessageText, _S("{SELL_PRICE}"), aPrice);
 
     SexyString aPlantName;
     if (thePlant->mSeedType == SeedType::SEED_SPROUT && aPottedPlant->mSeedType == SeedType::SEED_MARIGOLD) {
@@ -408,7 +413,8 @@ void ZenGarden::MouseDownWithMoneySign(Plant *thePlant) {
 
         int aNumPlantsAfterThis = mApp->mPlayerInfo->mNumPottedPlants - thePlant->mPottedPlantIndex - 1;
         if (aNumPlantsAfterThis > 0) {
-            memcpy(aPottedPlant, aPottedPlant + 1, aNumPlantsAfterThis * sizeof(PottedPlant));
+            // @ Minerscale tisk tisk tisk, using memcpy instead of memmove, amateur.
+            memmove(aPottedPlant, aPottedPlant + 1, aNumPlantsAfterThis * sizeof(PottedPlant));
 
             Plant *aUpdatePlant = nullptr;
             while (mBoard->IteratePlants(aUpdatePlant)) {
@@ -428,7 +434,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant *thePlant) {
 // 0x51DF40
 void ZenGarden::PlantFertilized(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
-    aPottedPlant->mLastFertilizedTime = time(nullptr);
+    aPottedPlant->mLastFertilizedTime = TimeToUnixEpoch(getTime());
     aPottedPlant->mPlantAge = (PottedPlantAge)((int)aPottedPlant->mPlantAge + 1);
     aPottedPlant->mPlantNeed = PottedPlantNeed::PLANTNEED_NONE;
     aPottedPlant->mTimesFed = 0;
@@ -461,7 +467,7 @@ void ZenGarden::PlantFertilized(Plant *thePlant) {
 // 0x51E110
 void ZenGarden::PlantFulfillNeed(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
-    aPottedPlant->mLastNeedFulfilledTime = time(nullptr);
+    aPottedPlant->mLastNeedFulfilledTime = TimeToUnixEpoch(getTime());
     aPottedPlant->mPlantNeed = PottedPlantNeed::PLANTNEED_NONE;
     aPottedPlant->mTimesFed = 0;
 
@@ -527,7 +533,9 @@ void ZenGarden::PlantWatered(Plant *thePlant) {
         mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_KEEP_WATERING) {
         aTimeSpan = 9;
     }
-    aPottedPlant->mLastWateredTime = time(nullptr) - (time_t)aTimeSpan;
+    aPottedPlant->mLastWateredTime = TimeToUnixEpoch(
+        getTime() - std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::seconds(aTimeSpan))
+    );
 
     mApp->PlayFoley(FoleyType::FOLEY_SPAWN_SUN);
     mBoard->AddCoin(thePlant->mX + 40, thePlant->mY, CoinType::COIN_SILVER, CoinMotion::COIN_MOTION_COIN);
@@ -628,30 +636,36 @@ void ZenGarden::RemoveHappyEffect(Plant *thePlant) {
     }
 }
 
+inline auto toLocalTime(const TimePoint &t) { return std::chrono::current_zone()->to_local(t); }
+
+inline auto compareFloorDaysLessEqual(const auto &l, const auto &r) {
+    return std::chrono::floor<std::chrono::days>(l) <= std::chrono::floor<std::chrono::days>(r);
+}
+
 // 0x51E890
 bool ZenGarden::WasPlantNeedFulfilledToday(PottedPlant *thePottedPlant) {
-    time_t aNow = time(nullptr);
-    if (aNow - thePottedPlant->mLastNeedFulfilledTime < 3600) {
+    auto aNow = getTime();
+    if (aNow - TimeFromUnixEpoch(thePottedPlant->mLastNeedFulfilledTime) < std::chrono::seconds(3600)) {
         return true;
     }
 
-    tm *aNowTM, *aLastNeedFulfilledTM;
-    aNowTM = localtime(&aNow);
-    aLastNeedFulfilledTM = localtime(&thePottedPlant->mLastNeedFulfilledTime);
-    return aNowTM->tm_year <= aLastNeedFulfilledTM->tm_year && aNowTM->tm_yday <= aLastNeedFulfilledTM->tm_yday;
+    return compareFloorDaysLessEqual(
+        toLocalTime(aNow), toLocalTime(TimeFromUnixEpoch(thePottedPlant->mLastNeedFulfilledTime))
+    );
+    // return std::chrono::floor<std::chrono::days>(aNowTM) <=
+    // std::chrono::floor<std::chrono::days>(aLastNeedFulfilledTM);
 }
 
 // 0x51E910
 bool ZenGarden::PlantShouldRefreshNeed(PottedPlant *thePottedPlant) {
-    time_t aNow = time(nullptr);
-    if (aNow - thePottedPlant->mLastWateredTime < 3600) {
+    auto aNow = getTime();
+    if (aNow - TimeFromUnixEpoch(thePottedPlant->mLastWateredTime) < std::chrono::seconds(3600)) {
         return false;
     }
 
-    tm *aNowTM, *aLastWateredTM;
-    aNowTM = localtime(&aNow);
-    aLastWateredTM = localtime(&thePottedPlant->mLastWateredTime);
-    return aNowTM->tm_year > aLastWateredTM->tm_year || aNowTM->tm_yday > aLastWateredTM->tm_yday;
+    return compareFloorDaysLessEqual(
+        toLocalTime(aNow), toLocalTime(TimeFromUnixEpoch(thePottedPlant->mLastWateredTime))
+    );
 }
 
 // GOTY @Patoke: 0x5292A0
@@ -661,7 +675,7 @@ void ZenGarden::RefreshPlantNeeds(PottedPlant *thePottedPlant) {
     }
 
     if (Plant::IsAquatic(thePottedPlant->mSeedType)) {
-        thePottedPlant->mLastWateredTime = time(nullptr);
+        thePottedPlant->mLastWateredTime = TimeToUnixEpoch(getTime());
         thePottedPlant->mPlantNeed = (PottedPlantNeed
         )RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH);
     } else {
@@ -683,7 +697,7 @@ void ZenGarden::UpdatePlantNeeds() {
 }
 
 bool ZenGarden::WasPlantFertilizedInLastHour(PottedPlant *thePottedPlant) {
-    return time(nullptr) - thePottedPlant->mLastFertilizedTime < 3600;
+    return getTime() - TimeFromUnixEpoch(thePottedPlant->mLastFertilizedTime) < std::chrono::seconds(3600);
 }
 
 // 0x51EA30
@@ -696,9 +710,9 @@ PottedPlantNeed ZenGarden::GetPlantsNeed(PottedPlant *thePottedPlant) {
         return PottedPlantNeed::PLANTNEED_NONE;
     }
 
-    time_t aNow = time(nullptr);
-    bool aTooLongSinceWatering = aNow - thePottedPlant->mLastWateredTime > 15;
-    bool aTooShortSinceWatering = aNow - thePottedPlant->mLastWateredTime < 3;
+    auto aNow = getTime();
+    bool aTooLongSinceWatering = aNow - TimeFromUnixEpoch(thePottedPlant->mLastWateredTime) > std::chrono::seconds(15);
+    bool aTooShortSinceWatering = aNow - TimeFromUnixEpoch(thePottedPlant->mLastWateredTime) < std::chrono::seconds(3);
 
     if (WasPlantFertilizedInLastHour(thePottedPlant) || WasPlantNeedFulfilledToday(thePottedPlant)) {
         return PottedPlantNeed::PLANTNEED_NONE;
@@ -760,7 +774,7 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
                 aStinky->mPosX + 40.0f, aStinky->mPosY + 40.0f, aStinky->mRenderOrder + 1,
                 ParticleEffect::PARTICLE_PRESENT_PICKUP
             );
-            mApp->mPlayerInfo->mLastStinkyChocolateTime = time(nullptr);
+            mApp->mPlayerInfo->mLastStinkyChocolateTime = getTime();
             mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE]--;
 
             mApp->PlayFoley(FoleyType::FOLEY_WAKEUP);
@@ -842,7 +856,7 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
 // 0x51F220
 void ZenGarden::FeedChocolateToPlant(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
-    aPottedPlant->mLastChocolateTime = time(nullptr);
+    aPottedPlant->mLastChocolateTime = TimeToUnixEpoch(getTime());
     thePlant->mLaunchCounter = 60;
     mApp->AddTodParticle(
         thePlant->mX + 40.0f, thePlant->mY + 40.0f, thePlant->mRenderOrder + 1, ParticleEffect::PARTICLE_PRESENT_PICKUP
@@ -1064,7 +1078,8 @@ void ZenGarden::AddStinky() {
 
     if (!mApp->mPlayerInfo->mHasSeenStinky) {
         mApp->mPlayerInfo->mHasSeenStinky = 1;
-        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = time(nullptr);
+        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] =
+            std::chrono::duration_cast<std::chrono::seconds>(getTime().time_since_epoch()).count();
     }
 
     GridItem *aStinky = mBoard->mGridItems.DataArrayAlloc();
@@ -1267,16 +1282,17 @@ void ZenGarden::StinkyAnimRateUpdate(GridItem *theStinky) {
 
 void ZenGarden::ResetStinkyTimers() {
     mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = 2;
-    mApp->mPlayerInfo->mLastStinkyChocolateTime = 0;
+    mApp->mPlayerInfo->mLastStinkyChocolateTime = {};
 }
 
 // 0x520500
 void ZenGarden::StinkyUpdate(GridItem *theStinky) {
     Reanimation *aStinkyReanim = mApp->ReanimationGet(theStinky->mGridItemReanimID);
 
-    time_t aNow = time(nullptr);
+    auto aNow = getTime();
     if (mApp->mPlayerInfo->mLastStinkyChocolateTime > aNow ||
-        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] > aNow) {
+        TimePoint(std::chrono::seconds{mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL]}) >
+            aNow) {
         ResetStinkyTimers();
     }
 
@@ -1851,7 +1867,11 @@ void ZenGarden::SetPlantAnimSpeed(Plant *thePlant) {
 // 0x521CC0
 int ZenGarden::PlantGetMinutesSinceHappy(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
-    int aMinutes = (time(nullptr) - aPottedPlant->mLastNeedFulfilledTime) / 60;
+
+    int aMinutes = std::chrono::duration_cast<std::chrono::minutes>(
+                       getTime() - TimeFromUnixEpoch(aPottedPlant->mLastNeedFulfilledTime)
+    )
+                       .count();
     if (PlantHighOnChocolate(aPottedPlant)) {
         aMinutes = 0;
     }
@@ -1882,18 +1902,21 @@ void ZenGarden::PlantUpdateProduction(Plant *thePlant) {
 }
 
 void ZenGarden::ResetPlantTimers(PottedPlant *thePottedPlant) {
-    thePottedPlant->mLastWateredTime = 0;
-    thePottedPlant->mLastNeedFulfilledTime = 0;
-    thePottedPlant->mLastFertilizedTime = 0;
-    thePottedPlant->mLastChocolateTime = 0;
+    thePottedPlant->mLastWateredTime = {};
+    thePottedPlant->mLastNeedFulfilledTime = {};
+    thePottedPlant->mLastFertilizedTime = {};
+    thePottedPlant->mLastChocolateTime = {};
 }
 
 // 0x521E70
 void ZenGarden::PottedPlantUpdate(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
-    time_t aNow = time(nullptr);
-    if (aPottedPlant->mLastWateredTime > aNow || aPottedPlant->mLastNeedFulfilledTime > aNow ||
-        aPottedPlant->mLastFertilizedTime > aNow || aPottedPlant->mLastChocolateTime > aNow) {
+    TimePoint aNow = getTime();
+
+    if (TimeFromUnixEpoch(aPottedPlant->mLastWateredTime) > aNow ||
+        TimeFromUnixEpoch(aPottedPlant->mLastNeedFulfilledTime) > aNow ||
+        TimeFromUnixEpoch(aPottedPlant->mLastFertilizedTime) > aNow ||
+        TimeFromUnixEpoch(aPottedPlant->mLastChocolateTime) > aNow) {
         ResetPlantTimers(aPottedPlant);
     }
 
@@ -1937,17 +1960,20 @@ void ZenGarden::DrawPlantOverlay(Graphics *g, Plant *thePlant) {
 
 // 0x521FE0
 void ZenGarden::WakeStinky() {
-    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = time(nullptr);
+    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] =
+        std::chrono::duration_cast<std::chrono::seconds>(getTime().time_since_epoch()).count();
     mApp->PlaySample(SOUND_TAP);
     mBoard->ClearAdvice(AdviceType::ADVICE_STINKY_SLEEPING);
     gLawnApp->mPlayerInfo->mHasWokenStinky = TRUE;
 }
 
 // 0x522090
-bool ZenGarden::IsStinkyHighOnChocolate() { return time(nullptr) - mApp->mPlayerInfo->mLastStinkyChocolateTime < 3600; }
+bool ZenGarden::IsStinkyHighOnChocolate() {
+    return getTime() - mApp->mPlayerInfo->mLastStinkyChocolateTime < std::chrono::seconds(3600);
+}
 
 bool ZenGarden::PlantHighOnChocolate(PottedPlant *thePottedPlant) {
-    return time(nullptr) - thePottedPlant->mLastChocolateTime < 300;
+    return getTime() - TimeFromUnixEpoch(thePottedPlant->mLastChocolateTime) < std::chrono::seconds(300);
 }
 
 bool ZenGarden::IsStinkySleeping() {
@@ -1960,7 +1986,10 @@ bool ZenGarden::ShouldStinkyBeAwake() {
     if (IsStinkyHighOnChocolate()) {
         return true;
     }
-    return time(nullptr) - mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] < 180;
+    return getTime() -
+               TimePoint(std::chrono::seconds(mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL]
+               )) <
+           std::chrono::seconds(180);
 }
 
 // 0x522110
@@ -2015,7 +2044,7 @@ SeedType ZenGarden::PickRandomSeedType() {
             aSeedCount++;
         }
     }
-    return (SeedType)TodPickFromArray((intptr_t *)aSeedList, aSeedCount);
+    return TodPickFromArray(aSeedList, aSeedCount);
 }
 
 // 0x5223F0

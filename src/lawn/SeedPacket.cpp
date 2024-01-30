@@ -1,6 +1,7 @@
 #include "SeedPacket.h"
 #include "Board.h"
 #include "Challenge.h"
+#include "ConstEnums.h"
 #include "CursorObject.h"
 #include "Cutscene.h"
 #include "LawnApp.h"
@@ -37,7 +38,7 @@ void SeedPacket::PickNextSlotMachineSeed() {
                                   SeedType::SEED_SLOT_MACHINE_SUN, SeedType::SEED_SLOT_MACHINE_DIAMOND};
 
     int aSeedsCount = 0;
-    TodWeightedArray aSeedWeightArray[(int)SeedType::NUM_SEED_TYPES];
+    TodWeightedArray<SeedType> aSeedWeightArray[SeedType::NUM_SEED_TYPES];
     for (size_t i = 0; i < LENGTH(SLOT_SEED_TYPES); i++) {
         SeedType aSeedType = SLOT_SEED_TYPES[i];
 
@@ -55,12 +56,12 @@ void SeedPacket::PickNextSlotMachineSeed() {
             }
         }
 
-        aSeedWeightArray[aSeedsCount].mItem = (int)aSeedType;
+        aSeedWeightArray[aSeedsCount].mItem = aSeedType;
         aSeedWeightArray[aSeedsCount].mWeight = aWeight;
         aSeedsCount++;
     }
 
-    mSlotMachiningNextSeed = (SeedType)TodPickFromWeightedArray(aSeedWeightArray, aSeedsCount);
+    mSlotMachiningNextSeed = TodPickFromWeightedArray(aSeedWeightArray, aSeedsCount);
 }
 
 void SeedPacket::SlotMachineStart() {

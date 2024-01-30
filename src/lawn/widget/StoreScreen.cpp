@@ -18,7 +18,7 @@
 #include "todlib/TodFoley.h"
 #include "todlib/TodStringFile.h"
 #include "widget/WidgetManager.h"
-#include <time.h>
+#include <chrono>
 
 static StoreItem gStoreItemSpots[NUM_STORE_PAGES][MAX_PAGE_SPOTS] = {
     {STORE_ITEM_PACKET_UPGRADE,    STORE_ITEM_POOL_CLEANER,      STORE_ITEM_RAKE,              STORE_ITEM_ROOF_CLEANER,
@@ -620,7 +620,7 @@ void StoreScreen::Update() {
             } else {
                 mAmbientSpeechCountDown--;
                 if (mAmbientSpeechCountDown <= 0) {
-                    TodWeightedArray aPickArray[4];
+                    TodWeightedArray<int> aPickArray[4];
                     for (int i = 0; i < 4; i++) {
                         int aMessage = 2015 + i;
                         aPickArray[i].mItem = aMessage;
@@ -818,7 +818,10 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
             } else if (theStoreItem == STORE_ITEM_RAKE) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 3;
             } else if (theStoreItem == STORE_ITEM_STINKY_THE_SNAIL) {
-                mApp->mPlayerInfo->mPurchases[theStoreItem] = time(nullptr);
+                mApp->mPlayerInfo->mPurchases[theStoreItem] =
+                    std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()
+                    )
+                        .count();
             } else if (theStoreItem == STORE_ITEM_FERTILIZER || theStoreItem == STORE_ITEM_BUG_SPRAY) {
                 if (mApp->mPlayerInfo->mPurchases[theStoreItem] < PURCHASE_COUNT_OFFSET) {
                     mApp->mPlayerInfo->mPurchases[theStoreItem] = PURCHASE_COUNT_OFFSET;

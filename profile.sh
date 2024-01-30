@@ -2,5 +2,5 @@
 
 cd tools/run/
 
-perf record -e cycles -g --call-graph=dwarf -F 2000 ./PlantsVsZombies
+perf record -e cycles -e cache-misses -e branch-misses -g --call-graph=dwarf -F 762 ./PlantsVsZombies
 #perf script -F +pid > test-conv.perf

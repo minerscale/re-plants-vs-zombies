@@ -3,7 +3,6 @@
 #include "framework/SexyAppBase.h"
 #include "misc/Debug.h"
 #include <cstdarg>
-#include <time.h>
 
 using namespace Sexy;
 

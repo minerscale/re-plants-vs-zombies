@@ -1,6 +1,7 @@
 #pragma once
 #include "ConstEnums.h"
 #include "framework/misc/ResourceManager.h"
+#include "todlib/TodDebug.h"
 #include <cfloat>
 #include <cmath>
 #include <cstdint>
@@ -21,10 +22,43 @@ using namespace Sexy;
 
 // #################################################################################################### //
 
-struct TodWeightedArray {
-    intptr_t mItem;
+template <typename T> struct TodWeightedArray {
+    T mItem;
     int mWeight;
 };
+
+template <typename T> static T TodPickFromArray(const T theArray[], int theCount) {
+    TOD_ASSERT(theCount > 0);
+    return theCount > 0 ? theArray[Sexy::Rand(theCount)] : (T)0;
+}
+
+template <typename T> static T TodPickFromWeightedArray(const TodWeightedArray<T> theArray[], int theCount) {
+    return TodPickArrayItemFromWeightedArray(theArray, theCount)->mItem;
+}
+
+// 0x511520
+template <typename T>
+static TodWeightedArray<T> *TodPickArrayItemFromWeightedArray(const TodWeightedArray<T> theArray[], int theCount) {
+    if (theCount <= 0) return nullptr;
+
+    int aTotalWeight = 0;
+    for (int i = 0; i < theCount; i++) {
+        aTotalWeight += theArray[i].mWeight;
+    }
+    TOD_ASSERT(aTotalWeight > 0);
+
+    aTotalWeight = Sexy::Rand(aTotalWeight);
+
+    for (int i = 0; i < theCount; i++) {
+        aTotalWeight -= theArray[i].mWeight;
+        if (aTotalWeight < 0) {
+            return (TodWeightedArray<T> *)&theArray[i];
+        }
+    }
+
+    TOD_ASSERT();
+    return nullptr;
+}
 
 struct TodWeightedGridArray {
     int mX;
@@ -40,9 +74,6 @@ public:
     float mSecondLastPicked;
 };
 
-/*inline*/ intptr_t TodPickFromArray(const intptr_t *theArray, int theCount);
-intptr_t TodPickFromWeightedArray(const TodWeightedArray *theArray, int theCount);
-TodWeightedArray *TodPickArrayItemFromWeightedArray(const TodWeightedArray *theArray, int theCount);
 TodWeightedGridArray *TodPickFromWeightedGridArray(const TodWeightedGridArray *theArray, int theCount);
 float TodCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPicked);
 void TodUpdateSmoothArrayPick(TodSmoothArray *theArray, int theCount, int thePickIndex);

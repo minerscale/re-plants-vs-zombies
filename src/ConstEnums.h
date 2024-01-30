@@ -1030,7 +1030,7 @@ enum StoreItem {
     STORE_ITEM_PVZ,
     STORE_ITEM_INVALID = -1
 };
-enum StorePages : int {
+enum StorePages {
     STORE_PAGE_SLOT_UPGRADES = 0,
     STORE_PAGE_PLANT_UPGRADES = 1,
     STORE_PAGE_ZEN1 = 2,
@@ -1199,7 +1199,7 @@ enum ZombiePhase {
     PHASE_SQUASH_FALLING,
     PHASE_SQUASH_DONE_FALLING
 };
-enum ZombieType : int {
+enum ZombieType {
     ZOMBIE_INVALID = -1,
     ZOMBIE_NORMAL,
     ZOMBIE_FLAG,

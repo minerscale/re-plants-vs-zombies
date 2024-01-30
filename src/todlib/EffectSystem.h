@@ -4,6 +4,7 @@
 #include "ConstEnums.h"
 #include "DataArray.h"
 #include "framework/graphics/Graphics.h"
+#include <deque>
 using namespace Sexy;
 
 #define MAX_TRIANGLES 256
@@ -20,7 +21,7 @@ public:
 class TodTriangleGroup {
 public:
     typedef std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> VertexArray;
-    typedef std::vector<VertexArray> VertexArrayPool;
+    typedef std::deque<VertexArray> VertexArrayPool;
 
     static size_t gNumVertArraysInUse;
     static VertexArrayPool gVertArrays;

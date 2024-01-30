@@ -37,10 +37,10 @@
 #include <math.h>
 #include <memory>
 #include <thread>
-#include <time.h>
 
 #include <chrono>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 // For TodResourceManager, since inheratance goes the other way lol.
@@ -5501,8 +5501,10 @@ int SexyAppBase::GetCursor() { return mCursorNum; }
 
 void SexyAppBase::EnableCustomCursors(bool enabled) { mCustomCursorsEnabled = enabled; }
 
-std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const std::string &theFileName, bool theDoImageSanding) {
-    std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theFileName, true, theDoImageSanding);
+std::unordered_map<std::string, std::unique_ptr<Vk::VkImage>> gBaseImageMap;
+std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const std::string &theFileName) {
+    // printf("new image to load: %s\n", theFileName.c_str());
+    std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theFileName, true);
 
     if (aLoadedImage == nullptr) return nullptr;
 
@@ -6102,18 +6104,11 @@ anUpperVariant), SharedImage())); aSharedImageRef = &aResultPair.first->second;
     return aSharedImageRef;
 }*/
 
-Image *
-SexyAppBase::GetSharedImage(const std::string &theFileName, const std::string &theVariant, bool theDoImageSanding) {
+Image *SexyAppBase::GetSharedImage(const std::string &theFileName) {
     std::string anUpperFileName = StringToUpper(theFileName);
-    std::string anUpperVariant = StringToUpper(theVariant);
 
     // Get the image and add it to the map if it doesn't exist.
-    std::unique_ptr<Image> &aResult =
-        mSharedImageMap
-            .try_emplace(
-                SharedImageMap::key_type(anUpperFileName, anUpperVariant), GetImage(theFileName, theDoImageSanding)
-            )
-            .first->second;
+    std::unique_ptr<Image> &aResult = mSharedImageMap.try_emplace(anUpperFileName, GetImage(theFileName)).first->second;
 
     // This represents an old path which is not implemented.
     // Pass in a '!' as the first char of the file name to create a new image

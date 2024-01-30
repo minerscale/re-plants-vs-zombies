@@ -424,7 +424,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToString(theParams.mElementVector[2], &aFileNameString))) {
                 std::string aFileName = GetPathFrom(aFileNameString, GetFileDir(mSourceFile));
 
-                Image *anImage = mApp->GetSharedImage(aFileName, "");
+                Image *anImage = mApp->GetSharedImage(aFileName);
 
                 if ((Image *)anImage != NULL) {
                     aLayer->mImage = anImage;

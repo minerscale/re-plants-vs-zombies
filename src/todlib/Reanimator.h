@@ -32,18 +32,22 @@ constexpr const double SECONDS_PER_UPDATE = 0.01f;
 
 enum ReanimFlags { REANIM_NO_ATLAS, REANIM_FAST_DRAW_IN_SW_MODE };
 
-struct ReanimatorTransformArray {
-    ReanimatorTransform *mTransforms;
-    int count;
-};
-
 class ReanimatorTrack {
 public:
-    const char *mName;                    //+0x0：轨道名称
-    ReanimatorTransformArray mTransforms; //+0x4：每一帧的动画变换的数组
+    enum NameStartsWithAttacher : uint8_t {
+        ATTACHER_UNKNOWN,
+        ATTACHER_NO,
+        ATTACHER_YES,
+    };
+
+    const char *mName;                //+0x0：轨道名称
+    ReanimatorTransform *mTransforms; //+0x4：每一帧的动画变换的数组
+    int mCount;
+    NameStartsWithAttacher
+        mNameStartsWithAttacher; // @ Minerscale, an extra byte + padding is worth the enormous cost of strcasecmp
 
 public:
-    ReanimatorTrack() : mName(""), mTransforms({NULL, 0}) {}
+    ReanimatorTrack() : mName(""), mTransforms(nullptr), mCount{0}, mNameStartsWithAttacher(ATTACHER_UNKNOWN) {}
 };
 
 struct ReanimatorTrackArray {
@@ -204,9 +208,12 @@ public:
     /*inline*/ void Draw(Graphics *g);
     void DrawRenderGroup(Graphics *g, int theRenderGroup);
     bool DrawTrack(Graphics *g, int theTrackIndex, int theRenderGroup, TodTriangleGroup *theTriangleGroup);
-    void GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent);
-    void GetTransformAtTime(int theTrackIndex, ReanimatorTransform *theTransform, ReanimatorFrameTime *theFrameTime);
-    void GetFrameTime(ReanimatorFrameTime *theFrameTime);
+    bool GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn = false);
+    bool GetTransformAtTime(
+        int theTrackIndex, ReanimatorTransform *theTransform, const ReanimatorFrameTime theFrameTime,
+        const bool theEarlyReturn = false
+    );
+    ReanimatorFrameTime GetFrameTime();
     int FindTrackIndex(const char *theTrackName);
     void AttachToAnotherReanimation(Reanimation *theAttachReanim, const char *theTrackName);
     void GetAttachmentOverlayMatrix(int theTrackIndex, SexyTransform2D &theOverlayMatrix);

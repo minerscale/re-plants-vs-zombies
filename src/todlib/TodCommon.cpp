@@ -120,38 +120,6 @@ bool TodHasUsedCheatKeys() { return false; }
 
 bool TodAppCloseRequest() { return false; }
 
-intptr_t TodPickFromArray(const intptr_t *theArray, int theCount) {
-    TOD_ASSERT(theCount > 0);
-    return theCount > 0 ? theArray[Sexy::Rand(theCount)] : 0;
-}
-
-intptr_t TodPickFromWeightedArray(const TodWeightedArray *theArray, int theCount) {
-    return TodPickArrayItemFromWeightedArray(theArray, theCount)->mItem;
-}
-
-// 0x511520
-TodWeightedArray *TodPickArrayItemFromWeightedArray(const TodWeightedArray *theArray, int theCount) {
-    if (theCount <= 0) return nullptr;
-
-    int aTotalWeight = 0;
-    for (int i = 0; i < theCount; i++) {
-        aTotalWeight += theArray[i].mWeight;
-    }
-    TOD_ASSERT(aTotalWeight > 0);
-
-    aTotalWeight = Sexy::Rand(aTotalWeight);
-
-    for (int i = 0; i < theCount; i++) {
-        aTotalWeight -= theArray[i].mWeight;
-        if (aTotalWeight < 0) {
-            return (TodWeightedArray *)&theArray[i];
-        }
-    }
-
-    TOD_ASSERT();
-    return nullptr;
-}
-
 // 0x511570
 TodWeightedGridArray *TodPickFromWeightedGridArray(const TodWeightedGridArray *theArray, int theCount) {
     if (theCount <= 0) return nullptr;
@@ -1045,7 +1013,6 @@ bool TodResourceManager::TodLoadNextResource() {
         switch (aRes->mType) {
         case ResType_Image: {
             ImageRes *anImageRes = (ImageRes *)aRes;
-            anImageRes->mImageSand = true;
             if (anImageRes->mImage != nullptr) {
                 mCurResGroupListItr++;
                 continue;
@@ -1076,17 +1043,6 @@ bool TodResourceManager::TodLoadNextResource() {
         }
 
         if (!LoadNextResource()) break;
-
-        /*
-        if (aRes->mType == ResType::ResType_Image)
-        {
-            ImageRes* anImageRes = (ImageRes*)aRes;
-            Image* aImage = (Image*)anImageRes->mImage;
-            if (aImage != nullptr)
-            {
-                TodMarkImageForSanding(aImage);
-            }
-        }*/
 
         // GetTickCount();
         TodHesitationTrace("Loading: '%s'", aRes->mPath.c_str());

@@ -2,7 +2,6 @@
 #include "Common.h"
 
 #include <fstream>
-#include <time.h>
 
 using namespace Sexy;
 

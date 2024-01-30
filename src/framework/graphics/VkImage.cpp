@@ -62,32 +62,48 @@ void createImage(int width, int height, ::VkImage &image, VkDeviceMemory &memory
     vkBindImageMemory(device, image, memory, 0);
 }
 
-void VkImage::UpdateDescriptorSet() {
-    VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = view;
-    imageInfo.sampler = textureSampler;
-
-    VkWriteDescriptorSet descriptorWrite{};
-    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = descriptor;
-    descriptorWrite.dstBinding = 0;
-    descriptorWrite.dstArrayElement = 0;
-    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    descriptorWrite.descriptorCount = 1;
-    descriptorWrite.pImageInfo = &imageInfo;
-
-    vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
-}
-
-void VkImage::AllocateDescriptorSets() {
+VkDescriptorSet VkImage::AllocateDescriptorSet(VkImageView theView) {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &descriptorSetLayout;
 
-    vkAllocateDescriptorSets(device, &allocInfo, &descriptor);
+    VkDescriptorSet dstSet;
+    vkAllocateDescriptorSets(device, &allocInfo, &dstSet);
+
+    std::array<VkDescriptorImageInfo, 2> imageInfos{
+        {{
+             textureSampler,
+             theView,
+             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+         }, {
+             textureSampler,
+             theView,
+             VK_IMAGE_LAYOUT_GENERAL,
+         }}
+    };
+
+    std::array<VkWriteDescriptorSet, 2> descriptorWrites{
+        {{
+             VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+             nullptr,
+             dstSet,
+             0,
+             0,
+             1,
+             VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+             &imageInfos[0],
+             nullptr,
+             nullptr,
+
+         }, {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, dstSet, 1, 0, 1, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+          &imageInfos[1], nullptr, nullptr}}
+    };
+
+    vkUpdateDescriptorSets(device, 2, descriptorWrites.data(), 0, nullptr);
+
+    return dstSet;
 }
 
 void VkImage::UpdateFramebuffer() {
@@ -111,7 +127,6 @@ struct deleteInfo {
     std::optional<VkFramebuffer> framebuffer;
     std::optional<VkDeviceMemory> memory;
     std::optional<VkDescriptorSet> set;
-    std::optional<VkDescriptorSet> computeSet;
     std::optional<VkBuffer> buffer;
 };
 
@@ -162,6 +177,8 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 
     renderMutex.lock();
 
+    endRenderPass();
+
     VkDeviceSize imageSize = mWidth * mHeight * sizeof(uint32_t);
 
     VkBuffer stagingBuffer;
@@ -183,22 +200,49 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
             VK_IMAGE_USAGE_STORAGE_BIT
     );
 
+    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
+
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, stagingBuffer});
+
+    view = createImageView(image, pixelFormat);
+    UpdateFramebuffer();
+    descriptor = AllocateDescriptorSet(view);
+
+    renderMutex.unlock();
+}
+
+VkImage::VkImage(int width, int height) {
+    mWidth = width;
+    mHeight = height;
+
+    if (!mWidth || !mHeight) throw std::runtime_error("Images with no size are not supported.");
+
+    renderMutex.lock();
+
     endRenderPass();
+
+    createImage(
+        mWidth, mHeight, image, memory,
+        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+            VK_IMAGE_USAGE_STORAGE_BIT
+    );
 
     TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
+    VkClearColorValue color = {
+        .uint32{0, 0, 0, 0}
+    };
 
-    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, {}, stagingBuffer});
+    vkCmdClearColorImage(imageCommandBuffers[imageBufferIdx], image, layout, &color, 1, &range);
 
     view = createImageView(image, pixelFormat);
 
     UpdateFramebuffer();
 
-    AllocateDescriptorSets();
-    UpdateDescriptorSet();
+    descriptor = AllocateDescriptorSet(view);
 
     renderMutex.unlock();
 }
@@ -206,9 +250,7 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 VkImage::~VkImage() {
     renderMutex.lock();
 
-    deleteList[imageBufferIdx].emplace_back(
-        deleteInfo{image, view, framebuffer, memory, descriptor, computeDescriptorSet, {}}
-    );
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
 
     renderMutex.unlock();
 }
@@ -281,7 +323,6 @@ void VkImage::TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newL
     );
 }
 
-auto begin_time = std::chrono::high_resolution_clock::now();
 void flushCommandBuffer() {
     endRenderPass();
 
@@ -299,7 +340,8 @@ void flushCommandBuffer() {
     beginCommandBuffer();
 }
 
-std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> VkImage::applyEffects(FilterEffect theFilterEffect) {
+std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory, VkDescriptorSet>
+VkImage::applyEffects(FilterEffect theFilterEffect) {
     endRenderPass();
 
     ::VkImage newImage;
@@ -338,36 +380,14 @@ std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> VkImage::apply
 
     VkImageView newView = createImageView(newImage, pixelFormat);
 
-    if (!computeDescriptorSet.has_value()) {
-        VkDescriptorSetAllocateInfo allocInfo{
-            VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, descriptorPool, 1, &computeDescriptorSetLayout
-        };
+    VkDescriptorSet newDescriptor = AllocateDescriptorSet(newView);
 
-        computeDescriptorSet = nullptr;
-        vkAllocateDescriptorSets(device, &allocInfo, &computeDescriptorSet.value());
-    }
-
-    { // Update descriptors
-        VkDescriptorImageInfo srcImageInfo{textureSampler, view, newLayout};
-
-        VkDescriptorImageInfo dstImageInfo{textureSampler, newView, newLayout};
-
-        std::array<VkWriteDescriptorSet, 2> descriptorWrites{
-            {
-             {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, computeDescriptorSet.value(), 0, 0, 1,
-                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, &srcImageInfo, nullptr, nullptr},
-             {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, computeDescriptorSet.value(), 1, 0, 1,
-                 VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, &dstImageInfo, nullptr, nullptr},
-             }
-        };
-
-        vkUpdateDescriptorSets(device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
-    }
+    std::array<VkDescriptorSet, 2> descriptorSetsToBind = {descriptor, newDescriptor};
 
     vkCmdBindPipeline(imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
     vkCmdBindDescriptorSets(
-        imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 1,
-        &computeDescriptorSet.value(), 0, 0
+        imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 2,
+        descriptorSetsToBind.data(), 0, 0
     );
 
     ComputePushConstants constants = {theFilterEffect};
@@ -379,7 +399,7 @@ std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory> VkImage::apply
 
     vkCmdDispatch(imageCommandBuffers[imageBufferIdx], mWidth / 16, mHeight / 16, 1);
 
-    return std::make_tuple(newLayout, newImage, newView, newMemory);
+    return std::make_tuple(newLayout, newImage, newView, newMemory, newDescriptor);
 }
 
 std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterEffect) {
@@ -389,7 +409,7 @@ std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterE
 
     auto ret = std::make_unique<VkImage>(
         this, std::get<VkImageLayout>(newData), std::get<::VkImage>(newData), std::get<VkImageView>(newData),
-        std::get<VkDeviceMemory>(newData)
+        std::get<VkDeviceMemory>(newData), std::get<VkDescriptorSet>(newData)
     );
 
     renderMutex.unlock();
@@ -402,7 +422,7 @@ void VkImage::applyEffectsToSelf(FilterEffect theFilterEffect) {
     auto newData = applyEffects(theFilterEffect);
 
     // Queue up old info for deletion.
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, {}, {}, {}});
+    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
 
     /*
      * Update the image info
@@ -413,9 +433,9 @@ void VkImage::applyEffectsToSelf(FilterEffect theFilterEffect) {
     image = std::get<::VkImage>(newData);
     view = std::get<VkImageView>(newData);
     memory = std::get<VkDeviceMemory>(newData);
+    descriptor = std::get<VkDescriptorSet>(newData);
 
     UpdateFramebuffer();
-    UpdateDescriptorSet();
 
     renderMutex.unlock();
 }
@@ -517,8 +537,8 @@ void VkImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMo
         blankImage = std::make_unique<VkImage>(inputImage);
     }
 
-    Rect theSrcRect = {0, 0, theRect.mWidth, theRect.mHeight};
-    BltF(blankImage.get(), 0, 0, theSrcRect, theRect, theColor, theDrawMode);
+    Rect theSrcRect = {0, 0, 1, 1};
+    StretchBlt(blankImage.get(), theRect, theSrcRect, theRect, theColor, theDrawMode, false);
 }
 
 void VkImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode) {

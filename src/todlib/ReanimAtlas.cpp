@@ -201,9 +201,9 @@ int ReanimAtlas::FindImage(Image *theImage) {
 void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition *theReanimDef) {
     for (int aTrackIndex = 0; aTrackIndex < theReanimDef->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &theReanimDef->mTracks.tracks[aTrackIndex];
-        for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++) // 遍历每一帧上的贴图
+        for (int aKeyIndex = 0; aKeyIndex < aTrack->mCount; aKeyIndex++) // 遍历每一帧上的贴图
         {
-            Image *aImage = aTrack->mTransforms.mTransforms[aKeyIndex].mImage;
+            Image *aImage = aTrack->mTransforms[aKeyIndex].mImage;
             // 如果存在贴图，且贴图的宽、高均不大于 254 像素，且相同的贴图未加入至图集图片数组中
             if (aImage != nullptr && aImage->mWidth <= 254 && aImage->mHeight <= 254 && FindImage(aImage) < 0)
                 AddImage(aImage); // 先将其加入数组中，后续再确定其位于图集中的位置
@@ -215,9 +215,9 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition *theReanimDef) {
 
     for (int aTrackIndex = 0; aTrackIndex < theReanimDef->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &theReanimDef->mTracks.tracks[aTrackIndex];
-        for (int aKeyIndex = 0; aKeyIndex < aTrack->mTransforms.count; aKeyIndex++) // 遍历每一帧上的贴图
+        for (int aKeyIndex = 0; aKeyIndex < aTrack->mCount; aKeyIndex++) // 遍历每一帧上的贴图
         {
-            Image *&aImage = aTrack->mTransforms.mTransforms[aKeyIndex].mImage;
+            Image *&aImage = aTrack->mTransforms[aKeyIndex].mImage;
             if (aImage != nullptr && aImage->mWidth <= 254 && aImage->mHeight <= 254) {
                 intptr_t aImageIndex = FindImage(aImage);
                 TOD_ASSERT(aImageIndex >= 0);

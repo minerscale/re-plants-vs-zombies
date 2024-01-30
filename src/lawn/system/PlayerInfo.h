@@ -1,11 +1,14 @@
 #ifndef __PLAYERINFO_H__
 #define __PLAYERINFO_H__
 
+#include <bits/chrono.h>
 #define MAX_POTTED_PLANTS 200
 #define PURCHASE_COUNT_OFFSET 1000
 
 #include "ConstEnums.h"
 #include <chrono>
+
+typedef std::chrono::system_clock::time_point TimePoint;
 
 class PottedPlant {
 public:
@@ -18,21 +21,32 @@ public:
     int mY;                     //+0xC
     FacingDirection mFacing;    //+0x10
 
-    time_t mLastWateredTime;      //+0x18
+    uint64_t mLastWateredTime;    //+0x18
     DrawVariation mDrawVariation; //+0x20
     PottedPlantAge mPlantAge;     //+0x24
     int mTimesFed;                //+0x28
     int mFeedingsPerGrow;         //+0x2C
     PottedPlantNeed mPlantNeed;   //+0x30
 
-    time_t mLastNeedFulfilledTime; //+0x38
-    time_t mLastFertilizedTime;    //+0x40
-    time_t mLastChocolateTime;     //+0x48
-    time_t mFutureAttribute[1];    //+0x50
+    uint64_t mLastNeedFulfilledTime; //+0x38
+    uint64_t mLastFertilizedTime;    //+0x40
+    uint64_t mLastChocolateTime;     //+0x48
+    uint64_t mFutureAttribute[1];    //+0x50
 
 public:
     void InitializePottedPlant(SeedType theSeedType);
 };
+
+static inline TimePoint getTime() {
+    using namespace std::chrono;
+    return system_clock::now();
+}
+
+static inline uint32_t TimeToUnixEpoch(const TimePoint &t) {
+    return std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch()).count();
+}
+
+static inline TimePoint TimeFromUnixEpoch(const uint32_t &t) { return TimePoint(std::chrono::seconds(t)); }
 
 class DataSync;
 class PlayerInfo {
@@ -50,7 +64,7 @@ public:
     int mHasUsedCheatKeys;                                                //+0x308
     int mHasWokenStinky;                                                  //+0x30C
     int mDidntPurchasePacketUpgrade;                                      //+0x310
-    int32_t mLastStinkyChocolateTime;                                     //+0x314
+    TimePoint mLastStinkyChocolateTime;                                   //+0x314
     int mStinkyPosX;                                                      //+0x318
     int mStinkyPosY;                                                      //+0x31C
     int mHasUnlockedMinigames;                                            //+0x320

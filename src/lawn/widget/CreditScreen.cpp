@@ -453,8 +453,8 @@ void CreditScreen::PreLoadCredits() {
     ReanimatorDefinition *aMain2Def = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_MAIN2];
     for (int aTrackIndex = 0; aTrackIndex < aMain2Def->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aMain2Def->mTracks.tracks[aTrackIndex];
-        for (int aTransIndex = 0; aTransIndex < aTrack->mTransforms.count; aTransIndex++) {
-            ReanimatorTransform &aTrans = aTrack->mTransforms.mTransforms[aTransIndex];
+        for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
+            ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTransIndex < 124 && (strcmp(aTrack->mName, "Words") == 0 || strcmp(aTrack->mName, "Words2") == 0)) {
                 aTrans.mFont = FONT_BRIANNETOD32BLACK;
             }
@@ -463,8 +463,8 @@ void CreditScreen::PreLoadCredits() {
     ReanimatorDefinition *aMain3Def = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_MAIN3];
     for (int aTrackIndex = 0; aTrackIndex < aMain3Def->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aMain3Def->mTracks.tracks[aTrackIndex];
-        for (int aTransIndex = 0; aTransIndex < aTrack->mTransforms.count; aTransIndex++) {
-            ReanimatorTransform &aTrans = aTrack->mTransforms.mTransforms[aTransIndex];
+        for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
+            ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTransIndex < 124 && (strcmp(aTrack->mName, "Words") == 0 || strcmp(aTrack->mName, "Words2") == 0)) {
                 aTrans.mFont = FONT_BRIANNETOD32BLACK;
             }
@@ -473,8 +473,8 @@ void CreditScreen::PreLoadCredits() {
     ReanimatorDefinition *aUndeadDef = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_WEARETHEUNDEAD];
     for (int aTrackIndex = 0; aTrackIndex < aUndeadDef->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aUndeadDef->mTracks.tracks[aTrackIndex];
-        for (int aTransIndex = 0; aTransIndex < aTrack->mTransforms.count; aTransIndex++) {
-            ReanimatorTransform &aTrans = aTrack->mTransforms.mTransforms[aTransIndex];
+        for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
+            ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTrans.mFont) {
                 aTrans.mFont = FONT_BRIANNETOD32BLACK;
             }
@@ -485,8 +485,7 @@ void CreditScreen::PreLoadCredits() {
 // 0x434C70
 void CreditScreen::GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction) {
     Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-    float aFrameCount =
-        aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime - 1.0f;
+    float aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime - 1.0f;
     if (mCreditsPhase == CreditsPhase::CREDITS_MAIN1) {
         aFrameCount += 2.0f;
     } else if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2) {
@@ -635,8 +634,8 @@ void CreditScreen::DrawFogEffect(Graphics *g, float theTime) {
             // 本格浓雾纵坐标 = 行 * 85 + 200
             float aPosY = y * 85 + 200.0f;
             // 开始计算周期变化的颜色，aAnimTime 为 MV 动画播放至当前时刻需要的时间（秒数）
-            float aAnimTime = aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count *
-                              aCreditsReanim->mAnimTime / (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
+            float aAnimTime = aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime /
+                              (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
             float aTime = aAnimTime * PI * 2;
             // 与行、列有关的初始相位
             float aPhaseX = 6 * PI * x / 14;
@@ -745,7 +744,7 @@ void CreditScreen::Draw(Graphics *g) {
     g->FillRect(0, 0, mWidth, mHeight);
 
     Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-    int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count - 1;
+    int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1;
     float aFrameFactor = 1.0f / aFrameCount;
     int aBackground1Index = aCreditsReanim->FindTrackIndex("Background");
     ReanimatorTransform aTransformBackground1;
@@ -781,7 +780,7 @@ void CreditScreen::Draw(Graphics *g) {
                 aTransformBackground2.mImage->mHeight - 1
             );
             aBackground2G.DrawImageF(
-                IMAGE_BACKGROUND1, aTransformBackground2.mTransX - BOARD_WIDTH / 2,
+                IMAGE_BACKGROUND1, aTransformBackground2.mTransX - BOARD_WIDTH / 2.0,
                 aTransformBackground2.mTransY - BOARD_HEIGHT / 2
             );
             aBackground2G.ClearClipRect();
@@ -793,7 +792,7 @@ void CreditScreen::Draw(Graphics *g) {
                 aTransformBackground3.mImage->mHeight - 1
             );
             aBackground3G.DrawImageF(
-                IMAGE_BACKGROUND1, aTransformBackground3.mTransX - BOARD_WIDTH / 2,
+                IMAGE_BACKGROUND1, aTransformBackground3.mTransX - BOARD_WIDTH / 2.0,
                 aTransformBackground3.mTransY - BOARD_HEIGHT / 2
             );
         }
@@ -804,7 +803,7 @@ void CreditScreen::Draw(Graphics *g) {
                 aTransformBackground4.mImage->mHeight - 1
             );
             aBackground4G.DrawImageF(
-                IMAGE_BACKGROUND2, aTransformBackground4.mTransX - BOARD_WIDTH / 2,
+                IMAGE_BACKGROUND2, aTransformBackground4.mTransX - BOARD_WIDTH / 2.0,
                 aTransformBackground4.mTransY - BOARD_HEIGHT / 2
             );
         }
@@ -827,7 +826,7 @@ void CreditScreen::Draw(Graphics *g) {
                 aTransformBackground1.mImage->mHeight - 1
             );
             aBackground1G.DrawImageF(
-                IMAGE_BACKGROUND1, aTransformBackground1.mTransX - BOARD_WIDTH / 2,
+                IMAGE_BACKGROUND1, aTransformBackground1.mTransX - BOARD_WIDTH / 2.0,
                 aTransformBackground1.mTransY - BOARD_HEIGHT / 2
             );
         }
@@ -848,7 +847,7 @@ void CreditScreen::Draw(Graphics *g) {
                 aTransformBackground4.mImage->mHeight - 1
             );
             aBackground4G.DrawImageF(
-                IMAGE_BACKGROUND2, aTransformBackground4.mTransX - BOARD_WIDTH / 2,
+                IMAGE_BACKGROUND2, aTransformBackground4.mTransX - BOARD_WIDTH / 2.0,
                 aTransformBackground4.mTransY - BOARD_HEIGHT / 2
             );
         }
@@ -921,8 +920,8 @@ void CreditScreen::Draw(Graphics *g) {
         g->ClipRect(48, 0, BOARD_WIDTH, BOARD_HEIGHT);
     }
     if (aDrawDiscoLights) {
-        float aDiscoTime = aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime /
-                           aCreditsReanim->mAnimRate;
+        float aDiscoTime =
+            aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate;
         DrawDisco(g, 600.0f, 450.0f, aDiscoTime);
         DrawDisco(g, 200.0f, 450.0f, aDiscoTime);
     }
@@ -988,7 +987,7 @@ void CreditScreen::UpdateBlink() {
     Reanimation *aSunFlowerReanim = FindSubReanim(aCreditsReanim, ReanimationType::REANIM_SUNFLOWER);
     if (aSunFlowerReanim) {
         if (mCreditsPhase == CreditsPhase::CREDITS_MAIN3) {
-            int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count - 1;
+            int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1;
             float aFrameFactor = 1.0f / aFrameCount;
             if (aCreditsReanim->mAnimTime > aFrameFactor * 200.0f) {
                 return;
@@ -1028,8 +1027,8 @@ void CreditScreen::Update() {
                                       std::chrono::high_resolution_clock::now() - mTimerSinceStart
         )
                                       .count();
-        int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count *
-                                    aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate) *
+        int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime /
+                                    aCreditsReanim->mAnimRate) *
                                    1000.0f;
         if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2) {
             aDurationReanimation += 57142;
@@ -1038,10 +1037,10 @@ void CreditScreen::Update() {
         }
 
         int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
-        int aUnsyncedFrames = (aUnsyncedDuration + 5) / 10;
+        int aUnsyncedFrames = (aUnsyncedDuration - 5) / 10;
         if (aUnsyncedFrames < 0) {
             TodTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
-        } else if (aUnsyncedFrames > 2) {
+        } else if (aUnsyncedFrames > 5) {
             TodTrace("Movie playing too slow %d frames", aUnsyncedFrames - 1);
         }
 
@@ -1064,7 +1063,7 @@ void CreditScreen::UpdateMovie() {
     UpdateBlink();
 
     Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-    float aFrameFactor = 1.0f / (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count - 1);
+    float aFrameFactor = 1.0f / (aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1);
 
     aCreditsReanim->Update();
     mApp->mEffectSystem->Update();
@@ -1097,13 +1096,13 @@ void CreditScreen::UpdateMovie() {
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 140.0f) ||
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 142.0f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDIT_STROBE
             );
         }
         if (aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 136.5f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDITS_RAYSWIPE
             );
         }
@@ -1144,7 +1143,7 @@ void CreditScreen::UpdateMovie() {
 
         if (aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 120.0f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDITS_ZOMBIEHEADWIPE
             );
         }
@@ -1187,7 +1186,7 @@ void CreditScreen::UpdateMovie() {
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 239.5f) ||
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 243.5f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDIT_STROBE
             );
         }
@@ -1206,7 +1205,7 @@ void CreditScreen::UpdateMovie() {
         }
         if (aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 342.0f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDIT_STROBE
             );
         }
@@ -1250,7 +1249,7 @@ void CreditScreen::UpdateMovie() {
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 243.0f) ||
             aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 247.0f)) {
             mApp->AddTodParticle(
-                BOARD_WIDTH / 2, BOARD_HEIGHT / 2, (int)RenderLayer::RENDER_LAYER_TOP,
+                BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, (int)RenderLayer::RENDER_LAYER_TOP,
                 ParticleEffect::PARTICLE_CREDIT_STROBE
             );
         }
@@ -1382,7 +1381,7 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame) {
         aReanim = PlayReanim((int)thePhase + 1);
     }
 
-    float aFrameFactor = 1.0f / (aReanim->mDefinition->mTracks.tracks->mTransforms.count - 1);
+    float aFrameFactor = 1.0f / (aReanim->mDefinition->mTracks.tracks->mCount - 1);
     int aMusicOffset = theFrame * 12142.0f;
     int aJumpMilliseconds = theFrame * 1000.0f / 7.0f;
     (void)aJumpMilliseconds; // unused, because of stub

@@ -3,6 +3,7 @@
 #include "XMLParser.h"
 #include "sound/SoundManager.h"
 #include <memory>
+#include <stdexcept>
 // #include "graphics/DDImage.h"
 // #include "graphics/D3DInterface.h"
 #include "graphics/ImageFont.h"
@@ -600,7 +601,11 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
 
     // bool isNew;
     ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
-    Image *anImage = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, theRes->mImageSand);
+    if (theRes->mVariant != "")
+        throw std::runtime_error(
+            "I mistakenly depricated image variants to simplify the rendering code. Apparently it was used."
+        );
+    Image *anImage = gSexyAppBase->GetSharedImage(theRes->mPath);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
     // DDImage* aDDImage = (DDImage*) aSharedImageRef;
