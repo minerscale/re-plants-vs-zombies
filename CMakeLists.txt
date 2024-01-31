@@ -34,10 +34,11 @@ else()
         "-fdiagnostics-color=always"
         "-pipe"
         "-pthread"
+        "-flto"
         # Remove these for proper release build
-        "-g"
-        "-fno-omit-frame-pointer"
-        "-fstack-protector-all"
+        #"-g"
+        #"-fno-omit-frame-pointer"
+        #"-fstack-protector-all"
         #"-fno-inline"
     )
 
@@ -53,7 +54,7 @@ else()
     else()
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O3"
+            "-O0"
         )
     endif()
 endif()

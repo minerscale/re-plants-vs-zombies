@@ -433,12 +433,12 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 
     SeedType aSeed1 = theBoardState->mSeedType[theGridX][theGridY];
     SeedType aSeed2 = theBoardState->mSeedType[theGridX + 1][theGridY];
-    SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
-    SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
+    SeedType aSeed3 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
+    SeedType aSeed4 = theBoardState->mSeedType[theGridX][theGridY + 1];
 
     theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
-    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed2;
-    theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed3;
+    theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
+    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
     theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
 
     int aHasMatch = BeghouledBoardHasMatch(theBoardState);
@@ -1058,9 +1058,14 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult *theHitResul
         return true;
     }
 
-    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theClickCount <= 0) {
-        mApp->PlaySample(Sexy::SOUND_TAPGLASS);
-        return true;
+    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
+        if (theClickCount > 0) {
+            ZombiquariumMouseDown(x, y);
+            return false;
+        } else {
+            mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+            return true;
+        }
     }
 
     if (mApp->IsScaryPotterLevel() && theHitResult->mObjectType == OBJECT_TYPE_SCARY_POT) {
@@ -1847,7 +1852,7 @@ void Challenge::SpawnLevelAward(int theGridX, int theGridY) {
     mApp->mBoardResult = BOARDRESULT_WON;
     mApp->PlayFoley(FOLEY_SPAWN_SUN);
     Coin *aCoin = mBoard->AddCoin(aPosX, aPosY, aCoinType, COIN_MOTION_COIN);
-    mApp->AddTodParticle(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
+    mApp->AddTodParticle(BOARD_WIDTH / 2.0, BOARD_HEIGHT / 2.0, RENDER_LAYER_TOP, PARTICLE_SCREEN_FLASH);
 
     if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
         aCoin->Collect();
@@ -3062,6 +3067,7 @@ void Challenge::ZombiquariumUpdate() {
         mBoard->DisplayAdvice("[ADVICE_ALMOST_THERE]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ALMOST_THERE);
     }
     if (aScore >= 110 && mBoard->mBoardData.mTutorialState == TUTORIAL_OFF) {
+        printf("xPos: %d\n", mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[0].mX);
         mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_BUY_SNORKEL;
         float aPosX = mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[0].mX;
         float aPosY = mBoard->mSeedBank->mY + mBoard->mSeedBank->mSeedPackets[0].mY;
@@ -3076,6 +3082,8 @@ void Challenge::ZombiquariumUpdate() {
     }
     if (aScore >= ZOMBIQUARIUM_WINNING_SCORE &&
         mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL) {
+        printf("woohoo! We Won!! xPos: %d\n", mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[1].mX);
+
         mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY;
         float aPosX = mBoard->mSeedBank->mX + mBoard->mSeedBank->mSeedPackets[1].mX;
         float aPosY = mBoard->mSeedBank->mY + mBoard->mSeedBank->mSeedPackets[1].mY;
@@ -3083,10 +3091,10 @@ void Challenge::ZombiquariumUpdate() {
         mBoard->DisplayAdvice(
             "[ADVICE_ZOMBIQUARIUM_CLICK_TROPHY]", MESSAGE_STYLE_HINT_TALL_FAST, ADVICE_ZOMBIQUARIUM_CLICK_TROPHY
         );
-    } else if (aScore <= ZOMBIQUARIUM_WINNING_SCORE && mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY) {
+    } else if (aScore < ZOMBIQUARIUM_WINNING_SCORE && mBoard->mBoardData.mTutorialState == TUTORIAL_ZOMBIQUARIUM_CLICK_TROPHY) {
         mBoard->TutorialArrowRemove();
         mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_CLICK_TROPHY);
-        mBoard->mBoardData.mTutorialState = TUTORIAL_OFF;
+        mBoard->mBoardData.mTutorialState = TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL;
     }
 
     GridItem *aGridItem = nullptr;

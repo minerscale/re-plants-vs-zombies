@@ -2,6 +2,7 @@
 
 #include "Board.h"
 #include "Challenge.h"
+#include "ConstEnums.h"
 #include "Cutscene.h"
 #include "GridItem.h"
 #include "LawnApp.h"
@@ -2715,7 +2716,7 @@ void Zombie::UpdateZombiquarium() {
             mVelZ = 0.0f;
         }
 
-        if (mPosX > 550.0f || aVelX > 0.0f) {
+        if (mPosX > 550.0f && aVelX > 0.0f) {
             mVelZ = PI;
         }
 
@@ -3251,7 +3252,7 @@ float Zombie::ZombieTargetLeadX(float theTime) {
     }
 
     Rect aZombieRect = GetZombieRect();
-    float aCurrentPosX = aZombieRect.mX + aZombieRect.mWidth / 2;
+    float aCurrentPosX = aZombieRect.mX + aZombieRect.mWidth / 2.0;
     float aDisplacementX = aSpeed * theTime;
     return aCurrentPosX - aDisplacementX;
 }
@@ -7563,6 +7564,9 @@ void Zombie::DrawShadow(Graphics *g) {
     ZombieDrawPosition aDrawPos;
     GetDrawPos(aDrawPos);
     if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON && !SetupDrawZombieWon(g)) return;
+
+    // We don't want to draw shadows in Zombiquarium it looks really dumb.
+    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) return;
 
     int aShadowType = 0;
     float aShadowOffsetX = aDrawPos.mImageOffsetX;

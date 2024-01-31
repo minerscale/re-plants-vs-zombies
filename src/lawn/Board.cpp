@@ -14,6 +14,7 @@
 #include "todlib/Attachment.h"
 #include "todlib/EffectSystem.h"
 #include "todlib/Reanimator.h"
+#include "todlib/TodCommon.h"
 #include "todlib/TodDebug.h"
 #include "todlib/TodFoley.h"
 #include "todlib/TodParticle.h"
@@ -1283,6 +1284,9 @@ void Board::InitLevel() {
         mSeedBank->mSeedPackets[2].SetPacketType(
             mApp->IsAdventureMode() ? SeedType::SEED_CHERRYBOMB : SeedType::SEED_ICESHROOM
         );
+    } else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
+        mSeedBank->mSeedPackets[0].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_SNORKLE);
+        mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_TROPHY);
     } else if (!ChooseSeedsOnCurrentLevel() && !HasConveyorBeltSeedBank()) {
         mSeedBank->mNumPackets = GetNumSeedsInBank();
         // 卡槽错误的关卡，依次填充所有卡牌
@@ -2934,7 +2938,7 @@ void Board::UpdateToolTip() {
     } else if (aUseSeedType == SeedType::SEED_SLOT_MACHINE_DIAMOND) {
         mToolTip->SetLabel(_S("[SLOT_MACHINE_DIAMOND_TOOLTIP]"));
     } else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_SNORKLE) {
-        mToolTip->SetLabel(_S("[ZOMBIQUARIUM_SNORKLE_TOOLTIP]"));
+        mToolTip->SetLabel(_S("[ZOMBIQUARIUM_SNORKEL_TOOLTIP]"));
     } else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_TROPHY) {
         mToolTip->SetLabel(_S("[ZOMBIQUARIUM_TROPHY_TOOLTIP]"));
     } else if (aUseSeedType == SeedType::SEED_ZOMBIE_NORMAL) {
@@ -6237,7 +6241,12 @@ void Board::DrawUIBottom(Graphics *g) {
         g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 160, 40, aWaveTime);
         g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 320, 40, aWaveTime);
         g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 480, 40, aWaveTime);
-        TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
+
+        TodDrawImageCelScaledF(
+            g, Sexy::IMAGE_WAVESIDE, 800, 40, aWaveTime % Sexy::IMAGE_WAVESIDE->mNumCols,
+            aWaveTime / Sexy::IMAGE_WAVESIDE->mNumCols, -1.0f, 1.0f
+        );
+        // TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
         g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
     }
 

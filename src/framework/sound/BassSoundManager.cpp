@@ -1,7 +1,10 @@
 #include "BassSoundManager.h"
+#include "Common.h"
 #include "paklib/PakInterface.h"
 #include <bass.h>
 #include <chrono>
+#include <cstddef>
+#include <cstdio>
 #include <cstring>
 #include <fcntl.h>
 #include <memory>
@@ -30,6 +33,50 @@ bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::str
     return true;
 }
 
+struct WavHeader {
+    // RIFF Header
+    char riff_header[4]; // Contains "RIFF"
+    uint wav_size;       // Size of the wav portion of the file, which follows the first 8 bytes. File size - 8
+    char wave_header[4]; // Contains "WAVE"
+
+    // Format Header
+    char fmt_header[4];  // Contains "fmt " (includes trailing space)
+    uint fmt_chunk_size; // Should be 16 for PCM
+    short audio_format;  // Should be 1 for PCM. 3 for IEEE Float
+    short num_channels;
+    uint sample_rate;
+    uint byte_rate;         // Number of bytes per second. sample_rate * num_channels * Bytes Per Sample
+    short sample_alignment; // num_channels * Bytes Per Sample
+    short bit_depth;        // Number of bits per sample
+
+    // Data
+    char data_header[4]; // Contains "data"
+    uint data_bytes;     // Number of bytes in data. Number of samples * num_channels * sample byte size
+    // uint8_t bytes[]; // Remainder of wave file is bytes
+};
+
+// From g711.c
+inline uint16_t Snack_Mulaw2Lin(uint8_t u_val) {
+    constexpr uint8_t QUANT_MASK = 0xf;
+    constexpr uint16_t BIAS = 0x84;
+    constexpr uint32_t SEG_MASK = 0x70;
+    constexpr uint8_t SEG_SHIFT = 4;
+    constexpr uint8_t SIGN_BIT = 0x80;
+    uint16_t t;
+
+    /* Complement to obtain normal u-law value. */
+    u_val = ~u_val;
+
+    /*
+     * Extract and bias the quantization bits. Then
+     * shift up by the segment number and subtract out the bias.
+     */
+    t = ((u_val & QUANT_MASK) << 3) + BIAS;
+    t <<= ((uint32_t)u_val & SEG_MASK) >> SEG_SHIFT;
+
+    return ((u_val & SIGN_BIT) ? (BIAS - t) : (t - BIAS));
+}
+
 bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &theFilename) {
     PFILE *fp;
 
@@ -37,28 +84,27 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
 
     if (fp == NULL) return false;
 
-    char aHeaderId[5];
-    aHeaderId[4] = '\0';
+    char aHeaderId[4];
     p_fread(aHeaderId, 1, 4, fp);
-    if ((!strcmp(aHeaderId, ".snd")) == 0) return false;
+    if ((!strncmp(aHeaderId, ".snd", 4)) == 0) return false;
 
-    ulong aHeaderSize;
+    uint32_t aHeaderSize;
     p_fread(&aHeaderSize, 4, 1, fp);
     aHeaderSize = LONG_BIGE_TO_NATIVE(aHeaderSize);
 
-    ulong aDataSize;
+    uint32_t aDataSize;
     p_fread(&aDataSize, 4, 1, fp);
     aDataSize = LONG_BIGE_TO_NATIVE(aDataSize);
 
-    ulong anEncoding;
+    uint32_t anEncoding;
     p_fread(&anEncoding, 4, 1, fp);
     anEncoding = LONG_BIGE_TO_NATIVE(anEncoding);
 
-    ulong aSampleRate;
+    uint32_t aSampleRate;
     p_fread(&aSampleRate, 4, 1, fp);
     aSampleRate = LONG_BIGE_TO_NATIVE(aSampleRate);
 
-    ulong aChannelCount;
+    uint32_t aChannelCount;
     p_fread(&aChannelCount, 4, 1, fp);
     aChannelCount = LONG_BIGE_TO_NATIVE(aChannelCount);
 
@@ -66,8 +112,8 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
 
     bool ulaw = false;
 
-    ulong aSrcBitCount = 8;
-    ulong aBitCount = 16;
+    uint32_t aSrcBitCount = 8;
+    uint32_t aBitCount = 16;
     switch (anEncoding) {
     case 1:
         aSrcBitCount = 8;
@@ -95,74 +141,50 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
     default: return false;
     }
 
-    ulong aDestSize = aDataSize * aBitCount / aSrcBitCount;
+    uint32_t aDestSize = aDataSize * (aBitCount / aSrcBitCount);
 
-    uchar *aDestHeader = new uchar[aDestSize + 44];
+    WavHeader *aDestHeader = (WavHeader *)calloc(1, sizeof(WavHeader) + aDestSize);
 
-    uchar *aPtr = aDestHeader;
-    memcpy(aPtr, "RIFF", 4);
-    aPtr += 4;
-    *(uint32_t *)aPtr = aDestSize + 36;
-    aPtr += 4;
-    memcpy(aPtr, "WAVE", 4);
-    aPtr += 4;
-    memcpy(aPtr, "fmt\0", 4);
-    aPtr += 4;
-    *(uint32_t *)aPtr = 16;
-    aPtr += 4;
-    *(uint16_t *)aPtr = 1;
-    aPtr += 2;
-    *(uint16_t *)aPtr = aChannelCount;
-    aPtr += 2;
-    *(uint32_t *)aPtr = aSampleRate;
-    aPtr += 4;
-    *(uint32_t *)aPtr = aSampleRate * aBitCount * aChannelCount / 8;
-    aPtr += 4;
-    *(uint16_t *)aPtr = aBitCount * aChannelCount / 8;
-    aPtr += 2;
-    *(uint16_t *)aPtr = aBitCount;
-    aPtr += 2;
-    memcpy(aPtr, "data", 4);
-    aPtr += 4;
-    *(uint32_t *)aPtr = aDestSize;
-    aPtr += 4;
+    *aDestHeader = WavHeader{
+        {'R', 'I', 'F', 'F'},
+        static_cast<uint>(aDestSize + sizeof(WavHeader) - offsetof(WavHeader, wave_header)),
+        {'W', 'A', 'V', 'E'},
+        {'f', 'm', 't', ' '},
+        offsetof(WavHeader, data_header) - offsetof(WavHeader, audio_format),
+        1,
+        static_cast<short>(aChannelCount),
+        aSampleRate,
+        (aSampleRate * aBitCount * aChannelCount) / 8,
+        static_cast<short>((aBitCount * aChannelCount) / 8),
+        static_cast<short>(aBitCount),
+        {'d', 'a', 't', 'a'},
+        aDestSize,
+    };
 
-    short *aDestBuffer = (short *)(aDestHeader + 44);
+    short *aDestBuffer = (short *)((char *)aDestHeader + sizeof(WavHeader));
 
     if (ulaw) {
-        uchar *aSrcBuffer = new uchar[aDataSize];
+        uint8_t *aSrcBuffer = new uint8_t[aDataSize];
 
-        ulong aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
+        size_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
         p_fclose(fp);
         if (aReadSize != aDataSize) return false;
 
-        for (ulong i = 0; i < aDataSize; i++) {
-            int ch = aSrcBuffer[i];
-
-            int sign = (ch < 128) ? -1 : 1;
-            ch = ch | 0x80;
-            if (ch > 239) ch = ((0xF0 | 15) - ch) * 2;
-            else if (ch > 223) ch = (((0xE0 | 15) - ch) * 4) + 32;
-            else if (ch > 207) ch = (((0xD0 | 15) - ch) * 8) + 96;
-            else if (ch > 191) ch = (((0xC0 | 15) - ch) * 16) + 224;
-            else if (ch > 175) ch = (((0xB0 | 15) - ch) * 32) + 480;
-            else if (ch > 159) ch = (((0xA0 | 15) - ch) * 64) + 992;
-            else if (ch > 143) ch = (((0x90 | 15) - ch) * 128) + 2016;
-            else if (ch > 128) ch = (((0x80 | 15) - ch) * 256) + 4064;
-            else ch = 0xff;
-
-            aDestBuffer[i] = sign * ch * 4;
+        for (uint32_t i = 0; i < aDataSize; i++) {
+            aDestBuffer[i] = Snack_Mulaw2Lin(aSrcBuffer[i]);
         }
 
         delete[] aSrcBuffer;
     } else {
-        ulong aReadSize = p_fread(aDestBuffer, 1, aDataSize, fp);
+        size_t aReadSize = p_fread(aDestBuffer, 1, aDataSize, fp);
         p_fclose(fp);
         if (aReadSize != aDataSize) return false;
     }
 
     mSourceSounds[theSfxID] =
-        std::make_optional(BASS_SampleLoad(true, aDestHeader, 0, aDestSize + 44, MAX_CHANNELS, 0));
+        std::make_optional(BASS_SampleLoad(true, aDestHeader, 0, sizeof(WavHeader) + aDestSize, MAX_CHANNELS, 0));
+
+    free(aDestHeader);
 
     return true;
 }

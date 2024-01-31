@@ -614,8 +614,8 @@ void VkImage::BltMatrix(
     for (auto &vert : vertices) {
         SexyVector3 v(vert.x, vert.y, 1);
         v = theMatrix * v;
-        vert.x = 2 * ((v.x + x - 0.5) / mWidth) - 1;
-        vert.y = 2 * ((v.y + y - 0.5) / mHeight) - 1;
+        vert.x = 2 * ((v.x + x) / mWidth) - 1;
+        vert.y = 2 * ((v.y + y) / mHeight) - 1;
     }
 
     BltEx(theImage, vertices, RectToVec4(theClipRect), theColor, theDrawMode, blend);
