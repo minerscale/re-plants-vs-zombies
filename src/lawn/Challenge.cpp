@@ -3333,8 +3333,10 @@ void Challenge::ScaryPotterPopulate() {
             ScaryPotterPlacePot(SCARYPOT_SEED, ZOMBIE_INVALID, SEED_TORCHWOOD, 4, aGridArray, aGridArrayCount);
             ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_NORMAL, SEED_NONE, 7, aGridArray, aGridArrayCount);
             ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_POLEVAULTER, SEED_NONE, 5, aGridArray, aGridArrayCount);
-            ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_FOOTBALL, SEED_NONE, 6, aGridArray, aGridArrayCount);
-            ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_JACK_IN_THE_BOX, SEED_NONE, 6, aGridArray, aGridArrayCount);
+
+            // @ Minerscale, fixed wrong number of football and jack in the box zombies in this level. Causes crash.
+            ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_FOOTBALL, SEED_NONE, 2, aGridArray, aGridArrayCount);
+            ScaryPotterPlacePot(SCARYPOT_ZOMBIE, ZOMBIE_JACK_IN_THE_BOX, SEED_NONE, 1, aGridArray, aGridArrayCount);
             ScaryPotterChangePotType(GRIDITEM_STATE_SCARY_POT_LEAF, 2);
             break;
         case GAMEMODE_SCARY_POTTER_7:

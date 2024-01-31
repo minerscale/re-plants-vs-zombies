@@ -25,6 +25,7 @@
 #include "widget/StoreScreen.h"
 // #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
+#include <bits/chrono.h>
 #include <chrono>
 
 static const int TimePanRightStart = 1500;
@@ -413,7 +414,8 @@ void CutScene::PreloadResources() {
 
     // mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
     mBoard->mBoardData.mPreloadTime = std::chrono::high_resolution_clock::now() - aTimer;
-    TodTrace("preloading: %d ms", mBoard->mBoardData.mPreloadTime);
+    // TodTrace("preloading: %f ms", std::chrono::duration_cast<std::chrono::duration<float, std::ratio<1,
+    // 1000>>>(mBoard->mBoardData.mPreloadTime).count());
     TodHesitationTrace("CutScene::PreloadResources");
 }
 

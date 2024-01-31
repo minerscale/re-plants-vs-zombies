@@ -1,5 +1,6 @@
 #include "Trail.h"
 #include "Definition.h"
+#include "SexyAppBase.h"
 #include "framework/graphics/Graphics.h"
 #include "framework/graphics/TriVertex.h"
 

@@ -19,6 +19,9 @@ public:
     virtual void SetVolume(double theVolume) = 0;
     virtual void SetPan(int thePosition) = 0; //-hundredth db to +hundredth db = left to right
 
+    virtual int GetSoundPosition() = 0;
+    virtual void SetSoundPosition(int thePosition) = 0;
+
     virtual bool Play(bool looping, bool autoRelease) = 0;
     virtual void Stop() = 0;
     virtual bool IsPlaying() = 0;

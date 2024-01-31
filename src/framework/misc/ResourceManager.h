@@ -2,7 +2,6 @@
 #define __SEXY_RESOURCEMANAGER_H__
 
 #include "framework/Common.h"
-#include "framework/SexyAppBase.h"
 #include "framework/graphics/Font.h"
 #include "framework/graphics/Image.h"
 #include <map>

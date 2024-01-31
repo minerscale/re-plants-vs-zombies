@@ -500,184 +500,28 @@ bool ResourceManager::ReparseResourcesFile(const std::string &theFilename) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-/*
-bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, DDImage *theImage)
-{
-    ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage,true);
-    if (anAlphaImage==NULL)
-        return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaGridImage.c_str()));
-
-    std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
-
-    int aNumRows = theRes->mRows;
-    int aNumCols = theRes->mCols;
-
-    int aCelWidth = theImage->mWidth/aNumCols;
-    int aCelHeight = theImage->mHeight/aNumRows;
-
-
-    if (anAlphaImage->mWidth!=aCelWidth || anAlphaImage->mHeight!=aCelHeight)
-        return Fail(StrFormat("GridAlphaImage size mismatch between %s and
-%s",theRes->mPath.c_str(),theRes->mAlphaGridImage.c_str()));
-
-    unsigned long *aMasterRowPtr = theImage->mBits;
-    for (int i=0; i < aNumRows; i++)
-    {
-        unsigned long *aMasterColPtr = aMasterRowPtr;
-        for (int j=0; j < aNumCols; j++)
-        {
-            unsigned long* aRowPtr = aMasterColPtr;
-            unsigned long* anAlphaBits = anAlphaImage->mBits;
-            for (int y=0; y<aCelHeight; y++)
-            {
-                unsigned long *aDestPtr = aRowPtr;
-                for (int x=0; x<aCelWidth; x++)
-                {
-                    *aDestPtr = (*aDestPtr & 0x00FFFFFF) | ((*anAlphaBits & 0xFF) << 24);
-                    ++anAlphaBits;
-                    ++aDestPtr;
-                }
-                aRowPtr += theImage->mWidth;
-            }
-
-            aMasterColPtr += aCelWidth;
-        }
-        aMasterRowPtr += aCelHeight*theImage->mWidth;
-    }
-
-    theImage->BitsChanged();
-    return true;
-}*/
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-/*
-bool ResourceManager::LoadAlphaImage(ImageRes *theRes, DDImage *theImage)
-{
-    SEXY_PERF_BEGIN("ResourceManager::GetImage");
-    ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
-    SEXY_PERF_END("ResourceManager::GetImage");
-
-    if (anAlphaImage==NULL)
-        return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaImage.c_str()));
-
-    std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
-
-    if (anAlphaImage->mWidth!=theImage->mWidth || anAlphaImage->mHeight!=theImage->mHeight)
-        return Fail(StrFormat("AlphaImage size mismatch between %s and
-%s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
-
-    unsigned long* aBits1 = theImage->mBits;
-    unsigned long* aBits2 = anAlphaImage->mBits;
-    int aSize = theImage->mWidth*theImage->mHeight;
-
-    for (int i = 0; i < aSize; i++)
-    {
-        *aBits1 = (*aBits1 & 0x00FFFFFF) | ((*aBits2 & 0xFF) << 24);
-        ++aBits1;
-        ++aBits2;
-    }
-
-    theImage->BitsChanged();
-    return true;
-}*/
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::DoLoadImage(ImageRes *theRes) {
     // bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; //
     // unused
 
     SEXY_PERF_BEGIN("ResourceManager:GetImage");
-    static bool has_shown = false;
-    if (!has_shown) {
-        printf("warning:  ResourceManager::DoLoadImage is probably full of bugs\n");
-        printf("          Actually, DoLoadImage has no support for AlphaImage and AlphaGridImage\n");
-        has_shown = true;
-    }
 
-    // ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
-    // SEXY_PERF_END("ResourceManager:GetImage");
-
-    // bool isNew;
     ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
     if (theRes->mVariant != "")
         throw std::runtime_error(
             "I mistakenly depricated image variants to simplify the rendering code. Apparently it was used."
         );
-    Image *anImage = gSexyAppBase->GetSharedImage(theRes->mPath);
+    Image *anImage = gSexyAppBase->GetSharedImage(*theRes);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-    // DDImage* aDDImage = (DDImage*) aSharedImageRef;
+    if (anImage == nullptr) return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
 
-    if (anImage == NULL) return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
-
-    /*
-    if (isNew)
-    {
-        if (!theRes->mAlphaImage.empty())
-        {
-            if (!LoadAlphaImage(theRes, aSharedImageRef))
-                return false;
-        }
-
-        if (!theRes->mAlphaGridImage.empty())
-        {
-            if (!LoadAlphaGridImage(theRes, aSharedImageRef))
-                return false;
-        }
-    }*/
-
-    // aDDImage->CommitBits();
     theRes->mImage = anImage;
-    // aDDImage->mPurgeBits = theRes->mPurgeBits;
-
-    /*
-    if (theRes->mDDSurface)
-    {
-        SEXY_PERF_BEGIN("ResourceManager:DDSurface");
-
-        aDDImage->CommitBits();
-
-        if (!aDDImage->mHasAlpha)
-        {
-            aDDImage->mWantDDSurface = true;
-            aDDImage->mPurgeBits = true;
-        }
-
-        SEXY_PERF_END("ResourceManager:DDSurface");
-    }*/
-
-    /*
-    if (theRes->mPalletize)
-    {
-        SEXY_PERF_BEGIN("ResourceManager:Palletize");
-        if (aDDImage->mSurface==NULL)
-            aDDImage->Palletize();
-        else
-            aDDImage->mWantPal = true;
-        SEXY_PERF_END("ResourceManager:Palletize");
-    }*/
-
-    /*
-    if (theRes->mA4R4G4B4)
-        aDDImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
-
-    if (theRes->mA8R8G8B8)
-        aDDImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
-
-    if (theRes->mMinimizeSubdivisions)
-        aDDImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
-    */
 
     if (theRes->mAnimInfo.mAnimType != AnimType_None) anImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
 
     anImage->mNumRows = theRes->mRows;
     anImage->mNumCols = theRes->mCols;
-
-    /*
-    if (aDDImage->mPurgeBits)
-        aDDImage->PurgeBits();*/
 
     ResourceLoadedHook(theRes);
     return true;

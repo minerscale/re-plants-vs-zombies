@@ -2,17 +2,24 @@
 #define __POOLEFFECT_H__
 
 #include "framework/graphics/Image.h"
+#include "graphics/VkImage.h"
 #include <array>
 #include <memory>
 
 constexpr const int CAUSTIC_IMAGE_WIDTH = 128;
 constexpr const int CAUSTIC_IMAGE_HEIGHT = 64;
+constexpr const size_t CAUSTIC_SIZE_BYTES = CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * sizeof(uint32_t);
 
 class LawnApp;
 class PoolEffect {
 public:
-    std::array<uint8_t, 256 * 256> mCausticGrayscaleImage;
-    std::unique_ptr<Sexy::Image> mCausticImage;
+    std::unique_ptr<ImageLib::Image> mCausticGrayscaleImage;
+    std::array<std::array<uint32_t, CAUSTIC_IMAGE_WIDTH>, CAUSTIC_IMAGE_HEIGHT> mMemCausticImage;
+    std::unique_ptr<Vk::VkImage> mCausticImage;
+
+    VkBuffer mStagingBuffer;
+    VkDeviceMemory mStagingBufferMemory;
+
     LawnApp *mApp;
     int mPoolCounter;
 

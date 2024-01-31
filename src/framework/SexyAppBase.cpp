@@ -5502,9 +5502,9 @@ int SexyAppBase::GetCursor() { return mCursorNum; }
 void SexyAppBase::EnableCustomCursors(bool enabled) { mCustomCursorsEnabled = enabled; }
 
 std::unordered_map<std::string, std::unique_ptr<Vk::VkImage>> gBaseImageMap;
-std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const std::string &theFileName) {
+std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const ResourceManager::ImageRes &theRes) {
     // printf("new image to load: %s\n", theFileName.c_str());
-    std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theFileName, true);
+    std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theRes, true);
 
     if (aLoadedImage == nullptr) return nullptr;
 
@@ -6105,28 +6105,24 @@ anUpperVariant), SharedImage())); aSharedImageRef = &aResultPair.first->second;
 }*/
 
 Image *SexyAppBase::GetSharedImage(const std::string &theFileName) {
-    std::string anUpperFileName = StringToUpper(theFileName);
+    // declaring this static means we only ever need to make one of these
+    static ResourceManager::ImageRes aRes = {};
+    aRes.mPath = theFileName;
+    return GetSharedImage(aRes);
+}
+
+Image *SexyAppBase::GetSharedImage(const ResourceManager::ImageRes &theRes) {
+    std::string anUpperFileName = StringToUpper(theRes.mPath);
 
     // Get the image and add it to the map if it doesn't exist.
-    std::unique_ptr<Image> &aResult = mSharedImageMap.try_emplace(anUpperFileName, GetImage(theFileName)).first->second;
+    std::unique_ptr<Image> &aResult = mSharedImageMap.try_emplace(anUpperFileName, GetImage(theRes)).first->second;
 
     // This represents an old path which is not implemented.
     // Pass in a '!' as the first char of the file name to create a new image
-    if ((theFileName.length() > 0) && (theFileName[0] == '!')) {
+    if ((theRes.mPath.length() > 0) && (theRes.mPath[0] == '!')) {
         // aSharedImageRef.mSharedImage->mImage = new DDImage(mDDInterface);
         unreachable();
     }
-    /*
-    if (aResultPair.second)
-    {
-        // Pass in a '!' as the first char of the file name to create a new image
-        if ((theFileName.length() > 0) && (theFileName[0] == '!')) {
-            aSharedImageRef.mSharedImage->mImage = new DDImage(mDDInterface);
-        }
-        else {
-            aSharedImageRef.mSharedImage->mImage = GetImage(theFileName,false);
-        }
-    }*/
 
     return aResult.get();
 }

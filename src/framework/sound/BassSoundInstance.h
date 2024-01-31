@@ -21,6 +21,9 @@ public:
     virtual void SetPan(int thePosition); //-hundredth db to +hundredth db = left to right
     virtual void AdjustPitch(double theNumSteps);
 
+    virtual int GetSoundPosition();
+    virtual void SetSoundPosition(int thePosition);
+
     virtual bool Play(bool looping, bool autoRelease);
     virtual void Stop();
     virtual bool IsPlaying();

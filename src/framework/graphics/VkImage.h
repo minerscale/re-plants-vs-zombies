@@ -17,8 +17,9 @@ namespace Vk {
 class VkImage : public Image {
 public:
     VkImage(const ImageLib::Image &theImage);
-    VkImage(int width, int height);
+    VkImage(int width, int height, bool initialise = true, bool textureRepeat = false);
     VkImage(const Image &theImage) = delete;
+    VkImage(VkImage &theImage);
     VkImage &operator=(const Image &) = delete;
     ~VkImage();
 
@@ -35,37 +36,52 @@ public:
     void TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     std::unique_ptr<VkImage> applyEffectsToNewImage(FilterEffect theFilterEffect);
+    static void applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEffect theFilterEffect);
     void applyEffectsToSelf(FilterEffect theFilterEffect);
+    void uploadNewData(VkBuffer stagingBuffer);
 
-    void FillRect(const Rect &, const Color &, int);
-    void ClearRect(const Rect &);
-    void DrawLine(double, double, double, double, const Color &, int);
-    void DrawLineAA(double, double, double, double, const Color &, int);
-    void FillScanLinesWithCoverage(Span *, int, const Color &, int, const unsigned char *, int, int, int, int);
-    bool PolyFill3D(const Point *, int, const Rect *, const Color &, int, int, int);
-    void Blt(Image *, int, int, const Rect &, const Color &, int);
-    void BltF(Image *, float, float, const Rect &, const Rect &, const Color &, int);
-    void BltRotated(Image *, float, float, const Rect &, const Rect &, const Color &, int, double, float, float);
-    void StretchBlt(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool);
-    void BltMatrix(Image *, float, float, const SexyMatrix3 &, const Rect &, const Color &, int, const Rect &, bool);
-    void BltTrianglesTex(
-        Image *, const std::array<TriVertex, 3> *, int, const Rect &, const Color &, int, float, float, bool
+    bool PolyFill3D(
+        const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode,
+        int tx, int ty
     );
-    void BltMirror(Image *, int, int, const Rect &, const Color &, int);
-    void StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool);
-
-    VkImage(
-        const Image *src, VkImageLayout layout, ::VkImage image, VkImageView view, VkDeviceMemory memory,
-        VkDescriptorSet descriptor
-    )
-        : layout(layout), image(image), view(view), memory(memory), descriptor(descriptor) {
-        mWidth = src->mWidth, mHeight = src->mHeight, mNumRows = src->mNumRows, mNumCols = src->mNumCols,
-        mDrawn = false;
-        if (src->mAnimInfo != nullptr) mAnimInfo = new AnimInfo(*src->mAnimInfo);
-        else mAnimInfo = nullptr;
-
-        UpdateFramebuffer();
-    }
+    void FillRect(const Rect &theRect, const Color &theColor, int theDrawMode);
+    void ClearRect(const Rect &theRect);
+    void DrawLine(
+        double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor, int theDrawMode
+    );
+    void DrawLineAA(
+        double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor, int theDrawMode
+    );
+    void FillScanLinesWithCoverage(
+        Span *theSpans, int theSpanCount, const Color &theColor, int theDrawMode, const unsigned char *theCoverage,
+        int theCoverX, int theCoverY, int theCoverWidth, int theCoverHeight
+    );
+    void Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode);
+    void BltF(
+        Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect, const Color &theColor,
+        int theDrawMode
+    );
+    void BltRotated(
+        Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect, const Color &theColor,
+        int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY
+    );
+    void StretchBlt(
+        Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect &theClipRect,
+        const Color &theColor, int theDrawMode, bool fastStretch
+    );
+    void BltMatrix(
+        Image *theImage, float x, float y, const SexyMatrix3 &theMatrix, const Rect &theClipRect, const Color &theColor,
+        int theDrawMode, const Rect &theSrcRect, bool blend
+    );
+    void BltTrianglesTex(
+        Image *theTexture, const std::array<TriVertex, 3> *theVertices, int theNumTriangles, const Rect &theClipRect,
+        const Color &theColor, int theDrawMode, float tx, float ty, bool blend
+    );
+    void BltMirror(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode);
+    void StretchBltMirror(
+        Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect &theClipRect,
+        const Color &theColor, int theDrawMode, bool fastStretch
+    );
 
 private:
     void BltEx(
@@ -78,10 +94,6 @@ private:
     );
     void BeginDraw(Image *theImage, int theDrawMode);
     void SetViewportAndScissor(const glm::vec4 &theClipRect);
-    VkDescriptorSet AllocateDescriptorSet(VkImageView theView);
-    std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory, VkDescriptorSet>
-    applyEffects(FilterEffect theFilterEffect);
-    void UpdateFramebuffer();
 };
 
 } // namespace Vk

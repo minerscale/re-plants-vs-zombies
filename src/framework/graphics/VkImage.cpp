@@ -1,6 +1,5 @@
 #include "VkImage.h"
 
-#include "Common.h"
 #include "VkCommon.h"
 
 #include "TriVertex.h"
@@ -20,7 +19,7 @@
 
 namespace Vk {
 
-void createImage(int width, int height, ::VkImage &image, VkDeviceMemory &memory, VkImageUsageFlags usage) {
+::VkImage createImage(int width, int height, VkImageUsageFlags usage) {
     static VkImageCreateInfo imageInfo{
         VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
         nullptr,
@@ -43,26 +42,34 @@ void createImage(int width, int height, ::VkImage &image, VkDeviceMemory &memory
     imageInfo.extent.height = height;
     imageInfo.usage = usage;
 
-    if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS) {
+    ::VkImage ret;
+    if (vkCreateImage(device, &imageInfo, nullptr, &ret) != VK_SUCCESS) {
         throw std::runtime_error("failed to create image!");
     }
 
+    return ret;
+}
+
+VkDeviceMemory createImageMemory(::VkImage theImage) {
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(device, image, &memRequirements);
+    vkGetImageMemoryRequirements(device, theImage, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-    if (vkAllocateMemory(device, &allocInfo, nullptr, &memory) != VK_SUCCESS) {
+    VkDeviceMemory ret;
+    if (vkAllocateMemory(device, &allocInfo, nullptr, &ret) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    vkBindImageMemory(device, image, memory, 0);
+    vkBindImageMemory(device, theImage, ret, 0);
+
+    return ret;
 }
 
-VkDescriptorSet VkImage::AllocateDescriptorSet(VkImageView theView) {
+VkDescriptorSet createDescriptorSet(VkImageView theView, VkSampler sampler) {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
@@ -74,11 +81,11 @@ VkDescriptorSet VkImage::AllocateDescriptorSet(VkImageView theView) {
 
     std::array<VkDescriptorImageInfo, 2> imageInfos{
         {{
-             textureSampler,
+             sampler,
              theView,
              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
          }, {
-             textureSampler,
+             sampler,
              theView,
              VK_IMAGE_LAYOUT_GENERAL,
          }}
@@ -106,29 +113,23 @@ VkDescriptorSet VkImage::AllocateDescriptorSet(VkImageView theView) {
     return dstSet;
 }
 
-void VkImage::UpdateFramebuffer() {
+VkFramebuffer createFramebuffer(VkImageView theView, int theWidth, int theHeight) {
     VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferInfo.renderPass = imagePass;
     framebufferInfo.attachmentCount = 1;
-    framebufferInfo.pAttachments = &view;
-    framebufferInfo.width = mWidth;
-    framebufferInfo.height = mHeight;
+    framebufferInfo.pAttachments = &theView;
+    framebufferInfo.width = theWidth;
+    framebufferInfo.height = theHeight;
     framebufferInfo.layers = 1;
 
-    if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer) != VK_SUCCESS) {
+    VkFramebuffer ret;
+    if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &ret) != VK_SUCCESS) {
         throw std::runtime_error("failed to create framebuffer!");
     }
-}
 
-struct deleteInfo {
-    std::optional<::VkImage> image;
-    std::optional<VkImageView> view;
-    std::optional<VkFramebuffer> framebuffer;
-    std::optional<VkDeviceMemory> memory;
-    std::optional<VkDescriptorSet> set;
-    std::optional<VkBuffer> buffer;
-};
+    return ret;
+}
 
 std::atomic<int> imageBufferIdx = 0;
 std::array<std::vector<deleteInfo>, NUM_IMAGE_SWAPS> deleteList;
@@ -169,6 +170,8 @@ void endRenderPass() {
     }
 }
 
+void doDeleteInfo(deleteInfo info) { deleteList[imageBufferIdx].emplace_back(info); }
+
 VkImage::VkImage(const ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
     mHeight = theImage.mHeight;
@@ -178,6 +181,15 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     renderMutex.lock();
 
     endRenderPass();
+
+    VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                              VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+
+    image = createImage(mWidth, mHeight, flags);
+    memory = createImageMemory(image);
+    view = createImageView(image, pixelFormat);
+    framebuffer = createFramebuffer(view, mWidth, mHeight);
+    descriptor = createDescriptorSet(view, textureSampler);
 
     VkDeviceSize imageSize = mWidth * mHeight * sizeof(uint32_t);
 
@@ -194,25 +206,26 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     memcpy(data, theImage.mBits.get(), imageSize);
     vkUnmapMemory(device, stagingBufferMemory);
 
-    createImage(
-        mWidth, mHeight, image, memory,
-        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
-            VK_IMAGE_USAGE_STORAGE_BIT
-    );
+    uploadNewData(stagingBuffer);
 
-    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
-
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, stagingBuffer});
-
-    view = createImageView(image, pixelFormat);
-    UpdateFramebuffer();
-    descriptor = AllocateDescriptorSet(view);
+    doDeleteInfo(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, stagingBuffer});
 
     renderMutex.unlock();
 }
 
-VkImage::VkImage(int width, int height) {
+// this function must be behind the renderMutex.
+void VkImage::uploadNewData(VkBuffer stagingBuffer) {
+    endRenderPass();
+
+    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
+};
+
+VkImage::VkImage(VkImage &theImage) : VkImage(theImage.mWidth, theImage.mHeight, false) {
+    applyEffects(&theImage, this, FILTER_EFFECT_NONE);
+}
+
+VkImage::VkImage(int width, int height, bool initialise, bool textureRepeat) {
     mWidth = width;
     mHeight = height;
 
@@ -222,27 +235,31 @@ VkImage::VkImage(int width, int height) {
 
     endRenderPass();
 
-    createImage(
-        mWidth, mHeight, image, memory,
-        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
-            VK_IMAGE_USAGE_STORAGE_BIT
-    );
+    VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                              VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 
-    TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-    VkClearColorValue color = {
-        .uint32{0, 0, 0, 0}
-    };
-
-    VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-
-    vkCmdClearColorImage(imageCommandBuffers[imageBufferIdx], image, layout, &color, 1, &range);
-
+    image = createImage(mWidth, mHeight, flags);
+    memory = createImageMemory(image);
     view = createImageView(image, pixelFormat);
+    framebuffer = createFramebuffer(view, mWidth, mHeight);
 
-    UpdateFramebuffer();
+    if (textureRepeat) {
+        descriptor = createDescriptorSet(view, textureSamplerRepeat);
+    } else {
+        descriptor = createDescriptorSet(view, textureSampler);
+    }
 
-    descriptor = AllocateDescriptorSet(view);
+    if (initialise) {
+        TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+        VkClearColorValue color = {
+            .uint32{0, 0, 0, 0}
+        };
+
+        VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+
+        vkCmdClearColorImage(imageCommandBuffers[imageBufferIdx], image, layout, &color, 1, &range);
+    }
 
     renderMutex.unlock();
 }
@@ -250,7 +267,7 @@ VkImage::VkImage(int width, int height) {
 VkImage::~VkImage() {
     renderMutex.lock();
 
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
+    doDeleteInfo(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
 
     renderMutex.unlock();
 }
@@ -340,51 +357,24 @@ void flushCommandBuffer() {
     beginCommandBuffer();
 }
 
-std::tuple<VkImageLayout, ::VkImage, VkImageView, VkDeviceMemory, VkDescriptorSet>
-VkImage::applyEffects(FilterEffect theFilterEffect) {
+void VkImage::applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEffect theFilterEffect) {
+    renderMutex.lock();
+
     endRenderPass();
 
-    ::VkImage newImage;
-    VkDeviceMemory newMemory;
-    createImage(
-        mWidth, mHeight, newImage, newMemory,
-        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT
+    constexpr auto newLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+    transitionImageLayouts(
+        imageCommandBuffers[imageBufferIdx],
+        {
+            {theSrcImage,  newLayout},
+            {theDestImage, newLayout}
+    }
     );
 
-    constexpr auto newLayout = VK_IMAGE_LAYOUT_GENERAL;
-    { // Transition the newly created image to general
-        constexpr auto oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        const auto srcAccess = accessMaskMap[oldLayout];
-        const auto dstAccess = accessMaskMap[newLayout];
-        VkImageMemoryBarrier barrier{
-            VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-            nullptr,
-            srcAccess.first,
-            dstAccess.first,
-            oldLayout,
-            newLayout,
-            0,
-            0,
-            newImage,
-            {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}
-        };
-
-        vkCmdPipelineBarrier(
-            imageCommandBuffers[imageBufferIdx], srcAccess.second, dstAccess.second, 0, 0, nullptr, 0, nullptr, 1,
-            &barrier
-        );
-    }
-
-    // Transition the old image to general
-    TransitionLayout(imageCommandBuffers[imageBufferIdx], newLayout);
-
-    VkImageView newView = createImageView(newImage, pixelFormat);
-
-    VkDescriptorSet newDescriptor = AllocateDescriptorSet(newView);
-
-    std::array<VkDescriptorSet, 2> descriptorSetsToBind = {descriptor, newDescriptor};
-
     vkCmdBindPipeline(imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
+
+    std::array<VkDescriptorSet, 2> descriptorSetsToBind = {theSrcImage->descriptor, theDestImage->descriptor};
     vkCmdBindDescriptorSets(
         imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 2,
         descriptorSetsToBind.data(), 0, 0
@@ -397,47 +387,22 @@ VkImage::applyEffects(FilterEffect theFilterEffect) {
         sizeof(ComputePushConstants), &constants
     );
 
-    vkCmdDispatch(imageCommandBuffers[imageBufferIdx], mWidth / 16, mHeight / 16, 1);
+    if (theSrcImage->mWidth != theDestImage->mWidth && theSrcImage->mHeight != theDestImage->mHeight) {
+        renderMutex.unlock();
+        throw std::runtime_error("applyEffectsToImage: The dimensions of the src and dest image don't match.");
+    }
+    vkCmdDispatch(imageCommandBuffers[imageBufferIdx], theSrcImage->mWidth / 16, theSrcImage->mHeight / 16, 1);
 
-    return std::make_tuple(newLayout, newImage, newView, newMemory, newDescriptor);
+    renderMutex.unlock();
 }
 
 std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterEffect) {
-    renderMutex.lock();
+    std::unique_ptr<VkImage> newImage = std::make_unique<VkImage>(mWidth, mHeight, false);
+    newImage->CopyAttributes(this);
 
-    auto newData = applyEffects(theFilterEffect);
+    applyEffects(this, newImage.get(), theFilterEffect);
 
-    auto ret = std::make_unique<VkImage>(
-        this, std::get<VkImageLayout>(newData), std::get<::VkImage>(newData), std::get<VkImageView>(newData),
-        std::get<VkDeviceMemory>(newData), std::get<VkDescriptorSet>(newData)
-    );
-
-    renderMutex.unlock();
-    return ret;
-}
-
-void VkImage::applyEffectsToSelf(FilterEffect theFilterEffect) {
-    renderMutex.lock();
-
-    auto newData = applyEffects(theFilterEffect);
-
-    // Queue up old info for deletion.
-    deleteList[imageBufferIdx].emplace_back(deleteInfo{image, view, framebuffer, memory, descriptor, {}});
-
-    /*
-     * Update the image info
-     * Note we don't need to allocate new descriptor sets,
-     * the old ones work just fine after updating them.
-     */
-    layout = std::get<VkImageLayout>(newData);
-    image = std::get<::VkImage>(newData);
-    view = std::get<VkImageView>(newData);
-    memory = std::get<VkDeviceMemory>(newData);
-    descriptor = std::get<VkDescriptorSet>(newData);
-
-    UpdateFramebuffer();
-
-    renderMutex.unlock();
+    return newImage;
 }
 
 void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) {
@@ -522,11 +487,29 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
     }
 }
 
+inline glm::vec4 RectToVec4(Rect a) { return glm::vec4(a.mX, a.mY, a.mWidth, a.mHeight); }
+
+inline constexpr glm::vec4 calcUVs(const glm::vec4 &theSrcRect, const glm::vec2 &extent) {
+    return glm::vec4(
+        (theSrcRect.x) / extent.x, (theSrcRect.y) / extent.y, (theSrcRect.x + theSrcRect.z) / extent.x,
+        (theSrcRect.y + theSrcRect.w) / extent.y
+    );
+}
+
+constexpr inline std::array<glm::vec4, 4> generateVertices(glm::vec4 dr, glm::vec4 uv, glm::vec2 ex) {
+    return {
+        {
+         {2 * ((dr.x)) / ex.x - 1, 2 * ((dr.y)) / ex.y - 1, uv.x, uv.y},
+         {2 * ((dr.x + dr.z)) / ex.x - 1, 2 * ((dr.y)) / ex.y - 1, uv.z, uv.y},
+         {2 * ((dr.x)) / ex.x - 1, 2 * ((dr.y + dr.w)) / ex.y - 1, uv.x, uv.w},
+         {2 * ((dr.x + dr.z)) / ex.x - 1, 2 * ((dr.y + dr.w)) / ex.y - 1, uv.z, uv.w},
+         }
+    };
+}
+
 /*================*
  | DRAW FUNCTIONS |
  *================*/
-
-glm::vec4 RectToVec4(Rect a) { return glm::vec4(a.mX, a.mY, a.mWidth, a.mHeight); }
 
 std::unique_ptr<VkImage> blankImage;
 void VkImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMode) {
@@ -545,24 +528,6 @@ void VkImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, c
     Rect theClipRect = {theX, theY, theSrcRect.mWidth, theSrcRect.mHeight};
 
     BltF(theImage, theX, theY, theSrcRect, theClipRect, theColor, theDrawMode);
-}
-
-inline constexpr glm::vec4 calcUVs(const glm::vec4 &theSrcRect, const glm::vec2 &extent) {
-    return glm::vec4(
-        (theSrcRect.x) / extent.x, (theSrcRect.y) / extent.y, (theSrcRect.x + theSrcRect.z) / extent.x,
-        (theSrcRect.y + theSrcRect.w) / extent.y
-    );
-}
-
-constexpr inline std::array<glm::vec4, 4> generateVertices(glm::vec4 dr, glm::vec4 uv, glm::vec2 ex) {
-    return {
-        {
-         {2 * ((dr.x)) / ex.x - 1, 2 * ((dr.y)) / ex.y - 1, uv.x, uv.y},
-         {2 * ((dr.x + dr.z)) / ex.x - 1, 2 * ((dr.y)) / ex.y - 1, uv.z, uv.y},
-         {2 * ((dr.x)) / ex.x - 1, 2 * ((dr.y + dr.w)) / ex.y - 1, uv.x, uv.w},
-         {2 * ((dr.x + dr.z)) / ex.x - 1, 2 * ((dr.y + dr.w)) / ex.y - 1, uv.z, uv.w},
-         }
-    };
 }
 
 void VkImage::BltF(

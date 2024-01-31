@@ -9,8 +9,10 @@
 #include "misc/Ratio.h"
 #include "misc/Rect.h"
 #include "misc/RegistryEmulator.h"
+#include "misc/ResourceManager.h"
 #include "widget/ButtonListener.h"
 #include "widget/DialogListener.h"
+
 #include <atomic>
 #include <chrono>
 #include <memory>
@@ -426,10 +428,11 @@ public:
     void SetCursor(int theCursorNum);
     int GetCursor();
     void EnableCustomCursors(bool enabled);
-    virtual std::unique_ptr<Image> GetImage(const std::string &theFileName);
+    virtual std::unique_ptr<Image> GetImage(const ResourceManager::ImageRes &theRes);
     //	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, DDImage*
     //theImage, bool* isNew);
-    virtual Image *GetSharedImage(const std::string &theFileName);
+    Image *GetSharedImage(const std::string &theRes);
+    Image *GetSharedImage(const ResourceManager::ImageRes &theRes);
 
     void CleanSharedImages();
     //	void					PrecacheAdditive(MemoryImage* theImage);

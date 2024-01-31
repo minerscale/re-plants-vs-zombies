@@ -36,6 +36,7 @@ extern VkDescriptorSetLayout descriptorSetLayout;
 extern VkPipelineLayout pipelineLayout;
 extern VkPipelineLayout computePipelineLayout;
 extern VkSampler textureSampler;
+extern VkSampler textureSamplerRepeat;
 
 extern uint32_t currentFrame;
 // extern VkImage* otherCachedImage;
@@ -94,6 +95,17 @@ void copyBufferToImage(
     VkCommandBuffer commandBuffer, VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height
 );
 void beginCommandBuffer();
+
+struct deleteInfo {
+    std::optional<::VkImage> image;
+    std::optional<VkImageView> view;
+    std::optional<VkFramebuffer> framebuffer;
+    std::optional<VkDeviceMemory> memory;
+    std::optional<VkDescriptorSet> set;
+    std::optional<VkBuffer> buffer;
+};
+void doDeleteInfo(deleteInfo info);
+void deferredDelete(size_t idx);
 
 } // namespace Vk
 

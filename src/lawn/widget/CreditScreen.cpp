@@ -1497,9 +1497,7 @@ void CreditScreen::PauseCredits() {
     mApp->mSoundSystem->StopFoley(FoleyType::FOLEY_SCREAM);
     mApp->PlaySample(SOUND_PAUSE);
     mCreditsPaused = true;
-    unreachable();
-    /* TODO
-    int aDurationOnPause = mTimerSinceStart.GetDuration();*/
+
     mApp->mMusic->GameMusicPause(true);
 
     if (mApp->LawnMessageBox(
@@ -1512,9 +1510,6 @@ void CreditScreen::PauseCredits() {
 
     mCreditsPaused = false;
     mApp->mMusic->GameMusicPause(false);
-    unreachable();
-    /* TODO
-    ((TodsHackyUnprotectedPerfTimer*)&mTimerSinceStart)->SetStartTime(aDurationOnPause);*/
 }
 
 // 0x438530

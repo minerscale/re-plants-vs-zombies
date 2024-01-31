@@ -1,22 +1,13 @@
 #include "fcaseopen.h"
-#include <algorithm>
-#include <cctype>
-#include <cstdlib>
-#include <locale>
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 #if !defined(_WIN32)
-#include <stdlib.h>
-#include <string.h>
-
-#include <dirent.h>
 #include <errno.h>
-#include <unistd.h>
-
 #include <filesystem>
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <unordered_map>
 
 constexpr inline std::vector<std::string> GetTokensFromPath(const std::string &path) {
     size_t pos = 0;

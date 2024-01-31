@@ -1,8 +1,6 @@
 #ifndef __EFFECTSYSTEM_H__
 #define __EFFECTSYSTEM_H__
 
-#include "ConstEnums.h"
-#include "DataArray.h"
 #include "framework/graphics/Graphics.h"
 #include <deque>
 using namespace Sexy;

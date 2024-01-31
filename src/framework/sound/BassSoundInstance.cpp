@@ -65,6 +65,12 @@ void BassSoundInstance::AdjustPitch(double theNumSteps) {
     BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_FREQ, aNewFrequency);
 }
 
+int BassSoundInstance::GetSoundPosition() { return BASS_ChannelGetPosition(mChannel, BASS_POS_BYTE); }
+
+void BassSoundInstance::SetSoundPosition(int thePosition) {
+    BASS_ChannelSetPosition(mChannel, BASS_POS_BYTE, thePosition);
+}
+
 bool BassSoundInstance::IsPlaying() { return (BASS_ChannelIsActive(mChannel) == BASS_ACTIVE_PLAYING); }
 
 bool BassSoundInstance::IsReleased() {

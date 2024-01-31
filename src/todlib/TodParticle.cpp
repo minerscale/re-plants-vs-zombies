@@ -2,6 +2,7 @@
 #include "Definition.h"
 #include "EffectSystem.h"
 #include "GameConstants.h"
+#include "SexyAppBase.h"
 #include "TodDebug.h"
 #include "graphics/Graphics.h"
 // #include "graphics/D3DInterface.h"

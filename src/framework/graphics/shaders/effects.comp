@@ -8,6 +8,7 @@ layout(push_constant) uniform constants {
     int type;
 } PushConstants;
 
+#define FILTER_EFFECT_NONE           -1
 #define FILTER_EFFECT_WASHED_OUT      0
 #define FILTER_EFFECT_LESS_WASHED_OUT 1
 #define FILTER_EFFECT_WHITE           2
@@ -102,6 +103,7 @@ void main() {
 
     vec4 outPixel;
     switch (PushConstants.type) {
+        case FILTER_EFFECT_NONE:            outPixel = pixel; break;
         case FILTER_EFFECT_WASHED_OUT:      outPixel = FilterEffectDoWashedOut(pixel); break;
         case FILTER_EFFECT_LESS_WASHED_OUT: outPixel = FilterEffectDoLessWashedOut(pixel); break;
         case FILTER_EFFECT_WHITE:           outPixel = FilterEffectDoWhite(pixel); break;

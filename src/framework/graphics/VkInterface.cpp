@@ -206,6 +206,7 @@ std::array<VkCommandBuffer, MAX_FRAMES_IN_FLIGHT> commandBuffers;
 std::array<VkCommandBuffer, NUM_IMAGE_SWAPS> imageCommandBuffers;
 
 VkSampler textureSampler;
+VkSampler textureSamplerRepeat;
 
 std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> imageAvailableSemaphores;
 std::array<VkSemaphore, MAX_FRAMES_IN_FLIGHT> renderFinishedSemaphores;
@@ -532,6 +533,14 @@ void createTextureSampler() {
     samplerInfo.maxLod = 0.0f;
 
     if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create texture sampler!");
+    }
+
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+
+    if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSamplerRepeat) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture sampler!");
     }
 }
@@ -1489,6 +1498,10 @@ VkInterface::~VkInterface() {
 
     flushCommandBuffer();
     vkDeviceWaitIdle(device);
+
+    for (int i = 0; i < NUM_IMAGE_SWAPS; ++i) {
+        deferredDelete(i);
+    }
 
     cleanupSwapChain();
 

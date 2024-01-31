@@ -1,4 +1,5 @@
 #include "EffectSystem.h"
+
 #include "Attachment.h"
 #include "GameConstants.h"
 #include "Reanimator.h"
@@ -9,9 +10,14 @@
 #include "graphics/Graphics.h"
 #include "graphics/TriVertex.h"
 #include <stdexcept>
-// #include "graphics/DDImage.h"
-// #include "graphics/DDInterface.h"
-// #include "graphics/D3DInterface.h"
+
+/*
+ * No, time is not used in this file, but for some reason removing this header
+ * prevents me from being able to default construct a TriVertex.
+ * I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++
+ * Try removing this include! It breaks everything :)
+ */
+#include <chrono>
 
 EffectSystem *gEffectSystem = nullptr; //[0x6A9EB8]
 

@@ -1,9 +1,11 @@
 #include "Definition.h"
 #include "Common.h"
+#include "SexyAppBase.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
 #include "TodParticle.h"
 #include "Trail.h"
+#include "misc/XMLParser.h"
 #include "misc/fcaseopen.h"
 #include "paklib/PakInterface.h"
 #include "todlib/Reanimator.h"
@@ -16,9 +18,6 @@
 #include <memory>
 #include <stddef.h>
 #include <stdexcept>
-// #include "misc/PerfTimer.h"
-#include "Resources.h"
-#include "misc/XMLParser.h"
 
 DefSymbol gTrailFlagDefSymbols[] = {
   //  0x69E150

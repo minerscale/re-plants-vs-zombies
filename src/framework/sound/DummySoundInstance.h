@@ -14,6 +14,9 @@ public:
     virtual void SetVolume(double) {}
     virtual void SetPan(int) {} //-hundredth db to +hundredth db = left to right
 
+    virtual int GetSoundPosition() { return 0; }
+    virtual void SetSoundPosition(int /*thePosition*/) {}
+
     virtual bool Play(bool, bool) { return true; }
     virtual void Stop() {}
     virtual bool IsPlaying() { return false; }

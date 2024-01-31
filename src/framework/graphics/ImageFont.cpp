@@ -5,12 +5,8 @@
 #include "SexyAppBase.h"
 #include <queue>
 #include <vector>
-// #include "MemoryImage.h"
-// #include "graphics/DDImage.h"
 
 using namespace Sexy;
-
-////
 
 DataElement::DataElement() : mIsList(false) {}
 
