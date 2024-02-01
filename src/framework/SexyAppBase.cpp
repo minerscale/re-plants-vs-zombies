@@ -5508,7 +5508,10 @@ std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const ResourceManager::ImageR
 
     if (aLoadedImage == nullptr) return nullptr;
 
-    return std::make_unique<Vk::VkImage>(*aLoadedImage);
+    std::unique_ptr<Vk::VkImage> ret = std::make_unique<Vk::VkImage>(*aLoadedImage);
+    ret->mFilePath = theRes.mPath;
+
+    return ret;
 }
 
 /*
@@ -6125,6 +6128,11 @@ Image *SexyAppBase::GetSharedImage(const ResourceManager::ImageRes &theRes) {
     }
 
     return aResult.get();
+}
+
+void SexyAppBase::DeleteSharedImage(const std::string &theFileName) {
+    std::string anUpperFileName = StringToUpper(theFileName);
+    mSharedImageMap.erase(anUpperFileName);
 }
 
 void SexyAppBase::CleanSharedImages() {

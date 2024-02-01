@@ -18,12 +18,7 @@ public:
 
     Image(int width, int height)
         : mWidth(width), mHeight(height), mBits(std::make_unique<uint32_t[]>(mWidth * mHeight)) {
-        for (int i = 0; i < mHeight; ++i) {
-            for (int j = 0; j < mWidth; ++j) {
-                // mBits[i*mWidth + j] = (((i/16)&1) ^ ((j/16)&1))?0xFFFF00FF:0x00000000;
-                mBits[i * mWidth + j] = 0x00000000;
-            }
-        }
+        memset(mBits.get(), 0, mWidth * mHeight * sizeof(uint32_t));
     }
 
     Image(int width, int height, std::unique_ptr<uint32_t[]> bits)

@@ -75,8 +75,6 @@ void PoolEffect::UpdateWaterEffect() {
     // if(!has_shown) printf("TODO:    write compute shader for updating the water effect.\n");
     // has_shown = true;
 
-    Vk::renderMutex.lock();
-
     uint32_t *data;
     vkMapMemory(Vk::device, mStagingBufferMemory, 0, CAUSTIC_SIZE_BYTES, 0, (void **)&data);
 
@@ -114,8 +112,8 @@ void PoolEffect::UpdateWaterEffect() {
 
     vkUnmapMemory(Vk::device, mStagingBufferMemory);
 
+    Vk::renderMutex.lock();
     mCausticImage->uploadNewData(mStagingBuffer);
-
     Vk::renderMutex.unlock();
 }
 

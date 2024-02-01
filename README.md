@@ -5,7 +5,7 @@ A project focused on decompiling the latest functionality from the first PvZ tit
 
 The SexyAppFramework dating as back as 2005 is a very old game engine and it does not follow proper C++ conventions as per modern standards nor does it use a modern renderer backend
 
-This project aims to modernize the engine by using features from the latest C++ standards aswell as replacing the old legacy DirectDraw and Direct3D7 renderers for the modern [GLFW](https://www.glfw.org/) cross-platform wrapper aswell as expanding upon an old (now deleted) decompilation project of PvZ version 0.9.9 by [Miya aka Kopie](https://github.com/rspforhp) to get the best possible PvZ experience both for modders and players alike
+This project aims to modernize the engine by using features from the latest C++ standards aswell as replacing the old legacy DirectDraw and Direct3D7 renderers for the modern Vulkan library wrapped with [SDL](https://www.glfw.org/). Additionally expanding upon an old (now deleted) decompilation project of PvZ version 0.9.9 by [Miya aka Kopie](https://github.com/rspforhp) to get the best possible PvZ experience both for modders and players alike.
 
 # DISCLAIMER
 
@@ -44,13 +44,13 @@ Open the folder containing the `CMakeSettings.json`, wait until cache finishes g
 
 Run the following commands (assuming you have CMake installed with Ninja) where the `CMakeSettings.json` file is located
 
-`cmake -G Ninja -B cmake-build`
+`cmake -G Ninja -B build`
 
-`cmake --build cmake-build`
+`cmake --build build`
 
 If running these commands does not create a successful build please [create an issue](https://github.com/Patoke/re-plants-vs-zombies/issue) and detail your problem
 
-After you build, the output executable should be in the `Debug` or `Release` (depending on your build target) folder inside `SexyAppFramework`
+After you build, the output executable should be in the root of the build/ folder.
 
 Then you want to copy that executable inside of the original game's root folder (or copy the contents of the original game folder inside the previously mentioned folder)
 

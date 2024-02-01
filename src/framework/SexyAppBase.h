@@ -432,6 +432,7 @@ public:
     //	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, DDImage*
     //theImage, bool* isNew);
     Image *GetSharedImage(const std::string &theRes);
+    void DeleteSharedImage(const std::string &theFileName);
     Image *GetSharedImage(const ResourceManager::ImageRes &theRes);
 
     void CleanSharedImages();

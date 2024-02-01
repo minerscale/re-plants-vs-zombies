@@ -1,5 +1,6 @@
 #include "ReanimAtlas.h"
 #include "Reanimator.h"
+#include "SexyAppBase.h"
 #include "TodCommon.h"
 #include "TodDebug.h"
 #include "graphics/VkImage.h"

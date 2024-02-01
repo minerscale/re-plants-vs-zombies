@@ -90,9 +90,7 @@ void createBuffer(
 
 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-VkCommandBuffer beginSingleTimeCommands();
 void flushCommandBuffer();
-void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 void copyBufferToImage(
     VkCommandBuffer commandBuffer, VkBuffer buffer, ::VkImage image, uint32_t width, uint32_t height
 );

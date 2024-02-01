@@ -54,7 +54,7 @@ else()
     else()
         set(universal_compiler_flags
             "${universal_compiler_flags}"
-            "-O0"
+            "-O3"
         )
     endif()
 endif()
