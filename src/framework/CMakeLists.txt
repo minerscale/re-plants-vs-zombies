@@ -97,6 +97,23 @@ FetchContent_Declare(glm
 
 FetchContent_MakeAvailable(glm)
 
+FetchContent_Declare(avir
+    GIT_REPOSITORY https://github.com/avaneev/avir.git
+    OVERRIDE_FIND_PACKAGE
+    GIT_PROGRESS            TRUE
+    GIT_SHALLOW             TRUE
+    CONFIGURE_COMMAND       ""
+    BUILD_COMMAND           ""
+    SYSTEM
+)
+
+FetchContent_GetProperties(avir)
+if(NOT avir_POPULATED)
+    FetchContent_Populate(avir)
+endif()
+
+add_library(avir INTERFACE)
+
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
@@ -105,13 +122,16 @@ target_link_libraries(
     #SDL2_mixer::SDL2_mixer-static
     zlibstatic
     glm::glm
+    avir
 )
 # Adds include directories
 target_include_directories(
-    ${PROJECT_NAME} 
+    ${PROJECT_NAME}
+    SYSTEM
     PRIVATE 
     ${SDL2_image_SOURCE_DIR}/include
     #${SDL2_mixer_SOURCE_DIR}/include
     ${zlib_SOURCE_DIR}
     ${zlib_BINARY_DIR}
+    ${avir_SOURCE_DIR}
 )

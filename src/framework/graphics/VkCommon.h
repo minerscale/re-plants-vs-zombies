@@ -6,6 +6,8 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#define SCALE 2
+
 namespace Vk {
 
 extern VkDevice device;

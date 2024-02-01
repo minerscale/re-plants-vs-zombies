@@ -17,6 +17,10 @@
 #include <unordered_map>
 #include <vulkan/vulkan_core.h>
 
+#include <avir.h>
+#include <avir_float4_sse.h>
+#include <avir_float8_avx.h>
+#include <lancir.h>
 namespace Vk {
 
 ::VkImage createImage(int width, int height, VkImageUsageFlags usage) {
@@ -38,8 +42,8 @@ namespace Vk {
         VK_IMAGE_LAYOUT_UNDEFINED
     };
 
-    imageInfo.extent.width = width;
-    imageInfo.extent.height = height;
+    imageInfo.extent.width = width * SCALE;
+    imageInfo.extent.height = height * SCALE;
     imageInfo.usage = usage;
 
     ::VkImage ret;
@@ -119,8 +123,8 @@ VkFramebuffer createFramebuffer(VkImageView theView, int theWidth, int theHeight
     framebufferInfo.renderPass = imagePass;
     framebufferInfo.attachmentCount = 1;
     framebufferInfo.pAttachments = &theView;
-    framebufferInfo.width = theWidth;
-    framebufferInfo.height = theHeight;
+    framebufferInfo.width = theWidth * SCALE;
+    framebufferInfo.height = theHeight * SCALE;
     framebufferInfo.layers = 1;
 
     VkFramebuffer ret;
@@ -172,6 +176,7 @@ void endRenderPass() {
 
 void doDeleteInfo(deleteInfo info) { deleteList[imageBufferIdx].emplace_back(info); }
 
+avir::CImageResizer<> ImageResizer(8);
 VkImage::VkImage(const ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
     mHeight = theImage.mHeight;
@@ -191,7 +196,7 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     framebuffer = createFramebuffer(view, mWidth, mHeight);
     descriptor = createDescriptorSet(view, textureSampler);
 
-    VkDeviceSize imageSize = mWidth * mHeight * sizeof(uint32_t);
+    VkDeviceSize imageSize = mWidth * mHeight * SCALE * SCALE * sizeof(uint32_t);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -203,7 +208,14 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 
     void *data;
     vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-    memcpy(data, theImage.mBits.get(), imageSize);
+    if (SCALE != 1) {
+        // Upscaling is done here
+        ImageResizer.resizeImage(
+            (uint8_t *)theImage.mBits.get(), mWidth, mHeight, 0, (uint8_t *)data, mWidth * SCALE, mHeight * SCALE, 4, 0
+        );
+    } else {
+        memcpy(data, theImage.mBits.get(), imageSize);
+    }
     vkUnmapMemory(device, stagingBufferMemory);
 
     uploadNewData(stagingBuffer);
@@ -218,7 +230,7 @@ void VkImage::uploadNewData(VkBuffer stagingBuffer) {
     endRenderPass();
 
     TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth, mHeight);
+    copyBufferToImage(imageCommandBuffers[imageBufferIdx], stagingBuffer, image, mWidth * SCALE, mHeight * SCALE);
 };
 
 VkImage::VkImage(VkImage &theImage) : VkImage(theImage.mWidth, theImage.mHeight, false) {
@@ -391,7 +403,9 @@ void VkImage::applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEf
         renderMutex.unlock();
         throw std::runtime_error("applyEffectsToImage: The dimensions of the src and dest image don't match.");
     }
-    vkCmdDispatch(imageCommandBuffers[imageBufferIdx], theSrcImage->mWidth / 16, theSrcImage->mHeight / 16, 1);
+    vkCmdDispatch(
+        imageCommandBuffers[imageBufferIdx], (SCALE * theSrcImage->mWidth) / 16, (SCALE * theSrcImage->mHeight) / 16, 1
+    );
 
     renderMutex.unlock();
 }
@@ -406,12 +420,12 @@ std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterE
 }
 
 void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) {
-    VkViewport viewport = {0, 0, static_cast<float>(mWidth), static_cast<float>(mHeight), 0.0, 1.0};
+    VkViewport viewport = {0, 0, static_cast<float>(mWidth * SCALE), static_cast<float>(mHeight * SCALE), 0.0, 1.0};
     vkCmdSetViewport(imageCommandBuffers[imageBufferIdx], 0, 1, &viewport);
 
     VkRect2D scissor = {
-        {static_cast<int32_t>(theClipRect.x), static_cast<int32_t>(theClipRect.y)},
-        {(uint32_t)(theClipRect.z),           (uint32_t)(theClipRect.w)          }
+        {static_cast<int32_t>(theClipRect.x * SCALE), static_cast<int32_t>(theClipRect.y * SCALE)},
+        {(uint32_t)(theClipRect.z * SCALE),           (uint32_t)(theClipRect.w * SCALE)          }
     };
     vkCmdSetScissor(imageCommandBuffers[imageBufferIdx], 0, 1, &scissor);
 }
@@ -474,8 +488,8 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
 
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = {
-            static_cast<uint32_t>(mWidth),
-            static_cast<uint32_t>(mHeight),
+            static_cast<uint32_t>(mWidth * SCALE),
+            static_cast<uint32_t>(mHeight * SCALE),
         };
         vkCmdBeginRenderPass(imageCommandBuffers[imageBufferIdx], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         inRenderpass = true;

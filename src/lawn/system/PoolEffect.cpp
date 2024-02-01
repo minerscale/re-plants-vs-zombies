@@ -81,18 +81,19 @@ void PoolEffect::UpdateWaterEffect() {
     vkMapMemory(Vk::device, mStagingBufferMemory, 0, CAUSTIC_SIZE_BYTES, 0, (void **)&data);
 
     int idx = 0;
-    for (int y = 0; y < CAUSTIC_IMAGE_HEIGHT; y++) {
+    for (int y = 0; y < CAUSTIC_IMAGE_HEIGHT * SCALE; y++) {
         int timeV1 = (256 - y) << 17;
         int timeV0 = y << 17;
 
-        for (int x = 0; x < CAUSTIC_IMAGE_WIDTH; x++) {
+        for (int x = 0; x < CAUSTIC_IMAGE_WIDTH * SCALE; x++) {
             uint32_t *pix = &data[idx];
 
             int timeU = x << 17;
             int timePool0 = mPoolCounter << 16;
             int timePool1 = ((mPoolCounter & 65535) + 1) << 16;
-            int a1 = (unsigned char)BilinearLookupFixedPoint(timeU - timePool1 / 6, timeV1 + timePool0 / 8);
-            int a0 = (unsigned char)BilinearLookupFixedPoint(timeU + timePool0 / 10, timeV0);
+            int a1 = (unsigned char
+            )BilinearLookupFixedPoint((timeU - timePool1 / 6) / SCALE, (timeV1 + timePool0 / 8) / SCALE);
+            int a0 = (unsigned char)BilinearLookupFixedPoint((timeU + timePool0 / 10) / SCALE, timeV0 / SCALE);
             unsigned char a = (unsigned char)((a0 + a1) / 2);
 
             unsigned char alpha;

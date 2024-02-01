@@ -538,7 +538,7 @@ void Challenge::BeghouledDragUpdate(int x, int y) {
         int aGridXFrom = mBoard->PixelToGridX(mBeghouledMouseDownX, mBeghouledMouseDownY);
         int aGridYFrom = mBoard->PixelToGridY(mBeghouledMouseDownX, mBeghouledMouseDownY);
         int aGridXTo, aGridYTo;
-        if (aDeltaX > aDeltaY) {
+        if (abs(aDeltaX) > abs(aDeltaY)) {
             aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
             aGridYTo = aGridYFrom;
         } else {
