@@ -20,6 +20,12 @@
 #include <string>
 #include <vector>
 
+#ifdef __GNUC__
+#include <bits/chrono.h>
+#else
+#include <chrono>
+#endif
+
 // Define unreachable()
 #ifdef _MSC_VER
 #define unreachable std::unreachable
@@ -73,7 +79,13 @@ typedef unsigned int UINT;
 #else
 #define NOMINMAX 1
 #include <intsafe.h>
-#endif
+
+#if alloca == _alloca
+#undef alloca
+#define alloca _malloca
+#endif // alloca == _alloca
+
+#endif // _MSC_VER
 
 typedef std::map<std::string, std::string> DefinesMap;
 typedef std::map<std::wstring, std::wstring> WStringWStringMap;

@@ -26,12 +26,6 @@
 // #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
 
-#ifdef __GNUC__
-#include <bits/chrono.h>
-#else
-#include <chrono>
-#endif
-
 static const int TimePanRightStart = 1500;
 static const int TimePanRightEnd = 3500;         //[0x6A4FFC]
 static const int TimeEarlyDaveEnterStart = 2000; //[0x6A5000]

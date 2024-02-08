@@ -18,12 +18,6 @@
  * Try removing this include! It breaks everything :)
  */
 
-#ifdef __GNUC__
-#include <bits/chrono.h>
-#else
-#include <chrono>
-#endif
-
 EffectSystem *gEffectSystem = nullptr; //[0x6A9EB8]
 
 // 0x445330

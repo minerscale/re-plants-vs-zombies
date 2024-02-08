@@ -3886,28 +3886,26 @@ void Zombie::UpdateYuckyFace() {
     if (mYuckyFaceCounter == 170) {
         StartWalkAnim(20);
 
-        bool aCanGoUp = true;
-        bool aCanGoDown = true;
+        bool aCanGoUp = mBoard->RowCanHaveZombies(mRow - 1);
+        bool aCanGoDown = mBoard->RowCanHaveZombies(mRow + 1);
         bool aIsPool = mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL;
-        if (!mBoard->RowCanHaveZombies(mRow - 1)) {
-            aCanGoUp = false;
-        } else if (mBoard->mBoardData.mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
+
+        if (mBoard->mBoardData.mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
             aCanGoUp = false;
         } else if (mBoard->mBoardData.mPlantRow[mRow - 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoUp = false;
         }
-        if (!mBoard->RowCanHaveZombies(mRow + 1)) {
-            aCanGoDown = false;
-        } else if (mBoard->mBoardData.mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
+
+        if (mBoard->mBoardData.mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
             aCanGoDown = false;
         } else if (mBoard->mBoardData.mPlantRow[mRow + 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoDown = false;
         }
 
         if (aCanGoDown && !aCanGoUp) {
-            SetRow(mRow - 1);
-        } else if (!aCanGoDown && aCanGoUp) {
             SetRow(mRow + 1);
+        } else if (!aCanGoDown && aCanGoUp) {
+            SetRow(mRow - 1);
         } else if (aCanGoDown && aCanGoUp) {
             SetRow((Rand(2) == 0) ? (mRow + 1) : (mRow - 1));
         } else {
