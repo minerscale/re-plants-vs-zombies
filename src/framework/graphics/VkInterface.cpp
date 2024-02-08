@@ -1576,6 +1576,8 @@ void VkInterface::cursorPositionCallback(double xpos, double ypos) {
     }
 }
 
+void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) { widgetManager->MouseWheel(yoffset); }
+
 void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
     constexpr auto mouseButtonTranslationTable = const_generate_sparse_array<std::array<std::pair<int, int>, 3>{
         {
@@ -1620,6 +1622,7 @@ void VkInterface::PollEvents() {
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
         case SDL_MOUSEMOTION: cursorPositionCallback(event.motion.x, event.motion.y); break;
+        case SDL_MOUSEWHEEL:  mouseWheelCallback(event.wheel.x, event.wheel.y); break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
             mouseButtonCallback(event.button.button, event.button.state, event.button.clicks);
@@ -1641,6 +1644,8 @@ void VkInterface::PollEvents() {
         }
     }
 }
+
+bool Vk::VkInterface::IsFocused() { return widgetManager->mApp->mActive; }
 
 void initSDL(int width, int height) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);

@@ -835,69 +835,13 @@ gGetCurrentLevelName().c_str());
     }
 }*/
 
-void SexyMatrix3Transpose(const SexyMatrix3 &m, SexyMatrix3 &r) {
-    SexyMatrix3 temp;
-    temp.m00 = m.m00;
-    temp.m01 = m.m10;
-    temp.m02 = m.m20;
-    temp.m10 = m.m01;
-    temp.m11 = m.m11;
-    temp.m12 = m.m21;
-    temp.m20 = m.m02;
-    temp.m21 = m.m12;
-    temp.m22 = m.m22;
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            r.m[i][j] = temp.m[i][j];
-        }
-    }
-}
+void SexyMatrix3Transpose(const SexyMatrix3 &m, SexyMatrix3 &r) { r.mat = glm::transpose(m.mat); }
 
 // 0x512D00
-void SexyMatrix3Inverse(const SexyMatrix3 &m, SexyMatrix3 &r) {
-    float aDet = (m.m22 * m.m11 - m.m21 * m.m12) * m.m00 - (m.m22 * m.m10 - m.m20 * m.m12) * m.m01 +
-                 (m.m21 * m.m10 - m.m20 * m.m11) * m.m02;
-    float aInvDet = 1.0f / aDet;
-
-    SexyMatrix3 temp;
-    temp.m00 = (m.m22 * m.m11 - m.m21 * m.m12) * aInvDet;
-    temp.m01 = (m.m02 * m.m21 - m.m22 * m.m01) * aInvDet;
-    temp.m02 = (m.m12 * m.m01 - m.m02 * m.m11) * aInvDet;
-    temp.m10 = (m.m20 * m.m12 - m.m22 * m.m10) * aInvDet;
-    temp.m11 = (m.m00 * m.m22 - m.m02 * m.m20) * aInvDet;
-    temp.m12 = (m.m02 * m.m10 - m.m12 * m.m00) * aInvDet;
-    temp.m20 = (m.m21 * m.m10 - m.m20 * m.m11) * aInvDet;
-    temp.m21 = (m.m20 * m.m01 - m.m21 * m.m00) * aInvDet;
-    temp.m22 = (m.m00 * m.m11 - m.m10 * m.m01) * aInvDet;
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            r.m[i][j] = temp.m[i][j];
-        }
-    }
-}
+void SexyMatrix3Inverse(const SexyMatrix3 &m, SexyMatrix3 &r) { r.mat = glm::inverse(m.mat); }
 
 // 0x512E20
-void SexyMatrix3Multiply(SexyMatrix3 &m, const SexyMatrix3 &l, const SexyMatrix3 &r) {
-    // SexyMatrix3 temp = l * r;
-    SexyMatrix3 temp;
-    temp.m00 = l.m00 * r.m00 + l.m01 * r.m10 + l.m02 * r.m20;
-    temp.m01 = l.m00 * r.m01 + l.m01 * r.m11 + l.m02 * r.m21;
-    temp.m02 = l.m00 * r.m02 + l.m01 * r.m12 + l.m02 * r.m22;
-    temp.m10 = l.m10 * r.m00 + l.m11 * r.m10 + l.m12 * r.m20;
-    temp.m11 = l.m10 * r.m01 + l.m11 * r.m11 + l.m12 * r.m21;
-    temp.m12 = l.m10 * r.m02 + l.m11 * r.m12 + l.m12 * r.m22;
-    temp.m20 = l.m20 * r.m00 + l.m21 * r.m10 + l.m22 * r.m20;
-    temp.m21 = l.m20 * r.m01 + l.m21 * r.m11 + l.m22 * r.m21;
-    temp.m22 = l.m20 * r.m02 + l.m21 * r.m12 + l.m22 * r.m22;
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            m.m[i][j] = temp.m[i][j];
-        }
-    }
-}
+void SexyMatrix3Multiply(SexyMatrix3 &m, const SexyMatrix3 &l, const SexyMatrix3 &r) { m.mat = r.mat * l.mat; }
 
 // 0x512F20
 //  GOTY @Patoke: 0x51D2C0

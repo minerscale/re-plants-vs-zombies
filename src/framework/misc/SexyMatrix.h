@@ -16,10 +16,12 @@ public:
             float m10, m11, m12;
             float m20, m21, m22;
         };
+        glm::mat3 mat;
     };
 
 public:
     SexyMatrix3();
+    SexyMatrix3(const glm::mat3 &m) : mat(m) {}
     void ZeroMatrix();
     void LoadIdentity();
 

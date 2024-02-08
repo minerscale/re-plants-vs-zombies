@@ -1,6 +1,11 @@
 #ifndef __SEXYVECTOR_H__
 #define __SEXYVECTOR_H__
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_transform_2d.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/mat3x3.hpp>
+#include <glm/vec3.hpp>
 #include <math.h>
 
 namespace Sexy {
@@ -9,7 +14,13 @@ namespace Sexy {
 ///////////////////////////////////////////////////////////////////////////////
 class SexyVector2 {
 public:
-    float x, y;
+    union {
+
+        struct {
+            float x, y;
+        };
+        glm::vec2 vec;
+    };
 
 public:
     SexyVector2() : x(0), y(0) {}
