@@ -1646,10 +1646,9 @@ void initSDL(int width, int height) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
     window = SDL_CreateWindow(
-        "SDL Vulkan Sample", 0, 0, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN
+        "Plants Vs Zombies", 400, 200, width, height,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI
     );
-
-    SDL_SetWindowTitle(window, "Plants Vs Zombies");
 }
 
 VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {

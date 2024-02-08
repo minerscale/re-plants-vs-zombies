@@ -79,6 +79,7 @@ FetchContent_MakeAvailable(SDL2_image)
 #    GIT_PROGRESS            TRUE
 #    GIT_SHALLOW             TRUE
 #)
+#set(SDL2MIXER_MOD ON CACHE BOOL "" FORCE)
 #set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 #set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 #set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -128,7 +129,8 @@ target_link_libraries(
 target_include_directories(
     ${PROJECT_NAME}
     SYSTEM
-    PRIVATE 
+    PRIVATE
+    ${SDL2_SOURCE_DIR}/include
     ${SDL2_image_SOURCE_DIR}/include
     #${SDL2_mixer_SOURCE_DIR}/include
     ${zlib_SOURCE_DIR}

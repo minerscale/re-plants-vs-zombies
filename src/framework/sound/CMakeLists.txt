@@ -52,3 +52,7 @@ target_include_directories(
     PRIVATE 
     ${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
+
+if (WIN32)
+    configure_file("${bass_SOURCE_DIR}/x64/bass.dll" ${CMAKE_BINARY_DIR} COPYONLY)
+endif()

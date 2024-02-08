@@ -17,7 +17,12 @@
  * I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++ I HATE C++
  * Try removing this include! It breaks everything :)
  */
+
+#ifdef __GNUC__
+#include <bits/chrono.h>
+#else
 #include <chrono>
+#endif
 
 EffectSystem *gEffectSystem = nullptr; //[0x6A9EB8]
 
@@ -343,10 +348,8 @@ size_t TodTriangleGroup::gNumVertArraysInUse = 0;
 TodTriangleGroup::VertexArrayPool TodTriangleGroup::gVertArrays{{}, {}};
 
 // 0x4461B0
-TodTriangleGroup::TodTriangleGroup() : mVertArray(gVertArrays[gNumVertArraysInUse]) {
-    gNumVertArraysInUse += 1;
-
-    if (gNumVertArraysInUse > gVertArrays.size()) {
+TodTriangleGroup::TodTriangleGroup() : mVertArray(gVertArrays[gNumVertArraysInUse++]) {
+    if (gNumVertArraysInUse >= gVertArrays.size()) {
         gVertArrays.push_back({});
     }
 }

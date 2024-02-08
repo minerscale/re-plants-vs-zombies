@@ -415,3 +415,4 @@ tools/read-compiled/target
 *.sublime-workspace
 
 Dependencies/*
+/launch.cmd

@@ -1,14 +1,28 @@
 #ifndef __PLAYERINFO_H__
 #define __PLAYERINFO_H__
 
-#include <bits/chrono.h>
 #define MAX_POTTED_PLANTS 200
 #define PURCHASE_COUNT_OFFSET 1000
 
 #include "ConstEnums.h"
+#ifdef __GNUC__
+#include <bits/chrono.h>
+#else
 #include <chrono>
+#endif
 
-typedef std::chrono::system_clock::time_point TimePoint;
+class TimePoint : public std::chrono::time_point<std::chrono::system_clock> {
+public:
+    TimePoint() : std::chrono::time_point<std::chrono::system_clock>() {}
+    TimePoint(const std::chrono::time_point<std::chrono::system_clock> &t)
+        : std::chrono::time_point<std::chrono::system_clock>(t) {}
+    TimePoint(const std::chrono::seconds &t) : std::chrono::time_point<std::chrono::system_clock>(t) {}
+    TimePoint(const std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<int64_t, std::nano>> &t) {
+        *this = std::chrono::time_point<std::chrono::system_clock>(
+            std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch())
+        );
+    }
+};
 
 class PottedPlant {
 public:
@@ -37,10 +51,7 @@ public:
     void InitializePottedPlant(SeedType theSeedType);
 };
 
-static inline TimePoint getTime() {
-    using namespace std::chrono;
-    return system_clock::now();
-}
+static inline TimePoint getTime() { return std::chrono::system_clock::now(); }
 
 static inline uint32_t TimeToUnixEpoch(const TimePoint &t) {
     return std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch()).count();

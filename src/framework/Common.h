@@ -7,15 +7,15 @@
 
 #include <cstdint>
 
-#include <mutex>
-#include <optional>
-
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <cwctype>
 #include <list>
 #include <map>
+#include <mutex>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
