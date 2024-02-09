@@ -11,7 +11,7 @@ using namespace Sexy;
 
 // 0x45A260
 Music::Music() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mMusicInterface = gSexyAppBase->mMusicInterface;
     mCurMusicTune = MusicTune::MUSIC_TUNE_NONE;
     mCurMusicFileMain = MusicFile::MUSIC_FILE_NONE;
@@ -37,7 +37,7 @@ MusicFileData gMusicFileData[MusicFile::NUM_MUSIC_FILES]; // 0x6A9ED0
 bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName) {
     HMUSIC aHMusic = 0;
     HSTREAM aStream = 0;
-    BassMusicInterface *aBass = dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface);
+    auto aBass = dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface);
     std::string anExt;
 
     if (!aBass) return false;
@@ -59,7 +59,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
         p_fclose(pFile);                            // 关闭文件流
 
         aHMusic = BASS_MusicLoad(true, aData, 0, aSize, aBass->mMusicLoadFlags, 0);
-        delete[] (char *)aData;
+        delete[] static_cast<char *>(aData);
 
         if (aHMusic == 0) return false;
     } else {
@@ -75,7 +75,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
 
         aStream = BASS_StreamCreateFile(true, aData, 0, aSize, 0);
         TOD_ASSERT(gMusicFileData[theMusicFile].mFileData == nullptr);
-        gMusicFileData[theMusicFile].mFileData = (unsigned int *)aData;
+        gMusicFileData[theMusicFile].mFileData = static_cast<unsigned int *>(aData);
 
         if (aStream == 0) return false;
     }
@@ -272,7 +272,7 @@ void Music::StopAllMusic() {
 
 // 0x45AC20
 HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    auto aBass = static_cast<BassMusicInterface *>(mApp->mMusicInterface);
     auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
     return anItr->second.mHMusic;
@@ -280,7 +280,7 @@ HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
 
 // 0x45AC70
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume) {
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    auto aBass = static_cast<BassMusicInterface *>(mApp->mMusicInterface);
     auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
     BassMusicInfo *aMusicInfo = &anItr->second;
@@ -440,7 +440,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 
 unsigned long Music::GetMusicOrder(MusicFile theMusicFile) {
     TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-    return ((BassMusicInterface *)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
+    return static_cast<BassMusicInterface *>(mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
 }
 
 // 0x45B1B0
@@ -650,7 +650,8 @@ void Music::StartGameMusic() {
     else if (mApp->IsFinalBossLevel()) MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_FINAL_BOSS_BRAINIAC_MANIAC);
     else if (mApp->IsWallnutBowlingLevel() || mApp->IsWhackAZombieLevel() || mApp->IsLittleTroubleLevel() || mApp->IsBungeeBlitzLevel() || mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_SPEED)
         MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON);
-    else if ((mApp->IsAdventureMode() && (mApp->mPlayerInfo->GetLevel() == 10 || mApp->mPlayerInfo->GetLevel() == 20 || mApp->mPlayerInfo->GetLevel() == 30)) ||
+    else if ((mApp->IsAdventureMode() && (mApp->mPlayerInfo->GetLevel() == 10 || mApp->mPlayerInfo->GetLevel() == 20 ||
+			mApp->mPlayerInfo->GetLevel() == 30)) ||
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_COLUMN)
         MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_CONVEYER);
     else if (mApp->IsStormyNightLevel()) StopAllMusic();
@@ -667,7 +668,7 @@ void Music::StartGameMusic() {
 void Music::GameMusicPause(bool thePause) {
     if (thePause) {
         if (!mPaused && mCurMusicTune != MusicTune::MUSIC_TUNE_NONE) {
-            BassMusicInterface *aBass = (BassMusicInterface *)mMusicInterface;
+            auto aBass = static_cast<BassMusicInterface *>(mMusicInterface);
             auto anItr = aBass->mMusicMap.find(mCurMusicFileMain);
             TOD_ASSERT(anItr != aBass->mMusicMap.end());
             BassMusicInfo *aMusicInfo = &anItr->second;

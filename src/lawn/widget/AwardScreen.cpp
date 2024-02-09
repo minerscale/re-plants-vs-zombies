@@ -275,7 +275,6 @@ void AwardScreen::Draw(Graphics *g) {
                     aMsgChar = aNumTrophies <= 7    ? _S("[YOU_UNLOCKED_A_SURVIVAL]")
                                : aNumTrophies == 10 ? _S("[YOU_UNLOCKED_ENDLESS_SURVIVAL]")
                                                     : _S("[EARN_MORE_TROPHIES_FOR_ENDLESS_SURVIVAL]");
-
                 } else if (mApp->IsScaryPotterLevel()) aMsgChar = _S("[UNLOCKED_VASEBREAKER_LEVEL]");
                 else if (mApp->IsPuzzleMode()) aMsgChar = _S("[UNLOCKED_I_ZOMBIE_LEVEL]");
                 else
@@ -518,9 +517,9 @@ void AwardScreen::DrawAchievements(Graphics *g) {
         std::string aAchievementDesc = gAchievementList[mAchievementItems[i].mId].description;
         aAchievementName.append(" Earned!");
 
-        Rect aSrcRect = Rect(70 * (mAchievementItems[i].mId % 7), 70 * (mAchievementItems[i].mId / 7), 70, 70);
-        Rect aDestRect = Rect(70, 70, 70, 70);
-        Rect aTextRect = Rect(300, mAchievementItems[i].mY + 20, 300, 60);
+        auto aSrcRect = Rect(70 * (mAchievementItems[i].mId % 7), 70 * (mAchievementItems[i].mId / 7), 70, 70);
+        auto aDestRect = Rect(70, 70, 70, 70);
+        auto aTextRect = Rect(300, mAchievementItems[i].mY + 20, 300, 60);
 
         g->DrawImage(IMAGE_ACHEESEMENTS_ICONS, aDestRect, aSrcRect);
 

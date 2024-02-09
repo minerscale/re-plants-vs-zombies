@@ -16,11 +16,14 @@ using namespace Sexy;
 // ######################################################################################################################################################
 
 enum FoleyFlags {
-    FOLEYFLAGS_LOOP,              // 循环播放
-    FOLEYFLAGS_ONE_AT_A_TIME,     // 禁止叠加播放：指定该种类的音效同时至多存在 1
-                                  // 个实例，重复播放时仅增加引用计数并刷新开始时间
-    FOLEYFLAGS_MUTE_ON_PAUSE,     // 暂停时静默
-    FOLEYFLAGS_USES_MUSIC_VOLUME, // 使用音乐音量，指定该种类的音效使用与背景音乐相同的音量
+    FOLEYFLAGS_LOOP,
+    // 循环播放
+    FOLEYFLAGS_ONE_AT_A_TIME,
+    // 禁止叠加播放：指定该种类的音效同时至多存在 1 个实例，重复播放时仅增加引用计数并刷新开始时间
+    FOLEYFLAGS_MUTE_ON_PAUSE,
+    // 暂停时静默
+    FOLEYFLAGS_USES_MUSIC_VOLUME,
+    // 使用音乐音量，指定该种类的音效使用与背景音乐相同的音量
     FOLEYFLAGS_DONT_REPEAT // 禁止变式重复，指定该种类的音效每次实际播放的变式不得与上一次相同
 };
 
@@ -140,14 +143,16 @@ public:
     unsigned int mFoleyFlags;
 };
 
-/*inline*/ void TodFoleyInitialize(FoleyParams *theFoleyParamArray, int theFoleyParamArraySize);
-/*inline*/ void TodFoleyDispose();
+/*inline*/
+void TodFoleyInitialize(FoleyParams *theFoleyParamArray, int theFoleyParamArraySize);
+/*inline*/
+void TodFoleyDispose();
 FoleyParams *LookupFoley(FoleyType theFoleyType);
 
 extern int gFoleyParamArraySize;      //[0x6A9F04]
 extern FoleyParams *gFoleyParamArray; //[0x6A9F00]
 
-extern FoleyParams gLawnFoleyParamArray[(int)FoleyType::NUM_FOLEY]; // 0x69FAD0
+extern FoleyParams gLawnFoleyParamArray[static_cast<int>(FoleyType::NUM_FOLEY)]; // 0x69FAD0
 
 // ######################################################################################################################################################
 // ############################################################ 以下正式开始拟音音效相关声明
@@ -186,7 +191,8 @@ public:
     void GamePause(bool theEnteringPause);
     void PlayFoleyPitch(FoleyType theFoleyType, float thePitch);
     void CancelPausedFoley();
-    /*inline*/ void ApplyMusicVolume(FoleyInstance *theFoleyInstance);
+    /*inline*/
+    void ApplyMusicVolume(const FoleyInstance *theFoleyInstance);
     void RehookupSoundWithMusicVolume();
 };
 

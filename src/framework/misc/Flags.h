@@ -2,7 +2,6 @@
 #define __FLAGS_H__
 
 namespace Sexy {
-
 class FlagsMod {
 public:
     int mAddFlags;
@@ -57,7 +56,6 @@ public:
         mModalFlags->mUnderFlags = mOldUnderFlags;
     }
 };
-
 } // namespace Sexy
 
 #endif //__FLAGS_H__

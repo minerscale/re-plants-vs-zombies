@@ -9,7 +9,7 @@ TrailDefinition *gTrailDefArray; //[0x6A9F24]
 int gTrailParamArraySize;        //[0x6A9F28]
 TrailParams *gTrailParamArray;   //[0x6A9F2C]
 
-TrailParams gLawnTrailArray[(int)TrailType::NUM_TRAILS] = {
+TrailParams gLawnTrailArray[static_cast<int>(TrailType::NUM_TRAILS)] = {
   //  0x6A19F4
     {TrailType::TRAIL_ICE, "particles/IceTrail.trail"}
 };
@@ -51,8 +51,8 @@ void TrailLoadDefinitions(TrailParams *theTrailParamArray, int theTrailParamArra
     gTrailDefArray = new TrailDefinition[theTrailParamArraySize];
 
     for (int i = 0; i < gTrailParamArraySize; i++) {
-        TrailParams *aTrailParams = &theTrailParamArray[i];
-        TOD_ASSERT(aTrailParams->mTrailType == (TrailType)i);
+        const TrailParams *aTrailParams = &theTrailParamArray[i];
+        TOD_ASSERT(aTrailParams->mTrailType == static_cast<TrailType>(i));
         if (!TrailLoadADef(&gTrailDefArray[i], aTrailParams->mTrailFileName)) {
             char aBuf[512];
             sprintf(aBuf, "Failed to load trail '%s'", aTrailParams->mTrailFileName);
@@ -88,11 +88,11 @@ Trail::Trail() {
 
 // 0x51BB30
 void Trail::AddPoint(float x, float y) {
-    int aMaxPoints = ClampInt(mDefinition->mMaxPoints, 2, 20);
+    const int aMaxPoints = ClampInt(mDefinition->mMaxPoints, 2, 20);
 
     if (mNumTrailPoints > 0) {
-        TrailPoint &aPoint = mTrailPoints[mNumTrailPoints - 1];
-        float aDistance = Distance2D(x, y, aPoint.aPos.x, aPoint.aPos.y);
+        const TrailPoint &aPoint = mTrailPoints[mNumTrailPoints - 1];
+        const float aDistance = Distance2D(x, y, aPoint.aPos.x, aPoint.aPos.y);
         if (aDistance < mDefinition->mMinPointDistance) {
             return; // 距离上次记录的轨迹点的距离不能小于规定的最小值
         }
@@ -122,21 +122,21 @@ void Trail::Update() {
 }
 
 // 0x41BC40
-bool Trail::GetNormalAtPoint(int nIndex, SexyVector2 &theNormal) {
+bool Trail::GetNormalAtPoint(int nIndex, SexyVector2 &theNormal) const {
     SexyVector2 aDirection;
     if (nIndex == 0) {
-        SexyVector2 aToNext = mTrailPoints[nIndex + 1].aPos - mTrailPoints[nIndex].aPos;
+        const SexyVector2 aToNext = mTrailPoints[nIndex + 1].aPos - mTrailPoints[nIndex].aPos;
         aDirection = aToNext.Perp();
     } else if (nIndex == mNumTrailPoints - 1) {
-        SexyVector2 aFromPrev = mTrailPoints[nIndex].aPos - mTrailPoints[nIndex - 1].aPos;
+        const SexyVector2 aFromPrev = mTrailPoints[nIndex].aPos - mTrailPoints[nIndex - 1].aPos;
         aDirection = aFromPrev.Perp();
     } else {
-        SexyVector2 aToNext = mTrailPoints[nIndex + 1].aPos - mTrailPoints[nIndex].aPos;
-        SexyVector2 aToPrev = mTrailPoints[nIndex - 1].aPos - mTrailPoints[nIndex].aPos;
+        const SexyVector2 aToNext = mTrailPoints[nIndex + 1].aPos - mTrailPoints[nIndex].aPos;
+        const SexyVector2 aToPrev = mTrailPoints[nIndex - 1].aPos - mTrailPoints[nIndex].aPos;
         aDirection = aToNext.Normalize() + aToPrev.Normalize();
     }
 
-    float aMag = aDirection.Magnitude();
+    const float aMag = aDirection.Magnitude();
     if (FloatApproxEqual(aMag, 0.0f)) return false;
 
     theNormal.x = aDirection.x / aMag;
@@ -145,11 +145,11 @@ bool Trail::GetNormalAtPoint(int nIndex, SexyVector2 &theNormal) {
 }
 
 // 0x51BD00
-void Trail::Draw(Graphics *g) {
+void Trail::Draw(Graphics *g) const {
     if (mDead || mNumTrailPoints < 2) return;
 
-    float aTimeValue = mTrailAge / (float)(mTrailDuration - 1);
-    int aTriangleCount = (mNumTrailPoints - 1) * 2;
+    const float aTimeValue = mTrailAge / static_cast<float>(mTrailDuration - 1);
+    const int aTriangleCount = (mNumTrailPoints - 1) * 2;
     TOD_ASSERT(aTriangleCount < MAX_TRAIL_TRIANGLES);
 
     std::array<std::array<TriVertex, 3>, MAX_TRAIL_TRIANGLES> aVertArray;
@@ -166,44 +166,44 @@ void Trail::Draw(Graphics *g) {
         }
 
         SexyVector2 aNormalNext;
-        SexyVector2 aNormalCur = aNormalPrev;
+        const SexyVector2 aNormalCur = aNormalPrev;
         if (!GetNormalAtPoint(i + 1, aNormalNext)) {
             aNormalNext = aNormalPrev;
         } else {
             aNormalPrev = aNormalNext;
         }
 
-        TrailPoint &aPointCur = mTrailPoints[i];
-        TrailPoint &aPointNext = mTrailPoints[i + 1];
-        float aUCur = 1.0f - i / (float)(mNumTrailPoints - 1);
-        float aUNext = 1.0f - (i + 1) / (float)(mNumTrailPoints - 1);
-        float aWidthOverLengthCur = FloatTrackEvaluate(
-            mDefinition->mWidthOverLength, aUCur, mTrailInterp[(int)TrailTracks::TRACK_WIDTH_OVER_LENGTH]
+        const TrailPoint &aPointCur = mTrailPoints[i];
+        const TrailPoint &aPointNext = mTrailPoints[i + 1];
+        const float aUCur = 1.0f - i / static_cast<float>(mNumTrailPoints - 1);
+        const float aUNext = 1.0f - (i + 1) / static_cast<float>(mNumTrailPoints - 1);
+        const float aWidthOverLengthCur = FloatTrackEvaluate(
+            mDefinition->mWidthOverLength, aUCur, mTrailInterp[static_cast<int>(TrailTracks::TRACK_WIDTH_OVER_LENGTH)]
         );
-        float aWidthOverLengthNext = FloatTrackEvaluate(
-            mDefinition->mWidthOverLength, aUNext, mTrailInterp[(int)TrailTracks::TRACK_WIDTH_OVER_LENGTH]
+        const float aWidthOverLengthNext = FloatTrackEvaluate(
+            mDefinition->mWidthOverLength, aUNext, mTrailInterp[static_cast<int>(TrailTracks::TRACK_WIDTH_OVER_LENGTH)]
         );
-        float aWidthOverTimeCur = FloatTrackEvaluate(
-            mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[(int)TrailTracks::TRACK_WIDTH_OVER_TIME]
+        const float aWidthOverTimeCur = FloatTrackEvaluate(
+            mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[static_cast<int>(TrailTracks::TRACK_WIDTH_OVER_TIME)]
         );
-        float aWidthOverTimeNext = FloatTrackEvaluate(
-            mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[(int)TrailTracks::TRACK_WIDTH_OVER_TIME]
+        const float aWidthOverTimeNext = FloatTrackEvaluate(
+            mDefinition->mWidthOverTime, aTimeValue, mTrailInterp[static_cast<int>(TrailTracks::TRACK_WIDTH_OVER_TIME)]
         );
-        float aAlphaOverLengthCur = FloatTrackEvaluate(
-            mDefinition->mAlphaOverLength, aUCur, mTrailInterp[(int)TrailTracks::TRACK_ALPHA_OVER_LENGTH]
+        const float aAlphaOverLengthCur = FloatTrackEvaluate(
+            mDefinition->mAlphaOverLength, aUCur, mTrailInterp[static_cast<int>(TrailTracks::TRACK_ALPHA_OVER_LENGTH)]
         );
-        float aAlphaOverLengthNext = FloatTrackEvaluate(
-            mDefinition->mAlphaOverLength, aUNext, mTrailInterp[(int)TrailTracks::TRACK_ALPHA_OVER_LENGTH]
+        const float aAlphaOverLengthNext = FloatTrackEvaluate(
+            mDefinition->mAlphaOverLength, aUNext, mTrailInterp[static_cast<int>(TrailTracks::TRACK_ALPHA_OVER_LENGTH)]
         );
-        float aAlphaOverTimeCur = FloatTrackEvaluate(
-            mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[(int)TrailTracks::TRACK_ALPHA_OVER_TIME]
+        const float aAlphaOverTimeCur = FloatTrackEvaluate(
+            mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[static_cast<int>(TrailTracks::TRACK_ALPHA_OVER_TIME)]
         );
-        float aAlphaOverTimeNext = FloatTrackEvaluate(
-            mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[(int)TrailTracks::TRACK_ALPHA_OVER_TIME]
+        const float aAlphaOverTimeNext = FloatTrackEvaluate(
+            mDefinition->mAlphaOverTime, aTimeValue, mTrailInterp[static_cast<int>(TrailTracks::TRACK_ALPHA_OVER_TIME)]
         );
-        int anAlphaCur =
+        const int anAlphaCur =
             ClampInt(FloatRoundToInt(aAlphaOverLengthCur * aAlphaOverTimeCur * mColorOverride.mAlpha), 0, 255);
-        int anAlphaNext =
+        const int anAlphaNext =
             ClampInt(FloatRoundToInt(aAlphaOverLengthNext * aAlphaOverTimeNext * mColorOverride.mAlpha), 0, 255);
         Sexy::Color aColorCur = mColorOverride;
         Sexy::Color aColorNext = mColorOverride;
@@ -222,8 +222,8 @@ void Trail::Draw(Graphics *g) {
         aPosition[3].y =
             mTrailCenter.y + aPointNext.aPos.y + -aNormalNext.y * aWidthOverLengthNext * aWidthOverTimeNext;
 
-        int aVertCur = i * 2;
-        int aVertNext = aVertCur + 1;
+        const int aVertCur = i * 2;
+        const int aVertNext = aVertCur + 1;
         aVertArray[aVertCur][0].x = aPosition[0].x;
         aVertArray[aVertCur][0].y = aPosition[0].y;
         aVertArray[aVertCur][0].u = aUCur;
@@ -266,7 +266,7 @@ void TrailHolder::DisposeHolder() { mTrails.DataArrayDispose(); }
 
 Trail *TrailHolder::AllocTrail(int theRenderOrder, TrailType theTrailType) {
     TOD_ASSERT(theTrailType >= 0 && theTrailType < gTrailDefCount);
-    return AllocTrailFromDef(theRenderOrder, &gTrailDefArray[(int)theTrailType]);
+    return AllocTrailFromDef(theRenderOrder, &gTrailDefArray[static_cast<int>(theTrailType)]);
 }
 
 Trail *TrailHolder::AllocTrailFromDef(int theRenderOrder, TrailDefinition *theDefinition) {
@@ -277,7 +277,8 @@ Trail *TrailHolder::AllocTrailFromDef(int theRenderOrder, TrailDefinition *theDe
     aTrail->mTrailHolder = this;
     aTrail->mDefinition = theDefinition;
 
-    float aDurationInterp = RandRangeFloat(0.0f, 1.0f);
-    aTrail->mTrailDuration = (int)FloatTrackEvaluate(aTrail->mDefinition->mTrailDuration, 0.0f, aDurationInterp);
+    const float aDurationInterp = RandRangeFloat(0.0f, 1.0f);
+    aTrail->mTrailDuration =
+        static_cast<int>(FloatTrackEvaluate(aTrail->mDefinition->mTrailDuration, 0.0f, aDurationInterp));
     return aTrail;
 }

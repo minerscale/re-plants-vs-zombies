@@ -116,8 +116,8 @@ void PlayerInfo::DeleteUserFiles() {
     std::string aFilename = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
     gSexyAppBase->EraseFile(aFilename);
 
-    for (int i = 0; i < (int)GameMode::NUM_GAME_MODES; i++) {
-        std::string aFileName = GetSavedGameName((GameMode)i, mId);
+    for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++) {
+        std::string aFileName = GetSavedGameName(static_cast<GameMode>(i), mId);
         gSexyAppBase->EraseFile(aFileName);
     }
 }
@@ -165,7 +165,7 @@ void PlayerInfo::AddCoins(int theAmount) {
 }
 
 void PlayerInfo::ResetChallengeRecord(GameMode theGameMode) {
-    int aGameMode = (int)theGameMode - (int)GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1;
+    int aGameMode = static_cast<int>(theGameMode) - static_cast<int>(GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1);
     TOD_ASSERT(aGameMode >= 0 && aGameMode <= NUM_CHALLENGE_MODES);
     mChallengeRecords[aGameMode] = 0;
 }
@@ -176,7 +176,9 @@ void PottedPlant::InitializePottedPlant(SeedType theSeedType) {
     mSeedType = theSeedType;
     mDrawVariation = DrawVariation::VARIATION_NORMAL;
     mLastWateredTime = {};
-    mFacing = (FacingDirection)RandRangeInt((int)FacingDirection::FACING_RIGHT, (int)FacingDirection::FACING_LEFT);
+    mFacing =
+        static_cast<FacingDirection>(RandRangeInt((int)FacingDirection::FACING_RIGHT, (int)FacingDirection::FACING_LEFT)
+        );
     mPlantAge = PottedPlantAge::PLANTAGE_SPROUT;
     mTimesFed = 0;
     mWhichZenGarden = GardenType::GARDEN_MAIN;

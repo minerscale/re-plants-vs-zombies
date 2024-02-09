@@ -8,17 +8,16 @@
 struct PFILE;
 
 namespace Sexy {
-
 class XMLParam {
 public:
     std::string mKey;
     std::string mValue;
 };
 
-typedef std::map<SexyString, SexyString> XMLParamMap;
-typedef std::list<XMLParamMap::iterator> XMLParamMapIteratorList;
+using XMLParamMap = std::map<SexyString, SexyString>;
+using XMLParamMapIteratorList = std::list<XMLParamMap::iterator>;
 
-typedef std::vector<wchar_t> XMLParserBuffer;
+using XMLParserBuffer = std::vector<wchar_t>;
 
 class XMLElement {
 public:
@@ -81,7 +80,6 @@ public:
     bool HasFailed();
     bool EndOfFile();
 };
-
 }; // namespace Sexy
 
 #endif //__XMLPARSER_H__

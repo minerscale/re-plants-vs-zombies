@@ -5,7 +5,6 @@
 #include "bass.h"
 
 namespace Sexy {
-
 #ifndef _WIN32
 #define HWND void *
 #endif
@@ -27,7 +26,7 @@ public:
     DWORD GetHandle() { return mHMusic ? mHMusic : mHStream; }
 };
 
-typedef std::map<int, BassMusicInfo> BassMusicMap;
+using BassMusicMap = std::map<int, BassMusicInfo>;
 
 class BassMusicInterface : public MusicInterface {
 public:
@@ -40,33 +39,32 @@ public:
 
 public:
     BassMusicInterface(HWND theHWnd);
-    virtual ~BassMusicInterface();
+    ~BassMusicInterface() override;
 
-    virtual bool LoadMusic(int theSongId, const std::string &theFileName);
-    virtual void PlayMusic(int theSongId, int theOffset = 0, bool noLoop = false);
-    virtual void StopMusic(int theSongId);
-    virtual void StopAllMusic();
-    virtual void UnloadMusic(int theSongId);
-    virtual void UnloadAllMusic();
-    virtual void PauseAllMusic();
-    virtual void ResumeAllMusic();
-    virtual void PauseMusic(int theSongId);
-    virtual void ResumeMusic(int theSongId);
-    virtual void FadeIn(int theSongId, int theOffset = -1, double theSpeed = 0.002, bool noLoop = false);
-    virtual void FadeOut(int theSongId, bool stopSong = true, double theSpeed = 0.004);
-    virtual void FadeOutAll(bool stopSong = true, double theSpeed = 0.004);
-    virtual void SetSongVolume(int theSongId, double theVolume);
-    virtual void SetSongMaxVolume(int theSongId, double theMaxVolume);
-    virtual bool IsPlaying(int theSongId);
+    bool LoadMusic(int theSongId, const std::string &theFileName) override;
+    void PlayMusic(int theSongId, int theOffset = 0, bool noLoop = false) override;
+    void StopMusic(int theSongId) override;
+    void StopAllMusic() override;
+    void UnloadMusic(int theSongId) override;
+    void UnloadAllMusic() override;
+    void PauseAllMusic() override;
+    void ResumeAllMusic() override;
+    void PauseMusic(int theSongId) override;
+    void ResumeMusic(int theSongId) override;
+    void FadeIn(int theSongId, int theOffset = -1, double theSpeed = 0.002, bool noLoop = false) override;
+    void FadeOut(int theSongId, bool stopSong = true, double theSpeed = 0.004) override;
+    void FadeOutAll(bool stopSong = true, double theSpeed = 0.004) override;
+    void SetSongVolume(int theSongId, double theVolume) override;
+    void SetSongMaxVolume(int theSongId, double theMaxVolume) override;
+    bool IsPlaying(int theSongId) override;
 
-    virtual void SetVolume(double theVolume);
-    virtual void SetMusicAmplify(int theSongId, double theAmp); // default is 0.50
-    virtual void Update();
+    void SetVolume(double theVolume) override;
+    void SetMusicAmplify(int theSongId, double theAmp) override; // default is 0.50
+    void Update() override;
 
     // functions for dealing with MODs
     int GetMusicOrder(int theSongId);
 };
-
 } // namespace Sexy
 
 #endif //__BASSMUSICINTERFACE_H__

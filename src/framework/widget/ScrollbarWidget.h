@@ -9,7 +9,6 @@
 #include "Widget.h"
 
 namespace Sexy {
-
 class ScrollListener;
 class ScrollbuttonWidget;
 
@@ -45,7 +44,7 @@ public:
 
 public:
     ScrollbarWidget(int theId, ScrollListener *theScrollListener);
-    virtual ~ScrollbarWidget();
+    ~ScrollbarWidget() override;
 
     virtual void SetInvisIfNoScroll(bool invisIfNoScroll);
     virtual void SetMaxValue(double theNewMaxValue);
@@ -60,21 +59,20 @@ public:
     virtual int GetTrackSize();
     virtual int GetThumbSize();
     virtual int GetThumbPosition();
-    virtual void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
     virtual void ClampValue();
     virtual void SetThumbPosition(int thePosition);
-    virtual void ButtonPress(int theId);
-    virtual void ButtonDepress(int theId);
-    virtual void ButtonDownTick(int theId);
-    virtual void Update();
+    void ButtonPress(int theId) override;
+    void ButtonDepress(int theId) override;
+    void ButtonDownTick(int theId) override;
+    void Update() override;
     virtual int ThumbCompare(int x, int y);
-    virtual void MouseDown(int x, int y, int theClickCount) { Widget::MouseDown(x, y, theClickCount); }
-    virtual void MouseDown(int x, int y, int theBtnNum, int theClickCount);
-    virtual void MouseUp(int x, int y) { Widget::MouseUp(x, y); }
-    virtual void MouseUp(int x, int y, int theBtnNum, int theClickCount);
-    virtual void MouseDrag(int x, int y);
+    void MouseDown(int x, int y, int theClickCount) override { Widget::MouseDown(x, y, theClickCount); }
+    void MouseDown(int x, int y, int theBtnNum, int theClickCount) override;
+    void MouseUp(int x, int y) override { Widget::MouseUp(x, y); }
+    void MouseUp(int x, int y, int theBtnNum, int theClickCount) override;
+    void MouseDrag(int x, int y) override;
 };
-
 } // namespace Sexy
 
 #endif // __SCROLLBARWIDGET_H__

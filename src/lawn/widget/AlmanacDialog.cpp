@@ -19,7 +19,7 @@ bool gZombieDefeated[NUM_ZOMBIE_TYPES] = {false};
 // 0x401010
 AlmanacDialog::AlmanacDialog(LawnApp *theApp)
     : LawnDialog(theApp, DIALOG_ALMANAC, true, _S("Almanac"), _S(""), _S(""), BUTTONS_NONE) {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mOpenPage = ALMANAC_PAGE_INDEX;
     mSelectedSeed = SEED_PEASHOOTER;
     mSelectedZombie = ZOMBIE_NORMAL;
@@ -37,7 +37,7 @@ AlmanacDialog::AlmanacDialog(LawnApp *theApp)
     mCloseButton->mOverImage = Sexy::IMAGE_ALMANAC_CLOSEBUTTONHIGHLIGHT;
     mCloseButton->mDownImage = nullptr;
     mCloseButton->SetFont(Sexy::FONT_BRIANNETOD12);
-    Color aColor = Color(42, 42, 90);
+    auto aColor = Color(42, 42, 90);
     mCloseButton->mColors[ButtonWidget::COLOR_LABEL] = aColor;
     mCloseButton->mColors[ButtonWidget::COLOR_LABEL_HILITE] = aColor;
     mCloseButton->Resize(676, 567, 89, 26);
@@ -225,7 +225,7 @@ void AlmanacDialog::Update() {
 }
 
 ZombieType AlmanacDialog::GetZombieType(int theIndex) {
-    return theIndex < NUM_ZOMBIE_TYPES ? (ZombieType)theIndex : ZOMBIE_INVALID;
+    return theIndex < NUM_ZOMBIE_TYPES ? static_cast<ZombieType>(theIndex) : ZOMBIE_INVALID;
 }
 
 // 0x401E70
@@ -237,12 +237,12 @@ void AlmanacDialog::DrawIndex(Graphics *g) {
     );
 
     if (mPlant) {
-        Graphics aPlantGraphics = Graphics(*g);
+        auto aPlantGraphics = Graphics(*g);
         mPlant->BeginDraw(&aPlantGraphics);
         mPlant->Draw(&aPlantGraphics);
     }
     if (mZombie) {
-        Graphics aZombieGraphics = Graphics(*g);
+        auto aZombieGraphics = Graphics(*g);
         mZombie->BeginDraw(&aZombieGraphics);
         mZombie->Draw(&aZombieGraphics);
     }
@@ -258,7 +258,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) {
 
     SeedType aSeedMouseOn = SeedHitTest(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY);
     for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType < NUM_ALMANAC_SEEDS;
-         aSeedType = (SeedType)(aSeedType + 1)) {
+         aSeedType = static_cast<SeedType>(aSeedType + 1)) {
         int aPosX, aPosY;
         GetSeedPosition(aSeedType, aPosX, aPosY);
         if (mApp->SeedTypeAvailable(aSeedType)) {
@@ -297,7 +297,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) {
     }
 
     if (mPlant) {
-        Graphics aPlantGraphics = Graphics(*g);
+        auto aPlantGraphics = Graphics(*g);
         mPlant->BeginDraw(&aPlantGraphics);
         mPlant->Draw(&aPlantGraphics);
     }
@@ -360,7 +360,7 @@ void AlmanacDialog::DrawZombies(Graphics *g) {
                 }
 
                 ZombieType aZombieTypeToDraw = aZombieType;
-                Graphics aZombieGraphics = Graphics(*g);
+                auto aZombieGraphics = Graphics(*g);
                 aZombieGraphics.SetClipRect(aPosX + 2, aPosY + 2, 72, 72);
                 aZombieGraphics.Translate(aPosX + 1, aPosY - 6);
                 aZombieGraphics.mScaleX = 0.5f;
@@ -415,7 +415,7 @@ void AlmanacDialog::DrawZombies(Graphics *g) {
         518, 110
     );
     if (mZombie && !ZombieHasSilhouette(mZombie->mZombieType)) {
-        Graphics aZombieGraphics = Graphics(*g);
+        auto aZombieGraphics = Graphics(*g);
         mZombie->BeginDraw(&aZombieGraphics);
         aZombieGraphics.SetClipRect(-42, -51, 197, 187);
         switch (mZombie->mZombieType) {
@@ -481,7 +481,7 @@ void AlmanacDialog::Draw(Graphics *g) {
 
     for (Zombie *aZombie : mZombiePerfTest) {
         if (aZombie) {
-            Graphics aTestGraphics = Graphics(*g);
+            auto aTestGraphics = Graphics(*g);
             aZombie->Draw(&aTestGraphics);
         }
     }
@@ -504,7 +504,7 @@ void AlmanacDialog::GetSeedPosition(SeedType theSeedType, int &x, int &y) {
 SeedType AlmanacDialog::SeedHitTest(int x, int y) {
     if (mMouseVisible && mOpenPage == AlmanacPage::ALMANAC_PAGE_PLANTS) {
         for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType < NUM_ALMANAC_SEEDS;
-             aSeedType = (SeedType)(aSeedType + 1)) {
+             aSeedType = static_cast<SeedType>(aSeedType + 1)) {
             if (mApp->SeedTypeAvailable(aSeedType)) {
                 int aSeedX, aSeedY;
                 GetSeedPosition(aSeedType, aSeedX, aSeedY);
@@ -639,4 +639,4 @@ void AlmanacInitForPlayer() {
         gZombieDefeated[i] = false;
 }
 
-void AlmanacPlayerDefeatedZombie(ZombieType theZombieType) { gZombieDefeated[(int)theZombieType] = true; }
+void AlmanacPlayerDefeatedZombie(ZombieType theZombieType) { gZombieDefeated[static_cast<int>(theZombieType)] = true; }

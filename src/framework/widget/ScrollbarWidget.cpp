@@ -114,13 +114,13 @@ int ScrollbarWidget::GetTrackSize() {
 int ScrollbarWidget::GetThumbSize() {
     if (mPageSize > mMaxValue) return 0;
 
-    int aThumbSize = (int)((double)((GetTrackSize() * mPageSize / mMaxValue)) + 0.5);
+    int aThumbSize = static_cast<int>((double)((GetTrackSize() * mPageSize / mMaxValue)) + 0.5);
     return std::max(8, aThumbSize);
 }
 
 int ScrollbarWidget::GetThumbPosition() {
     if (mPageSize > mMaxValue) return mUpButton->mWidth;
-    return (int)((double)(((mValue * (GetTrackSize() - GetThumbSize())) / (mMaxValue - mPageSize))) + 0.5) +
+    return static_cast<int>((double)(((mValue * (GetTrackSize() - GetThumbSize())) / (mMaxValue - mPageSize))) + 0.5) +
            mUpButton->mWidth;
 }
 

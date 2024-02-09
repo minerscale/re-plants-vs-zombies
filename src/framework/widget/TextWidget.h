@@ -5,12 +5,11 @@
 #include "Widget.h"
 
 namespace Sexy {
-
 class ScrollbarWidget;
 class _Font;
 
-typedef std::vector<SexyString> SexyStringVector;
-typedef std::vector<int> IntVector;
+using SexyStringVector = std::vector<SexyString>;
+using IntVector = std::vector<int>;
 
 class TextWidget : public Widget, public ScrollListener {
 public:
@@ -38,24 +37,23 @@ public:
     virtual int GetStringIndex(const SexyString &theString, int thePixel);
 
     virtual int GetColorStringWidth(const SexyString &theString);
-    virtual void Resize(int theX, int theY, int theWidth, int theHeight);
+    void Resize(int theX, int theY, int theWidth, int theHeight) override;
     virtual Color GetLastColor(const SexyString &theString);
     virtual void AddToPhysicalLines(int theIdx, const SexyString &theLine);
 
     virtual void AddLine(const SexyString &theString);
     virtual bool SelectionReversed();
     virtual void GetSelectedIndices(int theLineIdx, int *theIndices);
-    virtual void Draw(Graphics *g);
-    virtual void ScrollPosition(int theId, double thePosition);
+    void Draw(Graphics *g) override;
+    void ScrollPosition(int theId, double thePosition) override;
     virtual void GetTextIndexAt(int x, int y, int *thePosArray);
     virtual SexyString GetSelection();
 
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseDrag(int x, int y);
+    void MouseDown(int x, int y, int theClickCount) override;
+    void MouseDrag(int x, int y) override;
 
-    virtual void KeyDown(KeyCode theKey);
+    void KeyDown(KeyCode theKey) override;
 };
-
 } // namespace Sexy
 
 #endif //__TEXTWIDGET_H__

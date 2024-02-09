@@ -15,7 +15,7 @@ bool DescParser::Error(const std::string &theError) {
 DataElement *DescParser::Dereference(const std::string &theString) {
     std::string aDefineName = StringToUpper(theString);
 
-    DataElementMap::iterator anItr = mDefineMap.find(aDefineName);
+    auto anItr = mDefineMap.find(aDefineName);
     if (anItr != mDefineMap.end()) return anItr->second;
     else return NULL;
 }
@@ -53,23 +53,24 @@ bool DescParser::GetValues(ListDataElement *theSource, ListDataElement *theValue
 
     for (ulong aSourceNum = 0; aSourceNum < theSource->mElementVector.size(); aSourceNum++) {
         if (theSource->mElementVector[aSourceNum]->mIsList) {
-            ListDataElement *aChildList = new ListDataElement();
+            auto aChildList = new ListDataElement();
             theValues->mElementVector.push_back(aChildList);
 
-            if (!GetValues((ListDataElement *)theSource->mElementVector[aSourceNum], aChildList)) return false;
+            if (!GetValues(static_cast<ListDataElement *>(theSource->mElementVector[aSourceNum]), aChildList))
+                return false;
         } else {
-            std::string aString = ((SingleDataElement *)theSource->mElementVector[aSourceNum])->mString;
+            std::string aString = static_cast<SingleDataElement *>(theSource->mElementVector[aSourceNum])->mString;
 
             if (aString.length() > 0) {
                 if ((aString[0] == '\'') || (aString[0] == '"')) {
-                    SingleDataElement *aChildData = new SingleDataElement(Unquote(aString));
+                    auto aChildData = new SingleDataElement(Unquote(aString));
                     theValues->mElementVector.push_back(aChildData);
                 } else if (IsImmediate(aString)) {
                     theValues->mElementVector.push_back(new SingleDataElement(aString));
                 } else {
                     std::string aDefineName = StringToUpper(aString);
 
-                    DataElementMap::iterator anItr = mDefineMap.find(aDefineName);
+                    auto anItr = mDefineMap.find(aDefineName);
 
                     if (anItr == mDefineMap.end()) {
                         Error("Unable to Dereference \"" + aString + "\"");
@@ -87,7 +88,7 @@ bool DescParser::GetValues(ListDataElement *theSource, ListDataElement *theValue
 
 std::string DescParser::DataElementToString(DataElement *theDataElement) {
     if (theDataElement->mIsList) {
-        ListDataElement *aListDataElement = (ListDataElement *)theDataElement;
+        auto aListDataElement = static_cast<ListDataElement *>(theDataElement);
 
         std::string aString = "(";
 
@@ -101,7 +102,7 @@ std::string DescParser::DataElementToString(DataElement *theDataElement) {
 
         return aString;
     } else {
-        SingleDataElement *aSingleDataElement = (SingleDataElement *)theDataElement;
+        auto aSingleDataElement = static_cast<SingleDataElement *>(theDataElement);
         return aSingleDataElement->mString;
     }
 }
@@ -111,14 +112,14 @@ bool DescParser::DataToString(DataElement *theSource, std::string *theString) {
 
     if (theSource->mIsList) return false;
 
-    std::string aDefName = ((SingleDataElement *)theSource)->mString;
+    std::string aDefName = static_cast<SingleDataElement *>(theSource)->mString;
 
     DataElement *aDataElement = Dereference(aDefName);
 
     if (aDataElement != NULL) {
         if (aDataElement->mIsList) return false;
 
-        *theString = Unquote(((SingleDataElement *)aDataElement)->mString);
+        *theString = Unquote(static_cast<SingleDataElement *>(aDataElement)->mString);
     } else *theString = Unquote(aDefName);
 
     return true;
@@ -138,15 +139,15 @@ bool DescParser::DataToInt(DataElement *theSource, int *theInt) {
 bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStringVector) {
     theStringVector->clear();
 
-    ListDataElement aStaticValues = ListDataElement();
+    auto aStaticValues = ListDataElement();
     ListDataElement *aValues;
 
     if (theSource->mIsList) {
-        if (!GetValues((ListDataElement *)theSource, &aStaticValues)) return false;
+        if (!GetValues(static_cast<ListDataElement *>(theSource), &aStaticValues)) return false;
 
         aValues = &aStaticValues;
     } else {
-        std::string aDefName = ((SingleDataElement *)theSource)->mString;
+        std::string aDefName = static_cast<SingleDataElement *>(theSource)->mString;
 
         DataElement *aDataElement = Dereference(aDefName);
 
@@ -157,7 +158,7 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
 
         if (!aDataElement->mIsList) return false;
 
-        aValues = (ListDataElement *)aDataElement;
+        aValues = static_cast<ListDataElement *>(aDataElement);
     }
 
     for (ulong i = 0; i < aValues->mElementVector.size(); i++) {
@@ -166,7 +167,7 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
             return false;
         }
 
-        SingleDataElement *aSingleDataElement = (SingleDataElement *)aValues->mElementVector[i];
+        auto aSingleDataElement = static_cast<SingleDataElement *>(aValues->mElementVector[i]);
 
         theStringVector->push_back(aSingleDataElement->mString);
     }
@@ -176,14 +177,14 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
 
 bool DescParser::DataToList(DataElement *theSource, ListDataElement *theValues) {
     if (theSource->mIsList) {
-        return GetValues((ListDataElement *)theSource, theValues);
+        return GetValues(static_cast<ListDataElement *>(theSource), theValues);
     }
 
-    DataElement *aDataElement = Dereference(((SingleDataElement *)theSource)->mString);
+    DataElement *aDataElement = Dereference(static_cast<SingleDataElement *>(theSource)->mString);
 
     if ((aDataElement == NULL) || (!aDataElement->mIsList)) return false;
 
-    ListDataElement *aListElement = (ListDataElement *)aDataElement;
+    auto aListElement = static_cast<ListDataElement *>(aDataElement);
 
     *theValues = *aListElement;
 
@@ -193,7 +194,7 @@ bool DescParser::DataToList(DataElement *theSource, ListDataElement *theValues) 
 bool DescParser::DataToIntVector(DataElement *theSource, IntVector *theIntVector) {
     theIntVector->clear();
 
-    StringVector aStringVector = StringVector();
+    auto aStringVector = StringVector();
     if (!DataToStringVector(theSource, &aStringVector)) return false;
 
     for (ulong i = 0; i < aStringVector.size(); i++) {
@@ -235,7 +236,7 @@ bool DescParser::ParseToList(
 
     if (theStringPos == NULL) theStringPos = &aStringPos;
 
-    while (*theStringPos < (int)theString.length()) {
+    while (*theStringPos < static_cast<int>(theString.length())) {
         bool addSingleChar = false;
         char aChar = theString[(*theStringPos)++];
 
@@ -262,7 +263,7 @@ bool DescParser::ParseToList(
                         Error("Unexpected List Start");
                         return false;
                     } else {
-                        ListDataElement *aChildList = new ListDataElement();
+                        auto aChildList = new ListDataElement();
 
                         if (!ParseToList(theString, aChildList, true, theStringPos)) return false;
 

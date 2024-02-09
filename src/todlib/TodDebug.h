@@ -10,10 +10,11 @@ public:
     int mBracketStartTime;
 
 public:
-    TodHesitationBracket(const char * /*theFormat*/, ...) { ; }
-    ~TodHesitationBracket() { ; }
+    explicit TodHesitationBracket(const char * /*theFormat*/, ...) : mMessage{}, mBracketStartTime(0) {}
 
-    inline void EndBracket() { ; }
+    ~TodHesitationBracket() {}
+
+    static inline void EndBracket() {}
 };
 
 void TodLog(const char *theFormat, ...);
@@ -25,11 +26,14 @@ void TodTraceWithoutSpamming(const char *theFormat, ...);
 void TodHesitationTrace(...);
 // void				TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage);
 void TodAssertFailed(const char *theCondition, const char *theFile, int theLine, const char *theMsg = "", ...);
-/*inline*/ void TodErrorMessageBox(const char *theMessage, const char *theTitle);
+/*inline*/
+void TodErrorMessageBox(const char *theMessage, const char *theTitle);
 // long __stdcall	TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo);
 
-/*inline*/ void *TodMalloc(int theSize);
-/*inline*/ void TodFree(void *theBlock);
+/*inline*/
+void *TodMalloc(int theSize);
+/*inline*/
+void TodFree(void *theBlock);
 void TodAssertInitForApp();
 
 #if __has_builtin(__builtin_debugtrap)
@@ -40,13 +44,13 @@ void TodAssertInitForApp();
 
 #ifdef _DEBUG
 #define TOD_ASSERT(condition, ...)                                                                                     \
-    {                                                                                                                  \
+    do {                                                                                                               \
         if (!bool(condition)) {                                                                                        \
             TodAssertFailed("" #condition, __FILE__, __LINE__, ##__VA_ARGS__);                                         \
             DBG_BREAK();                                                                                               \
             TodTraceMemory();                                                                                          \
         }                                                                                                              \
-    }
+    } while (0)
 #else
 #define TOD_ASSERT(condition, ...)
 #endif

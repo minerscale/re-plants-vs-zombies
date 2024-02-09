@@ -8,6 +8,7 @@ namespace Sexy {
 class Image;
 //    class MemoryImage;
 } // namespace Sexy
+
 using namespace Sexy;
 
 enum FilterEffect : int32_t {
@@ -18,7 +19,7 @@ enum FilterEffect : int32_t {
     NUM_FILTER_EFFECTS
 };
 
-typedef std::unordered_map<Image *, std::unique_ptr<Image>> ImageFilterMap;
+using ImageFilterMap = std::unordered_map<Image *, std::unique_ptr<Image>>;
 extern ImageFilterMap gFilterMap[FilterEffect::NUM_FILTER_EFFECTS];
 
 void FilterEffectInitForApp();

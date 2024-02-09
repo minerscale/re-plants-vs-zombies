@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 template <class _T> class TPoint {
 public:
     _T mX;
@@ -31,33 +30,37 @@ public:
     TPoint operator-(const TPoint &p) const { return TPoint(mX - p.mX, mY - p.mY); }
     TPoint operator*(const TPoint &p) const { return TPoint(mX * p.mX, mY * p.mY); }
     TPoint operator/(const TPoint &p) const { return TPoint(mX / p.mX, mY / p.mY); }
+
     TPoint &operator+=(const TPoint &p) {
         mX += p.mX;
         mY += p.mY;
         return *this;
     }
+
     TPoint &operator-=(const TPoint &p) {
         mX -= p.mX;
         mY -= p.mY;
         return *this;
     }
+
     TPoint &operator*=(const TPoint &p) {
         mX *= p.mX;
         mY *= p.mY;
         return *this;
     }
+
     TPoint &operator/=(const TPoint &p) {
         mX /= p.mX;
         mY /= p.mY;
         return *this;
     }
+
     TPoint operator*(_T s) const { return TPoint(mX * s, mY * s); }
     TPoint operator/(_T s) const { return TPoint(mX / s, mY / s); }
 };
 
-typedef TPoint<int> Point;
-typedef TPoint<double> FPoint;
-
+using Point = TPoint<int>;
+using FPoint = TPoint<double>;
 }; // namespace Sexy
 
 #endif //__POINT_H__

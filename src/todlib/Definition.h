@@ -37,6 +37,7 @@ public:
     int mSymbolValue; //+0x0：标志位上的值或枚举项对应的数值，若为 -1 则表示不存在该项
     const char *mSymbolName; //+0x4：标志位或枚举项的名称，为空指针时表示不存在该项，故被作为读取结束的标志
 };
+
 // extern DefSymbol gParticleFlagSymbols[];  //0x69E290
 // extern DefSymbol gEmitterTypeSymbols[];  //0x69E260
 // extern DefSymbol gParticleTypeSymbols[];  //0x69E200
@@ -142,51 +143,58 @@ SexyString /*__cdecl*/ DefinitionGetCompiledFilePathFromXMLFilePath(const SexySt
 bool IsFileInPakFile(const SexyString &theFilePath);
 bool DefinitionIsCompiled(const SexyString &theXMLFilePath);
 bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition);
-void DefinitionFillWithDefaults(DefMap *theDefMap, void *theDefinition);
+void DefinitionFillWithDefaults(const DefMap *theDefMap, void *theDefinition);
 void DefinitionXmlError(XMLParser *theXmlParser, char *theFormat, ...);
-bool DefSymbolValueFromString(DefSymbol *theSymbolMap, const char *theName, int *theResultValue);
+bool DefSymbolValueFromString(const DefSymbol *theSymbolMap, const char *theName, int *theResultValue);
 bool DefinitionReadXMLString(XMLParser *theXmlParser, SexyString &theValue);
 bool DefinitionReadIntField(XMLParser *theXmlParser, int *theValue);
 bool DefinitionReadFloatField(XMLParser *theXmlParser, float *theValue);
 bool DefinitionReadStringField(XMLParser *theXmlParser, const char **theValue);
 bool DefinitionReadEnumField(XMLParser *theXmlParser, int *theValue, DefSymbol *theSymbolMap);
 bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue);
-bool DefinitionReadArrayField(XMLParser *theXmlParser, DefinitionArrayDef *theArray, DefField *theField);
+bool DefinitionReadArrayField(XMLParser *theXmlParser, DefinitionArrayDef *theArray, const DefField *theField);
 bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack *theTrack);
 bool DefinitionReadFlagField(
     XMLParser *theXmlParser, const SexyString &theElementName, uint *theResultValue, DefSymbol *theSymbolMap
 );
 bool DefinitionReadImageField(XMLParser *theXmlParser, Image **theImage);
 bool DefinitionReadFontField(XMLParser *theXmlParser, _Font **theFont);
-bool DefinitionReadField(XMLParser *theXmlParser, DefMap *theDefMap, void *theDefinition, bool *theDone);
+bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void *theDefinition, bool *theDone);
 bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition);
 bool DefinitionCompileFile(
     const SexyString theXMLFilePath, const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition
 );
 
-void DefMapWriteToCache(void *&theWritePtr, DefMap *theDefMap, void *theDefinition);
+void DefMapWriteToCache(void *&theWritePtr, const DefMap *theDefMap, void *theDefinition);
 void DefWriteToCacheString(void *&theWritePtr, char **theValue);
 void DefWriteToCacheArray(void *&theWritePtr, DefinitionArrayDef *theValue, DefMap *theDefMap);
-void DefWriteToCacheFloatTrack(void *&theWritePtr, FloatParameterTrack *theValue);
+void DefWriteToCacheFloatTrack(void *&theWritePtr, const FloatParameterTrack *theValue);
 void DefWriteToCacheImage(void *&theWritePtr, Image **theValue);
 void DefWriteToCacheFont(void *&theWritePtr, _Font **theValue);
 
 void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSize, unsigned int *theResultSize);
 
-/*inline*/ unsigned int DefGetSizeString(char **theValue);
-/*inline*/ unsigned int DefinitionGetArraySize(DefinitionArrayDef *theValue, DefMap *theDefMap);
-/*inline*/ unsigned int DefGetSizeFloatTrack(FloatParameterTrack *theValue);
-/*inline*/ unsigned int DefGetSizeImage(Image **theValue);
-/*inline*/ unsigned int DefGetSizeFont(_Font **theValue);
+/*inline*/
+unsigned int DefGetSizeString(char **theValue);
+/*inline*/
+unsigned int DefinitionGetArraySize(DefinitionArrayDef *theValue, DefMap *theDefMap);
+/*inline*/
+unsigned int DefGetSizeFloatTrack(const FloatParameterTrack *theValue);
+/*inline*/
+unsigned int DefGetSizeImage(Image **theValue);
+/*inline*/
+unsigned int DefGetSizeFont(_Font **theValue);
 
-/*inline*/ unsigned int DefinitionGetDeepSize(DefMap *theDefMap, void *theDefinition);
-/*inline*/ unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition);
+/*inline*/
+unsigned int DefinitionGetDeepSize(const DefMap *theDefMap, void *theDefinition);
+/*inline*/
+unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition);
 /*inline*/ // void*        DefinitionAlloc(int theSize);
 void *DefinitionUncompressCompiledBuffer(
     void *theCompressedBuffer, size_t theCompressedBufferSize, size_t &theUncompressedSize,
     const SexyString &theCompiledFilePath
 );
-uint /*__cdecl*/ DefinitionCalcHashSymbolMap(int aSchemaHash, DefSymbol *theSymbolMap);
+uint /*__cdecl*/ DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap);
 uint /*__cdecl*/ DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap *> &theProgressMaps);
 uint /*__cdecl*/ DefinitionCalcHash(DefMap *theDefMap);
 inline bool DefReadFromCacheString(void *&theReadPtr, char **theString);
@@ -194,19 +202,22 @@ inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArra
 inline bool DefReadFromCacheImage(void *&theReadPtr, Image **theImage);
 inline bool DefReadFromCacheFont(void *&theReadPtr, _Font **theFont);
 inline bool DefReadFromCacheFloatTrack(void *&theReadPtr, FloatParameterTrack *theTrack);
-bool DefMapReadFromCache(void *&theReadPtr, DefMap *theDefMap, void *theDefinition);
+bool DefMapReadFromCache(void *&theReadPtr, const DefMap *theDefMap, void *theDefinition);
 bool DefinitionCompileAndLoad(const SexyString &theXMLFilePath, DefMap *theDefMap, void *theDefinition);
 bool DefinitionLoadMap(XMLParser *theXmlParser, DefMap *theDefMap, void *theDefinition);
 bool DefinitionLoadImage(Image **theImage, const SexyString &theName);
 bool DefinitionLoadFont(_Font **theFont, const SexyString &theName);
 bool DefinitionLoadXML(const SexyString &theFilename, DefMap *theDefMap, void *theDefinition);
 void DefinitionFreeArrayField(DefinitionArrayDef *theArray, DefMap *theDefMap);
-void DefinitionFreeMap(DefMap *theDefMap, void *theDefinition);
+void DefinitionFreeMap(const DefMap *theDefMap, void *theDefinition);
 
-/*inline*/ bool FloatTrackIsSet(const FloatParameterTrack &theTrack);
-/*inline*/ void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue);
-float FloatTrackEvaluate(FloatParameterTrack &theTrack, float theTimeValue, float theInterp);
+/*inline*/
+bool FloatTrackIsSet(const FloatParameterTrack &theTrack);
+/*inline*/
+void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue);
+float FloatTrackEvaluate(const FloatParameterTrack &theTrack, float theTimeValue, float theInterp);
 float FloatTrackEvaluateFromLastTime(FloatParameterTrack &theTrack, float theTimeValue, float theInterp);
-/*inline*/ bool FloatTrackIsConstantZero(FloatParameterTrack &theTrack);
+/*inline*/
+bool FloatTrackIsConstantZero(const FloatParameterTrack &theTrack);
 
 #endif

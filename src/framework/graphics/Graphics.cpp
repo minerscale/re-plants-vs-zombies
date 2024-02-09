@@ -119,8 +119,8 @@ void Graphics::FillRect(const Rect &theRect) { FillRect(theRect.mX, theRect.mY, 
 void Graphics::DrawRect(int theX, int theY, int theWidth, int theHeight) {
     if (mColor.mAlpha == 0) return;
 
-    Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight);
-    Rect aFullDestRect = Rect(theX + mTransX, theY + mTransY, theWidth + 1, theHeight + 1);
+    auto aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight);
+    auto aFullDestRect = Rect(theX + mTransX, theY + mTransY, theWidth + 1, theHeight + 1);
     Rect aFullClippedRect = aFullDestRect.Intersection(mClipRect);
 
     if (aFullDestRect == aFullClippedRect) {
@@ -178,7 +178,7 @@ void Graphics::PFInsert(int i, int y) // append edge i to end of active list
         q = &mPFPoints[i];
     }
     /* initialize x position at intersection of edge with scanline y */
-    mPFActiveEdgeList[mPFNumActiveEdges].mDX = dx = (q->mX - p->mX) / (double)(q->mY - p->mY);
+    mPFActiveEdgeList[mPFNumActiveEdges].mDX = dx = (q->mX - p->mX) / static_cast<double>(q->mY - p->mY);
     mPFActiveEdgeList[mPFNumActiveEdges].mX = dx * (y + 0.5 - p->mY - mTransY) + p->mX + mTransX;
     mPFActiveEdgeList[mPFNumActiveEdges].i = i;
     mPFActiveEdgeList[mPFNumActiveEdges].b = p->mY - 1.0 / dx * p->mX;
@@ -214,10 +214,11 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
         ind[k] = k;
     qsort(ind, mPFNumVertices, sizeof ind[0], PFCompareInd); /* sort ind by mPFPoints[ind[k]].y */
 
-    mPFNumActiveEdges = 0;                                                 /* start with empty active list */
-    k = 0;                                                                 /* ind[k] is next vertex to process */
-    y0 = std::max(aMinY, (int)ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY)); /* ymin of polygon */
-    y1 = std::min(aMaxY, (int)floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)); /* ymax of polygon */
+    mPFNumActiveEdges = 0; /* start with empty active list */
+    k = 0;                 /* ind[k] is next vertex to process */
+    y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
+    y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
+    /* ymax of polygon */
 
     for (y = y0; y <= y1; y++) {
         // step through scanlines
@@ -248,11 +249,12 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
         qsort(mPFActiveEdgeList, mPFNumActiveEdges, sizeof mPFActiveEdgeList[0], PFCompareActive);
 
         // draw horizontal segments for scanline y
-        for (j = 0; j < mPFNumActiveEdges; j += 2) { // draw horizontal segments
+        for (j = 0; j < mPFNumActiveEdges; j += 2) {
+            // draw horizontal segments
             // span 'tween j & j+1 is inside, span tween j+1 & j+2 is outside
-            xl = (int)ceil(mPFActiveEdgeList[j].mX - 0.5); // left end of span
+            xl = static_cast<int>(ceil(mPFActiveEdgeList[j].mX - 0.5)); // left end of span
             if (xl < aMinX) xl = aMinX;
-            xr = (int)floor(mPFActiveEdgeList[j + 1].mX - 0.5); // right end of span
+            xr = static_cast<int>(floor(mPFActiveEdgeList[j + 1].mX - 0.5)); // right end of span
             if (xr > aMaxX) xr = aMaxX;
 
             if ((xl <= xr) && (aSpanPos < MAX_TEMP_SPANS)) {
@@ -328,10 +330,11 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
         ind[k] = k;
     qsort(ind, mPFNumVertices, sizeof ind[0], PFCompareInd); /* sort ind by mPFPoints[ind[k]].y */
 
-    mPFNumActiveEdges = 0;                                                 /* start with empty active list */
-    k = 0;                                                                 /* ind[k] is next vertex to process */
-    y0 = std::max(aMinY, (int)ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY)); /* ymin of polygon */
-    y1 = std::min(aMaxY, (int)floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)); /* ymax of polygon */
+    mPFNumActiveEdges = 0; /* start with empty active list */
+    k = 0;                 /* ind[k] is next vertex to process */
+    y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
+    y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
+    /* ymax of polygon */
 
     for (y = y0; y <= y1; y++) {
         // step through scanlines
@@ -362,16 +365,17 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
         qsort(mPFActiveEdgeList, mPFNumActiveEdges, sizeof mPFActiveEdgeList[0], PFCompareActive);
 
         // draw horizontal segments for scanline y
-        for (j = 0; j < mPFNumActiveEdges; j += 2) { // draw horizontal segments
+        for (j = 0; j < mPFNumActiveEdges; j += 2) {
+            // draw horizontal segments
             // span 'tween j & j+1 is inside, span tween j+1 & j+2 is outside
-            xl = (int)ceil(mPFActiveEdgeList[j].mX - 0.5); // left end of span
-            int lErr = int((fabs((mPFActiveEdgeList[j].mX - 0.5) - xl)) * 255);
+            xl = static_cast<int>(ceil(mPFActiveEdgeList[j].mX - 0.5)); // left end of span
+            int lErr = static_cast<int>((fabs((mPFActiveEdgeList[j].mX - 0.5) - xl)) * 255);
             if (xl < aMinX) {
                 xl = aMinX;
                 lErr = 255;
             }
-            xr = (int)floor(mPFActiveEdgeList[j + 1].mX - 0.5); // right end of span
-            int rErr = int((fabs((mPFActiveEdgeList[j + 1].mX - 0.5) - xr)) * 255);
+            xr = static_cast<int>(floor(mPFActiveEdgeList[j + 1].mX - 0.5)); // right end of span
+            int rErr = static_cast<int>((fabs((mPFActiveEdgeList[j + 1].mX - 0.5) - xr)) * 255);
             if (xr > aMaxX) {
                 xr = aMaxX;
                 rErr = 255;
@@ -393,7 +397,7 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
                                c = fabs(mPFActiveEdgeList[j].mDX);
                         do {
                             double _y = m * xl + b;
-                            lErr = std::min(255, int(fabs((_y)-y - .5) * 255));
+                            lErr = std::min(255, static_cast<int>(fabs((_y)-y - .5) * 255));
                             coverRow[xl - aCoverLeft] = std::min(255, coverRow[xl - aCoverLeft] + lErr);
                             xl++;
                             c -= 1.0;
@@ -409,7 +413,7 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
                                c = fabs(mPFActiveEdgeList[j + 1].mDX);
                         do {
                             double _y = m * xr + b;
-                            rErr = std::min(255, int(fabs((_y)-y - .5) * 255));
+                            rErr = std::min(255, static_cast<int>(fabs((_y)-y - .5) * 255));
                             coverRow[xr - aCoverLeft] = std::min(255, coverRow[xr - aCoverLeft] + rErr);
                             xr--;
                             c -= 1.0;
@@ -613,7 +617,7 @@ void Graphics::DrawImageMirror(Image *theImage, const Rect &theDestRect, const R
         return;
     }
 
-    Rect aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
+    auto aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
 
     mDestImage->StretchBltMirror(
         theImage, aDestRect, theSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -621,8 +625,8 @@ void Graphics::DrawImageMirror(Image *theImage, const Rect &theDestRect, const R
 }
 
 void Graphics::DrawImage(Image *theImage, int theX, int theY, int theStretchedWidth, int theStretchedHeight) {
-    Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theStretchedWidth, theStretchedHeight);
-    Rect aSrcRect = Rect(0, 0, theImage->mWidth, theImage->mHeight);
+    auto aDestRect = Rect(theX + mTransX, theY + mTransY, theStretchedWidth, theStretchedHeight);
+    auto aSrcRect = Rect(0, 0, theImage->mWidth, theImage->mHeight);
 
     mDestImage->StretchBlt(
         theImage, aDestRect, aSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -630,7 +634,7 @@ void Graphics::DrawImage(Image *theImage, int theX, int theY, int theStretchedWi
 }
 
 void Graphics::DrawImage(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect) {
-    Rect aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
+    auto aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
 
     mDestImage->StretchBlt(
         theImage, aDestRect, theSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -959,7 +963,8 @@ int Graphics::WriteString(
         }
     }
 
-    if (theLength < 0 || theOffset + theLength > (int)theString.length()) theLength = (int)theString.length();
+    if (theLength < 0 || theOffset + theLength > static_cast<int>(theString.length()))
+        theLength = static_cast<int>(theString.length());
     else theLength = theOffset + theLength;
 
     SexyString aString;
@@ -1036,7 +1041,7 @@ int Graphics::WriteWordWrapped(
     int anOrigColorInt = anOrigColor.ToInt();
     if ((anOrigColorInt & 0xFF000000) == 0xFF000000) anOrigColorInt &= ~0xFF000000;
 
-    if (theMaxChars < 0) theMaxChars = (int)theLine.length();
+    if (theMaxChars < 0) theMaxChars = static_cast<int>(theLine.length());
 
     _Font *aFont = GetFont();
 
@@ -1110,7 +1115,8 @@ int Graphics::WriteWordWrapped(
                 }
                 aLineStartPos = aCurPos;
             } else {
-                if ((int)aCurPos < aLineStartPos + 1) aCurPos++; // ensure at least one character gets written
+                if (static_cast<int>(aCurPos) < aLineStartPos + 1)
+                    aCurPos++; // ensure at least one character gets written
 
                 aWrittenWidth = WriteWordWrappedHelper(
                     this, theLine, theRect.mX + anIndentX, theRect.mY + aYOffset, theRect.mWidth, theJustification,
@@ -1134,7 +1140,7 @@ int Graphics::WriteWordWrapped(
         } else aCurPos++;
     }
 
-    if (aLineStartPos < (int)theLine.length()) // write the last piece
+    if (aLineStartPos < static_cast<int>(theLine.length())) // write the last piece
     {
         int aWrittenWidth = WriteWordWrappedHelper(
             this, theLine, theRect.mX + anIndentX, theRect.mY + aYOffset, theRect.mWidth, theJustification, true,

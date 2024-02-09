@@ -41,24 +41,32 @@ public:
     void CancelIntro();
     void Update();
     void AnimateBoard();
-    /*inline*/ void StartSeedChooser();
-    /*inline*/ void EndSeedChooser();
-    /*inline*/ int CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStart, int thePositionEnd);
+    /*inline*/
+    void StartSeedChooser();
+    /*inline*/
+    void EndSeedChooser();
+    /*inline*/
+    int CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStart, int thePositionEnd);
     void PlaceStreetZombies();
     void AddGraveStoneParticles();
     void PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY);
     bool CanZombieGoInGridSpot(ZombieType theZombieType, int theGridX, int theGridY, bool theZombieGrid[5][5]);
-    /*inline*/ bool IsSurvivalRepick();
-    /*inline*/ bool IsAfterSeedChooser();
+    /*inline*/
+    bool IsSurvivalRepick();
+    /*inline*/
+    bool IsAfterSeedChooser();
     void AddFlowerPots();
     void UpdateZombiesWon();
     void StartZombiesWon();
-    /*inline*/ bool ShowZombieWalking();
-    /*inline*/ bool IsCutSceneOver();
+    /*inline*/
+    bool ShowZombieWalking();
+    /*inline*/
+    bool IsCutSceneOver();
     void ZombieWonClick();
     void MouseDown(int theX, int theY);
     void KeyDown(KeyCode theKey);
-    /*inline*/ void AdvanceCrazyDaveDialog(bool theJustSkipping);
+    /*inline*/
+    void AdvanceCrazyDaveDialog(bool theJustSkipping);
     void ShowShovel();
     bool CanGetPacketUpgrade();
     bool CanGetPacketUpgrade(int theIndex);
@@ -66,18 +74,22 @@ public:
     void FindAndPlaceZombie(ZombieType theZombieType, bool theZombieGrid[5][5]);
     static /*inline*/ bool Is2x2Zombie(ZombieType theZombieType);
     void PreloadResources();
-    /*inline*/ bool IsBeforePreloading();
-    /*inline*/ bool IsShowingCrazyDave();
+    /*inline*/
+    bool IsBeforePreloading();
+    /*inline*/
+    bool IsShowingCrazyDave();
     bool IsNonScrollingCutscene();
     bool IsScrolledLeftAtStart();
-    /*inline*/ bool IsInShovelTutorial();
+    /*inline*/
+    bool IsInShovelTutorial();
     void PlaceLawnItems();
     bool CanGetSecondPacketUpgrade();
     int ParseDelayTimeFromMessage();
     int ParseTalkTimeFromMessage();
     void ClearUpsellBoard();
     void LoadIntroBoard();
-    /*inline*/ void AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY);
+    /*inline*/
+    void AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theGridY);
     void LoadUpsellBoardPool();
     void LoadUpsellBoardFog();
     void LoadUpsellChallengeScreen();
@@ -86,7 +98,8 @@ public:
     void DrawUpsell(Graphics *g);
     void UpdateIntro();
     void DrawIntro(Graphics *g);
-    /*inline*/ bool ShouldRunUpsellBoard();
+    /*inline*/
+    bool ShouldRunUpsellBoard();
 };
 
 #endif

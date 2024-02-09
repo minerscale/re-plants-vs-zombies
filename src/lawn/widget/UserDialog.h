@@ -21,19 +21,22 @@ public:
 
 public:
     UserDialog(LawnApp *theApp);
-    virtual ~UserDialog();
+    ~UserDialog() override;
 
-    virtual void Resize(int theX, int theY, int theWidth, int theHeight);
-    virtual int GetPreferredHeight(int theWidth);
-    virtual void AddedToManager(WidgetManager *theWidgetManager);
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
-    virtual void ListClicked(int theId, int theIdx, int theClickCount);
-    virtual void ListClosed(int) {}
-    virtual void ListHiliteChanged(int, int, int) {}
-    virtual void ButtonDepress(int theId);
-    virtual void EditWidgetText(int theId, const SexyString &theString);
+    void Resize(int theX, int theY, int theWidth, int theHeight) override;
+    int GetPreferredHeight(int theWidth) override;
+    void AddedToManager(WidgetManager *theWidgetManager) override;
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
+    void ListClicked(int theId, int theIdx, int theClickCount) override;
+
+    void ListClosed(int) override {}
+
+    void ListHiliteChanged(int, int, int) override {}
+
+    void ButtonDepress(int theId) override;
+    void EditWidgetText(int theId, const SexyString &theString) override;
     virtual bool AllowChar(int theId, SexyChar theChar);
-    virtual void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
     void FinishDeleteUser();
     void FinishRenameUser(const SexyString &theNewName);
     SexyString GetSelName();

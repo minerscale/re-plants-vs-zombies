@@ -450,7 +450,7 @@ void CreditScreen::PreLoadCredits() {
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_SUNSHROOM, true);
     ReanimationPreload(ReanimationType::REANIM_SUNSHROOM);
 
-    ReanimatorDefinition *aMain2Def = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_MAIN2];
+    ReanimatorDefinition *aMain2Def = &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN2)];
     for (int aTrackIndex = 0; aTrackIndex < aMain2Def->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aMain2Def->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
@@ -460,7 +460,7 @@ void CreditScreen::PreLoadCredits() {
             }
         }
     }
-    ReanimatorDefinition *aMain3Def = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_MAIN3];
+    ReanimatorDefinition *aMain3Def = &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN3)];
     for (int aTrackIndex = 0; aTrackIndex < aMain3Def->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aMain3Def->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
@@ -470,7 +470,8 @@ void CreditScreen::PreLoadCredits() {
             }
         }
     }
-    ReanimatorDefinition *aUndeadDef = &gReanimatorDefArray[(int)ReanimationType::REANIM_CREDITS_WEARETHEUNDEAD];
+    ReanimatorDefinition *aUndeadDef =
+        &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_WEARETHEUNDEAD)];
     for (int aTrackIndex = 0; aTrackIndex < aUndeadDef->mTracks.count; aTrackIndex++) {
         ReanimatorTrack *aTrack = &aUndeadDef->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
@@ -1045,7 +1046,7 @@ void CreditScreen::Update() {
         }
 
         if (aUnsyncedDuration > 10000) {
-            JumpToFrame((CreditsPhase)((int)mCreditsPhase + 1), 0.0f);
+            JumpToFrame(static_cast<CreditsPhase>((int)mCreditsPhase + 1), 0.0f);
             aUnsyncedFrames = 0;
         }
         while (aUnsyncedFrames > 0) {
@@ -1292,8 +1293,9 @@ void CreditScreen::UpdateMovie() {
             mBrainPosY = TodAnimateCurveFloatTime(0.0f, 1.0f, aFraction, 505.0f, 485.0f, TodCurves::CURVE_EASE_IN_OUT);
             mDrawBrain = true;
         }
-        else if (aBeforeTiming->mBrainType == CreditBrainType::BRAIN_FLY_ON || aBeforeTiming->mBrainType == CreditBrainType::BRAIN_FAST_ON || aBeforeTiming->mBrainType == CreditBrainType::BRAIN_NEXT_WORD)
-        {
+		else if (aBeforeTiming->mBrainType == CreditBrainType::BRAIN_FLY_ON || aBeforeTiming->mBrainType ==
+			CreditBrainType::BRAIN_FAST_ON || aBeforeTiming->mBrainType == CreditBrainType::BRAIN_NEXT_WORD)
+		{
             mBrainPosX = TodAnimateCurveFloatTime(
                 0.0f, 1.0f, aFraction, aBeforeTiming->mWordX - 15.0f, aAfterTiming->mWordX - 15.0f,
                 TodCurves::CURVE_EASE_IN_OUT
@@ -1378,7 +1380,7 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame) {
     if (thePhase == CreditsPhase::CREDITS_END) {
         aReanim = PlayReanim(3);
     } else {
-        aReanim = PlayReanim((int)thePhase + 1);
+        aReanim = PlayReanim(static_cast<int>(thePhase) + 1);
     }
 
     float aFrameFactor = 1.0f / (aReanim->mDefinition->mTracks.tracks->mCount - 1);

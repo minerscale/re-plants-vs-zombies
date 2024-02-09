@@ -70,7 +70,9 @@ enum AdviceType {
     ADVICE_NEED_WHEELBARROW,
     NUM_ADVICE_TYPES
 };
+
 enum AlmanacPage { ALMANAC_PAGE_INDEX, ALMANAC_PAGE_PLANTS, ALMANAC_PAGE_ZOMBIES };
+
 enum AwardType {
     AWARD_FORLEVEL,
     AWARD_CREDITS_ZOMBIENOTE,
@@ -78,6 +80,7 @@ enum AwardType {
     AWARD_ACHIEVEMENTONLY,
     AWARD_PRECREDITS_ZOMBIENOTE,
 };
+
 enum BackgroundType {
     BACKGROUND_1_DAY,
     BACKGROUND_2_NIGHT,
@@ -90,6 +93,7 @@ enum BackgroundType {
     BACKGROUND_ZOMBIQUARIUM,
     BACKGROUND_TREEOFWISDOM
 };
+
 enum BoardResult {
     BOARDRESULT_NONE = 0,
     BOARDRESULT_WON = 1,
@@ -99,6 +103,7 @@ enum BoardResult {
     BOARDRESULT_QUIT_APP = 5,
     BOARDRESULT_CHEAT = 6
 };
+
 enum BossPart {
     BOSS_PART_BACK_LEG = 0,
     BOSS_PART_FRONT_LEG = 1,
@@ -106,6 +111,7 @@ enum BossPart {
     BOSS_PART_BACK_ARM = 3,
     BOSS_PART_FIREBALL = 4
 };
+
 enum ChallengePage {
     CHALLENGE_PAGE_SURVIVAL = 0,
     CHALLENGE_PAGE_CHALLENGE = 1,
@@ -113,6 +119,7 @@ enum ChallengePage {
     CHALLENGE_PAGE_PUZZLE = 3,
     MAX_CHALLANGE_PAGES = 4
 };
+
 enum ChallengeState {
     STATECHALLENGE_NORMAL,
     STATECHALLENGE_BEGHOULED_MOVING,
@@ -130,6 +137,7 @@ enum ChallengeState {
     STATECHALLENGE_TREE_WAITING_TO_BABBLE,
     STATECHALLENGE_TREE_BABBLING
 };
+
 enum ChosenSeedState {
     SEED_FLYING_TO_BANK = 0,
     SEED_IN_BANK = 1,
@@ -137,6 +145,7 @@ enum ChosenSeedState {
     SEED_IN_CHOOSER = 3,
     SEED_PACKET_HIDDEN = 4
 };
+
 enum CoinMotion {
     COIN_MOTION_FROM_SKY = 0,
     COIN_MOTION_FROM_SKY_SLOW = 1,
@@ -146,6 +155,7 @@ enum CoinMotion {
     COIN_MOTION_FROM_PRESENT = 5,
     COIN_MOTION_FROM_BOSS = 6
 };
+
 enum CoinType {
     COIN_NONE,
     COIN_SILVER,
@@ -176,6 +186,7 @@ enum CoinType {
     COIN_PRESENT_PUZZLE_MODE,
     COIN_PRESENT_SURVIVAL_MODE,
 };
+
 enum CrazyDaveState {
     CRAZY_DAVE_OFF = 0,
     CRAZY_DAVE_ENTERING = 1,
@@ -185,6 +196,7 @@ enum CrazyDaveState {
     CRAZY_DAVE_HANDING_TALKING = 5,
     CRAZY_DAVE_HANDING_IDLING = 6
 };
+
 enum CursorType {
     CURSOR_TYPE_NORMAL,
     CURSOR_TYPE_PLANT_FROM_BANK,
@@ -205,6 +217,7 @@ enum CursorType {
     CURSOR_TYPE_WHEEELBARROW,
     CURSOR_TYPE_TREE_FOOD
 };
+
 enum DamageFlags {
     DAMAGE_BYPASSES_SHIELD = 0,
     DAMAGE_HITS_SHIELD_AND_BODY = 1,
@@ -213,6 +226,7 @@ enum DamageFlags {
     DAMAGE_DOESNT_LEAVE_BODY = 4,
     DAMAGE_SPIKE = 5
 };
+
 enum DamageRangeFlags {
     DAMAGES_GROUND,
     DAMAGES_FLYING,
@@ -223,60 +237,113 @@ enum DamageRangeFlags {
     DAMAGES_UNDERGROUND,
     DAMAGES_ONLY_MINDCONTROLLED
 };
+
 enum Dialogs {
-    DIALOG_NEW_GAME,               // 0：
-    DIALOG_OPTIONS,                // 1：
-    DIALOG_NEWOPTIONS,             // 2：菜单
-    DIALOG_ALMANAC,                // 3：图鉴
-    DIALOG_STORE,                  // 4：商店
-    DIALOG_PREGAME_NAG,            // 5：
-    DIALOG_LOAD_GAME,              // 6：
-    DIALOG_CONFIRM_UPDATE_CHECK,   // 7：
-    DIALOG_CHECKING_UPDATES,       // 8：
-    DIALOG_REGISTER_ERROR,         // 9：
-    DIALOG_COLORDEPTH_EXP,         // 10：不支持窗口模式
-    DIALOG_OPENURL_WAIT,           // 11：
-    DIALOG_OPENURL_FAIL,           // 12：
-    DIALOG_QUIT,                   // 13：退出游戏（主菜单点击退出时）
-    DIALOG_HIGH_SCORES,            // 14：
-    DIALOG_NAG,                    // 15：
-    DIALOG_INFO,                   // 16：信息（3D 加速不支持/不推荐）
-    DIALOG_GAME_OVER,              // 17：游戏结束（关卡失败）
-    DIALOG_LEVEL_COMPLETE,         // 18：关卡完成
-    DIALOG_PAUSED,                 // 19：暂停游戏
-    DIALOG_NO_MORE_MONEY,          // 20：
-    DIALOG_BONUS,                  // 21：
-    DIALOG_CONFIRM_BACK_TO_MAIN,   // 22：返回主菜单
-    DIALOG_CONFIRM_RESTART,        // 23：重新开始关卡
-    DIALOG_THANKS_FOR_REGISTERING, // 24：
-    DIALOG_NOT_ENOUGH_MONEY,       // 25：资金不足（购买商品但钱数不够时触发）
-    DIALOG_UPGRADED,               // 26：卡槽升级
-    DIALOG_NO_UPGRADE,             // 27：
-    DIALOG_CHOOSER_WARNING, // 28：选卡提醒（未携带生产阳光的植物、未携带紫卡原植物等情况下触发）
-    DIALOG_USERDIALOG,        // 29：用户对话
-    DIALOG_CREATEUSER,        // 30：创建新用户
-    DIALOG_CONFIRMDELETEUSER, // 31：删除用户
-    DIALOG_RENAMEUSER,        // 32：重命名用户
-    DIALOG_CREATEUSERERROR,   // 33：请输入名字（创建新用户对话中不输入用户名时触发）
-    DIALOG_RENAMEUSERERROR,   // 34：请输入名字（重命名用户对话中不输入用户名时触发）
-    DIALOG_CHEAT,             // 35：跳关对话（仅内测版可触发）
-    DIALOG_CHEATERROR,        // 36：跳关指令输入有误
-    DIALOG_CONTINUE,          // 37：继续游戏（读档进入关卡时）
-    DIALOG_GETREADY,          // 38：
-    DIALOG_RESTARTCONFIRM,    // 39：重新开始游戏（继续游戏对话中选择开始新游戏时触发）
-    DIALOG_CONFIRMPURCHASE,   // 40：
-    DIALOG_CONFIRMSELL,       // 41：
-    DIALOG_TIMESUP,           // 42：
-    DIALOG_VIRTUALHELP,       // 43：
-    DIALOG_JUMPAHEAD,         // 44：
-    DIALOG_CRAZY_DAVE,        // 45：
-    DIALOG_STORE_PURCHASE,    // 46：购买商品（戴夫商店）
-    DIALOG_ZEN_SELL,          // 47：出售盆栽植物（禅境花园）
-    DIALOG_MESSAGE, // 48：通用消息对话，包括：①加载中（切换用户时触发）；②小游戏等模式未解锁；……
-    DIALOG_IMITATER,             // 49：模仿者对话
-    DIALOG_PURCHASE_PACKET_SLOT, // 50：升级卡槽的格子数量
+    DIALOG_NEW_GAME,
+    // 0：
+    DIALOG_OPTIONS,
+    // 1：
+    DIALOG_NEWOPTIONS,
+    // 2：菜单
+    DIALOG_ALMANAC,
+    // 3：图鉴
+    DIALOG_STORE,
+    // 4：商店
+    DIALOG_PREGAME_NAG,
+    // 5：
+    DIALOG_LOAD_GAME,
+    // 6：
+    DIALOG_CONFIRM_UPDATE_CHECK,
+    // 7：
+    DIALOG_CHECKING_UPDATES,
+    // 8：
+    DIALOG_REGISTER_ERROR,
+    // 9：
+    DIALOG_COLORDEPTH_EXP,
+    // 10：不支持窗口模式
+    DIALOG_OPENURL_WAIT,
+    // 11：
+    DIALOG_OPENURL_FAIL,
+    // 12：
+    DIALOG_QUIT,
+    // 13：退出游戏（主菜单点击退出时）
+    DIALOG_HIGH_SCORES,
+    // 14：
+    DIALOG_NAG,
+    // 15：
+    DIALOG_INFO,
+    // 16：信息（3D 加速不支持/不推荐）
+    DIALOG_GAME_OVER,
+    // 17：游戏结束（关卡失败）
+    DIALOG_LEVEL_COMPLETE,
+    // 18：关卡完成
+    DIALOG_PAUSED,
+    // 19：暂停游戏
+    DIALOG_NO_MORE_MONEY,
+    // 20：
+    DIALOG_BONUS,
+    // 21：
+    DIALOG_CONFIRM_BACK_TO_MAIN,
+    // 22：返回主菜单
+    DIALOG_CONFIRM_RESTART,
+    // 23：重新开始关卡
+    DIALOG_THANKS_FOR_REGISTERING,
+    // 24：
+    DIALOG_NOT_ENOUGH_MONEY,
+    // 25：资金不足（购买商品但钱数不够时触发）
+    DIALOG_UPGRADED,
+    // 26：卡槽升级
+    DIALOG_NO_UPGRADE,
+    // 27：
+    DIALOG_CHOOSER_WARNING,
+    // 28：选卡提醒（未携带生产阳光的植物、未携带紫卡原植物等情况下触发）
+    DIALOG_USERDIALOG,
+    // 29：用户对话
+    DIALOG_CREATEUSER,
+    // 30：创建新用户
+    DIALOG_CONFIRMDELETEUSER,
+    // 31：删除用户
+    DIALOG_RENAMEUSER,
+    // 32：重命名用户
+    DIALOG_CREATEUSERERROR,
+    // 33：请输入名字（创建新用户对话中不输入用户名时触发）
+    DIALOG_RENAMEUSERERROR,
+    // 34：请输入名字（重命名用户对话中不输入用户名时触发）
+    DIALOG_CHEAT,
+    // 35：跳关对话（仅内测版可触发）
+    DIALOG_CHEATERROR,
+    // 36：跳关指令输入有误
+    DIALOG_CONTINUE,
+    // 37：继续游戏（读档进入关卡时）
+    DIALOG_GETREADY,
+    // 38：
+    DIALOG_RESTARTCONFIRM,
+    // 39：重新开始游戏（继续游戏对话中选择开始新游戏时触发）
+    DIALOG_CONFIRMPURCHASE,
+    // 40：
+    DIALOG_CONFIRMSELL,
+    // 41：
+    DIALOG_TIMESUP,
+    // 42：
+    DIALOG_VIRTUALHELP,
+    // 43：
+    DIALOG_JUMPAHEAD,
+    // 44：
+    DIALOG_CRAZY_DAVE,
+    // 45：
+    DIALOG_STORE_PURCHASE,
+    // 46：购买商品（戴夫商店）
+    DIALOG_ZEN_SELL,
+    // 47：出售盆栽植物（禅境花园）
+    DIALOG_MESSAGE,
+    // 48：通用消息对话，包括：①加载中（切换用户时触发）；②小游戏等模式未解锁；……
+    DIALOG_IMITATER,
+    // 49：模仿者对话
+    DIALOG_PURCHASE_PACKET_SLOT,
+    // 50：升级卡槽的格子数量
     NUM_DIALOGS
 };
+
 enum DebugTextMode {
     DEBUG_TEXT_NONE = 0,
     DEBUG_TEXT_ZOMBIE_SPAWN = 1,
@@ -284,6 +351,7 @@ enum DebugTextMode {
     DEBUG_TEXT_MEMORY = 3,
     DEBUG_TEXT_COLLISION = 4
 };
+
 enum DrawStringJustification {
     DS_ALIGN_LEFT = 0,
     DS_ALIGN_RIGHT = 1,
@@ -292,6 +360,7 @@ enum DrawStringJustification {
     DS_ALIGN_RIGHT_VERTICAL_MIDDLE = 4,
     DS_ALIGN_CENTER_VERTICAL_MIDDLE = 5
 };
+
 enum DrawVariation {
     VARIATION_NORMAL,
     VARIATION_IMITATER,
@@ -312,7 +381,9 @@ enum DrawVariation {
     VARIATION_IMITATER_LESS,
     VARIATION_AQUARIUM
 };
+
 enum EffectType { EFFECT_PARTICLE = 0, EFFECT_TRAIL = 1, EFFECT_REANIM = 2, EFFECT_ATTACHMENT = 3, EFFECT_OTHER = 4 };
+
 enum EmitterType {
     EMITTER_CIRCLE = 0,
     EMITTER_BOX = 1,
@@ -320,6 +391,7 @@ enum EmitterType {
     EMITTER_CIRCLE_PATH = 3,
     EMITTER_CIRCLE_EVEN_SPACING = 4
 };
+
 enum GameMode {
     GAMEMODE_ADVENTURE,
     GAMEMODE_SURVIVAL_NORMAL_STAGE_1,
@@ -396,6 +468,7 @@ enum GameMode {
     GAMEMODE_INTRO,
     NUM_GAME_MODES
 };
+
 enum GameObjectType {
     OBJECT_TYPE_NONE,
     OBJECT_TYPE_PLANT,
@@ -420,6 +493,7 @@ enum GameObjectType {
     OBJECT_TYPE_STINKY,
     OBJECT_TYPE_TREE_OF_WISDOM
 };
+
 enum GameScenes {
     SCENE_LOADING = 0,
     SCENE_MENU = 1,
@@ -430,7 +504,9 @@ enum GameScenes {
     SCENE_CREDIT = 6,
     SCENE_CHALLENGE = 7
 };
+
 enum GardenType { GARDEN_MAIN = 0, GARDEN_MUSHROOM = 1, GARDEN_WHEELBARROW = 2, GARDEN_AQUARIUM = 3 };
+
 enum GridItemType {
     GRIDITEM_NONE = 0,
     GRIDITEM_GRAVESTONE = 1,
@@ -446,6 +522,7 @@ enum GridItemType {
     GRIDITEM_RAKE = 11,
     GRIDITEM_IZOMBIE_BRAIN = 12
 };
+
 enum GridItemState {
     GRIDITEM_STATE_NORMAL = 0,
     GRIDITEM_STATE_GRAVESTONE_SPECIAL = 1,
@@ -478,6 +555,7 @@ enum GridItemState {
     GRIDITEM_STATE_RAKE_TRIGGERED = 28,
     GRIDITEM_STATE_BRAIN_SQUISHED = 29
 };
+
 enum GridSquareType {
     GRIDSQUARE_NONE = 0,
     GRIDSQUARE_GRASS = 1,
@@ -485,6 +563,7 @@ enum GridSquareType {
     GRIDSQUARE_POOL = 3,
     GRIDSQUARE_HIGH_GROUND = 4
 };
+
 enum HelmType {
     HELMTYPE_NONE = 0,
     HELMTYPE_TRAFFIC_CONE = 1,
@@ -497,8 +576,11 @@ enum HelmType {
     HELMTYPE_WALLNUT = 8,
     HELMTYPE_TALLNUT = 9
 };
+
 enum LawnMowerState { MOWER_ROLLING_IN = 0, MOWER_READY = 1, MOWER_TRIGGERED = 2, MOWER_SQUISHED = 3 };
+
 enum LawnMowerType : int { LAWNMOWER_LAWN, LAWNMOWER_POOL, LAWNMOWER_ROOF, LAWNMOWER_SUPER_MOWER, NUM_MOWER_TYPES };
+
 enum MessageStyle {
     MESSAGE_STYLE_OFF,
     MESSAGE_STYLE_TUTORIAL_LEVEL1,
@@ -521,12 +603,14 @@ enum MessageStyle {
     MESSAGE_STYLE_ZEN_GARDEN_LONG,
     MESSAGE_STYLE_ACHIEVEMENT // @Patoke: implemented
 };
+
 enum MowerHeight {
     MOWER_HEIGHT_LAND = 0,
     MOWER_HEIGHT_DOWN_TO_POOL = 1,
     MOWER_HEIGHT_IN_POOL = 2,
     MOWER_HEIGHT_UP_TO_LAND = 3
 };
+
 enum NotRecommend {
     NOT_RECOMMENDED_NOCTURNAL,
     NOT_RECOMMENDED_NEEDS_POOL,
@@ -537,6 +621,7 @@ enum NotRecommend {
     NOT_RECOMMENDED_FOR_CHALLENGE,
     NOT_RECOMMENDED_AT_NIGHT
 };
+
 enum ParticleEffect {
     PARTICLE_NONE = -1,
     PARTICLE_MELONSPLASH,
@@ -647,6 +732,7 @@ enum ParticleEffect {
     PARTICLE_PERSENT_PICK_UP_ARROW,
     NUM_PARTICLES
 };
+
 enum PlantPriority {
     TOPPLANT_EATING_ORDER,
     TOPPLANT_DIGGING_ORDER,
@@ -659,6 +745,7 @@ enum PlantPriority {
     TOPPLANT_ONLY_PUMPKIN,
     TOPPLANT_ONLY_UNDER_PLANT
 };
+
 enum PlantingReason {
     PLANTING_OK,
     PLANTING_NOT_HERE,
@@ -675,8 +762,11 @@ enum PlantingReason {
     PLANTING_NEEDS_GROUND,
     PLANTING_NEEDS_SLEEPING
 };
+
 enum PlantRowType { PLANTROW_DIRT = 0, PLANTROW_NORMAL = 1, PLANTROW_POOL = 2, PLANTROW_HIGH_GROUND = 3 };
+
 enum PottedPlantAge { PLANTAGE_SPROUT = 0, PLANTAGE_SMALL = 1, PLANTAGE_MEDIUM = 2, PLANTAGE_FULL = 3 };
+
 enum PottedPlantNeed {
     PLANTNEED_NONE = 0,
     PLANTNEED_WATER = 1,
@@ -684,35 +774,61 @@ enum PottedPlantNeed {
     PLANTNEED_BUGSPRAY = 3,
     PLANTNEED_PHONOGRAPH = 4
 };
+
 enum ProjectileMotion {
-    MOTION_STRAIGHT = 0,      // 水平向右
-    MOTION_LOBBED = 1,        // 抛物线
-    MOTION_THREEPEATER = 2,   // 偏转向右
-    MOTION_BEE = 3,           //
-    MOTION_BEE_BACKWARDS = 4, //
-    MOTION_PUFF = 5,          // 水平向右（一段时间后消失）
-    MOTION_BACKWARDS = 6,     // 水平向左
-    MOTION_STAR = 7,          // 斜向运动
-    MOTION_FLOAT_OVER = 8,    // 缓慢漂浮向右（无碰撞）
-    MOTION_HOMING = 9         // 追踪
+    MOTION_STRAIGHT = 0,
+    // 水平向右
+    MOTION_LOBBED = 1,
+    // 抛物线
+    MOTION_THREEPEATER = 2,
+    // 偏转向右
+    MOTION_BEE = 3,
+    //
+    MOTION_BEE_BACKWARDS = 4,
+    //
+    MOTION_PUFF = 5,
+    // 水平向右（一段时间后消失）
+    MOTION_BACKWARDS = 6,
+    // 水平向左
+    MOTION_STAR = 7,
+    // 斜向运动
+    MOTION_FLOAT_OVER = 8,
+    // 缓慢漂浮向右（无碰撞）
+    MOTION_HOMING = 9 // 追踪
 };
+
 enum ProjectileType {
-    PROJECTILE_PEA = 0,         // 豌豆
-    PROJECTILE_SNOWPEA = 1,     // 冰豌豆
-    PROJECTILE_CABBAGE = 2,     // 卷心菜
-    PROJECTILE_MELON = 3,       // 西瓜
-    PROJECTILE_PUFF = 4,        // 孢子
-    PROJECTILE_WINTERMELON = 5, // 冰瓜
-    PROJECTILE_FIREBALL = 6,    // 火豌豆
-    PROJECTILE_STAR = 7,        // 星星
-    PROJECTILE_SPIKE = 8,       // 尖刺
-    PROJECTILE_BASKETBALL = 9,  // 篮球
-    PROJECTILE_KERNEL = 10,     // 玉米粒
-    PROJECTILE_COBBIG = 11,     // 玉米加农炮
-    PROJECTILE_BUTTER = 12,     // 黄油
-    PROJECTILE_ZOMBIE_PEA = 13, // 僵尸豌豆
+    PROJECTILE_PEA = 0,
+    // 豌豆
+    PROJECTILE_SNOWPEA = 1,
+    // 冰豌豆
+    PROJECTILE_CABBAGE = 2,
+    // 卷心菜
+    PROJECTILE_MELON = 3,
+    // 西瓜
+    PROJECTILE_PUFF = 4,
+    // 孢子
+    PROJECTILE_WINTERMELON = 5,
+    // 冰瓜
+    PROJECTILE_FIREBALL = 6,
+    // 火豌豆
+    PROJECTILE_STAR = 7,
+    // 星星
+    PROJECTILE_SPIKE = 8,
+    // 尖刺
+    PROJECTILE_BASKETBALL = 9,
+    // 篮球
+    PROJECTILE_KERNEL = 10,
+    // 玉米粒
+    PROJECTILE_COBBIG = 11,
+    // 玉米加农炮
+    PROJECTILE_BUTTER = 12,
+    // 黄油
+    PROJECTILE_ZOMBIE_PEA = 13,
+    // 僵尸豌豆
     NUM_PROJECTILES = 14
 };
+
 enum ReanimationType : int {
     REANIM_NONE = -1,
     REANIM_LOADBAR_SPROUT = 0,
@@ -860,6 +976,7 @@ enum ReanimationType : int {
     REANIM_FLAG,
     NUM_REANIMS
 };
+
 enum ReanimLoopType {
     REANIM_LOOP = 0,
     REANIM_LOOP_FULL_LAST_FRAME = 1,
@@ -868,6 +985,7 @@ enum ReanimLoopType {
     REANIM_PLAY_ONCE_FULL_LAST_FRAME = 4,
     REANIM_PLAY_ONCE_FULL_LAST_FRAME_AND_HOLD = 5
 };
+
 enum RenderLayer {
     RENDER_LAYER_ROW_OFFSET = 10000,
     RENDER_LAYER_UI_BOTTOM = 100000,
@@ -887,6 +1005,7 @@ enum RenderLayer {
     RENDER_LAYER_ABOVE_UI = 800000,
     RENDER_LAYER_SCREEN_FADE = 900000
 };
+
 enum RenderObjectType {
     RENDER_ITEM_COIN,
     RENDER_ITEM_PROJECTILE,
@@ -914,32 +1033,58 @@ enum RenderObjectType {
     RENDER_ITEM_GRID_ITEM,
     RENDER_ITEM_GRID_ITEM_OVERLAY
 };
+
 enum ScaryPotType { SCARYPOT_NONE = 0, SCARYPOT_SEED = 1, SCARYPOT_ZOMBIE = 2, SCARYPOT_SUN = 3 };
+
 enum SeedChooserState { CHOOSE_NORMAL = 0, CHOOSE_VIEW_LAWN = 1 };
+
 enum SeedType {
-    SEED_PEASHOOTER = 0,     // 豌豆射手
-    SEED_SUNFLOWER = 1,      // 向日葵
-    SEED_CHERRYBOMB = 2,     // 樱桃炸弹
-    SEED_WALLNUT = 3,        // 坚果
-    SEED_POTATOMINE = 4,     // 土豆地雷
-    SEED_SNOWPEA = 5,        // 寒冰射手
-    SEED_CHOMPER = 6,        // 大嘴花
-    SEED_REPEATER = 7,       // 双发射手
-    SEED_PUFFSHROOM = 8,     // 小喷菇
-    SEED_SUNSHROOM = 9,      // 阳光菇
-    SEED_FUMESHROOM = 10,    // 大喷菇
-    SEED_GRAVEBUSTER = 11,   // 墓碑吞噬者
-    SEED_HYPNOSHROOM = 12,   // 魅惑菇
-    SEED_SCAREDYSHROOM = 13, // 胆小菇
-    SEED_ICESHROOM = 14,     // 寒冰菇
-    SEED_DOOMSHROOM = 15,    // 毁灭菇
-    SEED_LILYPAD = 16,       // 睡莲
-    SEED_SQUASH = 17,        // 窝瓜
-    SEED_THREEPEATER = 18,   // 三线射手
-    SEED_TANGLEKELP = 19,    // 缠绕海草
-    SEED_JALAPENO = 20,      // 火爆辣椒
-    SEED_SPIKEWEED = 21,     // 地刺
-    SEED_TORCHWOOD = 22,     // 火炬树桩
+    SEED_PEASHOOTER = 0,
+    // 豌豆射手
+    SEED_SUNFLOWER = 1,
+    // 向日葵
+    SEED_CHERRYBOMB = 2,
+    // 樱桃炸弹
+    SEED_WALLNUT = 3,
+    // 坚果
+    SEED_POTATOMINE = 4,
+    // 土豆地雷
+    SEED_SNOWPEA = 5,
+    // 寒冰射手
+    SEED_CHOMPER = 6,
+    // 大嘴花
+    SEED_REPEATER = 7,
+    // 双发射手
+    SEED_PUFFSHROOM = 8,
+    // 小喷菇
+    SEED_SUNSHROOM = 9,
+    // 阳光菇
+    SEED_FUMESHROOM = 10,
+    // 大喷菇
+    SEED_GRAVEBUSTER = 11,
+    // 墓碑吞噬者
+    SEED_HYPNOSHROOM = 12,
+    // 魅惑菇
+    SEED_SCAREDYSHROOM = 13,
+    // 胆小菇
+    SEED_ICESHROOM = 14,
+    // 寒冰菇
+    SEED_DOOMSHROOM = 15,
+    // 毁灭菇
+    SEED_LILYPAD = 16,
+    // 睡莲
+    SEED_SQUASH = 17,
+    // 窝瓜
+    SEED_THREEPEATER = 18,
+    // 三线射手
+    SEED_TANGLEKELP = 19,
+    // 缠绕海草
+    SEED_JALAPENO = 20,
+    // 火爆辣椒
+    SEED_SPIKEWEED = 21,
+    // 地刺
+    SEED_TORCHWOOD = 22,
+    // 火炬树桩
     SEED_TALLNUT = 23,
     SEED_SEASHROOM = 24,
     SEED_PLANTERN = 25,
@@ -995,7 +1140,9 @@ enum SeedType {
     NUM_SEEDS_IN_CHOOSER = 49,
     SEED_NONE = -1
 };
+
 enum ShieldType { SHIELDTYPE_NONE, SHIELDTYPE_DOOR, SHIELDTYPE_NEWSPAPER, SHIELDTYPE_LADDER };
+
 enum StoreItem {
     STORE_ITEM_PLANT_GATLINGPEA,
     STORE_ITEM_PLANT_TWINSUNFLOWER,
@@ -1030,6 +1177,7 @@ enum StoreItem {
     STORE_ITEM_PVZ,
     STORE_ITEM_INVALID = -1
 };
+
 enum StorePages {
     STORE_PAGE_SLOT_UPGRADES = 0,
     STORE_PAGE_PLANT_UPGRADES = 1,
@@ -1037,23 +1185,39 @@ enum StorePages {
     STORE_PAGE_ZEN2 = 3,
     NUM_STORE_PAGES = 4
 };
+
 enum TodCurves {
-    CURVE_CONSTANT,           // 常函数曲线
-    CURVE_LINEAR,             // 线性曲线
-    CURVE_EASE_IN,            // 二次曲线（缓入）
-    CURVE_EASE_OUT,           // 二次曲线（缓出）
-    CURVE_EASE_IN_OUT,        // 缓入缓出曲线
-    CURVE_EASE_IN_OUT_WEAK,   // 缓入缓出曲线（效果减弱）
-    CURVE_FAST_IN_OUT,        // 快入快出曲线
-    CURVE_FAST_IN_OUT_WEAK,   // 快入快出曲线（效果减弱）
-    CURVE_WEAK_FAST_IN_OUT,   // 【废弃】弱快入快出曲线
-    CURVE_BOUNCE,             // 弹跳效果曲线
-    CURVE_BOUNCE_FAST_MIDDLE, // 弹跳效果曲线（尖形）
-    CURVE_BOUNCE_SLOW_MIDDLE, // 弹跳效果曲线（罩形）
-    CURVE_SIN_WAVE,           // 正弦曲线
-    CURVE_EASE_SIN_WAVE       // 缓入缓出的正弦曲线
+    CURVE_CONSTANT,
+    // 常函数曲线
+    CURVE_LINEAR,
+    // 线性曲线
+    CURVE_EASE_IN,
+    // 二次曲线（缓入）
+    CURVE_EASE_OUT,
+    // 二次曲线（缓出）
+    CURVE_EASE_IN_OUT,
+    // 缓入缓出曲线
+    CURVE_EASE_IN_OUT_WEAK,
+    // 缓入缓出曲线（效果减弱）
+    CURVE_FAST_IN_OUT,
+    // 快入快出曲线
+    CURVE_FAST_IN_OUT_WEAK,
+    // 快入快出曲线（效果减弱）
+    CURVE_WEAK_FAST_IN_OUT,
+    // 【废弃】弱快入快出曲线
+    CURVE_BOUNCE,
+    // 弹跳效果曲线
+    CURVE_BOUNCE_FAST_MIDDLE,
+    // 弹跳效果曲线（尖形）
+    CURVE_BOUNCE_SLOW_MIDDLE,
+    // 弹跳效果曲线（罩形）
+    CURVE_SIN_WAVE,
+    // 正弦曲线
+    CURVE_EASE_SIN_WAVE // 缓入缓出的正弦曲线
 };
+
 enum TrialType { TRIALTYPE_NONE, TRIALTYPE_STAGELOCKED };
+
 enum TutorialState {
     TUTORIAL_OFF = 0,
     TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER = 1,
@@ -1087,7 +1251,9 @@ enum TutorialState {
     TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED = 29,
     TUTORIAL_WHACK_A_ZOMBIE_COMPLETED = 30
 };
+
 enum UnlockingState { UNLOCK_OFF, UNLOCK_SHAKING, UNLOCK_FADING };
+
 enum ZombieHeight {
     HEIGHT_ZOMBIE_NORMAL = 0,
     HEIGHT_IN_TO_POOL = 1,
@@ -1101,6 +1267,7 @@ enum ZombieHeight {
     HEIGHT_GETTING_BUNGEE_DROPPED = 9,
     HEIGHT_ZOMBIQUARIUM = 10
 };
+
 enum ZombiePhase {
     PHASE_ZOMBIE_NORMAL,
     PHASE_ZOMBIE_DYING,
@@ -1199,6 +1366,7 @@ enum ZombiePhase {
     PHASE_SQUASH_FALLING,
     PHASE_SQUASH_DONE_FALLING
 };
+
 enum ZombieType {
     ZOMBIE_INVALID = -1,
     ZOMBIE_NORMAL,
@@ -1266,10 +1434,17 @@ enum ZombieType {
 // const ZombieID ZOMBIEID_NULL = 0;
 
 enum AttachmentID : int { ATTACHMENTID_NULL };
+
 enum CoinID : unsigned int { COINID_NULL };
+
 enum ParticleID : unsigned int { PARTICLEID_NULL };
+
 enum ParticleEmitterID : unsigned int { PARTICLEEMITTERID_NULL };
+
 enum ParticleSystemID : unsigned int { PARTICLESYSTEMID_NULL };
+
 enum PlantID : unsigned int { PLANTID_NULL };
+
 enum ReanimationID : unsigned int { REANIMATIONID_NULL };
+
 enum ZombieID : unsigned int { ZOMBIEID_NULL };

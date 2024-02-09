@@ -4,7 +4,6 @@
 #include <string>
 
 namespace Sexy {
-
 #define MTRAND_N 624
 
 class MTRand {
@@ -34,7 +33,6 @@ struct MTAutoDisallowRand {
     MTAutoDisallowRand() { MTRand::SetRandAllowed(false); }
     ~MTAutoDisallowRand() { MTRand::SetRandAllowed(true); }
 };
-
 } // namespace Sexy
 
 #endif //__MTRAND_H__

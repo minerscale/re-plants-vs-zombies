@@ -7,7 +7,6 @@
 #include "framework/misc/Rect.h"
 
 namespace Sexy {
-
 struct Span {
     int mY;
     int mX;
@@ -121,25 +120,39 @@ public:
 };
 
 class DummyImage : public Image {
-    bool PolyFill3D(const Point *, int, const Rect *, const Color &, int, int, int) { return false; }
+    bool PolyFill3D(const Point *, int, const Rect *, const Color &, int, int, int) override { return false; }
 
-    void FillRect(const Rect &, const Color &, int) {}
-    void ClearRect(const Rect &) {}
-    void DrawLine(double, double, double, double, const Color &, int) {}
-    void DrawLineAA(double, double, double, double, const Color &, int) {}
-    void FillScanLinesWithCoverage(Span *, int, const Color &, int, const unsigned char *, int, int, int, int) {}
-    void Blt(Image *, int, int, const Rect &, const Color &, int) {}
-    void BltF(Image *, float, float, const Rect &, const Rect &, const Color &, int) {}
-    void BltRotated(Image *, float, float, const Rect &, const Rect &, const Color &, int, double, float, float) {}
-    void StretchBlt(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}
-    void BltMatrix(Image *, float, float, const SexyMatrix3 &, const Rect &, const Color &, int, const Rect &, bool) {}
+    void FillRect(const Rect &, const Color &, int) override {}
+
+    void ClearRect(const Rect &) override {}
+
+    void DrawLine(double, double, double, double, const Color &, int) override {}
+
+    void DrawLineAA(double, double, double, double, const Color &, int) override {}
+
+    void
+    FillScanLinesWithCoverage(Span *, int, const Color &, int, const unsigned char *, int, int, int, int) override {}
+
+    void Blt(Image *, int, int, const Rect &, const Color &, int) override {}
+
+    void BltF(Image *, float, float, const Rect &, const Rect &, const Color &, int) override {}
+
+    void
+    BltRotated(Image *, float, float, const Rect &, const Rect &, const Color &, int, double, float, float) override {}
+
+    void StretchBlt(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) override {}
+
+    void BltMatrix(Image *, float, float, const SexyMatrix3 &, const Rect &, const Color &, int, const Rect &, bool)
+        override {}
+
     void BltTrianglesTex(
         Image *, const std::array<TriVertex, 3> *, int, const Rect &, const Color &, int, float, float, bool
-    ) {}
-    void BltMirror(Image *, int, int, const Rect &, const Color &, int) {}
-    void StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) {}
-};
+    ) override {}
 
+    void BltMirror(Image *, int, int, const Rect &, const Color &, int) override {}
+
+    void StretchBltMirror(Image *, const Rect &, const Rect &, const Rect &, const Color &, int, bool) override {}
+};
 } // namespace Sexy
 
 #endif //__IMAGE_H__

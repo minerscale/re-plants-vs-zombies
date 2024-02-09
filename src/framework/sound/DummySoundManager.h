@@ -3,31 +3,38 @@
 
 #include "DummySoundInstance.h"
 #include "SoundManager.h"
+
 class DummySoundManager : public Sexy::SoundManager {
 public:
-    virtual bool Initialized() { return true; }
+    bool Initialized() override { return true; }
 
-    virtual bool LoadSound(unsigned int, const std::string &) { return true; }
-    virtual int LoadSound(const std::string &) { return 0; }
-    virtual void ReleaseSound(unsigned int) {}
+    bool LoadSound(unsigned int, const std::string &) override { return true; }
+    int LoadSound(const std::string &) override { return 0; }
 
-    virtual void SetVolume(double) {}
-    virtual bool SetBaseVolume(unsigned int, double) { return 0; }
-    virtual bool SetBasePan(unsigned int, int) { return 0; }
+    void ReleaseSound(unsigned int) override {}
 
-    virtual Sexy::SoundInstance *GetSoundInstance(unsigned int) { return &dummy; }
+    void SetVolume(double) override {}
 
-    virtual void ReleaseSounds() {}
-    virtual void ReleaseChannels() {}
+    bool SetBaseVolume(unsigned int, double) override { return 0; }
+    bool SetBasePan(unsigned int, int) override { return 0; }
 
-    virtual double GetMasterVolume() { return 0; }
-    virtual void SetMasterVolume(double) {}
+    Sexy::SoundInstance *GetSoundInstance(unsigned int) override { return &dummy; }
 
-    virtual void Flush() {}
+    void ReleaseSounds() override {}
+
+    void ReleaseChannels() override {}
+
+    double GetMasterVolume() override { return 0; }
+
+    void SetMasterVolume(double) override {}
+
+    void Flush() override {}
+
     //	virtual void			SetCooperativeWindow(HWND theHWnd) {}
-    virtual void StopAllSounds() {}
-    virtual int GetFreeSoundId() { return 0; }
-    virtual int GetNumSounds() { return 0; }
+    void StopAllSounds() override {}
+
+    int GetFreeSoundId() override { return 0; }
+    int GetNumSounds() override { return 0; }
 
 private:
     DummySoundInstance dummy;

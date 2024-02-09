@@ -106,17 +106,17 @@ void ContinueDialog::ButtonDepress(int theId) {
         mApp->KillDialog(mId);
     } else if (theId == ContinueDialog::ContinueDialog_NewGame) {
         if (mApp->IsAdventureMode()) {
-            LawnDialog *aDialog = (LawnDialog *)mApp->DoDialog(
+            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_RESTARTCONFIRM, true, _S("[RESTART_LEVEL_HEADER]"), _S("[RESTART_LEVEL]"), _S(""),
                 Dialog::BUTTONS_OK_CANCEL
-            );
+            ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[RESTART_BUTTON]"));
             // aDialog->CalcSize(0, 0);
         } else {
-            LawnDialog *aDialog = (LawnDialog *)mApp->DoDialog(
+            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_RESTARTCONFIRM, true, _S("[NEW_GAME_HEADER]"), _S("[NEW_GAME]"), _S(""),
                 Dialog::BUTTONS_OK_CANCEL
-            );
+            ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[NEW_GAME_BUTTON]"));
             // aDialog->CalcSize(0, 0);
         }

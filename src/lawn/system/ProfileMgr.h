@@ -7,8 +7,8 @@
 
 class DataSync;
 class PlayerInfo;
-typedef std::pair<SexyString, PlayerInfo> ProfilePair;
-typedef std::map<SexyString, PlayerInfo, Sexy::StringLessNoCase> ProfileMap;
+using ProfilePair = std::pair<SexyString, PlayerInfo>;
+using ProfileMap = std::map<SexyString, PlayerInfo, Sexy::StringLessNoCase>;
 
 class ProfileMgr {
 protected:
@@ -28,13 +28,15 @@ public:
     bool DeleteProfile(const SexyString &theName);
 
 protected:
-    /*inline*/ void DeleteProfile(ProfileMap::iterator theProfile);
+    /*inline*/
+    void DeleteProfile(ProfileMap::iterator theProfile);
 
 public:
     ProfileMgr() { Clear(); }   // 0x46A6E0
     virtual ~ProfileMgr() { ; } // 0x46A780
 
-    /*inline*/ void Clear();
+    /*inline*/
+    void Clear();
     void Load();
     void Save();
     inline int GetNumProfiles() const { return mProfileMap.size(); }

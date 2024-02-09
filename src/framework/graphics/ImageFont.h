@@ -11,12 +11,11 @@
 // #include "SharedImage.h"
 
 namespace Sexy {
-
 class SexyAppBase;
 class Image;
 
-typedef std::unordered_map<char32_t, int> CharIntMap;
-typedef std::array<int, 128> CharIntTable;
+using CharIntMap = std::unordered_map<char32_t, int>;
+using CharIntTable = std::array<int, 128>;
 
 class CharData {
 public:
@@ -31,12 +30,14 @@ private:
 
 public:
     CharData();
+
     inline void SetKernOffset(char32_t theChar, int theOffset) {
         mKerningOffsets[theChar] = theOffset;
         if (theChar >= 0 && theChar < mKerningOffsetTable.size()) {
             mKerningOffsetTable[theChar] = theOffset;
         }
     }
+
     inline int GetKernOffset(char32_t theChar) {
         if (theChar >= 0 && theChar < mKerningOffsetTable.size()) {
             return mKerningOffsetTable[theChar];
@@ -47,8 +48,8 @@ public:
 };
 
 class FontData;
-typedef std::unordered_map<char32_t, std::shared_ptr<CharData>> CharDataMap;
-typedef std::array<std::optional<std::shared_ptr<CharData>>, 128> CharDataTable;
+using CharDataMap = std::unordered_map<char32_t, std::shared_ptr<CharData>>;
+using CharDataTable = std::array<std::optional<std::shared_ptr<CharData>>, 128>;
 
 class FontLayer {
 public:
@@ -84,11 +85,11 @@ public:
     CharData *GetCharData(SexyChar theChar);
 };
 
-typedef std::unordered_map<SexyChar, SexyChar> CharMap;
-typedef std::array<std::optional<SexyChar>, 128> CharTable;
-typedef std::vector<FontLayer> FontLayerList;
-typedef std::unordered_map<std::string, FontLayer *> FontLayerMap;
-typedef std::vector<Rect> RectList;
+using CharMap = std::unordered_map<SexyChar, SexyChar>;
+using CharTable = std::array<std::optional<SexyChar>, 128>;
+using FontLayerList = std::vector<FontLayer>;
+using FontLayerMap = std::unordered_map<std::string, FontLayer *>;
+using RectList = std::vector<Rect>;
 
 class FontData : public DescParser {
 public:
@@ -106,16 +107,16 @@ public:
     std::string mFontErrorHeader;
 
 public:
-    virtual bool Error(const std::string &theError);
+    bool Error(const std::string &theError) override;
 
     bool GetColorFromDataElement(DataElement *theElement, Color &theColor);
     bool DataToLayer(DataElement *theSource, FontLayer **theFontLayer);
-    virtual bool HandleCommand(const ListDataElement &theParams);
+    bool HandleCommand(const ListDataElement &theParams) override;
     inline void SetMappedChar(SexyChar fromChar, SexyChar toChar);
 
 public:
     FontData();
-    virtual ~FontData();
+    ~FontData() override;
 
     void Ref();
     void DeRef();
@@ -124,7 +125,7 @@ public:
     bool LoadLegacy(Image *theFontImage, const std::string &theFontDescFileName);
 };
 
-typedef std::unordered_map<SexyChar, Rect> CharRectMap;
+using CharRectMap = std::unordered_map<SexyChar, Rect>;
 
 class ActiveFontLayer {
 public:
@@ -140,7 +141,7 @@ public:
     virtual ~ActiveFontLayer();
 };
 
-typedef std::vector<ActiveFontLayer> ActiveFontLayerList;
+using ActiveFontLayerList = std::vector<ActiveFontLayer>;
 
 class RenderCommand {
 public:
@@ -156,7 +157,8 @@ public:
 class KernTable {
     static constexpr size_t printable_ascii_size = 126 - 32;
     // To save on memory, 4 bit signed integers are used.
-    typedef std::array<std::array<int8_t, printable_ascii_size>, printable_ascii_size> KernTable_t;
+    using KernTable_t = std::array<std::array<int8_t, printable_ascii_size>, printable_ascii_size>;
+
     static constexpr KernTable_t createKernTable() {
         KernTable_t ret;
 
@@ -168,6 +170,7 @@ class KernTable {
 
         return ret;
     }
+
     KernTable_t mKernTable = createKernTable();
 
 public:
@@ -244,20 +247,20 @@ public:
     ImageFont(SexyAppBase *theSexyApp, const std::string &theFontDescFileName);
     ImageFont(Image *theFontImage); // for constructing your own image font without a file descriptor
     ImageFont(const ImageFont &theImageFont);
-    virtual ~ImageFont();
+    ~ImageFont() override;
 
     // Deprecated
     ImageFont(Image *theFontImage, const std::string &theFontDescFileName);
     // ImageFont(const ImageFont& theImageFont, Image* theImage);
 
-    virtual int CharWidth(SexyChar theChar);
-    virtual int CharWidthKern(SexyChar theChar, SexyChar thePrevChar);
-    virtual int StringWidth(const SexyString &theString);
-    virtual void DrawString(
+    int CharWidth(SexyChar theChar) override;
+    int CharWidthKern(SexyChar theChar, SexyChar thePrevChar) override;
+    int StringWidth(const SexyString &theString) override;
+    void DrawString(
         Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, const Rect &theClipRect
-    );
+    ) override;
 
-    virtual _Font *Duplicate();
+    _Font *Duplicate() override;
 
     virtual void SetPointSize(int thePointSize);
     virtual int GetPointSize();
@@ -271,7 +274,6 @@ public:
     virtual void Prepare();
     SexyChar GetMappedChar(SexyChar theChar);
 };
-
 } // namespace Sexy
 
 #endif //__IMAGEFONT_H__

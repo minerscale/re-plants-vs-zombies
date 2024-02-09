@@ -2,26 +2,32 @@
 #define __DUMMY_SOUND_INSTANCE_H__
 
 #include "sound/SoundInstance.h"
+
 class DummySoundInstance : public Sexy::SoundInstance {
 public:
-    virtual void Release() {}
+    void Release() override {}
 
-    virtual void SetBaseVolume(double) {}
-    virtual void SetBasePan(int) {}
+    void SetBaseVolume(double) override {}
 
-    virtual void AdjustPitch(double) {}
+    void SetBasePan(int) override {}
 
-    virtual void SetVolume(double) {}
-    virtual void SetPan(int) {} //-hundredth db to +hundredth db = left to right
+    void AdjustPitch(double) override {}
 
-    virtual int GetSoundPosition() { return 0; }
-    virtual void SetSoundPosition(int /*thePosition*/) {}
+    void SetVolume(double) override {}
 
-    virtual bool Play(bool, bool) { return true; }
-    virtual void Stop() {}
-    virtual bool IsPlaying() { return false; }
-    virtual bool IsReleased() { return true; }
-    virtual double GetVolume() { return 0; }
+    void SetPan(int) override {} //-hundredth db to +hundredth db = left to right
+
+    int GetSoundPosition() override { return 0; }
+
+    void SetSoundPosition(int /*thePosition*/) override {}
+
+    bool Play(bool, bool) override { return true; }
+
+    void Stop() override {}
+
+    bool IsPlaying() override { return false; }
+    bool IsReleased() override { return true; }
+    double GetVolume() override { return 0; }
 };
 
 #endif // __DUMMY_SOUND_INSTANCE_H__

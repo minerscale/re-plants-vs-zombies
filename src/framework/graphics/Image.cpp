@@ -13,6 +13,7 @@ Image::Image() {
     mAnimInfo = NULL;
     mDrawn = false;
 }
+
 /*
 Image::Image(const Image& theImage) :
     mWidth(theImage.mWidth),
@@ -62,7 +63,7 @@ AnimInfo::AnimInfo() {
 }
 
 void AnimInfo::SetPerFrameDelay(int theFrame, int theTime) {
-    if ((int)mPerFrameDelay.size() <= theFrame) mPerFrameDelay.resize(theFrame + 1);
+    if (static_cast<int>(mPerFrameDelay.size()) <= theFrame) mPerFrameDelay.resize(theFrame + 1);
 
     mPerFrameDelay[theFrame] = theTime;
 }
@@ -84,7 +85,7 @@ void AnimInfo::Compute(int theNumCels, int theBeginFrameTime, int theEndFrameTim
             mFrameMap[index++] = i;
     }
 
-    if (!mFrameMap.empty()) mNumCels = (int)mFrameMap.size();
+    if (!mFrameMap.empty()) mNumCels = static_cast<int>(mFrameMap.size());
 
     if (theBeginFrameTime > 0) SetPerFrameDelay(0, theBeginFrameTime);
 
@@ -152,7 +153,7 @@ void Image::CopyAttributes(Image *from) {
 }
 
 Graphics *Image::GetGraphics() {
-    Graphics *g = new Graphics(this);
+    auto g = new Graphics(this);
 
     return g;
 }

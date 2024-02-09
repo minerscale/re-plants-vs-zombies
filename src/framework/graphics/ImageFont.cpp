@@ -19,7 +19,7 @@ SingleDataElement::SingleDataElement(const std::string theString) : mString(theS
 SingleDataElement::~SingleDataElement() {}
 
 DataElement *SingleDataElement::Duplicate() {
-    SingleDataElement *aSingleDataElement = new SingleDataElement(*this);
+    auto aSingleDataElement = new SingleDataElement(*this);
     return aSingleDataElement;
 }
 
@@ -50,7 +50,7 @@ ListDataElement &ListDataElement::operator=(const ListDataElement &theListDataEl
 }
 
 DataElement *ListDataElement::Duplicate() {
-    ListDataElement *aListDataElement = new ListDataElement(*this);
+    auto aListDataElement = new ListDataElement(*this);
     return aListDataElement;
 }
 
@@ -82,7 +82,7 @@ FontLayer::FontLayer(FontData *theFontData) {
 }
 
 inline CharData *FontLayer::GetCharData(SexyChar theChar) {
-    bool array_lookup = theChar >= 0 && (char32_t)theChar < mCharDataTable.size();
+    bool array_lookup = theChar >= 0 && static_cast<char32_t>(theChar) < mCharDataTable.size();
     if (array_lookup) {
         auto &aData = mCharDataTable[theChar];
         if (aData.has_value()) return aData.value().get();
@@ -137,7 +137,7 @@ FontData::FontData() {
 }
 
 FontData::~FontData() {
-    DataElementMap::iterator anItr = mDefineMap.begin();
+    auto anItr = mDefineMap.begin();
     while (anItr != mDefineMap.end()) {
         std::string aDefineName = anItr->first;
         DataElement *aDataElement = anItr->second;
@@ -174,9 +174,9 @@ bool FontData::DataToLayer(DataElement *theSource, FontLayer **theFontLayer) {
 
     if (theSource->mIsList) return false;
 
-    std::string aLayerName = StringToUpper(((SingleDataElement *)theSource)->mString);
+    std::string aLayerName = StringToUpper(static_cast<SingleDataElement *>(theSource)->mString);
 
-    FontLayerMap::iterator anItr = mFontLayerMap.find(aLayerName);
+    auto anItr = mFontLayerMap.find(aLayerName);
     if (anItr == mFontLayerMap.end()) {
         Error("Undefined Layer");
         return false;
@@ -193,15 +193,15 @@ bool FontData::GetColorFromDataElement(DataElement *theElement, Color &theColor)
         if (!DataToDoubleVector(theElement, &aFactorVector) && (aFactorVector.size() == 4)) return false;
 
         theColor = Color(
-            (int)(aFactorVector[0] * 255), (int)(aFactorVector[1] * 255), (int)(aFactorVector[2] * 255),
-            (int)(aFactorVector[3] * 255)
+            static_cast<int>(aFactorVector[0] * 255), static_cast<int>(aFactorVector[1] * 255),
+            static_cast<int>(aFactorVector[2] * 255), static_cast<int>(aFactorVector[3] * 255)
         );
 
         return true;
     }
 
     int aColor = 0;
-    if (!StringToInt(((SingleDataElement *)theElement)->mString, &aColor)) return false;
+    if (!StringToInt(static_cast<SingleDataElement *>(theElement)->mString, &aColor)) return false;
 
     theColor = aColor;
     return true;
@@ -214,7 +214,7 @@ char32_t UTF8CharToUTF32Char(const std::string theString) {
 }
 
 bool FontData::HandleCommand(const ListDataElement &theParams) {
-    std::string aCmd = ((SingleDataElement *)theParams.mElementVector[0])->mString;
+    std::string aCmd = static_cast<SingleDataElement *>(theParams.mElementVector[0])->mString;
 
     bool invalidNumParams = false;
     bool invalidParamFormat = false;
@@ -224,25 +224,26 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
     if (strcasecmp(aCmd.c_str(), "Define") == 0) {
         if (theParams.mElementVector.size() == 3) {
             if (!theParams.mElementVector[1]->mIsList) {
-                std::string aDefineName = StringToUpper(((SingleDataElement *)theParams.mElementVector[1])->mString);
+                std::string aDefineName =
+                    StringToUpper(static_cast<SingleDataElement *>(theParams.mElementVector[1])->mString);
 
                 if (!IsImmediate(aDefineName)) {
-                    DataElementMap::iterator anItr = mDefineMap.find(aDefineName);
+                    auto anItr = mDefineMap.find(aDefineName);
                     if (anItr != mDefineMap.end()) {
                         delete anItr->second;
                         mDefineMap.erase(anItr);
                     }
 
                     if (theParams.mElementVector[2]->mIsList) {
-                        ListDataElement *aValues = new ListDataElement();
-                        if (!GetValues(((ListDataElement *)theParams.mElementVector[2]), aValues)) {
+                        auto aValues = new ListDataElement();
+                        if (!GetValues(static_cast<ListDataElement *>(theParams.mElementVector[2]), aValues)) {
                             delete aValues;
                             return false;
                         }
 
                         mDefineMap.insert(DataElementMap::value_type(aDefineName, aValues));
                     } else {
-                        SingleDataElement *aDefParam = (SingleDataElement *)theParams.mElementVector[2];
+                        auto aDefParam = static_cast<SingleDataElement *>(theParams.mElementVector[2]);
 
                         DataElement *aDerefVal = Dereference(aDefParam->mString);
 
@@ -261,14 +262,15 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             if ((!theParams.mElementVector[1]->mIsList) &&
                 (DataToIntVector(theParams.mElementVector[2], &aRectIntVector)) && (aRectIntVector.size() == 4) &&
                 (DataToIntVector(theParams.mElementVector[3], &aWidthsVector))) {
-                std::string aDefineName = StringToUpper(((SingleDataElement *)theParams.mElementVector[1])->mString);
+                std::string aDefineName =
+                    StringToUpper(static_cast<SingleDataElement *>(theParams.mElementVector[1])->mString);
 
                 int aXPos = 0;
 
-                ListDataElement *aRectList = new ListDataElement();
+                auto aRectList = new ListDataElement();
 
                 for (ulong aWidthNum = 0; aWidthNum < aWidthsVector.size(); aWidthNum++) {
-                    ListDataElement *aRectElement = new ListDataElement();
+                    auto aRectElement = new ListDataElement();
                     aRectList->mElementVector.push_back(aRectElement);
 
                     char aStr[256];
@@ -288,7 +290,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                     aXPos += aWidthsVector[aWidthNum];
                 }
 
-                DataElementMap::iterator anItr = mDefineMap.find(aDefineName);
+                auto anItr = mDefineMap.find(aDefineName);
                 if (anItr != mDefineMap.end()) {
                     delete anItr->second;
                     mDefineMap.erase(anItr);
@@ -302,7 +304,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             int aPointSize;
 
             if ((!theParams.mElementVector[1]->mIsList) &&
-                (StringToInt(((SingleDataElement *)theParams.mElementVector[1])->mString, &aPointSize))) {
+                (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[1])->mString, &aPointSize))) {
                 mDefaultPointSize = aPointSize;
             } else invalidParamFormat = true;
         } else invalidNumParams = true;
@@ -329,7 +331,8 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
     } else if (strcasecmp(aCmd.c_str(), "CreateLayer") == 0) {
         if (theParams.mElementVector.size() == 2) {
             if (!theParams.mElementVector[1]->mIsList) {
-                std::string aLayerName = StringToUpper(((SingleDataElement *)theParams.mElementVector[1])->mString);
+                std::string aLayerName =
+                    StringToUpper(static_cast<SingleDataElement *>(theParams.mElementVector[1])->mString);
 
                 mFontLayerList.push_back(FontLayer(this));
                 FontLayer *aFontLayer = &mFontLayerList.back();
@@ -344,7 +347,8 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aSourceLayer;
 
             if ((!theParams.mElementVector[1]->mIsList) && (DataToLayer(theParams.mElementVector[2], &aSourceLayer))) {
-                std::string aLayerName = StringToUpper(((SingleDataElement *)theParams.mElementVector[1])->mString);
+                std::string aLayerName =
+                    StringToUpper(static_cast<SingleDataElement *>(theParams.mElementVector[1])->mString);
 
                 mFontLayerList.push_back(FontLayer(*aSourceLayer));
                 FontLayer *aFontLayer = &mFontLayerList.back();
@@ -384,8 +388,10 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 int aMinPointSize;
                 int aMaxPointSize;
 
-                if ((StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &aMinPointSize)) &&
-                    (StringToInt(((SingleDataElement *)theParams.mElementVector[3])->mString, &aMaxPointSize))) {
+                if ((StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &aMinPointSize)
+                    ) &&
+                    (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[3])->mString, &aMaxPointSize)
+                    )) {
                     aLayer->mMinPointSize = aMinPointSize;
                     aLayer->mMaxPointSize = aMaxPointSize;
                 } else invalidParamFormat = true;
@@ -396,7 +402,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int aPointSize;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &aPointSize)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &aPointSize)) {
                     aLayer->mPointSize = aPointSize;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -406,7 +412,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int aHeight;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &aHeight)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &aHeight)) {
                     aLayer->mHeight = aHeight;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -435,7 +441,8 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int anDrawMode;
-                if ((StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &anDrawMode)) &&
+                if ((StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &anDrawMode)
+                    ) &&
                     (anDrawMode >= 0) && (anDrawMode <= 1)) {
                     aLayer->mDrawMode = anDrawMode;
                 } else invalidParamFormat = true;
@@ -461,7 +468,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int anAscent;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &anAscent)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &anAscent)) {
                     aLayer->mAscent = anAscent;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -471,7 +478,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int anAscent;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &anAscent)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &anAscent)) {
                     aLayer->mAscentPadding = anAscent;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -481,7 +488,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int anAscent;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &anAscent)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &anAscent)) {
                     aLayer->mLineSpacingOffset = anAscent;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -524,7 +531,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int aSpacing;
 
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &aSpacing)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &aSpacing)) {
                     aLayer->mSpacing = aSpacing;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -553,7 +560,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                                 (aRectElement.size() == 4))
 
                             {
-                                Rect aRect = Rect(aRectElement[0], aRectElement[1], aRectElement[2], aRectElement[3]);
+                                auto aRect = Rect(aRectElement[0], aRectElement[1], aRectElement[2], aRectElement[3]);
 
                                 if ((aRect.mX < 0) || (aRect.mY < 0) || (aRect.mX + aRect.mWidth > anImageWidth) ||
                                     (aRect.mY + aRect.mHeight > anImageHeight)) {
@@ -587,15 +594,15 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
     } else if (strcasecmp(aCmd.c_str(), "LayerSetCharOffsets") == 0) {
         if (theParams.mElementVector.size() == 4) {
             FontLayer *aLayer;
-            StringVector aCharsVector = StringVector();
-            ListDataElement aRectList = ListDataElement();
+            auto aCharsVector = StringVector();
+            auto aRectList = ListDataElement();
 
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) &&
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToList(theParams.mElementVector[3], &aRectList))) {
                 if (aCharsVector.size() == aRectList.mElementVector.size()) {
                     for (ulong i = 0; i < aCharsVector.size(); i++) {
-                        IntVector aRectElement = IntVector();
+                        auto aRectElement = IntVector();
 
                         char32_t first_char = UTF8CharToUTF32Char(aCharsVector[i]);
                         // std::wstring aWString = UTF8StringToWString(aCharsVector[i]);
@@ -627,7 +634,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                         char32_t aChars[2]{};
                         int stringIdx = 0;
                         for (int j = 0; j < 2; ++j) {
-                            char *a = (char *)&aChars[j];
+                            auto a = (char *)&aChars[j];
                             for (size_t k = 0; k < aPairsVector[i].length(); ++k) {
                                 a[k] = aPairsVector[i][stringIdx++];
                                 if (!(a[k] & 0x80)) break;
@@ -650,7 +657,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             FontLayer *aLayer;
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) && (!theParams.mElementVector[2]->mIsList)) {
                 int aBaseOrder;
-                if (StringToInt(((SingleDataElement *)theParams.mElementVector[2])->mString, &aBaseOrder)) {
+                if (StringToInt(static_cast<SingleDataElement *>(theParams.mElementVector[2])->mString, &aBaseOrder)) {
                     aLayer->mBaseOrder = aBaseOrder;
                 } else invalidParamFormat = true;
             } else invalidParamFormat = true;
@@ -727,7 +734,7 @@ bool FontData::LoadLegacy(Image * /*theFontImage*/, const std::string & /*theFon
     mFontLayerList.push_back(FontLayer(this));
     FontLayer *aFontLayer = &mFontLayerList.back();
 
-    FontLayerMap::iterator anItr = mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
+    auto anItr = mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
     if (anItr == mFontLayerMap.end()) return false;
 
     unreachable();
@@ -862,7 +869,6 @@ ImageFont::ImageFont(const ImageFont &theImageFont)
 }
 
 ImageFont::ImageFont(Image *theFontImage, const std::string &theFontDescFileName) {
-
     mScale = 1.0;
     mFontData = new FontData();
     mFontData->Ref();
@@ -897,7 +903,7 @@ void ImageFont::GenerateActiveFontLayers() {
     mHeight = 0;
     mLineSpacingOffset = 0;
 
-    FontLayerList::iterator anItr = mFontData->mFontLayerList.begin();
+    auto anItr = mFontData->mFontLayerList.begin();
 
     bool firstLayer = true;
 
@@ -980,8 +986,8 @@ void ImageFont::GenerateActiveFontLayers() {
                         Rect *anOrigRect = &anItr.second->mImageRect;
 
                         Rect aScaledRect(
-                            aCurX, 0, (int)((anOrigRect->mWidth * aPointSize) / aLayerPointSize),
-                            (int)((anOrigRect->mHeight * aPointSize) / aLayerPointSize)
+                            aCurX, 0, static_cast<int>((anOrigRect->mWidth * aPointSize) / aLayerPointSize),
+                            static_cast<int>((anOrigRect->mHeight * aPointSize) / aLayerPointSize)
                         );
 
                         anActiveFontLayer->mScaledCharImageRects[aCharNum] = aScaledRect;
@@ -1062,7 +1068,7 @@ void ImageFont::GenerateActiveFontLayers() {
 int ImageFont::StringWidth(const SexyString &theString) {
     int aWidth = 0;
     SexyChar aPrevChar = 0;
-    for (int i = 0; i < (int)theString.length(); i++) {
+    for (int i = 0; i < static_cast<int>(theString.length()); i++) {
         SexyChar aChar = theString[i];
         aWidth += CharWidthKern(aChar, aPrevChar);
         aPrevChar = aChar;
@@ -1155,7 +1161,7 @@ void ImageFont::DrawStringEx(
 
             int aLayerPointSize = aBaseFontLayer.mPointSize;
             CharData &aBaseCharData = *aBaseFontLayer.GetCharData(aChar);
-            if (aLayerPointSize != 0) aScale *= (float)mPointSize / (float)aLayerPointSize;
+            if (aLayerPointSize != 0) aScale *= static_cast<float>(mPointSize) / static_cast<float>(aLayerPointSize);
 
             if (aScale == 1.0) {
                 anImageX = aLayerXPos + aBaseFontLayer.mOffset.mX + aBaseCharData.mOffset.mX;
@@ -1165,14 +1171,17 @@ void ImageFont::DrawStringEx(
                 if (aNextChar != 0) aSpacing = aBaseFontLayer.mSpacing + aBaseCharData.GetKernOffset(aNextChar);
                 else aSpacing = 0;
             } else {
-                anImageX = aLayerXPos + (int)((aBaseFontLayer.mOffset.mX + aBaseCharData.mOffset.mX) * aScale);
+                anImageX =
+                    aLayerXPos + static_cast<int>((aBaseFontLayer.mOffset.mX + aBaseCharData.mOffset.mX) * aScale);
                 anImageY =
-                    theY -
-                    (int)((aBaseFontLayer.mAscent - aBaseFontLayer.mOffset.mY - aBaseCharData.mOffset.mY) * aScale);
+                    theY - static_cast<int>(
+                               (aBaseFontLayer.mAscent - aBaseFontLayer.mOffset.mY - aBaseCharData.mOffset.mY) * aScale
+                           );
                 aCharWidth = (aBaseCharData.mWidth * aScale);
 
                 if (aNextChar != 0)
-                    aSpacing = (int)((aBaseFontLayer.mSpacing + aBaseCharData.GetKernOffset(aNextChar)) * aScale);
+                    aSpacing =
+                        static_cast<int>((aBaseFontLayer.mSpacing + aBaseCharData.GetKernOffset(aNextChar)) * aScale);
                 else aSpacing = 0;
             }
 
@@ -1278,7 +1287,7 @@ bool ImageFont::AddTag(const std::string &theTagName) {
 bool ImageFont::RemoveTag(const std::string &theTagName) {
     std::string aTagName = StringToUpper(theTagName);
 
-    StringVector::iterator anItr = std::find(mTagVector.begin(), mTagVector.end(), aTagName);
+    auto anItr = std::find(mTagVector.begin(), mTagVector.end(), aTagName);
     if (anItr == mTagVector.end()) return false;
 
     mTagVector.erase(anItr);
@@ -1287,7 +1296,7 @@ bool ImageFont::RemoveTag(const std::string &theTagName) {
 }
 
 bool ImageFont::HasTag(const std::string &theTagName) {
-    StringVector::iterator anItr = std::find(mTagVector.begin(), mTagVector.end(), theTagName);
+    auto anItr = std::find(mTagVector.begin(), mTagVector.end(), theTagName);
     return anItr != mTagVector.end();
 }
 
@@ -1308,7 +1317,7 @@ void ImageFont::Prepare() {
 
 inline void FontData::SetMappedChar(SexyChar fromChar, SexyChar toChar) {
     mCharMap[fromChar] = toChar;
-    if (fromChar >= 0 && (uint32_t)fromChar < mCharTable.size()) {
+    if (fromChar >= 0 && static_cast<uint32_t>(fromChar) < mCharTable.size()) {
         if (!mCharTable[fromChar].has_value()) {
             mCharTable[fromChar] = toChar;
         }
@@ -1316,7 +1325,7 @@ inline void FontData::SetMappedChar(SexyChar fromChar, SexyChar toChar) {
 }
 
 SexyChar ImageFont::GetMappedChar(SexyChar theChar) {
-    if (theChar >= 0 && (uint32_t)theChar < mFontData->mCharTable.size()) {
+    if (theChar >= 0 && static_cast<uint32_t>(theChar) < mFontData->mCharTable.size()) {
         auto aChar = mFontData->mCharTable[theChar];
         if (aChar.has_value()) return aChar.value();
         else return theChar;

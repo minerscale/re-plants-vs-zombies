@@ -47,21 +47,26 @@ public:
 
 public:
     TitleScreen(LawnApp *theApp);
-    virtual ~TitleScreen();
+    ~TitleScreen() override;
 
-    virtual void Update();
-    virtual void Draw(Graphics *g);
-    virtual void Resize(int theX, int theY, int theWidth, int theHeight);
-    virtual void AddedToManager(WidgetManager *theWidgetManager);
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
-    virtual void ButtonPress(int theId);
-    virtual void ButtonDepress(int theId);
-    virtual void ButtonDownTick(int) {}
-    virtual void ButtonMouseEnter(int) {}
-    virtual void ButtonMouseLeave(int) {}
-    virtual void ButtonMouseMove(int, int, int) {}
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void KeyDown(KeyCode theKey);
+    void Update() override;
+    void Draw(Graphics *g) override;
+    void Resize(int theX, int theY, int theWidth, int theHeight) override;
+    void AddedToManager(WidgetManager *theWidgetManager) override;
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
+    void ButtonPress(int theId) override;
+    void ButtonDepress(int theId) override;
+
+    void ButtonDownTick(int) override {}
+
+    void ButtonMouseEnter(int) override {}
+
+    void ButtonMouseLeave(int) override {}
+
+    void ButtonMouseMove(int, int, int) override {}
+
+    void MouseDown(int x, int y, int theClickCount) override;
+    void KeyDown(KeyCode theKey) override;
     void SetRegistered();
     void DrawToPreload(Graphics *g);
 };

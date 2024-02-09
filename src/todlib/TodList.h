@@ -20,9 +20,10 @@ struct TodAllocator {
     void *Calloc(int theItemSize);
     void Free(void *theItem, int theItemSize);
     void Grow();
-    bool IsPointerFromAllocator(void *theItem);
-    bool IsPointerOnFreeList(void *theItem);
+    bool IsPointerFromAllocator(void *theItem) const;
+    bool IsPointerOnFreeList(const void *theItem) const;
 };
+
 extern int gNumGlobalAllocators;
 extern TodAllocator gGlobalAllocators[MAX_GLOBAL_ALLOCATORS];
 
@@ -63,7 +64,7 @@ public:
     void AddHead(const T &theHead) {
         if (mpAllocator == nullptr) mpAllocator = FindGlobalAllocator(sizeof(TodListNode<T>));
 
-        TodListNode<T> *aNode = (TodListNode<T> *)mpAllocator->Calloc(sizeof(TodListNode<T>));
+        TodListNode<T> *aNode = static_cast<TodListNode<T> *>(mpAllocator->Calloc(sizeof(TodListNode<T>)));
         if (aNode) aNode->mValue = theHead;
         aNode->mNext = mHead;            // 新节点的下一个节点指向原节点
         aNode->mPrev = nullptr;          // 新节点作为头部，不存在上一个节点
@@ -76,7 +77,7 @@ public:
     void AddTail(const T &theTail) {
         if (mpAllocator == nullptr) mpAllocator = FindGlobalAllocator(sizeof(TodListNode<T>));
 
-        TodListNode<T> *aNode = (TodListNode<T> *)mpAllocator->Calloc(sizeof(TodListNode<T>));
+        TodListNode<T> *aNode = static_cast<TodListNode<T> *>(mpAllocator->Calloc(sizeof(TodListNode<T>)));
         if (aNode) aNode->mValue = theTail;
         aNode->mNext = nullptr;
         aNode->mPrev = mTail;

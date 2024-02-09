@@ -6,7 +6,6 @@
 #include <list>
 
 namespace Sexy {
-
 template <class _T> class TRect {
 public:
     _T mX;
@@ -82,6 +81,7 @@ public:
     bool operator==(const TRect<_T> &theRect) const {
         return (mX == theRect.mX) && (mY == theRect.mY) && (mWidth == theRect.mWidth) && (mHeight == theRect.mHeight);
     }
+
     /*
         RECT					ToRECT() const
         {
@@ -90,9 +90,8 @@ public:
         }*/
 };
 
-typedef TRect<int> Rect;
-typedef TRect<double> FRect;
-
+using Rect = TRect<int>;
+using FRect = TRect<double>;
 } // namespace Sexy
 
 #endif //__TRectANGLE_H__

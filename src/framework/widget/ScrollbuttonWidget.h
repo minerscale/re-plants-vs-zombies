@@ -4,7 +4,6 @@
 #include "widget/ButtonWidget.h"
 
 namespace Sexy {
-
 class ButtonListener;
 
 class ScrollbuttonWidget : public ButtonWidget {
@@ -17,11 +16,10 @@ public:
 
 public:
     ScrollbuttonWidget(int theId, ButtonListener *theButtonListener, int theType = 0);
-    virtual ~ScrollbuttonWidget();
+    ~ScrollbuttonWidget() override;
 
-    void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
 };
-
 } // namespace Sexy
 
 #endif //__SCROLLBUTTONWIDGET_H__

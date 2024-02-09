@@ -6,9 +6,11 @@
 
 class Plant;
 class Zombie;
+
 namespace Sexy {
 class Graphics;
 };
+
 using namespace Sexy;
 
 class ProjectileDefinition {
@@ -17,6 +19,7 @@ public:
     int mImageRow;
     int mDamage;
 };
+
 extern ProjectileDefinition gProjectileDefinition[NUM_PROJECTILES]; // 0x69F1C0
 
 class Projectile : public GameObject {

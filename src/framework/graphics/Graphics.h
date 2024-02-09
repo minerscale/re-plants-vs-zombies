@@ -8,7 +8,6 @@
 #include "framework/misc/Rect.h"
 
 namespace Sexy {
-
 class _Font;
 class SexyMatrix3;
 class Transform;
@@ -48,7 +47,7 @@ public:
     void CopyStateFrom(const GraphicsState *theState);
 };
 
-typedef std::list<GraphicsState> GraphicsStateList;
+using GraphicsStateList = std::list<GraphicsState>;
 
 class Graphics : public GraphicsState {
 public:
@@ -182,12 +181,12 @@ public:
         const Rect &theRect, const SexyString &theLine, int theLineSpacing = -1, int theJustification = -1,
         int *theMaxWidth = NULL, int theMaxChars = -1, int *theLastWidth = NULL
     );
-    int DrawStringColor(
-        const SexyString &theString, int theX, int theY, int theOldColor = -1
-    ); // works like DrawString but can have color tags like ^ff0000^.
+    int DrawStringColor(const SexyString &theString, int theX, int theY, int theOldColor = -1);
+    // works like DrawString but can have color tags like ^ff0000^.
     int DrawStringWordWrapped(
         const SexyString &theLine, int theX, int theY, int theWrapWidth = 10000000, int theLineSpacing = -1,
-        int theJustification = -1, int *theMaxWidth = NULL
+        int theJustification = -1,
+        int *theMaxWidth = NULL
     ); // works like DrawString but also word wraps
     int GetWordWrappedHeight(int theWidth, const SexyString &theLine, int theLineSpacing = -1, int *theMaxWidth = NULL);
 
@@ -203,7 +202,6 @@ public:
 
     ~GraphicsAutoState() { mG->PopState(); }
 };
-
 } // namespace Sexy
 
 #endif //__GRAPHICS_H__

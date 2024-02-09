@@ -4,7 +4,7 @@
 #include "misc/Debug.h"
 
 void TodAllocator::Initialize(int theGrowCount, int theItemSize) {
-    TOD_ASSERT((size_t)theItemSize >= sizeof(void *));
+    TOD_ASSERT(static_cast<size_t>(theItemSize) >= sizeof(void *));
 
     mFreeList = nullptr;
     mBlockList = nullptr;
@@ -18,28 +18,28 @@ void TodAllocator::Dispose() { FreeAll(); }
 // 0x4438C0
 void TodAllocator::Grow() {
     TOD_ASSERT(mGrowCount > 0);
-    TOD_ASSERT((size_t)mItemSize >= sizeof(void *));
+    TOD_ASSERT(static_cast<size_t>(mItemSize) >= sizeof(void *));
 
     void *aBlock = TodMalloc(mGrowCount * mItemSize + sizeof(void *));
-    *(void **)aBlock = mBlockList;
+    *static_cast<void **>(aBlock) = mBlockList;
     mBlockList = aBlock;
 
     void *aFreeList = mFreeList;
-    void *aItem = (void *)((uintptr_t)aBlock + sizeof(void *));
+    auto aItem = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(aBlock) + sizeof(void *));
     for (int i = 0; i < mGrowCount; i++) {
-        *(void **)aItem = aFreeList;
+        *static_cast<void **>(aItem) = aFreeList;
         aFreeList = aItem;
-        aItem = (void *)((uintptr_t)aItem + mItemSize);
+        aItem = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(aItem) + mItemSize);
     }
     mFreeList = aFreeList;
 }
 
-bool TodAllocator::IsPointerFromAllocator(void *theItem) {
-    size_t aBlockSize = mGrowCount * mItemSize; // 每次“Grow”的内存大小，即每个区块的内存大小
-    for (void *aPtr = mBlockList; aPtr != nullptr; aPtr = *(void **)aPtr) {
-        uintptr_t aItemPtr = (uintptr_t)theItem;
+bool TodAllocator::IsPointerFromAllocator(void *theItem) const {
+    const size_t aBlockSize = mGrowCount * mItemSize; // 每次“Grow”的内存大小，即每个区块的内存大小
+    for (void *aPtr = mBlockList; aPtr != nullptr; aPtr = *static_cast<void **>(aPtr)) {
+        const uintptr_t aItemPtr = reinterpret_cast<uintptr_t>(theItem);
         // 区块的首个四字节为额外申请的、用于存储指向下一区块的指针的区域
-        uintptr_t aBlockPtr = (uintptr_t)aPtr + sizeof(void *);
+        const uintptr_t aBlockPtr = reinterpret_cast<uintptr_t>(aPtr) + sizeof(void *);
         // 判断 theItem 是否位于当前区块内且指向某一项的区域的起始地址
         if (aItemPtr >= aBlockPtr && aItemPtr < aBlockPtr + aBlockSize && (aItemPtr - aBlockPtr) % mItemSize == 0)
             return true;
@@ -47,8 +47,8 @@ bool TodAllocator::IsPointerFromAllocator(void *theItem) {
     return false;
 }
 
-bool TodAllocator::IsPointerOnFreeList(void *theItem) {
-    for (void *aPtr = mFreeList; aPtr != nullptr; aPtr = *(void **)aPtr)
+bool TodAllocator::IsPointerOnFreeList(const void *theItem) const {
+    for (void *aPtr = mFreeList; aPtr != nullptr; aPtr = *static_cast<void **>(aPtr))
         if (theItem == aPtr) return true;
     return false;
 }
@@ -58,8 +58,8 @@ void *TodAllocator::Alloc(int theItemSize) {
     mTotalItems++;
     if (mFreeList == nullptr) Grow();
 
-    void *anItem = (void *)mFreeList;
-    mFreeList = *(void **)anItem;
+    const auto anItem = (void *)mFreeList;
+    mFreeList = *static_cast<void **>(anItem);
     return anItem;
 }
 
@@ -74,13 +74,13 @@ void TodAllocator::Free(void *theItem, int theItemSize) {
     mTotalItems--;
     TOD_ASSERT(IsPointerFromAllocator(theItem));
     TOD_ASSERT(!IsPointerOnFreeList(theItem));
-    *(void **)theItem = mFreeList; // 将原可用区域头存入 [*theItem] 中
-    mFreeList = theItem;           // 将 theItem 设为新的可用区域头
+    *static_cast<void **>(theItem) = mFreeList; // 将原可用区域头存入 [*theItem] 中
+    mFreeList = theItem;                        // 将 theItem 设为新的可用区域头
 }
 
 void TodAllocator::FreeAll() {
     for (void *aBlock = mBlockList; aBlock != nullptr;) {
-        void *aNext = *(void **)aBlock;
+        void *aNext = *static_cast<void **>(aBlock);
         TodFree(aBlock);
         aBlock = aNext;
     }

@@ -4,7 +4,6 @@
 #include "SexyAppBase.h"
 
 namespace Sexy {
-
 class InternetManager;
 class BetaSupport;
 
@@ -41,38 +40,38 @@ public:
 #endif
 
 public:
-    virtual void UpdateFrames();
+    void UpdateFrames() override;
 
-    virtual void WriteToRegistry();
-    virtual void ReadFromRegistry();
+    void WriteToRegistry() override;
+    void ReadFromRegistry() override;
 
     //	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
 
     virtual bool ShouldCheckForUpdate();
     virtual void UpdateCheckQueried();
 
-    virtual void URLOpenSucceeded(const std::string &theURL);
+    void URLOpenSucceeded(const std::string &theURL) override;
 
 public:
     SexyApp();
-    virtual ~SexyApp();
+    ~SexyApp() override;
 
     //	bool					Validate(const std::string& theUserName, const std::string& theRegCode);
 
     virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
     virtual bool OpenRegisterPage();
 
-    virtual void PreDisplayHook();
-    virtual void InitPropertiesHook();
-    virtual void Init();
-    virtual void PreTerminate();
+    void PreDisplayHook() override;
+    void InitPropertiesHook() override;
+    void Init() override;
+    void PreTerminate() override;
 
     virtual bool OpenHTMLTemplate(const std::string &theTemplateFile, const DefinesMap &theDefinesMap);
     virtual void OpenUpdateURL();
 
-    virtual void HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue);
+    void HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue) override;
     virtual std::string GetGameSEHInfo();
-    virtual void GetSEHWebParams(DefinesMap *theDefinesMap);
+    void GetSEHWebParams(DefinesMap *theDefinesMap) override;
 
 #ifdef ZYLOM
     bool ZylomUpdateCheckNeeded();
@@ -81,7 +80,6 @@ public:
 };
 
 extern SexyApp *gSexyApp;
-
 }; // namespace Sexy
 
 #endif //__SEXYAPP_H__

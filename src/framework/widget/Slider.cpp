@@ -53,11 +53,13 @@ void Slider::Draw(Graphics *g) {
 
     if (mHorizontal && (mThumbImage != NULL))
         g->DrawImage(
-            mThumbImage, (int)(mVal * (mWidth - mThumbImage->GetWidth())), (mHeight - mThumbImage->GetHeight()) / 2
+            mThumbImage, static_cast<int>(mVal * (mWidth - mThumbImage->GetWidth())),
+            (mHeight - mThumbImage->GetHeight()) / 2
         );
     else if (!mHorizontal && (mThumbImage != NULL))
         g->DrawImage(
-            mThumbImage, (mWidth - mThumbImage->GetWidth()) / 2, (int)(mVal * (mHeight - mThumbImage->GetHeight()))
+            mThumbImage, (mWidth - mThumbImage->GetWidth()) / 2,
+            static_cast<int>(mVal * (mHeight - mThumbImage->GetHeight()))
         );
 
     // g->SetColor(Color(255, 255, 0));
@@ -67,7 +69,7 @@ void Slider::Draw(Graphics *g) {
 void Slider::MouseDown(int x, int y, int theClickCount) {
     (void)theClickCount;
     if (mHorizontal) {
-        int aThumbX = (int)(mVal * (mWidth - mThumbImage->GetWidth()));
+        int aThumbX = static_cast<int>(mVal * (mWidth - mThumbImage->GetWidth()));
 
         if ((x >= aThumbX) && (x < aThumbX + mThumbImage->GetWidth())) {
             mWidgetManager->mApp->SetCursor(CURSOR_DRAGGING);
@@ -75,11 +77,11 @@ void Slider::MouseDown(int x, int y, int theClickCount) {
             mRelX = x - aThumbX;
         } else {
             // clicked on the bar, set position to mouse click
-            double pos = (double)x / mWidth;
+            double pos = static_cast<double>(x) / mWidth;
             SetValue(pos);
         }
     } else {
-        int aThumbY = (int)(mVal * (mHeight - mThumbImage->GetHeight()));
+        int aThumbY = static_cast<int>(mVal * (mHeight - mThumbImage->GetHeight()));
 
         if ((y >= aThumbY) && (y < aThumbY + mThumbImage->GetHeight())) {
             mWidgetManager->mApp->SetCursor(CURSOR_DRAGGING);
@@ -87,7 +89,7 @@ void Slider::MouseDown(int x, int y, int theClickCount) {
             mRelY = y - aThumbY;
         } else {
             // clicked on the bar, set position to mouse click
-            double pos = (double)y / mHeight;
+            double pos = static_cast<double>(y) / mHeight;
             SetValue(pos);
         }
     }
@@ -95,12 +97,12 @@ void Slider::MouseDown(int x, int y, int theClickCount) {
 
 void Slider::MouseMove(int x, int y) {
     if (mHorizontal) {
-        int aThumbX = (int)(mVal * (mWidth - mThumbImage->GetWidth()));
+        int aThumbX = static_cast<int>(mVal * (mWidth - mThumbImage->GetWidth()));
 
         if ((x >= aThumbX) && (x < aThumbX + mThumbImage->GetWidth())) mWidgetManager->mApp->SetCursor(CURSOR_DRAGGING);
         else mWidgetManager->mApp->SetCursor(CURSOR_POINTER);
     } else {
-        int aThumbY = (int)(mVal * (mHeight - mThumbImage->GetHeight()));
+        int aThumbY = static_cast<int>(mVal * (mHeight - mThumbImage->GetHeight()));
 
         if ((y >= aThumbY) && (y < aThumbY + mThumbImage->GetHeight()))
             mWidgetManager->mApp->SetCursor(CURSOR_DRAGGING);
@@ -112,8 +114,8 @@ void Slider::MouseDrag(int x, int y) {
     if (mDragging) {
         double anOldVal = mVal;
 
-        if (mHorizontal) mVal = (x - mRelX) / (double)(mWidth - mThumbImage->GetWidth());
-        else mVal = (y - mRelY) / (double)(mHeight - mThumbImage->GetHeight());
+        if (mHorizontal) mVal = (x - mRelX) / static_cast<double>(mWidth - mThumbImage->GetWidth());
+        else mVal = (y - mRelY) / static_cast<double>(mHeight - mThumbImage->GetHeight());
 
         if (mVal < 0.0) mVal = 0.0;
         if (mVal > 1.0) mVal = 1.0;

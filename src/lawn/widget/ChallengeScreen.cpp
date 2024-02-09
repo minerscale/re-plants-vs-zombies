@@ -89,8 +89,8 @@ ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
     },
     {GameMode::GAMEMODE_CHALLENGE_BUNGEE_BLITZ,            9,  ChallengePage::CHALLENGE_PAGE_LIMBO,     2, 2, _S("[BUNGEE_BLITZ]")        },
     {GameMode::GAMEMODE_CHALLENGE_SQUIRREL,                10, ChallengePage::CHALLENGE_PAGE_LIMBO,     2, 3, _S("Squirrel")              },
-    {GameMode::GAMEMODE_TREE_OF_WISDOM,                    10, ChallengePage::CHALLENGE_PAGE_LIMBO,     2, 4, _S("Tree of Wisdom")
-    }, // @Patoke: replaced for english
+    {GameMode::GAMEMODE_TREE_OF_WISDOM,                    10, ChallengePage::CHALLENGE_PAGE_LIMBO,     2, 4, _S("Tree of Wisdom")        },
+ // @Patoke: replaced for english
     {GameMode::GAMEMODE_SCARY_POTTER_1,                    10, ChallengePage::CHALLENGE_PAGE_PUZZLE,    0, 0, _S("[SCARY_POTTER_1]")      },
     {GameMode::GAMEMODE_SCARY_POTTER_2,                    10, ChallengePage::CHALLENGE_PAGE_PUZZLE,    0, 1, _S("[SCARY_POTTER_2]")      },
     {GameMode::GAMEMODE_SCARY_POTTER_3,                    10, ChallengePage::CHALLENGE_PAGE_PUZZLE,    0, 2, _S("[SCARY_POTTER_3]")      },
@@ -142,7 +142,7 @@ ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
     mBackButton->Resize(18, 568, 111, 26);
 
     for (int aPageIdx = CHALLENGE_PAGE_SURVIVAL; aPageIdx < MAX_CHALLANGE_PAGES; aPageIdx++) {
-        ButtonWidget *aPageButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Page + aPageIdx, this);
+        auto aPageButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Page + aPageIdx, this);
         aPageButton->mDoFinger = true;
         mPageButton[aPageIdx] = aPageButton;
         if (aPageIdx == CHALLENGE_PAGE_LIMBO) aPageButton->mLabel = TodStringTranslate(_S("Limbo Page"));
@@ -160,7 +160,7 @@ ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
 
     for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++) {
         ChallengeDefinition &aChlDef = GetChallengeDefinition(aChallengeMode);
-        ButtonWidget *aChallengeButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Mode + aChallengeMode, this);
+        auto aChallengeButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Mode + aChallengeMode, this);
         mChallengeButtons[aChallengeMode] = aChallengeButton;
         aChallengeButton->mDoFinger = true;
         aChallengeButton->mFrameNoDraw = true;
@@ -573,12 +573,12 @@ void ChallengeScreen::ButtonDepress(int theId) {
     int aChallengeMode = theId - ChallengeScreen::ChallengeScreen_Mode;
     if (aChallengeMode >= 0 && aChallengeMode < NUM_CHALLENGE_MODES) {
         mApp->KillChallengeScreen();
-        mApp->PreNewGame((GameMode)(aChallengeMode + 1), true);
+        mApp->PreNewGame(static_cast<GameMode>(aChallengeMode + 1), true);
     }
 
     int aPageIndex = theId - ChallengeScreen::ChallengeScreen_Page;
     if (aPageIndex >= 0 && aPageIndex < 4) {
-        mPageIndex = (ChallengePage)aPageIndex;
+        mPageIndex = static_cast<ChallengePage>(aPageIndex);
         UpdateButtons();
     }
 }

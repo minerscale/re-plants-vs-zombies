@@ -4,10 +4,10 @@
 #include <string>
 
 namespace Sexy {
-
 class MusicInterface {
 public:
     MusicInterface() {}
+
     virtual ~MusicInterface() {}
 
     virtual bool LoadMusic(int theSongId, const std::string &theFileName) = 0;

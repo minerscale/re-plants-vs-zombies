@@ -39,7 +39,7 @@ UserDialog::UserDialog(LawnApp *theApp)
     }
 
     const ProfileMap &aMap = theApp->mProfileMgr->GetProfileMap();
-    for (ProfileMap::const_iterator anItr = aMap.begin(); anItr != aMap.end(); anItr++) {
+    for (auto anItr = aMap.begin(); anItr != aMap.end(); anItr++) {
         if (theApp->mPlayerInfo && anItr->second.mName == theApp->mPlayerInfo->mName) {
             continue;
         }

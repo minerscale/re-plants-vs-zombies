@@ -409,7 +409,8 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
 
         if (!IsOnBoard() || mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN) {
             AddAttachedParticle(
-                mX + 40, mY + 40, (int)RenderLayer::RENDER_LAYER_FOG + 1, ParticleEffect::PARTICLE_LANTERN_SHINE
+                mX + 40, mY + 40, static_cast<int>(RenderLayer::RENDER_LAYER_FOG) + 1,
+                ParticleEffect::PARTICLE_LANTERN_SHINE
             );
         }
         if (IsInPlay()) {
@@ -1555,8 +1556,9 @@ void Plant::UpdateChomper() {
             mState = PlantState::STATE_CHOMPER_SWALLOWING;
         }
     }
-    else if ((mState == PlantState::STATE_CHOMPER_SWALLOWING || mState == PlantState::STATE_CHOMPER_BITING_MISSED) && aBodyReanim->mLoopCount > 0)
-    {
+	else if ((mState == PlantState::STATE_CHOMPER_SWALLOWING || mState == PlantState::STATE_CHOMPER_BITING_MISSED) &&
+		aBodyReanim->mLoopCount > 0)
+	{
         PlayIdleAnim(aBodyReanim->mDefinition->mFPS);
         mState = PlantState::STATE_READY;
     }
@@ -1598,7 +1600,7 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 25.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
-        aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_PAIL_1 + aDamageIndex);
+        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_PAIL_1 + aDamageIndex);
     } else if (theZombie->mHelmType == HelmType::HELMTYPE_FOOTBALL) {
         int aDamageIndex = theZombie->GetHelmDamageIndex();
 
@@ -1612,7 +1614,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= 60.0f;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
-        aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_FOOTBALL_HELMET_1 + aDamageIndex);
+        aMagnetItem->mItemType =
+            static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_FOOTBALL_HELMET_1 + aDamageIndex);
     } else if (theZombie->mShieldType == ShieldType::SHIELDTYPE_DOOR) {
         int aDamageIndex = theZombie->GetShieldDamageIndex();
 
@@ -1628,7 +1631,7 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
-        aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_DOOR_1 + aDamageIndex);
+        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_DOOR_1 + aDamageIndex);
     } else if (theZombie->mShieldType == ShieldType::SHIELDTYPE_LADDER) {
         int aDamageIndex = theZombie->GetShieldDamageIndex();
 
@@ -1640,7 +1643,7 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
-        aMagnetItem->mItemType = (MagnetItemType)((int)MagnetItemType::MAGNET_ITEM_LADDER_1 + aDamageIndex);
+        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_LADDER_1 + aDamageIndex);
     } else if (theZombie->mZombieType == ZombieType::ZOMBIE_POGO) {
         theZombie->PogoBreak(16U);
         // ZombieDrawPosition aDrawPos;
@@ -2445,9 +2448,9 @@ bool Plant::NotOnGround() {
 // 0x463F30
 Reanimation *Plant::AttachBlinkAnim(Reanimation *theReanimBody) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(mSeedType);
-    LawnApp *aApp = (LawnApp *)gSexyAppBase;
+    auto aApp = static_cast<LawnApp *>(gSexyAppBase);
     Reanimation *aAnimToAttach = theReanimBody;
-    const char *aTrackToPlay = "anim_blink";
+    auto aTrackToPlay = "anim_blink";
     const char *aTrackToAttach = nullptr;
 
     if (mSeedType == SeedType::SEED_WALLNUT || mSeedType == SeedType::SEED_TALLNUT ||
@@ -3078,7 +3081,8 @@ void Plant::DrawMagnetItems(Graphics *g) {
             } else if (aMagnetItem->mItemType == MagnetItemType::MAGNET_ITEM_DOOR_3) {
                 aImage = IMAGE_REANIM_ZOMBIE_SCREENDOOR3;
             } else if (aMagnetItem->mItemType >= MagnetItemType::MAGNET_ITEM_POGO_1 && aMagnetItem->mItemType <= MagnetItemType::MAGNET_ITEM_POGO_3) {
-                aCelCol = (int)aMagnetItem->mItemType - (int)MagnetItemType::MAGNET_ITEM_POGO_1;
+                aCelCol =
+                    static_cast<int>(aMagnetItem->mItemType) - static_cast<int>(MagnetItemType::MAGNET_ITEM_POGO_1);
                 aImage = IMAGE_ZOMBIEPOGO;
             } else if (aMagnetItem->mItemType == MagnetItemType::MAGNET_ITEM_LADDER_1) {
                 aImage = IMAGE_REANIM_ZOMBIE_LADDER_1;
@@ -3384,7 +3388,7 @@ void Plant::DrawSeedType(
         aDrawVariation = DrawVariation::VARIATION_AQUARIUM;
     }
 
-    if (((LawnApp *)gSexyAppBase)->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME &&
+    if (static_cast<LawnApp *>(gSexyAppBase)->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME &&
         (aSeedType == SeedType::SEED_WALLNUT || aSeedType == SeedType::SEED_SUNFLOWER ||
          aSeedType == SeedType::SEED_MARIGOLD)) {
         aSeedG.mScaleX *= 1.5f;
@@ -3443,7 +3447,7 @@ void Plant::MouseDown(int x, int y, int theClickCount) {
         mBoard->mCursorObject->mCursorType = CursorType::CURSOR_TYPE_COBCANNON_TARGET;
         mBoard->mCursorObject->mSeedBankIndex = -1;
         mBoard->mCursorObject->mCoinID = CoinID::COINID_NULL;
-        mBoard->mCursorObject->mCobCannonPlantID = (PlantID)mBoard->mPlants.DataArrayGetID(this);
+        mBoard->mCursorObject->mCobCannonPlantID = static_cast<PlantID>(mBoard->mPlants.DataArrayGetID(this));
         mBoard->mBoardData.mCobCannonCursorDelayCounter = 30;
         mBoard->mBoardData.mCobCannonMouseX = x;
         mBoard->mBoardData.mCobCannonMouseY = y;
@@ -4059,7 +4063,7 @@ void Plant::Die() {
 
 PlantDefinition &GetPlantDefinition(SeedType theSeedType) {
     TOD_ASSERT(gPlantDefs[theSeedType].mSeedType == theSeedType);
-    TOD_ASSERT(theSeedType >= 0 && theSeedType < (int)SeedType::NUM_SEED_TYPES);
+    TOD_ASSERT(theSeedType >= 0 && theSeedType < static_cast<int>(SeedType::NUM_SEED_TYPES));
 
     return gPlantDefs[theSeedType];
 }

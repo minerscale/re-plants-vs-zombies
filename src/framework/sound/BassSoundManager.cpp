@@ -12,7 +12,6 @@
 #include <optional>
 
 namespace Sexy {
-
 BassSoundManager::BassSoundManager(HWND theHWnd) { BassMusicInterface::InitBass(theHWnd); }
 
 bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename) {
@@ -23,7 +22,7 @@ bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::str
     size_t aLength = p_ftell(aFile);
     p_fseek(aFile, 0, SEEK_SET);
 
-    char *aBuf = (char *)malloc(aLength);
+    auto aBuf = static_cast<char *>(malloc(aLength));
     p_fread(aBuf, aLength, 1, aFile);
     p_fclose(aFile);
 
@@ -52,7 +51,7 @@ struct WavHeader {
     // Data
     char data_header[4]; // Contains "data"
     uint data_bytes;     // Number of bytes in data. Number of samples * num_channels * sample byte size
-    // uint8_t bytes[]; // Remainder of wave file is bytes
+                         // uint8_t bytes[]; // Remainder of wave file is bytes
 };
 
 // From g711.c
@@ -72,7 +71,7 @@ inline uint16_t Snack_Mulaw2Lin(uint8_t u_val) {
      * shift up by the segment number and subtract out the bias.
      */
     t = ((u_val & QUANT_MASK) << 3) + BIAS;
-    t <<= ((uint32_t)u_val & SEG_MASK) >> SEG_SHIFT;
+    t <<= (static_cast<uint32_t>(u_val) & SEG_MASK) >> SEG_SHIFT;
 
     return ((u_val & SIGN_BIT) ? (BIAS - t) : (t - BIAS));
 }
@@ -143,7 +142,7 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
 
     uint32_t aDestSize = aDataSize * (aBitCount / aSrcBitCount);
 
-    WavHeader *aDestHeader = (WavHeader *)calloc(1, sizeof(WavHeader) + aDestSize);
+    auto aDestHeader = static_cast<WavHeader *>(calloc(1, sizeof(WavHeader) + aDestSize));
 
     *aDestHeader = WavHeader{
         {'R', 'I', 'F', 'F'},
@@ -161,10 +160,10 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
         aDestSize,
     };
 
-    short *aDestBuffer = (short *)((char *)aDestHeader + sizeof(WavHeader));
+    auto aDestBuffer = (short *)((char *)aDestHeader + sizeof(WavHeader));
 
     if (ulaw) {
-        uint8_t *aSrcBuffer = new uint8_t[aDataSize];
+        auto aSrcBuffer = new uint8_t[aDataSize];
 
         size_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
         p_fclose(fp);
@@ -259,7 +258,7 @@ inline bool BassSoundManager::Exists(unsigned int theSfxID) {
 }
 
 void BassSoundManager::SetVolume(double theVolume) {
-    BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, (int)(theVolume * 10000));
+    BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, static_cast<int>(theVolume * 10000));
 }
 
 double BassSoundManager::PanDBToNorm(int dbpan) {
@@ -355,5 +354,4 @@ SoundInstance *BassSoundManager::GetSoundInstance(unsigned int theSfxID) {
 
     return mPlayingSounds[aFreeChannel].value().get();
 }
-
 } // Namespace Sexy

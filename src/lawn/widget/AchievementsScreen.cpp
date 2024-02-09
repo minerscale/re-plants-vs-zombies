@@ -100,7 +100,7 @@ void AchievementsWidget::Draw(Graphics *g) {
         if (mApp->mPlayerInfo) aHasAchievement = mApp->mPlayerInfo->mEarnedAchievements[i];
         else aHasAchievement = false;
 
-        int aCurrAchievementOff = 57 * int(i / 2);
+        int aCurrAchievementOff = 57 * static_cast<int>(i / 2);
         int aImageXPos = i % 2 == 0 ? 120 : 410;
         int aImageYPos = 178 + aCurrAchievementOff;
         int aTextXPos = aImageXPos + 70;
@@ -123,7 +123,7 @@ void AchievementsWidget::Draw(Graphics *g) {
         g->DrawString(gAchievementList[i].name, aTextXPos, aTextYPos);
 
         // Achievement descriptions
-        Rect aPos = Rect(aTextXPos, aTextYPos + 3, 212, 60);
+        auto aPos = Rect(aTextXPos, aTextYPos + 3, 212, 60);
 
         g->SetFont(FONT_DWARVENTODCRAFT12);
         g->SetColor(Color(255, 255, 255));
@@ -165,7 +165,7 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 // GOTY @Patoke: 0x401890
 void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
     (void)theClickCount;
-    Point aPos = Point(x, y);
+    auto aPos = Point(x, y);
     if (aBackButtonRect.Contains(aPos)) {
         mApp->mGameSelector->SlideTo(0, 0);
         mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
@@ -232,7 +232,7 @@ void ReportAchievement::AchievementInitForPlayer(LawnApp *theApp) {
 
     bool aGiveAchievement = true;
     for (int i = STORE_ITEM_PLANT_GATLINGPEA; i <= STORE_ITEM_PLANT_IMITATER; i++) {
-        if (theApp->SeedTypeAvailable(SeedType(i))) aGiveAchievement = false;
+        if (theApp->SeedTypeAvailable(static_cast<SeedType>(i))) aGiveAchievement = false;
     }
 
     if (aGiveAchievement) {

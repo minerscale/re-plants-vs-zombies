@@ -28,6 +28,7 @@ public:
     double ReadDouble();
     void ReadString(SexyString &theStr);
 };
+
 class DataReaderException : public std::exception {};
 
 class DataWriter {
@@ -57,18 +58,19 @@ public:
     void WriteDouble(double theDouble);
     void WriteString(const SexyString &theStr);
     inline uint32_t GetPos();
-    inline void SetLong(uint32_t, uint32_t) { /* 未找到 */
-    }
-    inline void SetShort(unsigned int, uint32_t) { /* 未找到 */
-    }
-    inline void SetByte(unsigned int, uint32_t) { /* 未找到 */
-    }
+
+    inline void SetLong(uint32_t, uint32_t) { /* 未找到 */ }
+
+    inline void SetShort(unsigned int, uint32_t) { /* 未找到 */ }
+
+    inline void SetByte(unsigned int, uint32_t) { /* 未找到 */ }
+
     inline void *GetDataPtr() { return mData; }
     inline int GetDataLen() { return mDataLen; }
 };
 
-typedef std::map<void *, int> PointerToIntMap;
-typedef std::map<int, void *> IntToPointerMap;
+using PointerToIntMap = std::map<void *, int>;
+using IntToPointerMap = std::map<int, void *>;
 
 class DataSync {
 protected:
@@ -89,8 +91,8 @@ public:
     DataSync(DataWriter &theWriter);
     virtual ~DataSync();
 
-    inline void SyncPointers() { /* 未找到 */
-    }
+    inline void SyncPointers() { /* 未找到 */ }
+
     inline void SetReader(DataReader *theReader) { mReader = theReader; }
     inline void SetWriter(DataWriter *theWriter) { mWriter = theWriter; }
     inline DataReader *GetReader() { return mReader; }
@@ -165,10 +167,10 @@ public:
         }
     }
 
-    inline void SyncPointer(void **) { /* 未找到 */
-    }
-    inline void RegisterPointer(void *) { /* 未找到 */
-    }
+    inline void SyncPointer(void **) { /* 未找到 */ }
+
+    inline void RegisterPointer(void *) { /* 未找到 */ }
+
     inline void SetVersion(int theVersion) { mVersion = theVersion; }
     inline int GetVersion() const { return mVersion; }
 };

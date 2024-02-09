@@ -8,6 +8,7 @@ constexpr const int SLOT_MACHINE_TIME = 400;
 constexpr const int CONVEYOR_SPEED = 4;
 
 class HitResult;
+
 class SeedPacket : public GameObject {
 public:
     int mRefreshCounter;             //+0x24
@@ -32,10 +33,12 @@ public:
     bool MouseHitTest(int theX, int theY, HitResult *theHitResult);
     void Deactivate();
     void Activate();
-    /*inline*/ void SetActivate(bool theActivate);
+    /*inline*/
+    void SetActivate(bool theActivate);
     void PickNextSlotMachineSeed();
     void WasPlanted();
-    /*inline*/ void SlotMachineStart();
+    /*inline*/
+    void SlotMachineStart();
     void FlashIfReady();
     bool CanPickUp();
     void SetPacketType(SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
@@ -53,15 +56,18 @@ public:
 
     void Draw(Graphics *g);
     bool MouseHitTest(int x, int y, HitResult *theHitResult);
+
     inline void Move(int x, int y) {
         mX = x;
         mY = y;
     }
+
     bool ContainsPoint(int theX, int theY);
     void AddSeed(SeedType theSeedType, bool thePlaceOnLeft = false);
     void RemoveSeed(int theIndex);
     int GetNumSeedsOnConveyorBelt();
-    /*inline*/ int CountOfTypeOnConveyorBelt(SeedType theSeedType);
+    /*inline*/
+    int CountOfTypeOnConveyorBelt(SeedType theSeedType);
     void UpdateConveyorBelt();
     void UpdateWidth();
     void RefreshAllPackets();

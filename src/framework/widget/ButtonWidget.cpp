@@ -133,7 +133,7 @@ void ButtonWidget::Draw(Graphics *g) {
                     DrawButtonImage(g, mButtonImage, mNormalRect, 0, 0);
 
                 g->SetColorizeImages(true);
-                g->SetColor(Color(255, 255, 255, (int)(mOverAlpha * 255)));
+                g->SetColor(Color(255, 255, 255, static_cast<int>(mOverAlpha * 255)));
                 DrawButtonImage(g, mOverImage, mOverRect, 0, 0);
                 g->SetColorizeImages(false);
             } else if ((mIsOver || mIsDown) && HaveButtonImage(mOverImage, mOverRect)) {

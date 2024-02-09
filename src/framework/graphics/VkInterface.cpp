@@ -52,7 +52,6 @@ DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
 
 namespace Vk {
-
 const int MAX_FRAMES_IN_FLIGHT = 3;
 
 const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -108,7 +107,7 @@ void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 void createCommandBuffers();
 
-void createTextureImage(int width, int height, uint32_t const *imdata);
+void createTextureImage(int width, int height, const uint32_t *imdata);
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
@@ -225,18 +224,23 @@ uint32_t currentFrame = 0;
 class sdlCursor {
 public:
     SDL_Cursor *cursor;
+
     sdlCursor(const uint8_t *data, const uint8_t *mask, int w, int h, int hot_x, int hot_y) {
         cursor = SDL_CreateCursor(data, mask, w, h, hot_x, hot_y);
     }
+
     sdlCursor(SDL_SystemCursor shape) { cursor = SDL_CreateSystemCursor(shape); }
+
     ~sdlCursor() { SDL_FreeCursor(cursor); }
 };
+
 std::map<int, std::unique_ptr<sdlCursor>> cursorMap;
 
 template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
     using T = decltype(arr)::value_type::second_type;
 
-    for (auto &it : arr) { // unset the keycode flag
+    for (auto &it : arr) {
+        // unset the keycode flag
         it.first = it.first & (~(1 << 30));
     }
 
@@ -259,9 +263,10 @@ template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
             int offset = key;
             if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
             else if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
-            else if (key >= SDLK_KP_0 && key <= SDLK_KP_9) offset = (int)SDLK_KP_0 - KEYCODE_NUMPAD0;
-            else if (key >= SDLK_F1 && key <= SDLK_F24) offset = (int)SDLK_F1 - KEYCODE_F1;
-            sparse_array[key] = (KeyCode)(key - offset); // if we didn't find it the resulting keycode is key - key == 0
+            else if (key >= SDLK_KP_0 && key <= SDLK_KP_9) offset = static_cast<int>(SDLK_KP_0) - KEYCODE_NUMPAD0;
+            else if (key >= SDLK_F1 && key <= SDLK_F24) offset = static_cast<int>(SDLK_F1) - KEYCODE_F1;
+            sparse_array[key] = static_cast<KeyCode>(key - offset);
+            // if we didn't find it the resulting keycode is key - key == 0
         }
     }
 
@@ -1316,7 +1321,6 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, [[maybe_unused]] void *pUserData
 ) {
-
     std::cerr << "\033[0;31m" << pCallbackData->pMessage << "\033[0m" << std::endl << std::endl;
 
     return VK_FALSE;
@@ -1521,7 +1525,6 @@ void VkInterface::RehupFocus() {
         widgetManager->mApp->mHasFocus = wantHasFocus;
 
         if (widgetManager->mApp->mHasFocus) {
-
             if (widgetManager->mApp->mMuteOnLostFocus) widgetManager->mApp->Unmute(true);
 
             widgetManager->GotFocus();
@@ -1807,5 +1810,4 @@ void VkInterface::Draw() {
 
     renderMutex.unlock();
 }
-
 } // namespace Vk

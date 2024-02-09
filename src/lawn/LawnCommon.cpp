@@ -77,7 +77,7 @@ void LawnEditWidget::KeyChar(char theChar) {
 
 // 0x4567B0
 LawnEditWidget *CreateEditWidget(int theId, EditListener *theListener, Dialog *theDialog) {
-    LawnEditWidget *aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
+    auto aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
     aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
     aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
     aEditWidget->mBlinkDelay = 14;
@@ -92,8 +92,7 @@ void DrawEditBox(Graphics *g, EditWidget *theWidget) {
 
 // 0x456860
 Checkbox *MakeNewCheckbox(int theId, CheckboxListener *theListener, bool theDefault) {
-    Checkbox *aCheckbox =
-        new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
+    auto aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
     aCheckbox->mChecked = theDefault;
     aCheckbox->mHasAlpha = true;
     aCheckbox->mHasTransparencies = true;

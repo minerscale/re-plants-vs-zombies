@@ -4,10 +4,12 @@
 #include "DataArray.h"
 #include "TodList.h"
 #include "framework/misc/SexyVector.h"
+
 namespace Sexy {
 class Image;
 class Graphics;
 }; // namespace Sexy
+
 // using namespace std;
 using namespace Sexy;
 
@@ -20,33 +22,55 @@ using namespace Sexy;
 // ######################################################################################################################################################
 
 enum ParticleFlags {
-    PARTICLE_RANDOM_LAUNCH_SPIN, // 随机发射旋转，指定粒子在发射时使用 [0, 2π] 内随机的初始旋转角度
-    PARTICLE_ALIGN_LAUNCH_SPIN, // 对齐发射角度，指定粒子在发射时的初始旋转角度与发射方向一致（优先级低于随机发射旋转）
-    PARTICLE_ALIGN_TO_PIXELS, // 对齐至像素，指定粒子渲染时的坐标四舍五入地对齐至整数像素值
-    PARTICLE_SYSTEM_LOOPS,    // 系统循环，指定发射器在生命周期结束后立即回到周期起始的时刻
-    PARTICLE_PARTICLE_LOOPS,  // 粒子循环，指定粒子在生命周期结束后立即回到周期起始的时刻
-    PARTICLE_PARTICLES_DONT_FOLLOW, // 粒子不跟随，指定当粒子发射器的位置移动时，已发射的粒子不随之移动
-    PARTICLE_RANDOM_START_TIME, // 随机初始时刻，指定粒子初始时的存在时间为 0 至最大持续时间之间的随机值
-    PARTICLE_DIE_IF_OVERLOADED, // 过载限制，指定在粒子数量过多时，该发射器所属的粒子系统无法被创建
-    PARTICLE_ADDITIVE,      // 叠加模式，指定粒子渲染时固定使用叠加（Additive）模式
-    PARTICLE_FULLSCREEN,    // 全屏模式，指定粒子在渲染时改为填充一个屏幕大小的矩形
-    PARTICLE_SOFTWARE_ONLY, // 仅软件渲染，指定粒子仅在未开启 3D 加速时可被渲染
-    PARTICLE_HARDWARE_ONLY  // 仅硬件渲染，指定粒子仅在已开启 3D 加速时可被渲染
+    PARTICLE_RANDOM_LAUNCH_SPIN,
+    // 随机发射旋转，指定粒子在发射时使用 [0, 2π] 内随机的初始旋转角度
+    PARTICLE_ALIGN_LAUNCH_SPIN,
+    // 对齐发射角度，指定粒子在发射时的初始旋转角度与发射方向一致（优先级低于随机发射旋转）
+    PARTICLE_ALIGN_TO_PIXELS,
+    // 对齐至像素，指定粒子渲染时的坐标四舍五入地对齐至整数像素值
+    PARTICLE_SYSTEM_LOOPS,
+    // 系统循环，指定发射器在生命周期结束后立即回到周期起始的时刻
+    PARTICLE_PARTICLE_LOOPS,
+    // 粒子循环，指定粒子在生命周期结束后立即回到周期起始的时刻
+    PARTICLE_PARTICLES_DONT_FOLLOW,
+    // 粒子不跟随，指定当粒子发射器的位置移动时，已发射的粒子不随之移动
+    PARTICLE_RANDOM_START_TIME,
+    // 随机初始时刻，指定粒子初始时的存在时间为 0 至最大持续时间之间的随机值
+    PARTICLE_DIE_IF_OVERLOADED,
+    // 过载限制，指定在粒子数量过多时，该发射器所属的粒子系统无法被创建
+    PARTICLE_ADDITIVE,
+    // 叠加模式，指定粒子渲染时固定使用叠加（Additive）模式
+    PARTICLE_FULLSCREEN,
+    // 全屏模式，指定粒子在渲染时改为填充一个屏幕大小的矩形
+    PARTICLE_SOFTWARE_ONLY,
+    // 仅软件渲染，指定粒子仅在未开启 3D 加速时可被渲染
+    PARTICLE_HARDWARE_ONLY // 仅硬件渲染，指定粒子仅在已开启 3D 加速时可被渲染
 };
 
 enum ParticleFieldType {
     FIELD_INVALID,
-    FIELD_FRICTION,     // 摩擦力场：该场内粒子的速度按一定比例不断衰减
-    FIELD_ACCELERATION, // 加速度场：该场内粒子以一定加速度做加速运动
-    FIELD_ATTRACTOR, // 弹性力场：该场内粒子加速度的大小和方向均受到粒子与发射器之间距离大小的影响
-    FIELD_MAX_VELOCITY,    // 限速场：该场内粒子速度的大小不能超过一定的上限值
-    FIELD_VELOCITY,        // 匀速场：该场内粒子速度的大小总是为一给定值
-    FIELD_POSITION,        // 定位场：该场内粒子的位置总是为一给定值
-    FIELD_SYSTEM_POSITION, // 系统定位场：仅发射器可用，该场内发射器的位置总是为一给定值
-    FIELD_GROUND_CONSTRAINT, // 地面限制：粒子的纵向位置不能低于地面，且接触地面时会触发弹起效果
-    FIELD_SHAKE,             // 震动：粒子的坐标会有随机 -1.0 到 +1.0 的偏移，每帧独立计算
-    FIELD_CIRCLE, // 引力场：该场内粒子围绕发射器中心做圆周运动（考虑误差，实为螺线运动）
-    FIELD_AWAY, // 斥力场：该场内粒子沿径向不断远离发射器中心
+    FIELD_FRICTION,
+    // 摩擦力场：该场内粒子的速度按一定比例不断衰减
+    FIELD_ACCELERATION,
+    // 加速度场：该场内粒子以一定加速度做加速运动
+    FIELD_ATTRACTOR,
+    // 弹性力场：该场内粒子加速度的大小和方向均受到粒子与发射器之间距离大小的影响
+    FIELD_MAX_VELOCITY,
+    // 限速场：该场内粒子速度的大小不能超过一定的上限值
+    FIELD_VELOCITY,
+    // 匀速场：该场内粒子速度的大小总是为一给定值
+    FIELD_POSITION,
+    // 定位场：该场内粒子的位置总是为一给定值
+    FIELD_SYSTEM_POSITION,
+    // 系统定位场：仅发射器可用，该场内发射器的位置总是为一给定值
+    FIELD_GROUND_CONSTRAINT,
+    // 地面限制：粒子的纵向位置不能低于地面，且接触地面时会触发弹起效果
+    FIELD_SHAKE,
+    // 震动：粒子的坐标会有随机 -1.0 到 +1.0 的偏移，每帧独立计算
+    FIELD_CIRCLE,
+    // 引力场：该场内粒子围绕发射器中心做圆周运动（考虑误差，实为螺线运动）
+    FIELD_AWAY,
+    // 斥力场：该场内粒子沿径向不断远离发射器中心
     PARTICLE_FIELD_COUNT
 }; // 粒子场相关内容详见 TodParticleEmitter::UpdateParticleField() 函数（系统定位场为
    // TodParticleEmitter::UpdateSystemField() 函数）
@@ -187,6 +211,7 @@ public:
     ParticleEffect mParticleEffect;
     const char *mParticleFileName;
 };
+
 extern int gParticleParamArraySize;         // [0x6A9F10]
 extern ParticleParams *gParticleParamArray; // [0x6A9F14]
 
@@ -194,7 +219,7 @@ bool TodParticleLoadADef(TodParticleDefinition *theParticleDef, const char *theP
 void TodParticleLoadDefinitions(ParticleParams *theParticleParamArray, int theParticleParamArraySize);
 void TodParticleFreeDefinitions();
 
-extern ParticleParams gLawnParticleArray[(int)ParticleEffect::NUM_PARTICLES]; // 0x6A0FF0
+extern ParticleParams gLawnParticleArray[static_cast<int>(ParticleEffect::NUM_PARTICLES)]; // 0x6A0FF0
 
 // ######################################################################################################################################################
 // ############################################################ 以下正式开始粒子系统相关声明
@@ -238,6 +263,7 @@ enum ParticleTracks {
 class TodParticleSystem;
 class TodParticleEmitter;
 class TodParticle;
+
 class TodParticleHolder {
 public:
     DataArray<TodParticleSystem> mParticleSystems;
@@ -257,7 +283,8 @@ public:
     );
     TodParticleSystem *
     AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
-    /*inline*/ bool IsOverLoaded();
+    /*inline*/
+    bool IsOverLoaded();
 };
 
 class ParticleRenderParams {
@@ -301,6 +328,7 @@ public:
 };
 
 class TodTriangleGroup;
+
 class TodParticleEmitter {
 public:
     TodEmitterDefinition *mEmitterDef;                           //+0x0
@@ -341,15 +369,19 @@ public:
     void DeleteAll();
     void UpdateParticleField(
         TodParticle *theParticle, ParticleField *theParticleField, float theParticleTimeValue, int theFieldIndex
-    );
+    ) const;
     void UpdateSystemField(ParticleField *theParticleField, float theParticleTimeValue, int theFieldIndex);
-    /*inline*/ float SystemTrackEvaluate(FloatParameterTrack &theTrack, ParticleSystemTracks theSystemTrack);
-    static /*inline*/ float
-    ParticleTrackEvaluate(FloatParameterTrack &theTrack, TodParticle *theParticle, ParticleTracks theParticleTrack);
+    /*inline*/
+    float SystemTrackEvaluate(FloatParameterTrack &theTrack, ParticleSystemTracks theSystemTrack) const;
+    static /*inline*/ float ParticleTrackEvaluate(
+        FloatParameterTrack &theTrack, const TodParticle *theParticle, ParticleTracks theParticleTrack
+    );
     void DeleteParticle(TodParticle *theParticle);
     void DeleteNonCrossFading();
 };
-/*inline*/ float CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
+
+/*inline*/
+float CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
 void RenderParticle(
     Graphics *g, TodParticle *theParticle, const Color &theColor, ParticleRenderParams *theParams,
     TodTriangleGroup *theTriangleGroup

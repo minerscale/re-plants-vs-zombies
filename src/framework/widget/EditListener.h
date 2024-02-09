@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 class EditListener {
 public:
     virtual void EditWidgetText(int theId, const SexyString &theString) = 0;
@@ -13,7 +12,6 @@ public:
     //	virtual bool			AllowChar(int theId, SexyChar theChar) { return true; }
     //	virtual bool			AllowText(int theId, const SexyString& theText) { return true; }
 };
-
 } // namespace Sexy
 
 #endif //__EDITLISTENER_H__

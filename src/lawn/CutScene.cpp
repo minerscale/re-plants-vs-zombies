@@ -74,7 +74,7 @@ static const int TimeLawnMowerStart[6] = {6300, 6250, 6200, 6150, 6100, 6050}; /
 
 // 0x4390E0
 CutScene::CutScene() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mBoard = mApp->mBoard;
     mCutsceneTime = 0;
     mSodTime = 0;
@@ -296,7 +296,7 @@ void CutScene::PreloadResources() {
     }
 
     for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType < SeedType::NUM_SEED_TYPES;
-         aSeedType = (SeedType)((int)aSeedType + 1)) {
+         aSeedType = static_cast<SeedType>((int)aSeedType + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             Plant::PreloadPlantResources(aSeedType);
         }
@@ -309,7 +309,7 @@ void CutScene::PreloadResources() {
     if (mCrazyDaveDialogStart != -1) {
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_CRAZY_DAVE, true);
     }
-    if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_RAKE]) {
+    if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_RAKE)]) {
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_RAKE, true);
     }
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN) {
@@ -427,7 +427,7 @@ void CutScene::PlaceStreetZombies() {
     // 以下统计出怪列表中各种可预览的僵尸的数量
     // int aZombieValueTotal = 0;
     int aTotalZombieCount = 0;
-    int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES] = {0};
+    int aZombieTypeCount[static_cast<int>(ZombieType::NUM_ZOMBIE_TYPES)] = {0};
     TOD_ASSERT(mBoard->mBoardData.mNumWaves <= MAX_ZOMBIE_WAVES);
 
     for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
@@ -463,14 +463,14 @@ void CutScene::PlaceStreetZombies() {
 
     // 谁笑到最后关卡，除雪人僵尸外，所有允许出怪的僵尸类型至少计入 1 只僵尸
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND) {
-        for (int aZombieType = 0; aZombieType < (int)ZombieType::NUM_ZOMBIE_TYPES; aZombieType++) {
+        for (int aZombieType = 0; aZombieType < static_cast<int>(ZombieType::NUM_ZOMBIE_TYPES); aZombieType++) {
             if (aZombieType != ZombieType::ZOMBIE_YETI && mBoard->mBoardData.mZombieAllowed[aZombieType]) {
                 aZombieTypeCount[aZombieType] = std::max(aZombieTypeCount[aZombieType], 1);
             }
         }
     }
     if (mBoard->StageHasPool()) {
-        aZombieTypeCount[(int)ZombieType::ZOMBIE_DUCKY_TUBE] = 1; // 泳池关卡，必定出现鸭子僵尸预览
+        aZombieTypeCount[static_cast<int>(ZombieType::ZOMBIE_DUCKY_TUBE)] = 1; // 泳池关卡，必定出现鸭子僵尸预览
     }
 
     bool aZombieGrid[5][5] = {{false}};
@@ -483,17 +483,17 @@ void CutScene::PlaceStreetZombies() {
 
     // 优先放置较大体型的僵尸，然后再放置较小体型的僵尸
     for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES;
-         aZombieType = (ZombieType)((int)aZombieType + 1)) {
-        if (aZombieTypeCount[(int)aZombieType] &&
+         aZombieType = static_cast<ZombieType>((int)aZombieType + 1)) {
+        if (aZombieTypeCount[static_cast<int>(aZombieType)] &&
             (Is2x2Zombie(aZombieType) || aZombieType == ZombieType::ZOMBIE_ZAMBONI)) {
             FindAndPlaceZombie(aZombieType, aZombieGrid);
         }
     }
     for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES;
-         aZombieType = (ZombieType)((int)aZombieType + 1)) {
-        if (aZombieTypeCount[(int)aZombieType] && !Is2x2Zombie(aZombieType) &&
+         aZombieType = static_cast<ZombieType>((int)aZombieType + 1)) {
+        if (aZombieTypeCount[static_cast<int>(aZombieType)] && !Is2x2Zombie(aZombieType) &&
             aZombieType != ZombieType::ZOMBIE_ZAMBONI) {
-            int aZombieNumInWave = aZombieTypeCount[(int)aZombieType];
+            int aZombieNumInWave = aZombieTypeCount[static_cast<int>(aZombieType)];
             int aZombiePreviewNum = aZombieNumInWave * aPreviewCapacity / aTotalZombieCount;
             aZombiePreviewNum = ClampInt(aZombiePreviewNum, 1, aZombieNumInWave);
             for (int i = 0; i < aZombiePreviewNum; i++) {
@@ -565,10 +565,9 @@ bool CutScene::CanGetSecondPacketUpgrade() {
 bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex) {
     int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
-    return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] ==
-               theUpgradeIndex && // theUpgradeIndex 从首次为 0 开始计算
-           mApp->mPlayerInfo->mCoins >= aCost &&
-           mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
+    return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == theUpgradeIndex &&
+           // theUpgradeIndex 从首次为 0 开始计算
+           mApp->mPlayerInfo->mCoins >= aCost && mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
 
 // 0x43A900
@@ -670,7 +669,7 @@ void CutScene::StartLevelIntro() {
     } else if (mApp->IsFinalBossLevel() && mApp->IsAdventureMode() && !isRestart) {
         mCrazyDaveDialogStart = 2300;
     } else if (mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM) {
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_TREE_FOOD)] < PURCHASE_COUNT_OFFSET) {
             mCrazyDaveDialogStart = 3200;
             mBoard->mStoreButton->mBtnNoDraw = true;
         }
@@ -1296,10 +1295,10 @@ void CutScene::UpdateZombiesWon() {
             int aFlagsCompleted = mBoard->GetSurvivalFlagsCompleted();
             SexyString aFlagsStr = mApp->Pluralize(aFlagsCompleted, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
             SexyString aStr = TodReplaceString(_S("[SURVIVAL_DEATH_MESSAGE]"), _S("{FLAGS}"), aFlagsStr);
-            GameOverDialog *aDialog = new GameOverDialog(aStr, true);
+            auto aDialog = new GameOverDialog(aStr, true);
             mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
         } else {
-            GameOverDialog *aDialog = new GameOverDialog(_S(""), false);
+            auto aDialog = new GameOverDialog(_S(""), false);
             mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
         }
     }
@@ -1370,7 +1369,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     // （推销卡槽）“听起来怎么样”
     if ((aMessageIndex == 1503 || aMessageIndex == 1553) && !theJustSkipping) {
         int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
-        int aNumPackets = mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_PACKET_UPGRADE];
+        int aNumPackets = mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)];
         SexyString aBodyString = TodReplaceNumberString(_S("[UPGRADE_DIALOG_BODY]"), _S("{SLOTS}"), aNumPackets + 1);
         SexyString aAmountString = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
         // 创建询问是否升级卡槽格数的对话
@@ -1384,7 +1383,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
         int aResult = aDialog->WaitForResult();
         if (aResult == Dialog::ID_YES) {
             mApp->mPlayerInfo->AddCoins(-aCost);
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_PACKET_UPGRADE]++;
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)]++;
             mApp->WriteCurrentUserConfig();
             mBoard->mSeedBank->UpdateWidth();
 
@@ -1516,8 +1515,8 @@ void CutScene::AddUpsellZombie(ZombieType theZombieType, int thePixelX, int theG
     aZombie->mPosX = thePixelX;
     aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
     aZombie->SetRow(theGridY);
-    aZombie->mX = (int)aZombie->mPosX;
-    aZombie->mY = (int)aZombie->mPosY;
+    aZombie->mX = static_cast<int>(aZombie->mPosX);
+    aZombie->mY = static_cast<int>(aZombie->mPosY);
 }
 
 // 0x43DBA0

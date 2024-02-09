@@ -1,7 +1,6 @@
 #include "Ratio.h"
 
 namespace Sexy {
-
 Ratio::Ratio() : mNumerator(1), mDenominator(1) {}
 
 Ratio::Ratio(int theNumerator, int theDenominator) { Set(theNumerator, theDenominator); }
@@ -21,5 +20,4 @@ void Ratio::Set(int theNumerator, int theDenominator) {
     mNumerator = theNumerator / a;
     mDenominator = theDenominator / a;
 }
-
 } // namespace Sexy

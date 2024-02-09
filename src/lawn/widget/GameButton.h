@@ -8,9 +8,11 @@
 using namespace Sexy;
 
 class LawnApp;
+
 class GameButton {
 public:
     enum { BUTTON_LABEL_LEFT = -1, BUTTON_LABEL_CENTER = 0, BUTTON_LABEL_RIGHT = 1 };
+
     enum {
         COLOR_LABEL = 0,
         COLOR_LABEL_HILITE = 1,
@@ -63,14 +65,20 @@ public:
 
     static /*inline*/ bool HaveButtonImage(Image *theImage, Rect &theRect);
     void DrawButtonImage(Graphics *g, Image *theImage, Rect &theRect, int theX, int theY);
-    /*inline*/ void SetFont(_Font *theFont);
-    /*inline*/ bool IsButtonDown();
+    /*inline*/
+    void SetFont(_Font *theFont);
+    /*inline*/
+    bool IsButtonDown();
     void Draw(Graphics *g);
-    /*inline*/ void SetDisabled(bool theDisabled);
-    /*inline*/ bool IsMouseOver();
+    /*inline*/
+    void SetDisabled(bool theDisabled);
+    /*inline*/
+    bool IsMouseOver();
     void Update();
-    /*inline*/ void Resize(int theX, int theY, int theWidth, int theHeight);
-    /*inline*/ void SetLabel(const SexyString &theLabel);
+    /*inline*/
+    void Resize(int theX, int theY, int theWidth, int theHeight);
+    /*inline*/
+    void SetLabel(const SexyString &theLabel);
 };
 
 class LawnStoneButton : public DialogButton {
@@ -78,8 +86,9 @@ public:
     LawnStoneButton(Image *theComponentImage, int theId, ButtonListener *theListener)
         : DialogButton(theComponentImage, theId, theListener) {}
 
-    virtual void Draw(Graphics *g);
-    /*inline*/ void SetLabel(const SexyString &theLabel);
+    void Draw(Graphics *g) override;
+    /*inline*/
+    void SetLabel(const SexyString &theLabel);
 };
 
 class NewLawnButton : public DialogButton {
@@ -94,10 +103,10 @@ public:
 
 public:
     NewLawnButton(Image *theComponentImage, int theId, ButtonListener *theListener);
-    virtual ~NewLawnButton();
+    ~NewLawnButton() override;
 
-    virtual void Draw(Graphics *g);
-    virtual bool IsPointVisible(int x, int y);
+    void Draw(Graphics *g) override;
+    bool IsPointVisible(int x, int y) override;
     void SetLabel(const SexyString &theLabel);
     // @Patoke: user defined
     void SetOffset(int theX, int theY);

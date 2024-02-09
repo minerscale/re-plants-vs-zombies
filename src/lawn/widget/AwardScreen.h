@@ -38,23 +38,26 @@ public:
 public:
     // @Patoke: added argument
     AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowingAchievements = false);
-    virtual ~AwardScreen();
+    ~AwardScreen() override;
 
-    /*inline*/ bool IsPaperNote();
-    virtual void Resize(int theX, int theY, int theWidth, int theHeight) {
+    /*inline*/
+    bool IsPaperNote();
+
+    void Resize(int theX, int theY, int theWidth, int theHeight) override {
         Widget::Resize(theX, theY, theWidth, theHeight);
     }
+
     static void
     DrawBottom(Graphics *g, const SexyString &theTitle, const SexyString &theAward, const SexyString &theMessage);
     void DrawAwardSeed(Graphics *g);
-    virtual void Draw(Graphics *g);
-    virtual void Update();
-    virtual void AddedToManager(WidgetManager *theWidgetManager) { Widget::AddedToManager(theWidgetManager); }
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager) { Widget::RemovedFromManager(theWidgetManager); }
-    virtual void KeyChar(char theChar);
+    void Draw(Graphics *g) override;
+    void Update() override;
+    void AddedToManager(WidgetManager *theWidgetManager) override { Widget::AddedToManager(theWidgetManager); }
+    void RemovedFromManager(WidgetManager *theWidgetManager) override { Widget::RemovedFromManager(theWidgetManager); }
+    void KeyChar(char theChar) override;
     void StartButtonPressed();
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseUp(int x, int y, int theClickCount);
+    void MouseDown(int x, int y, int theClickCount) override;
+    void MouseUp(int x, int y, int theClickCount) override;
     // @Patoke: implement functions
     void DrawAchievements(Graphics *g);
     void AchievementsContinuePressed();

@@ -23,13 +23,14 @@
 // HINSTANCE Sexy::gHInstance;
 bool Sexy::gDebug = false;
 static Sexy::MTRand gMTRand;
+
 namespace Sexy {
 std::string gAppDataFolder = "";
 }
 
 int Sexy::Rand() { return gMTRand.Next(); }
 
-int Sexy::Rand(int range) { return gMTRand.Next((unsigned long)range); }
+int Sexy::Rand(int range) { return gMTRand.Next(static_cast<unsigned long>(range)); }
 
 float Sexy::Rand(float range) { return gMTRand.Next(range); }
 
@@ -37,29 +38,29 @@ void Sexy::SRand(ulong theSeed) { gMTRand.SRand(theSeed); }
 
 bool Sexy::CheckFor98Mill() {
     unreachable(); // FIXME (sort of, really it just needs removing)
-    /*
-        static bool needOsCheck = true;
-        static bool is98Mill = false;
-
-        if (needOsCheck)
-        {
-            // bool invalid = false; // unused
-            OSVERSIONINFOEXA osvi;
-            ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
-
-            osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-            if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-            {
-                osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-                if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-                    return false;
-            }
-
-            needOsCheck = false;
-            is98Mill = osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS; // let's check Win95, 98, *AND* ME.
-        }
-
-        return is98Mill;*/
+                   /*
+                       static bool needOsCheck = true;
+                       static bool is98Mill = false;
+               
+                       if (needOsCheck)
+                       {
+                           // bool invalid = false; // unused
+                           OSVERSIONINFOEXA osvi;
+                           ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
+               
+                           osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
+                           if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
+                           {
+                               osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
+                               if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
+                                   return false;
+                           }
+               
+                           needOsCheck = false;
+                           is98Mill = osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS; // let's check Win95, 98, *AND* ME.
+                       }
+               
+                       return is98Mill;*/
 }
 
 bool Sexy::CheckForVista() {
@@ -103,7 +104,7 @@ void Sexy::SetAppDataFolder(const std::string &thePath) {
 }
 
 std::string Sexy::URLEncode(const std::string &theString) {
-    char *aHexChars = (char *)"0123456789ABCDEF";
+    auto aHexChars = (char *)"0123456789ABCDEF";
 
     std::string aString;
 
@@ -168,7 +169,7 @@ std::wstring Sexy::StringToWString(const std::string &theString) {
     std::wstring aString;
     aString.reserve(theString.length());
     for (size_t i = 0; i < theString.length(); ++i)
-        aString += (unsigned char)theString[i];
+        aString += static_cast<unsigned char>(theString[i]);
     return aString;
 }
 
@@ -208,7 +209,7 @@ static const wchar_t CP1252_UNICODE_TABLE[] = L"\u0000\u0001\u0002\u0003\u0004\u
 std::string Sexy::WStringToString(const std::wstring &theString) {
     std::wstring ret = theString;
     for (size_t i = 0; i < theString.size(); ++i)
-        ret[i] = CP1252_UNICODE_TABLE[(uint8_t)theString[i]];
+        ret[i] = CP1252_UNICODE_TABLE[static_cast<uint8_t>(theString[i])];
 
     // Unicode => UTF8.
     std::wstring_convert<std::codecvt_utf8<wchar_t>> unicode_to_utf8;
@@ -269,7 +270,7 @@ std::wstring Sexy::SexyStringToWString(const SexyString &theString) {
 
 std::string Sexy::Trim(const std::string &theString) {
     int aStartPos = 0;
-    while (aStartPos < (int)theString.length() && isspace(theString[aStartPos]))
+    while (aStartPos < static_cast<int>(theString.length()) && isspace(theString[aStartPos]))
         aStartPos++;
 
     int anEndPos = theString.length() - 1;
@@ -279,9 +280,10 @@ std::string Sexy::Trim(const std::string &theString) {
     return theString.substr(aStartPos, anEndPos - aStartPos + 1);
 }
 
-std::wstring Sexy::Trim(const std::wstring &theString) { // 0x5AFD80
+std::wstring Sexy::Trim(const std::wstring &theString) {
+    // 0x5AFD80
     int aStartPos = 0;
-    while (aStartPos < (int)theString.length() && iswspace(theString[aStartPos]))
+    while (aStartPos < static_cast<int>(theString.length()) && iswspace(theString[aStartPos]))
         aStartPos++;
 
     int anEndPos = theString.length() - 1;
@@ -460,7 +462,7 @@ SexyString Sexy::CommaSeperate(int theValue) {
 
     while (aCurValue > 0) {
         if ((aPlace != 0) && (aPlace % 3 == 0)) aCurString = _S(',') + aCurString;
-        aCurString = (SexyChar)(_S('0') + (aCurValue % 10)) + aCurString;
+        aCurString = static_cast<SexyChar>((_S('0') + (aCurValue % 10))) + aCurString;
         aCurValue /= 10;
         aPlace++;
     }
@@ -553,86 +555,86 @@ std::string Sexy::GetPathFrom(const std::string &theRelPath, const std::string &
 
 bool Sexy::AllowAllAccess(const std::string & /*theFileName*/) {
     unreachable(); // FIXME (probably not even important)
-    /*
-        HMODULE aLib = LoadLibraryA("advapi32.dll");
-        if (aLib == NULL)
-            return false;
-
-        BOOL (WINAPI *fnSetFileSecurity)(LPCTSTR lpFileName, SECURITY_INFORMATION SecurityInformation,
-       PSECURITY_DESCRIPTOR pSecurityDescriptor); BOOL (WINAPI *fnSetSecurityDescriptorDacl)(PSECURITY_DESCRIPTOR
-       pSecurityDescriptor, BOOL bDaclPresent, PACL pDacl, BOOL bDaclDefaulted); BOOL (WINAPI
-       *fnInitializeSecurityDescriptor)(PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD dwRevision); BOOL (WINAPI
-       *fnAllocateAndInitializeSid)( PSID_IDENTIFIER_AUTHORITY pIdentifierAuthority, BYTE nSubAuthorityCount, DWORD
-       dwSubAuthority0, DWORD dwSubAuthority1, DWORD dwSubAuthority2, DWORD dwSubAuthority3, DWORD dwSubAuthority4,
-          DWORD dwSubAuthority5,
-          DWORD dwSubAuthority6,
-          DWORD dwSubAuthority7,
-          PSID* pSid
-        );
-        DWORD (WINAPI *fnSetEntriesInAcl)(ULONG cCountOfExplicitEntries, PEXPLICIT_ACCESS pListOfExplicitEntries, PACL
-       OldAcl, PACL* NewAcl); PVOID (WINAPI *fnFreeSid)(PSID pSid);
-
-        *(void**)&fnSetFileSecurity = (void*)GetProcAddress(aLib, "SetFileSecurityA");
-        *(void**)&fnSetSecurityDescriptorDacl = (void*)GetProcAddress(aLib, "SetSecurityDescriptorDacl");
-        *(void**)&fnInitializeSecurityDescriptor = (void*)GetProcAddress(aLib, "InitializeSecurityDescriptor");
-        *(void**)&fnAllocateAndInitializeSid = (void*)GetProcAddress(aLib, "AllocateAndInitializeSid");
-        *(void**)&fnSetEntriesInAcl = (void*)GetProcAddress(aLib, "SetEntriesInAclA");
-        *(void**)&fnFreeSid = (void*) GetProcAddress(aLib, "FreeSid");
-
-        if (!(fnSetFileSecurity && fnSetSecurityDescriptorDacl && fnInitializeSecurityDescriptor &&
-       fnAllocateAndInitializeSid && fnSetEntriesInAcl && fnFreeSid))
-        {
-            FreeLibrary(aLib);
-            return false;
-        }
-
-
-        PSID pEveryoneSID = NULL;
-        SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
-        bool result = false;
-
-        // Create a well-known SID for the Everyone group.
-        if (fnAllocateAndInitializeSid(&SIDAuthWorld, 1,
-                         SECURITY_WORLD_RID,
-                         0, 0, 0, 0, 0, 0, 0,
-                         &pEveryoneSID))
-        {
-            EXPLICIT_ACCESS ea;
-
-            // Initialize an EXPLICIT_ACCESS structure for an ACE.
-            // The ACE will allow Everyone read access to the key.
-            ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
-            ea.grfAccessPermissions = STANDARD_RIGHTS_ALL | SPECIFIC_RIGHTS_ALL;
-            ea.grfAccessMode = SET_ACCESS;
-            ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
-            ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-            ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-            ea.Trustee.ptstrName = (LPTSTR) pEveryoneSID;
-
-            // Create a new ACL that contains the new ACEs.
-            PACL pACL = NULL;
-            if (fnSetEntriesInAcl(1, &ea, NULL, &pACL) == ERROR_SUCCESS)
-            {
-                // Initialize a security descriptor.
-                PSECURITY_DESCRIPTOR pSD = (PSECURITY_DESCRIPTOR) new char[SECURITY_DESCRIPTOR_MIN_LENGTH];
-
-                if (fnInitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION))
-                {
-                    // Add the ACL to the security descriptor.
-                    if (fnSetSecurityDescriptorDacl(pSD,
-                            TRUE,     // bDaclPresent flag
-                            pACL,
-                            FALSE))   // not a default DACL
-                    {
-                        if (fnSetFileSecurity(theFileName.c_str(), DACL_SECURITY_INFORMATION, pSD))
-                            result = true;
-                    }
-                }
-            }
-        }
-
-        FreeLibrary(aLib);
-        return result;*/
+                   /*
+                       HMODULE aLib = LoadLibraryA("advapi32.dll");
+                       if (aLib == NULL)
+                           return false;
+               
+                       BOOL (WINAPI *fnSetFileSecurity)(LPCTSTR lpFileName, SECURITY_INFORMATION SecurityInformation,
+                      PSECURITY_DESCRIPTOR pSecurityDescriptor);                BOOL (WINAPI *fnSetSecurityDescriptorDacl)(PSECURITY_DESCRIPTOR
+                      pSecurityDescriptor, BOOL bDaclPresent, PACL pDacl, BOOL bDaclDefaulted);                BOOL (WINAPI
+                      *fnInitializeSecurityDescriptor)(PSECURITY_DESCRIPTOR pSecurityDescriptor, DWORD dwRevision);                BOOL (WINAPI
+                      *fnAllocateAndInitializeSid)(                PSID_IDENTIFIER_AUTHORITY pIdentifierAuthority,                BYTE nSubAuthorityCount,                DWORD
+                      dwSubAuthority0,                DWORD dwSubAuthority1,                DWORD dwSubAuthority2,                DWORD dwSubAuthority3,                DWORD dwSubAuthority4,
+                         DWORD dwSubAuthority5,
+                         DWORD dwSubAuthority6,
+                         DWORD dwSubAuthority7,
+                         PSID* pSid
+                       );
+                       DWORD (WINAPI *fnSetEntriesInAcl)(ULONG cCountOfExplicitEntries, PEXPLICIT_ACCESS pListOfExplicitEntries, PACL
+                      OldAcl, PACL* NewAcl);                PVOID (WINAPI *fnFreeSid)(PSID pSid);
+               
+                       *(void**)&fnSetFileSecurity = (void*)GetProcAddress(aLib, "SetFileSecurityA");
+                       *(void**)&fnSetSecurityDescriptorDacl = (void*)GetProcAddress(aLib, "SetSecurityDescriptorDacl");
+                       *(void**)&fnInitializeSecurityDescriptor = (void*)GetProcAddress(aLib, "InitializeSecurityDescriptor");
+                       *(void**)&fnAllocateAndInitializeSid = (void*)GetProcAddress(aLib, "AllocateAndInitializeSid");
+                       *(void**)&fnSetEntriesInAcl = (void*)GetProcAddress(aLib, "SetEntriesInAclA");
+                       *(void**)&fnFreeSid = (void*) GetProcAddress(aLib, "FreeSid");
+               
+                       if (!(fnSetFileSecurity && fnSetSecurityDescriptorDacl && fnInitializeSecurityDescriptor &&
+                      fnAllocateAndInitializeSid && fnSetEntriesInAcl && fnFreeSid))
+                       {
+                           FreeLibrary(aLib);
+                           return false;
+                       }
+               
+               
+                       PSID pEveryoneSID = NULL;
+                       SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
+                       bool result = false;
+               
+                       // Create a well-known SID for the Everyone group.
+                       if (fnAllocateAndInitializeSid(&SIDAuthWorld, 1,
+                                        SECURITY_WORLD_RID,
+                                        0, 0, 0, 0, 0, 0, 0,
+                                        &pEveryoneSID))
+                       {
+                           EXPLICIT_ACCESS ea;
+               
+                           // Initialize an EXPLICIT_ACCESS structure for an ACE.
+                           // The ACE will allow Everyone read access to the key.
+                           ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
+                           ea.grfAccessPermissions = STANDARD_RIGHTS_ALL | SPECIFIC_RIGHTS_ALL;
+                           ea.grfAccessMode = SET_ACCESS;
+                           ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+                           ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+                           ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+                           ea.Trustee.ptstrName = (LPTSTR) pEveryoneSID;
+               
+                           // Create a new ACL that contains the new ACEs.
+                           PACL pACL = NULL;
+                           if (fnSetEntriesInAcl(1, &ea, NULL, &pACL) == ERROR_SUCCESS)
+                           {
+                               // Initialize a security descriptor.
+                               PSECURITY_DESCRIPTOR pSD = (PSECURITY_DESCRIPTOR) new char[SECURITY_DESCRIPTOR_MIN_LENGTH];
+               
+                               if (fnInitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION))
+                               {
+                                   // Add the ACL to the security descriptor.
+                                   if (fnSetSecurityDescriptorDacl(pSD,
+                                           TRUE,     // bDaclPresent flag
+                                           pACL,
+                                           FALSE))   // not a default DACL
+                                   {
+                                       if (fnSetFileSecurity(theFileName.c_str(), DACL_SECURITY_INFORMATION, pSD))
+                                           result = true;
+                                   }
+                               }
+                           }
+                       }
+               
+                       FreeLibrary(aLib);
+                       return result;*/
 }
 
 bool Sexy::Deltree(const std::string &thePath) {
@@ -720,10 +722,10 @@ void Sexy::MkDir(const std::string &theDir) {
 }
 
 std::string Sexy::GetFileName(const std::string &thePath, bool noExtension) {
-    int aLastSlash = std::max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
+    int aLastSlash = std::max(static_cast<int>(thePath.rfind('\\')), static_cast<int>(thePath.rfind('/')));
 
     if (noExtension) {
-        int aLastDot = (int)thePath.rfind('.');
+        int aLastDot = static_cast<int>(thePath.rfind('.'));
         if (aLastDot > aLastSlash) return thePath.substr(aLastSlash + 1, aLastDot - aLastSlash - 1);
     }
 
@@ -732,7 +734,7 @@ std::string Sexy::GetFileName(const std::string &thePath, bool noExtension) {
 }
 
 std::string Sexy::GetFileDir(const std::string &thePath, bool withSlash) {
-    int aLastSlash = std::max((int)thePath.rfind('\\'), (int)thePath.rfind('/'));
+    int aLastSlash = std::max(static_cast<int>(thePath.rfind('\\')), static_cast<int>(thePath.rfind('/')));
 
     if (aLastSlash == -1) return "";
     else {
@@ -819,7 +821,7 @@ std::string Sexy::vformat(const char *fmt, va_list argPtr) {
     while (((numChars == -1) || (numChars > attemptedSize)) && (attemptedSize < maxSize)) {
         // Try a bigger size
         attemptedSize *= 2;
-        heapBuffer = (char *)realloc(heapBuffer, (attemptedSize + 1));
+        heapBuffer = static_cast<char *>(realloc(heapBuffer, (attemptedSize + 1)));
 #ifdef _WIN32
         numChars = _vsnprintf(heapBuffer, attemptedSize, fmt, argPtr);
 #else
@@ -829,7 +831,7 @@ std::string Sexy::vformat(const char *fmt, va_list argPtr) {
 
     heapBuffer[numChars] = 0;
 
-    std::string result = std::string(heapBuffer);
+    auto result = std::string(heapBuffer);
 
     free(heapBuffer);
     return result;
@@ -880,7 +882,7 @@ std::wstring Sexy::vformat(const wchar_t *fmt, va_list argPtr) {
     while (((numChars == -1) || (numChars > attemptedSize)) && (attemptedSize < maxSize)) {
         // Try a bigger size
         attemptedSize *= 2;
-        heapBuffer = (wchar_t *)realloc(heapBuffer, (attemptedSize + 1));
+        heapBuffer = static_cast<wchar_t *>(realloc(heapBuffer, (attemptedSize + 1)));
 #ifdef _WIN32
         numChars = _vsnwprintf(heapBuffer, attemptedSize, fmt, argPtr);
 #else
@@ -890,7 +892,7 @@ std::wstring Sexy::vformat(const wchar_t *fmt, va_list argPtr) {
 
     heapBuffer[numChars] = 0;
 
-    std::wstring result = std::wstring(heapBuffer);
+    auto result = std::wstring(heapBuffer);
 
     free(heapBuffer);
 
@@ -921,7 +923,7 @@ std::string Sexy::Evaluate(const std::string &theString, const DefinesMap &theDe
         std::string aName = anEvaluatedString.substr(aPercentPos + 1, aSecondPercentPos - aPercentPos - 1);
 
         std::string aValue;
-        DefinesMap::const_iterator anItr = theDefinesMap.find(aName);
+        auto anItr = theDefinesMap.find(aName);
         if (anItr != theDefinesMap.end()) aValue = anItr->second;
         else aValue = "";
 
@@ -1111,8 +1113,8 @@ std::wstring Sexy::Lower(const std::wstring &_data) {
 int Sexy::StrFindNoCase(const char *theStr, const char *theFind) {
     int p1, p2;
     int cp = 0;
-    const int len1 = (int)strlen(theStr);
-    const int len2 = (int)strlen(theFind);
+    const int len1 = static_cast<int>(strlen(theStr));
+    const int len2 = static_cast<int>(strlen(theFind));
     while (cp < len1) {
         p1 = cp;
         p2 = 0;

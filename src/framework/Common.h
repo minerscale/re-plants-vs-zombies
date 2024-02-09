@@ -38,7 +38,7 @@
 #define _MAX_PATH 260
 
 // Removed wide string support
-typedef std::string SexyString;
+using SexyString = std::string;
 #define _S(x) x
 
 #define sexystrncmp strncmp
@@ -65,10 +65,10 @@ typedef std::string SexyString;
 
 #define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
 
-typedef uint8_t uchar;
-typedef uint16_t ushort;
-typedef uint32_t uint;
-typedef unsigned long ulong;
+using uchar = uint8_t;
+using ushort = uint16_t;
+using uint = uint32_t;
+using ulong = unsigned long;
 
 #ifndef _MSC_VER
 typedef unsigned char BYTE;
@@ -87,14 +87,13 @@ typedef unsigned int UINT;
 
 #endif // _MSC_VER
 
-typedef std::map<std::string, std::string> DefinesMap;
-typedef std::map<std::wstring, std::wstring> WStringWStringMap;
-typedef SexyString::value_type SexyChar;
+using DefinesMap = std::map<std::string, std::string>;
+using WStringWStringMap = std::map<std::wstring, std::wstring>;
+using SexyChar = SexyString::value_type;
 
 #define HAS_SEXYCHAR
 
 namespace Sexy {
-
 const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
 
 extern bool gDebug;
@@ -165,7 +164,7 @@ void SMemWStr(void *&_Dst, const std::string &theString);
 inline void inlineUpper(std::string &theData) {
     // std::transform(theData.begin(), theData.end(), theData.begin(), toupper);
 
-    int aStrLen = (int)theData.length();
+    int aStrLen = static_cast<int>(theData.length());
     for (int i = 0; i < aStrLen; i++) {
         theData[i] = toupper(theData[i]);
     }
@@ -174,7 +173,7 @@ inline void inlineUpper(std::string &theData) {
 inline void inlineUpper(std::wstring &theData) {
     // std::transform(theData.begin(), theData.end(), theData.begin(), toupper);
 
-    int aStrLen = (int)theData.length();
+    int aStrLen = static_cast<int>(theData.length());
     for (int i = 0; i < aStrLen; i++) {
         theData[i] = std::towupper(theData[i]);
     }
@@ -210,7 +209,6 @@ struct StringLessNoCase {
         return strcasecmp(s1.c_str(), s2.c_str()) < 0;
     }
 };
-
 } // namespace Sexy
 
 #endif //__SEXYAPPFRAMEWORK_COMMON_H__

@@ -7,7 +7,6 @@
 #include <memory>
 
 namespace Vk {
-
 class VkInterface : public WindowInterface<VkInterface> {
 public:
     VkInterface(int width, int height, WidgetManager *mWidgetManager);
@@ -37,7 +36,6 @@ private:
     void cursorEnterCallback(int entered);
     void windowCloseCallback();
 };
-
 } // namespace Vk
 
 #endif // __VK_INTERFACE_H__

@@ -5,30 +5,30 @@
 #include <bass.h>
 
 namespace Sexy {
-
 class BassSoundManager;
 
 class BassSoundInstance : public Sexy::SoundInstance {
 public:
     BassSoundInstance(HSAMPLE theSourceSound);
-    virtual ~BassSoundInstance();
-    virtual void Release();
+    ~BassSoundInstance() override;
+    void Release() override;
 
-    virtual void SetBaseVolume(double /*theBaseVolume*/) {}
-    virtual void SetBasePan(int /*theBasePan*/) {}
+    void SetBaseVolume(double /*theBaseVolume*/) override {}
 
-    virtual void SetVolume(double theVolume);
-    virtual void SetPan(int thePosition); //-hundredth db to +hundredth db = left to right
-    virtual void AdjustPitch(double theNumSteps);
+    void SetBasePan(int /*theBasePan*/) override {}
 
-    virtual int GetSoundPosition();
-    virtual void SetSoundPosition(int thePosition);
+    void SetVolume(double theVolume) override;
+    void SetPan(int thePosition) override; //-hundredth db to +hundredth db = left to right
+    void AdjustPitch(double theNumSteps) override;
 
-    virtual bool Play(bool looping, bool autoRelease);
-    virtual void Stop();
-    virtual bool IsPlaying();
-    virtual bool IsReleased();
-    virtual double GetVolume();
+    int GetSoundPosition() override;
+    void SetSoundPosition(int thePosition) override;
+
+    bool Play(bool looping, bool autoRelease) override;
+    void Stop() override;
+    bool IsPlaying() override;
+    bool IsReleased() override;
+    double GetVolume() override;
 
 private:
     void RehupVolume();
@@ -46,7 +46,6 @@ private:
 
     DWORD mDefaultFrequency = 44100;
 };
-
 } // namespace Sexy
 
 #endif // __BASS_SOUND_INSTANCE_H__

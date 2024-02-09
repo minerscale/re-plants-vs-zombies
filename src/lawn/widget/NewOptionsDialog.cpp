@@ -22,9 +22,8 @@ NewOptionsDialog::NewOptionsDialog(LawnApp *theApp, bool theFromGameSelector)
     mFromGameSelector = theFromGameSelector;
     SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
     mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, _S("[VIEW_ALMANAC_BUTTON]"));
-    mRestartButton = MakeButton(
-        NewOptionsDialog::NewOptionsDialog_Restart, this, _S("[RESTART_LEVEL]")
-    ); // @Patoke: wrong local name
+    mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, _S("[RESTART_LEVEL]"));
+    // @Patoke: wrong local name
     mBackToMainButton = MakeButton(NewOptionsDialog::NewOptionsDialog_MainMenu, this, _S("[MAIN_MENU_BUTTON]"));
 
     mBackToGameButton = MakeNewButton(
@@ -322,9 +321,9 @@ void NewOptionsDialog::ButtonDepress(int theId) {
                 aDialogMessage = _S("[RESTART_LEVEL_BODY]");
             }
 
-            LawnDialog *aDialog = (LawnDialog *)mApp->DoDialog(
+            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_CONFIRM_RESTART, true, aDialogTitle, aDialogMessage, _S(""), Dialog::BUTTONS_YES_NO
-            );
+            ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[RESTART_BUTTON]"));
             aDialog->mLawnNoButton->mLabel = TodStringTranslate(_S("[DIALOG_BUTTON_CANCEL]"));
 

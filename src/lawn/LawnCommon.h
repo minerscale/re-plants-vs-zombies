@@ -11,6 +11,7 @@ using namespace Sexy;
 class Board;
 class LawnStoneButton;
 class NewLawnButton;
+
 namespace Sexy {
 class Dialog;
 class Checkbox;
@@ -25,23 +26,27 @@ public:
 
 public:
     LawnEditWidget(int theId, EditListener *theListener, Dialog *theDialog);
-    ~LawnEditWidget();
+    ~LawnEditWidget() override;
 
-    virtual void KeyDown(KeyCode theKey);
-    virtual void KeyChar(char theChar);
+    void KeyDown(KeyCode theKey) override;
+    void KeyChar(char theChar) override;
 };
 
 // ====================================================================================================
 // ★ 常用逻辑判断
 // ====================================================================================================
-/*inline*/ bool ModInRange(int theNumber, int theMod, int theRange = 0);
-/*inline*/ bool GridInRange(int x1, int y1, int x2, int y2, int theRangeX = 1, int theRangeY = 1);
+/*inline*/
+bool ModInRange(int theNumber, int theMod, int theRange = 0);
+/*inline*/
+bool GridInRange(int x1, int y1, int x2, int y2, int theRangeX = 1, int theRangeY = 1);
 
 // ====================================================================================================
 // ★ 动画、特效与绘制相关
 // ====================================================================================================
-/*inline*/ void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int theWidth);
-/*inline*/ void TileImageVertically(Graphics *g, Image *theImage, int theX, int theY, int theHeight);
+/*inline*/
+void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int theWidth);
+/*inline*/
+void TileImageVertically(Graphics *g, Image *theImage, int theX, int theY, int theHeight);
 
 // ====================================================================================================
 // ★ 控件

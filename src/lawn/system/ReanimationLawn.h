@@ -10,11 +10,13 @@
 namespace Sexy {
 class Graphics;
 };
+
 using namespace Sexy;
 
 class LawnApp;
 
 class Reanimation;
+
 class ReanimatorCache {
 public:
     std::map<uint64_t, std::unique_ptr<Image>> mImageVariationMap;
@@ -34,8 +36,8 @@ public:
     std::unique_ptr<Image> MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation);
     std::unique_ptr<Image> MakeCachedMowerFrame(LawnMowerType theMowerType);
     std::unique_ptr<Image> MakeCachedZombieFrame(ZombieType theZombieType);
-    /*inline*/ void
-    GetPlantImageSize(SeedType theSeedType, int &theOffsetX, int &theOffsetY, int &theWidth, int &theHeight);
+    /*inline*/
+    void GetPlantImageSize(SeedType theSeedType, int &theOffsetX, int &theOffsetY, int &theWidth, int &theHeight);
     void DrawReanimatorFrame(
         Graphics *g, float thePosX, float thePosY, ReanimationType theReanimationType, const char *theTrackName,
         DrawVariation theDrawVariation

@@ -32,7 +32,7 @@ static void GenerateCRCTable(void) {
     int i, j;
     unsigned long crc_accum;
     for (i = 0; i < 256; i++) {
-        crc_accum = ((unsigned long)i << 24);
+        crc_accum = (static_cast<unsigned long>(i) << 24);
         for (j = 0; j < 8; j++) {
             if (crc_accum & 0x80000000L) crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
             else crc_accum = (crc_accum << 1);
@@ -49,7 +49,7 @@ static unsigned long UpdateCRC(unsigned long crc_accum, const char *data_blk_ptr
 
     int i, j;
     for (j = 0; j < data_blk_size; j++) {
-        i = ((int)(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
+        i = (static_cast<int>(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
         crc_accum = (crc_accum << 8) ^ crc_table[i];
     }
     return crc_accum;
@@ -71,10 +71,10 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
 
     const char *aBuffer = *theBuffer;
 
-    int aTempChar = int((unsigned char)*aBuffer++);
+    int aTempChar = static_cast<int>((unsigned char)*aBuffer++);
     if ((aTempChar & 0x80) != 0) {
-        if ((aTempChar & 0xC0) != 0xC0)
-            return 0; // sanity check: high bit should not be set without the next highest bit being set, too.
+        if ((aTempChar & 0xC0) != 0xC0) return 0;
+        // sanity check: high bit should not be set without the next highest bit being set, too.
 
         int aBytesRead[6];
         int *aBytesReadPtr = &aBytesRead[0];
@@ -82,10 +82,10 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
         *aBytesReadPtr++ = aTempChar;
 
         int aLen;
-        for (aLen = 0; aLen < (int)(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
+        for (aLen = 0; aLen < static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
             if ((aTempChar & aMaskData[aLen]) == ((aMaskData[aLen] << 1) & aMaskData[aLen])) break;
         }
-        if (aLen >= (int)(sizeof(aMaskData) / sizeof(*aMaskData))) return 0;
+        if (aLen >= static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData))) return 0;
 
         aTempChar &= ~aMaskData[aLen];
         int aTotalLen = aLen + 1;
@@ -94,7 +94,7 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
 
         int anExtraChar = 0;
         while (aLen > 0 && (aBuffer - *theBuffer) < theLen) {
-            anExtraChar = int((unsigned char)*aBuffer++);
+            anExtraChar = static_cast<int>((unsigned char)*aBuffer++);
             if ((anExtraChar & 0xC0) != 0x80) return 0; // sanity check: high bit set, and next highest bit NOT set.
 
             *aBytesReadPtr++ = anExtraChar;
@@ -120,7 +120,7 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
 
     if ((aTempChar >= 0xD800 && aTempChar <= 0xDFFF) || (aTempChar >= 0xFFFE && aTempChar <= 0xFFFF)) return 0;
 
-    *theChar = (wchar_t)aTempChar;
+    *theChar = static_cast<wchar_t>(aTempChar);
 
     *theBuffer = aBuffer;
     return aConsumedCount;
@@ -155,7 +155,7 @@ std::string Buffer::ToWebString() const {
 }
 
 std::wstring Buffer::UTF8ToWideString() const {
-    const char *aData = (const char *)GetDataPtr();
+    auto aData = (const char *)GetDataPtr();
     int aLen = GetDataLen();
 
     bool firstChar = true;
@@ -219,11 +219,11 @@ void Buffer::Clear() {
 }
 
 void Buffer::WriteByte(uchar theByte) {
-    if (mWriteBitPos % 8 == 0) mData.push_back((char)theByte);
+    if (mWriteBitPos % 8 == 0) mData.push_back(static_cast<char>(theByte));
     else {
         int anOfs = mWriteBitPos % 8;
         mData[mWriteBitPos / 8] |= theByte << anOfs;
-        mData.push_back((char)(theByte >> (8 - anOfs)));
+        mData.push_back(static_cast<char>(theByte >> (8 - anOfs)));
     }
 
     mWriteBitPos += 8;
@@ -256,20 +256,20 @@ int Buffer::GetBitsRequired(int theNum, bool isSigned) {
 void Buffer::WriteBoolean(bool theBool) { WriteByte(theBool ? 1 : 0); }
 
 void Buffer::WriteShort(short theShort) {
-    WriteByte((uchar)theShort);
-    WriteByte((uchar)(theShort >> 8));
+    WriteByte(static_cast<uchar>(theShort));
+    WriteByte(static_cast<uchar>(theShort >> 8));
 }
 
 void Buffer::WriteLong(int32_t theLong) {
-    WriteByte((uchar)theLong);
-    WriteByte((uchar)(theLong >> 8));
-    WriteByte((uchar)(theLong >> 16));
-    WriteByte((uchar)(theLong >> 24));
+    WriteByte(static_cast<uchar>(theLong));
+    WriteByte(static_cast<uchar>(theLong >> 8));
+    WriteByte(static_cast<uchar>(theLong >> 16));
+    WriteByte(static_cast<uchar>(theLong >> 24));
 }
 
 void Buffer::WriteString(const std::string &theString) {
-    WriteShort((short)theString.length());
-    for (int i = 0; i < (int)theString.length(); i++)
+    WriteShort(static_cast<short>(theString.length()));
+    for (int i = 0; i < static_cast<int>(theString.length()); i++)
         WriteByte(theString[i]);
 }
 
@@ -277,35 +277,35 @@ void Buffer::WriteUTF8String(const std::wstring &theString) {
     if ((mWriteBitPos & 7) != 0) // boo! let's get byte aligned.
         mWriteBitPos = (mWriteBitPos + 8) & ~7;
 
-    WriteShort((short)theString.length());
-    for (int i = 0; i < (int)theString.length(); ++i) {
-        const unsigned int c =
-            (unsigned int)theString[i]; // just in case wchar_t is only 16 bits, and it generally is in visual studio
+    WriteShort(static_cast<short>(theString.length()));
+    for (int i = 0; i < static_cast<int>(theString.length()); ++i) {
+        const unsigned int c = (unsigned int)theString[i];
+        // just in case wchar_t is only 16 bits, and it generally is in visual studio
         if (c < 0x80) {
-            WriteByte((uchar)c);
+            WriteByte(static_cast<uchar>(c));
         } else if (c < 0x800) {
-            WriteByte((uchar)(0xC0 | (c >> 6)));
-            WriteByte((uchar)(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uchar>(0xC0 | (c >> 6)));
+            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
         } else if (c < 0x10000) {
-            WriteByte((uchar)(0xE0 | c >> 12));
-            WriteByte((uchar)(0x80 | ((c >> 6) & 0x3F)));
-            WriteByte((uchar)(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uchar>(0xE0 | c >> 12));
+            WriteByte(static_cast<uchar>(0x80 | ((c >> 6) & 0x3F)));
+            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
         } else if (c < 0x110000) {
-            WriteByte((uchar)(0xF0 | (c >> 18)));
-            WriteByte((uchar)(0x80 | ((c >> 12) & 0x3F)));
-            WriteByte((uchar)(0x80 | ((c >> 6) & 0x3F)));
-            WriteByte((uchar)(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uchar>(0xF0 | (c >> 18)));
+            WriteByte(static_cast<uchar>(0x80 | ((c >> 12) & 0x3F)));
+            WriteByte(static_cast<uchar>(0x80 | ((c >> 6) & 0x3F)));
+            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
         } // are the remaining ranges really necessary? add if so!
     }
 }
 
 void Buffer::WriteLine(const std::string &theString) {
-    WriteBytes((const uchar *)(theString + "\r\n").c_str(), (int)theString.length() + 2);
+    WriteBytes((const uchar *)(theString + "\r\n").c_str(), static_cast<int>(theString.length()) + 2);
 }
 
 void Buffer::WriteBuffer(const ByteVector &theBuffer) {
-    WriteLong((short)theBuffer.size());
-    for (int i = 0; i < (int)theBuffer.size(); i++)
+    WriteLong(static_cast<short>(theBuffer.size()));
+    for (int i = 0; i < static_cast<int>(theBuffer.size()); i++)
         WriteByte(theBuffer[i]);
 }
 
@@ -326,7 +326,7 @@ void Buffer::SetData(uchar *thePtr, int theCount) {
 }
 
 uchar Buffer::ReadByte() const {
-    if ((mReadBitPos + 7) / 8 >= (int)mData.size()) {
+    if ((mReadBitPos + 7) / 8 >= static_cast<int>(mData.size())) {
         return 0; // Underflow
     }
 
@@ -349,7 +349,7 @@ uchar Buffer::ReadByte() const {
 }
 
 int Buffer::ReadNumBits(int theBits, bool isSigned) const {
-    int aByteLength = (int)mData.size();
+    int aByteLength = static_cast<int>(mData.size());
 
     int theNum = 0;
     bool bset = false;
@@ -374,15 +374,15 @@ bool Buffer::ReadBoolean() const { return ReadByte() != 0; }
 
 short Buffer::ReadShort() const {
     short aShort = ReadByte();
-    aShort |= ((short)ReadByte() << 8);
+    aShort |= (static_cast<short>(ReadByte()) << 8);
     return aShort;
 }
 
 int32_t Buffer::ReadLong() const {
     int32_t aLong = ReadByte();
-    aLong |= ((int32_t)ReadByte()) << 8;
-    aLong |= ((int32_t)ReadByte()) << 16;
-    aLong |= ((int32_t)ReadByte()) << 24;
+    aLong |= static_cast<int32_t>(ReadByte()) << 8;
+    aLong |= static_cast<int32_t>(ReadByte()) << 16;
+    aLong |= static_cast<int32_t>(ReadByte()) << 24;
 
     return aLong;
 }
@@ -392,7 +392,7 @@ std::string Buffer::ReadString() const {
     int aLen = ReadShort();
 
     for (int i = 0; i < aLen; i++)
-        aString += (char)ReadByte();
+        aString += static_cast<char>(ReadByte());
 
     return aString;
 }
@@ -403,7 +403,7 @@ std::wstring Buffer::ReadUTF8String() const {
     std::wstring aString;
     int aLen = ReadShort();
 
-    const char *aData = (const char *)(&mData[mReadBitPos / 8]);
+    auto aData = (const char *)(&mData[mReadBitPos / 8]);
     int aDataSizeBytes = (mDataBitSize - mReadBitPos) / 8;
 
     int i;
@@ -460,7 +460,7 @@ int Buffer::GetDataLenBits() const { return mDataBitSize; }
 
 ulong Buffer::GetCRC32(ulong theSeed) const {
     ulong aCRC = theSeed;
-    aCRC = UpdateCRC(aCRC, (const char *)&mData[0], (int)mData.size());
+    aCRC = UpdateCRC(aCRC, (const char *)&mData[0], static_cast<int>(mData.size()));
     return aCRC;
 }
 

@@ -139,7 +139,7 @@ void RegistryEmulatorTest() {
         printf("%d\n", aLength);
     }
 
-    char *test_string = (char *)"I HATE MINORITIES I HATE MINORITIES";
+    auto test_string = (char *)"I HATE MINORITIES I HATE MINORITIES";
     aRegHandle.Write("MY_NAME_JEFF", REG_SZ, (uint8_t *)test_string, strlen(test_string));
     aRegHandle.Write("PENGIS", REG_SZ, (uint8_t *)test_string, strlen(test_string));
     // aRegHandle.Write("PEEPEEPOOPOO", REG_SZ, (uint8_t *)test_string, strlen(test_string));

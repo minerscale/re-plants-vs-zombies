@@ -24,17 +24,21 @@ struct SEXY_ALLOC_INFO {
     char file[_MAX_PATH + 1];
     int line;
 };
+
 static bool gShowLeaks = false;
 static bool gSexyAllocMapValid = false;
+
 class SexyAllocMap : public std::map<void *, SEXY_ALLOC_INFO> {
 public:
     SexyAllocMap() { gSexyAllocMapValid = true; }
+
     ~SexyAllocMap() {
         if (gShowLeaks) SexyDumpUnfreed();
 
         gSexyAllocMapValid = false;
     }
 };
+
 static SexyAllocMap gSexyAllocMap;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -108,7 +112,7 @@ void SexyMemRemoveTrack(void *addr) {
     if (!gSexyAllocMapValid) return;
 
     // AutoCrit aCrit(gSexyAllocMap.mCrit);
-    SexyAllocMap::iterator anItr = gSexyAllocMap.find(addr);
+    auto anItr = gSexyAllocMap.find(addr);
     if (anItr != gSexyAllocMap.end()) gSexyAllocMap.erase(anItr);
 };
 

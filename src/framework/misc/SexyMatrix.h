@@ -4,24 +4,27 @@
 #include "SexyVector.h"
 
 namespace Sexy {
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class SexyMatrix3 {
 public:
     union {
         float m[3][3];
+
         struct {
             float m00, m01, m02;
             float m10, m11, m12;
             float m20, m21, m22;
         };
+
         glm::mat3 mat;
     };
 
 public:
     SexyMatrix3();
+
     SexyMatrix3(const glm::mat3 &m) : mat(m) {}
+
     void ZeroMatrix();
     void LoadIdentity();
 
@@ -78,7 +81,6 @@ public:
 
     const SexyTransform2D &GetMatrix() const;
 };
-
 } // namespace Sexy
 
 #endif

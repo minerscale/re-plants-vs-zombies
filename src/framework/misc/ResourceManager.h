@@ -13,7 +13,6 @@ class Image;
 };
 
 namespace Sexy {
-
 class XMLParser;
 class XMLElement;
 class Image;
@@ -21,8 +20,8 @@ class SoundInstance;
 class SexyAppBase;
 class _Font;
 
-typedef std::map<std::string, std::string> StringToStringMap;
-typedef std::map<SexyString, SexyString> XMLParamMap;
+using StringToStringMap = std::map<std::string, std::string>;
+using XMLParamMap = std::map<SexyString, SexyString>;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,6 +38,7 @@ public: // @Patoke todo: revert to protected
         bool mFromProgram;
 
         virtual ~BaseRes() {}
+
         virtual void DeleteResource() {}
     };
 
@@ -60,7 +60,7 @@ public: // @Patoke todo: revert to protected
         AnimInfo mAnimInfo;
 
         ImageRes() { mType = ResType_Image; }
-        virtual void DeleteResource();
+        void DeleteResource() override;
     };
 
     struct SoundRes : public BaseRes {
@@ -69,7 +69,7 @@ public: // @Patoke todo: revert to protected
         int mPanning;
 
         SoundRes() { mType = ResType_Sound; }
-        virtual void DeleteResource();
+        void DeleteResource() override;
     };
 
     struct FontRes : public BaseRes {
@@ -87,12 +87,12 @@ public: // @Patoke todo: revert to protected
         int mSize;
 
         FontRes() { mType = ResType_Font; }
-        virtual void DeleteResource();
+        void DeleteResource() override;
     };
 
-    typedef std::map<std::string, BaseRes *> ResMap;
-    typedef std::list<BaseRes *> ResList;
-    typedef std::map<std::string, ResList, StringLessNoCase> ResGroupMap;
+    using ResMap = std::map<std::string, BaseRes *>;
+    using ResList = std::list<BaseRes *>;
+    using ResGroupMap = std::map<std::string, ResList, StringLessNoCase>;
 
     std::set<std::string, StringLessNoCase> mLoadedGroups;
 
@@ -194,9 +194,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 struct ResourceManagerException : public std::exception {
     std::string what;
+
     ResourceManagerException(const std::string &theWhat) : what(theWhat) {}
 };
-
 } // namespace Sexy
 
 #endif //__PROPERTIESPARSER_H__

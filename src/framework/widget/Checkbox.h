@@ -4,7 +4,6 @@
 #include "Widget.h"
 
 namespace Sexy {
-
 class CheckboxListener;
 class Image;
 
@@ -31,14 +30,13 @@ public:
     virtual void SetChecked(bool checked, bool tellListener = true);
     virtual bool IsChecked();
 
-    virtual void MouseDown(int x, int y, int theClickCount) { Widget::MouseDown(x, y, theClickCount); }
-    virtual void MouseDown(int x, int y, int theBtnNum, int theClickCount);
-    virtual void Draw(Graphics *g);
+    void MouseDown(int x, int y, int theClickCount) override { Widget::MouseDown(x, y, theClickCount); }
+    void MouseDown(int x, int y, int theBtnNum, int theClickCount) override;
+    void Draw(Graphics *g) override;
 
 public:
     Checkbox(Image *theUncheckedImage, Image *theCheckedImage, int theId, CheckboxListener *theCheckboxListener);
 };
-
 } // namespace Sexy
 
 #endif //__CHECKBOX_H__

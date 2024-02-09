@@ -65,7 +65,7 @@ bool TodStringListReadName(const char *&thePtr, std::string &theName) {
             return false;
         }
 
-        int aCount = aNameEnd - aNameStart - 1;
+        const int aCount = aNameEnd - aNameStart - 1;
         theName = Sexy::Trim(std::string(aNameStart + 1, aCount)); // 取得中括号之间的部分并去除字符串前后的空白字符
         if (theName.size() == 0) {
             TodTrace("Name Too Short");
@@ -88,7 +88,7 @@ void TodStringRemoveReturnChars(std::string &theString) {
 // 0x518FB0
 bool TodStringListReadValue(const char *&thePtr, std::string &theValue) {
     const char *aValueEnd = strchr(thePtr, '[');
-    int aLen = aValueEnd ? aValueEnd - thePtr : strlen(thePtr);
+    const int aLen = aValueEnd ? aValueEnd - thePtr : strlen(thePtr);
     theValue = Sexy::Trim(std::string(thePtr, aLen)); // 如果存在下一个“[”，则取到“[”前为止；否则，取剩下的全部
     TodStringRemoveReturnChars(theValue); // 移除所有的换行符
     thePtr += aLen;                       // 移动读取指针至“[”处（或结尾处）
@@ -122,10 +122,10 @@ bool TodStringListReadFile(const char *theFileName) {
         return false;
     }
 
-    p_fseek(pFile, 0, SEEK_END); // 指针调整至文件末尾
-    int aSize = p_ftell(pFile);  // 当前位置即为文件长度
-    p_fseek(pFile, 0, SEEK_SET); // 指针调回文件开头
-    char *aFileText = new char[aSize + 1];
+    p_fseek(pFile, 0, SEEK_END);      // 指针调整至文件末尾
+    const int aSize = p_ftell(pFile); // 当前位置即为文件长度
+    p_fseek(pFile, 0, SEEK_SET);      // 指针调回文件开头
+    const auto aFileText = new char[aSize + 1];
     bool aSuccess = true;
     if (p_fread(aFileText, sizeof(char), aSize, pFile) <= 0) // 按字节读取数据
     {
@@ -150,8 +150,8 @@ void TodStringListLoad(const char *theFileName) {
 
 // 0x519410
 SexyString TodStringListFind(const SexyString &theName) {
-    std::string aNameString = Sexy::SexyStringToString(theName);
-    StringWStringMap::iterator anItr = gSexyAppBase->mStringProperties.find(aNameString);
+    const std::string aNameString = Sexy::SexyStringToString(theName);
+    const auto anItr = gSexyAppBase->mStringProperties.find(aNameString);
     if (anItr != gSexyAppBase->mStringProperties.end()) {
         return Sexy::WStringToSexyString(anItr->second);
     } else {
@@ -163,7 +163,7 @@ SexyString TodStringListFind(const SexyString &theName) {
 //  GOTY @Patoke: 0x523B90
 SexyString TodStringTranslate(const SexyString &theString) {
     if (theString.size() >= 3 && theString[0] == '[') {
-        SexyString aName = theString.substr(1, theString.size() - 2); // 取“[”与“]”中间的部分
+        const SexyString aName = theString.substr(1, theString.size() - 2); // 取“[”与“]”中间的部分
         return TodStringListFind(aName);
     }
     return theString;
@@ -172,9 +172,9 @@ SexyString TodStringTranslate(const SexyString &theString) {
 // 0x5195D0
 SexyString TodStringTranslate(const SexyChar *theString) {
     if (theString != nullptr) {
-        int aLen = strlen(theString);
+        const int aLen = strlen(theString);
         if (aLen >= 3 && theString[0] == '[') {
-            SexyString aName(theString, 1, aLen - 2); // 取“[”与“]”中间的部分
+            const SexyString aName(theString, 1, aLen - 2); // 取“[”与“]”中间的部分
             return TodStringListFind(aName);
         } else return theString;
     } else return "";
@@ -183,8 +183,8 @@ SexyString TodStringTranslate(const SexyChar *theString) {
 // 0x5196C0
 bool TodStringListExists(const SexyString &theString) {
     if (theString.size() >= 3 && theString[0] == '[') {
-        SexyString aName = theString.substr(1, theString.size() - 2); // 取“[”与“]”中间的部分
-        return gSexyAppBase->mStringProperties.find(aName) != gSexyAppBase->mStringProperties.end();
+        const SexyString aName = theString.substr(1, theString.size() - 2); // 取“[”与“]”中间的部分
+        return gSexyAppBase->mStringProperties.contains(aName);
     }
     return false;
 }
@@ -217,10 +217,10 @@ int TodWriteString(
     _Font *aFont = *theCurrentFormat.mNewFont;
     if (drawString) // 如果需要实际绘制
     {
-        int aSpareX = theWidth - TodWriteString(
-                                     g, theString, theX, theY, theCurrentFormat, theWidth,
-                                     DrawStringJustification::DS_ALIGN_LEFT, false, theOffset, theLength
-                                 );
+        const int aSpareX = theWidth - TodWriteString(
+                                           g, theString, theX, theY, theCurrentFormat, theWidth,
+                                           DrawStringJustification::DS_ALIGN_LEFT, false, theOffset, theLength
+                                       );
         switch (theJustification) // 根据对齐方式调整实际绘制的横坐标
         {
         case DrawStringJustification::DS_ALIGN_RIGHT:
@@ -232,7 +232,7 @@ int TodWriteString(
         }
     }
 
-    if (theLength < 0 || theOffset + theLength > (int)theString.size()) theLength = theString.size();
+    if (theLength < 0 || theOffset + theLength > static_cast<int>(theString.size())) theLength = theString.size();
     else theLength = theOffset + theLength; // 将 theLength 更改为子串结束位置
 
     SexyString aString;
@@ -246,9 +246,8 @@ int TodWriteString(
             {
                 i += aFormatEnd - aFormatStart; // i 移动至 "}" 处
                 if (drawString)                 // 如果需要实际绘制
-                    aFont->DrawString(
-                        g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect
-                    ); // 将已经积攒的字符进行绘制
+                    aFont->DrawString(g, theX + aXOffset, theY, aString, theCurrentFormat.mNewColor, g->mClipRect);
+                // 将已经积攒的字符进行绘制
 
                 aXOffset += aFont->StringWidth(aString); // 横向偏移值加上绘制的字符串的宽度
                 aString.assign("");                      // 清空字符串
@@ -299,7 +298,7 @@ int TodDrawStringWrappedHelper(
     Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification, bool drawString
 ) {
-    int theMaxChars = theText.size();
+    const int theMaxChars = theText.size();
     TodStringListFormat aCurrentFormat;
     aCurrentFormat.mNewFont = &theFont;
     aCurrentFormat.mNewColor = theColor;
@@ -327,11 +326,11 @@ int TodDrawStringWrappedHelper(
             if (aFmtEnd != nullptr) // 如果存在与“{”对应的“}”，即存在完整的控制字符
             {
                 aCurPos += aFmtEnd - aFormat; // aCurPos 移至“}”的下一个字符处
-                int aOldAscentOffset = theFont->GetAscent() - theFont->GetAscentPadding();
-                Color aExistingColor = aCurrentFormat.mNewColor;  // 备份当前格式的颜色
-                TodWriteStringSetFormat(aFormat, aCurrentFormat); // 根据当前控制字符设置新的格式
-                aCurrentFormat.mNewColor = aExistingColor;        // 还原为原有格式的颜色
-                int aNewAscentOffset =
+                const int aOldAscentOffset = theFont->GetAscent() - theFont->GetAscentPadding();
+                const Color aExistingColor = aCurrentFormat.mNewColor; // 备份当前格式的颜色
+                TodWriteStringSetFormat(aFormat, aCurrentFormat);      // 根据当前控制字符设置新的格式
+                aCurrentFormat.mNewColor = aExistingColor;             // 还原为原有格式的颜色
+                const int aNewAscentOffset =
                     (*aCurrentFormat.mNewFont)->GetAscent() - (*aCurrentFormat.mNewFont)->GetAscentPadding();
                 aLineSpacing = (*aCurrentFormat.mNewFont)->GetLineSpacing() + aCurrentFormat.mLineSpacingOffset;
                 aYOffset += aNewAscentOffset - aOldAscentOffset;
@@ -353,9 +352,9 @@ int TodDrawStringWrappedHelper(
             int aLineWidth;
             if (aSpacePos != -1) // 如果本行前面的字符中存在空格字符
             {
-                int aCurY = (int)g->mTransY + theRect.mY + aYOffset;
-                if (aCurY >= g->mClipRect.mY && aCurY <= g->mClipRect.mY + g->mClipRect.mHeight +
-                                                             aLineSpacing) // 确保当前绘制位置纵坐标在裁剪范围内
+                const int aCurY = static_cast<int>(g->mTransY) + theRect.mY + aYOffset;
+                if (aCurY >= g->mClipRect.mY && aCurY <= g->mClipRect.mY + g->mClipRect.mHeight + aLineSpacing)
+                // 确保当前绘制位置纵坐标在裁剪范围内
                 {
                     TodWriteWordWrappedHelper(
                         g, theText, theRect.mX, theRect.mY + aYOffset, aCurrentFormat, theRect.mWidth, theJustification,
@@ -401,7 +400,7 @@ int TodDrawStringWrappedHelper(
     }
 
     if (aLineFeedPos < theText.size()) {
-        int aLastLineLength = TodWriteWordWrappedHelper(
+        const int aLastLineLength = TodWriteWordWrappedHelper(
             g, theText, theRect.mX, theRect.mY + aYOffset, aCurrentFormat, theRect.mWidth, theJustification, drawString,
             aLineFeedPos,                  // 上次换行的位置即为最后一行开始的位置
             theText.size() - aLineFeedPos, // 绘制部分为从上次换行的位置开始的所有剩余文本
@@ -419,7 +418,7 @@ void TodDrawStringWrapped(
     Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification
 ) {
-    SexyString aTextFinal = TodStringTranslate(theText);
+    const SexyString aTextFinal = TodStringTranslate(theText);
     Rect aRectTodUse = theRect;
     if (theJustification == DrawStringJustification::DS_ALIGN_LEFT_VERTICAL_MIDDLE ||
         theJustification == DrawStringJustification::DS_ALIGN_RIGHT_VERTICAL_MIDDLE ||

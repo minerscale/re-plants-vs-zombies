@@ -33,7 +33,7 @@ void TextWidget::DrawColorString(Graphics *g, const SexyString &theString, int x
     if (useColors) g->SetColor(Color(0, 0, 0));
 
     SexyString aCurString = _S("");
-    for (int i = 0; i < (int)theString.length(); i++) {
+    for (int i = 0; i < static_cast<int>(theString.length()); i++) {
         // Widestrings are cringe, can safely compare to zero
         // if (theString[i] == 0x100)
         if (theString[i] == 0x00) {
@@ -72,7 +72,7 @@ void TextWidget::DrawColorStringHilited(
 int TextWidget::GetStringIndex(const SexyString &theString, int thePixel) {
     int aPos = 0;
 
-    for (int i = 0; i < (int)theString.length(); i++) {
+    for (int i = 0; i < static_cast<int>(theString.length()); i++) {
         SexyString aLoSubStr = theString.substr(0, i);
         SexyString aHiSubStr = theString.substr(0, i + 1);
 
@@ -89,7 +89,7 @@ int TextWidget::GetColorStringWidth(const SexyString &theString) {
     int aWidth = 0;
     SexyString aTempString;
 
-    for (int i = 0; i < (int)theString.length(); i++) {
+    for (int i = 0; i < static_cast<int>(theString.length()); i++) {
         // Removed wide strings because they're cringe
         if (theString[i] == 0x00) {
             aWidth += mFont->StringWidth(aTempString);
@@ -114,14 +114,14 @@ void TextWidget::Resize(int theX, int theY, int theWidth, int theHeight) {
     if (mLineMap.size() > 0) {
         // IntIntMap::iterator anItr = mLineMap.find(mScrollbar->mValue);
 
-        aLogValue = mLineMap[(int)mScrollbar->mValue];
+        aLogValue = mLineMap[static_cast<int>(mScrollbar->mValue)];
     }
 
     int aNewPhysValue = 0;
 
     mLineMap.clear();
     mPhysicalLines.clear();
-    for (int i = 0; i < (int)mLogicalLines.size(); i++) {
+    for (int i = 0; i < static_cast<int>(mLogicalLines.size()); i++) {
         if (i == aLogValue) aNewPhysValue = mPhysicalLines.size();
 
         AddToPhysicalLines(i, mLogicalLines[i]);
@@ -131,7 +131,7 @@ void TextWidget::Resize(int theX, int theY, int theWidth, int theHeight) {
 
     mPageSize = aPageSize;
     mScrollbar->SetMaxValue(mPhysicalLines.size());
-    mScrollbar->SetPageSize((int)aPageSize);
+    mScrollbar->SetPageSize(static_cast<int>(aPageSize));
     mScrollbar->SetValue(aNewPhysValue);
 
     if ((mStickToBottom) && (atBottom)) mScrollbar->GoToBottom();
@@ -139,7 +139,7 @@ void TextWidget::Resize(int theX, int theY, int theWidth, int theHeight) {
 
 // UNICODE
 Color TextWidget::GetLastColor(const SexyString &theString) {
-    int anIdx = theString.rfind((char)0xFF);
+    int anIdx = theString.rfind(static_cast<char>(0xFF));
     if (anIdx < 0) return Color(0, 0, 0);
 
     return Color(theString[anIdx + 1], theString[anIdx + 2], theString[anIdx + 3]);
@@ -153,9 +153,9 @@ void TextWidget::AddToPhysicalLines(int theIdx, const SexyString &theLine) {
         aCurString = theLine;
     } else {
         int aCurPos = 0;
-        while (aCurPos < (int)theLine.length()) {
+        while (aCurPos < static_cast<int>(theLine.length())) {
             int aNextCheckPos = aCurPos;
-            while ((aNextCheckPos < (int)theLine.length()) && (theLine[aNextCheckPos] == ' '))
+            while ((aNextCheckPos < static_cast<int>(theLine.length())) && (theLine[aNextCheckPos] == ' '))
                 aNextCheckPos++;
 
             int aSpacePos = theLine.find(_S(" "), aNextCheckPos);
@@ -166,10 +166,10 @@ void TextWidget::AddToPhysicalLines(int theIdx, const SexyString &theLine) {
                 mPhysicalLines.push_back(aCurString);
                 mLineMap.push_back(theIdx);
                 Color aColor = GetLastColor(aCurString);
-                aCurString =
-                    _S("  "
-                    )[SexyChar(0xFF) + (SexyChar)aColor.mRed + (SexyChar)aColor.mGreen + (SexyChar)aColor.mBlue] +
-                    theLine.substr(aNextCheckPos, aSpacePos - aNextCheckPos);
+                aCurString = _S("  "
+                             )[static_cast<SexyChar>(0xFF) + static_cast<SexyChar>(aColor.mRed) +
+                               static_cast<SexyChar>(aColor.mGreen) + static_cast<SexyChar>(aColor.mBlue)] +
+                             theLine.substr(aNextCheckPos, aSpacePos - aNextCheckPos);
             } else aCurString = aNewString;
 
             aCurPos = aSpacePos;
@@ -192,7 +192,7 @@ void TextWidget::AddLine(const SexyString &theLine) {
 
     mLogicalLines.push_back(aLine);
 
-    if ((int)mLogicalLines.size() > mMaxLines) {
+    if (static_cast<int>(mLogicalLines.size()) > mMaxLines) {
         // Remove an extra 10 lines, for safty
         int aNumLinesToRemove = mLogicalLines.size() - mMaxLines + 10;
 
@@ -210,7 +210,7 @@ void TextWidget::AddLine(const SexyString &theLine) {
 
         // Offset the line map numbers
         int i;
-        for (i = 0; i < (int)mLineMap.size(); i++) {
+        for (i = 0; i < static_cast<int>(mLineMap.size()); i++) {
             mLineMap[i] -= aNumLinesToRemove;
         }
         // mLineMap.setElementAt(new Integer(((Integer) mLineMap.elementAt(i)).intValue() - aNumLinesToRemove), i);
@@ -266,11 +266,13 @@ void TextWidget::Draw(Graphics *g) {
     aClipG.SetColor(Color(0, 0, 0));
     aClipG.SetFont(mFont);
 
-    int aFirstLine = (int)mPosition;
-    int aLastLine = std::min((int)mPhysicalLines.size() - 1, (int)mPosition + (int)mPageSize + 1);
+    int aFirstLine = static_cast<int>(mPosition);
+    int aLastLine = std::min(
+        static_cast<int>(mPhysicalLines.size()) - 1, static_cast<int>(mPosition) + static_cast<int>(mPageSize) + 1
+    );
 
     for (int i = aFirstLine; i <= aLastLine; i++) {
-        int aYPos = 4 + (int)((i - (int)mPosition) * mFont->GetHeight()) + mFont->GetAscent();
+        int aYPos = 4 + (int)((i - static_cast<int>(mPosition)) * mFont->GetHeight()) + mFont->GetAscent();
         SexyString aString = mPhysicalLines[i];
 
         int aHilitePos[2];
@@ -286,11 +288,11 @@ void TextWidget::ScrollPosition(int theId, double thePosition) {
 }
 
 void TextWidget::GetTextIndexAt(int x, int y, int *thePosArray) {
-    int aLineNum = (int)(mScrollbar->mValue + (y / (double)mFont->GetHeight()));
+    int aLineNum = static_cast<int>(mScrollbar->mValue + (y / (double)mFont->GetHeight()));
     if (y < 0) {
         thePosArray[0] = 0;
         thePosArray[1] = 0;
-    } else if (aLineNum < (int)mPhysicalLines.size()) {
+    } else if (aLineNum < static_cast<int>(mPhysicalLines.size())) {
         thePosArray[0] = GetStringIndex(mPhysicalLines[aLineNum], x);
         thePosArray[1] = aLineNum;
     } else {
@@ -344,6 +346,7 @@ SexyString TextWidget::GetSelection() {
 }
 
 void TextWidget::KeyDown(KeyCode) {}
+
 /*
 void TextWidget::KeyDown(KeyCode theKey)
 {

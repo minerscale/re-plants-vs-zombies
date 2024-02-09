@@ -13,6 +13,7 @@ constexpr const size_t CAUSTIC_SIZE_BYTES =
     CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * SCALE * SCALE * sizeof(uint32_t);
 
 class LawnApp;
+
 class PoolEffect {
 public:
     std::unique_ptr<ImageLib::Image> mCausticGrayscaleImage;

@@ -10,11 +10,11 @@ void TypingCheck::SetPhrase(const std::string &thePhrase) {
         AddChar(thePhrase[i]);
 }
 
-void TypingCheck::AddKeyCode(Sexy::KeyCode theKeyCode) { mPhrase.append(1, (char)theKeyCode); }
+void TypingCheck::AddKeyCode(Sexy::KeyCode theKeyCode) { mPhrase.append(1, static_cast<char>(theKeyCode)); }
 
 // 0x51C510
 void TypingCheck::AddChar(char theChar) {
-    theChar = (char)tolower(theChar);
+    theChar = static_cast<char>(tolower(theChar));
     std::string aCharString{theChar};
     AddKeyCode(GetKeyCodeFromName(aCharString));
 }
@@ -29,7 +29,7 @@ bool TypingCheck::Check() {
 
 // 0x51C5A0
 bool TypingCheck::Check(Sexy::KeyCode theKeyCode) {
-    mRecentTyping.append(1, (char)theKeyCode);
+    mRecentTyping.append(1, static_cast<char>(theKeyCode));
     size_t aLength = mPhrase.size();
     if (aLength == 0) return false;
 

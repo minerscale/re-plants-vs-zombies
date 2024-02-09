@@ -2,6 +2,7 @@
 #define __TOOLTIPWIDGET_H__
 
 #include "framework/Common.h"
+
 namespace Sexy {
 class Graphics;
 }
@@ -35,6 +36,7 @@ public:
     inline void Update() {
         if (mWarningFlashCounter > 0) mWarningFlashCounter--;
     }
+
     inline void SetPosition(int theX, int theY) {
         mX = theX;
         mY = theY;

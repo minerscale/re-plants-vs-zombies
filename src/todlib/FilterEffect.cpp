@@ -15,14 +15,14 @@ void RGB_to_HSL(float r, float g, float b, float &h, float &s, float &l) {
     l = (minval + maxval) / 2; // luminosity
     if (l <= 0.0f) return;
 
-    float delta = maxval - minval;
+    const float delta = maxval - minval;
     s = delta;
     if (s <= 0.0f) return;
     s /= ((l <= 0.5f) ? (minval + maxval) : (2.0f - minval - maxval)); // saturation
 
-    float r2 = (maxval - r) / delta;
-    float g2 = (maxval - g) / delta;
-    float b2 = (maxval - b) / delta;
+    const float r2 = (maxval - r) / delta;
+    const float g2 = (maxval - g) / delta;
+    const float b2 = (maxval - b) / delta;
     if (maxval == r) h = ((g == minval) ? (5.0f + b2) : (1.0f - g2));
     else if (maxval == g) h = ((b == minval) ? (1.0f + r2) : (3.0f - b2));
     else h = ((r == minval) ? (3.0f + g2) : (5.0f - r2));
@@ -31,7 +31,7 @@ void RGB_to_HSL(float r, float g, float b, float &h, float &s, float &l) {
 
 // 0x446D80
 void HSL_to_RGB(float h, float sl, float l, float &r, float &g, float &b) {
-    float v = (l <= 0.5f) ? (l * (1.0f + sl)) : (l + sl - l * sl);
+    const float v = (l <= 0.5f) ? (l * (1.0f + sl)) : (l + sl - l * sl);
     if (v <= 0.0f) {
         r = 0.0f;
         g = 0.0f;
@@ -39,13 +39,13 @@ void HSL_to_RGB(float h, float sl, float l, float &r, float &g, float &b) {
         return;
     }
 
-    float y = 2 * l - v;
-    float sv = (v - y) / v;
+    const float y = 2 * l - v;
+    const float sv = (v - y) / v;
     h *= 6.0f;
-    int sextant = ClampInt((int)h, 0, 5);
-    float vsf = v * sv * (h - sextant);
-    float x = y + vsf;
-    float z = v - vsf;
+    const int sextant = ClampInt(static_cast<int>(h), 0, 5);
+    const float vsf = v * sv * (h - sextant);
+    const float x = y + vsf;
+    const float z = v - vsf;
 
     switch (sextant) {
     case 0:
@@ -87,7 +87,7 @@ void FilterEffectInitForApp() {}
 
 // 0x446F00
 void FilterEffectDisposeForApp() {
-    for (int i = 0; i < (int)FilterEffect::NUM_FILTER_EFFECTS; i++) {
+    for (int i = 0; i < static_cast<int>(FilterEffect::NUM_FILTER_EFFECTS); i++) {
         ImageFilterMap &aFilterMap = gFilterMap[i];
 
         /*
@@ -185,11 +185,11 @@ MemoryImage* FilterEffectCreateImage(Image* theImage, FilterEffect theFilterEffe
 Image *FilterEffectGetImage(Image *theImage, FilterEffect theFilterEffect) {
     TOD_ASSERT(theFilterEffect >= 0 && theFilterEffect < FilterEffect::NUM_FILTER_EFFECTS);
 
-    ImageFilterMap &aFilterMap = gFilterMap[(int)theFilterEffect];
-    ImageFilterMap::iterator it = aFilterMap.find(theImage);
+    ImageFilterMap &aFilterMap = gFilterMap[static_cast<int>(theFilterEffect)];
+    const auto it = aFilterMap.find(theImage);
     if (it != aFilterMap.end()) return it->second.get();
 
-    auto aImage = ((Vk::VkImage *)theImage)->applyEffectsToNewImage(theFilterEffect);
+    auto aImage = static_cast<Vk::VkImage *>(theImage)->applyEffectsToNewImage(theFilterEffect);
 
     return aFilterMap.insert(ImageFilterMap::value_type(theImage, std::move(aImage))).first->second.get();
 }

@@ -338,7 +338,7 @@ bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
 
     // Insert game specific stats
     std::string aStatsString;
-    DefinesMap::iterator anItr = theStatsMap.begin();
+    auto anItr = theStatsMap.begin();
     while (anItr != theStatsMap.end()) {
         std::string aKeyString = anItr->first;
         std::string aValueString = anItr->second;

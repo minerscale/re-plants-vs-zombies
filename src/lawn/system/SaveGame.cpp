@@ -18,14 +18,14 @@
 static const char *FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
 static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;
 static const unsigned int SAVE_FILE_VERSION = 2U;
-static unsigned int SAVE_FILE_DATE =
-    crc32(0, (Bytef *)FILE_COMPILE_TIME_STRING, strlen(FILE_COMPILE_TIME_STRING)); //[0x6AA7EC]
+static unsigned int SAVE_FILE_DATE = crc32(0, (Bytef *)FILE_COMPILE_TIME_STRING, strlen(FILE_COMPILE_TIME_STRING));
+//[0x6AA7EC]
 
 // 0x4813D0
 void SaveGameContext::SyncBytes(void *theDest, int theReadSize) {
     int aReadSize = theReadSize;
     if (mReading) {
-        if ((unsigned long)ByteLeftToRead() < 4) {
+        if (static_cast<unsigned long>(ByteLeftToRead()) < 4) {
             mFailed = true;
         }
 
@@ -42,10 +42,10 @@ void SaveGameContext::SyncBytes(void *theDest, int theReadSize) {
         if (mFailed) {
             memset(theDest, 0, theReadSize);
         } else {
-            mBuffer.ReadBytes((uchar *)theDest, theReadSize);
+            mBuffer.ReadBytes(static_cast<uchar *>(theDest), theReadSize);
         }
     } else {
-        mBuffer.WriteBytes((uchar *)theDest, theReadSize);
+        mBuffer.WriteBytes(static_cast<uchar *>(theDest), theReadSize);
     }
 }
 
@@ -80,7 +80,7 @@ ReanimationType SaveGameContext::SyncReanimationDef(ReanimatorDefinition *&theDe
         for (int i = 0; i < ReanimationType::NUM_REANIMS; i++) {
             ReanimatorDefinition *aDef = &gReanimatorDefArray[i];
             if (theDefinition == aDef) {
-                aReanimType = (ReanimationType)i;
+                aReanimType = static_cast<ReanimationType>(i);
                 break;
             }
         }
@@ -95,16 +95,16 @@ void SaveGameContext::SyncParticleDef(TodParticleDefinition *&theDefinition) {
     if (mReading) {
         int aParticleType;
         SyncInt(aParticleType);
-        if (aParticleType == (int)ParticleEffect::PARTICLE_NONE) {
+        if (aParticleType == static_cast<int>(ParticleEffect::PARTICLE_NONE)) {
             theDefinition = nullptr;
-        } else if (aParticleType >= 0 && aParticleType < (int)ParticleEffect::NUM_PARTICLES) {
+        } else if (aParticleType >= 0 && aParticleType < static_cast<int>(ParticleEffect::NUM_PARTICLES)) {
             theDefinition = &gParticleDefArray[aParticleType];
         } else {
             mFailed = true;
         }
     } else {
         int aParticleType = (int)ParticleEffect::PARTICLE_NONE;
-        for (int i = 0; i < (int)ParticleEffect::NUM_PARTICLES; i++) {
+        for (int i = 0; i < static_cast<int>(ParticleEffect::NUM_PARTICLES); i++) {
             TodParticleDefinition *aDef = &gParticleDefArray[i];
             if (theDefinition == aDef) {
                 aParticleType = i;
@@ -262,7 +262,8 @@ void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameConte
     if (theReanimation->mDefinition->mTracks.count != 0) {
         int aSize = theReanimation->mDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
         if (theContext.mReading) {
-            theReanimation->mTrackInstances = (ReanimatorTrackInstance *)FindGlobalAllocator(aSize)->Calloc(aSize);
+            theReanimation->mTrackInstances =
+                static_cast<ReanimatorTrackInstance *>(FindGlobalAllocator(aSize)->Calloc(aSize));
         }
         theContext.SyncBytes(theReanimation->mTrackInstances, aSize);
 
@@ -344,11 +345,11 @@ void SyncBoard(SaveGameContext &theContext, Board *theBoard) {
     theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
 
     if (theContext.mReading) {
-        if ((unsigned long)theContext.ByteLeftToRead() < 4) {
+        if (static_cast<unsigned long>(theContext.ByteLeftToRead()) < 4) {
             theContext.mFailed = true;
         }
 
-        if (theContext.mFailed || (unsigned int)theContext.mBuffer.ReadLong() != SAVE_FILE_MAGIC_NUMBER) {
+        if (theContext.mFailed || static_cast<unsigned int>(theContext.mBuffer.ReadLong()) != SAVE_FILE_MAGIC_NUMBER) {
             theContext.mFailed = true;
         }
     } else {

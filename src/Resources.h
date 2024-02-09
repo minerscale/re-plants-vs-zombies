@@ -1886,8 +1886,9 @@ ResourceId GetIdBySound(intptr_t theSound);
 // const char*         GetStringIdById(ResourceId theId);
 // ResourceId          GetIdByString(const char* theStringId);
 }; // namespace Sexy
+
 extern bool (*gExtractResourcesByName)(Sexy::ResourceManager *theResourceManager, const char *theName);
 
-extern void *gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX];
+extern void *gResources[static_cast<int>(Sexy::ResourceId::RESOURCE_ID_MAX)];
 
 #endif

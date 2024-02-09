@@ -2,12 +2,10 @@
 #define __SCROLLLISTENER_H__
 
 namespace Sexy {
-
 class ScrollListener {
 public:
     virtual void ScrollPosition(int theId, double thePosition) = 0;
 };
-
 } // namespace Sexy
 
 #endif // __SCROLLLISTENER_H__

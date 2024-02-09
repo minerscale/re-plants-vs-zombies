@@ -4,11 +4,12 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 class SoundInstance {
 public:
     SoundInstance() {}
+
     virtual ~SoundInstance() {}
+
     virtual void Release() = 0;
 
     virtual void SetBaseVolume(double theBaseVolume) = 0;
@@ -28,7 +29,6 @@ public:
     virtual bool IsReleased() = 0;
     virtual double GetVolume() = 0;
 };
-
 } // namespace Sexy
 
 #endif //__SOUNDINSTANCE_H__

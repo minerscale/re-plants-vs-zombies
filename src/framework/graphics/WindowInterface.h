@@ -41,6 +41,7 @@ public:
     void ReleaseMouseCapture() { static_cast<T *>(this)->ReleaseMouseCapture(); }
     void Draw() { static_cast<T *>(this)->Draw(); }
     void EnforceCursor() { static_cast<T *>(this)->EnforceCursor(); }
+
     int
     CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, const void *pvANDPlane, const void *pvXORPlane) {
         return static_cast<T *>(this)->CreateCursor(xHotSpot, yHotSpot, nWidth, nHeight, pvANDPlane, pvXORPlane);

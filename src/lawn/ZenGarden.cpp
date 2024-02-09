@@ -80,7 +80,7 @@ static SpecialGridPlacement gAquariumGridPlacement[] = {
 };
 
 ZenGarden::ZenGarden() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mBoard = nullptr;
     mGardenType = GardenType::GARDEN_MAIN;
 }
@@ -254,7 +254,8 @@ bool ZenGarden::PlantCanHaveChocolate(Plant *thePlant) {
 // 0x51D710
 bool ZenGarden::CanDropChocolate() {
     return HasPurchasedStinky() &&
-           mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE] - PURCHASE_COUNT_OFFSET < 10;
+           mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)] - PURCHASE_COUNT_OFFSET <
+               10;
 }
 
 // 0x51D740
@@ -435,7 +436,7 @@ void ZenGarden::MouseDownWithMoneySign(Plant *thePlant) {
 void ZenGarden::PlantFertilized(Plant *thePlant) {
     PottedPlant *aPottedPlant = PottedPlantFromIndex(thePlant->mPottedPlantIndex);
     aPottedPlant->mLastFertilizedTime = TimeToUnixEpoch(getTime());
-    aPottedPlant->mPlantAge = (PottedPlantAge)((int)aPottedPlant->mPlantAge + 1);
+    aPottedPlant->mPlantAge = static_cast<PottedPlantAge>((int)aPottedPlant->mPlantAge + 1);
     aPottedPlant->mPlantNeed = PottedPlantNeed::PLANTNEED_NONE;
     aPottedPlant->mTimesFed = 0;
 
@@ -541,8 +542,9 @@ void ZenGarden::PlantWatered(Plant *thePlant) {
     mBoard->AddCoin(thePlant->mX + 40, thePlant->mY, CoinType::COIN_SILVER, CoinMotion::COIN_MOTION_COIN);
     if (aPottedPlant->mPlantAge == PottedPlantAge::PLANTAGE_FULL &&
         aPottedPlant->mPlantNeed == PottedPlantNeed::PLANTNEED_NONE) {
-        aPottedPlant->mPlantNeed = (PottedPlantNeed
-        )RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH);
+        aPottedPlant->mPlantNeed = static_cast<PottedPlantNeed>(
+            RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH)
+        );
     }
 
     if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_WATER_PLANT) {
@@ -676,8 +678,9 @@ void ZenGarden::RefreshPlantNeeds(PottedPlant *thePottedPlant) {
 
     if (Plant::IsAquatic(thePottedPlant->mSeedType)) {
         thePottedPlant->mLastWateredTime = TimeToUnixEpoch(getTime());
-        thePottedPlant->mPlantNeed = (PottedPlantNeed
-        )RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH);
+        thePottedPlant->mPlantNeed = static_cast<PottedPlantNeed>(
+            RandRangeInt((int)PottedPlantNeed::PLANTNEED_BUGSPRAY, (int)PottedPlantNeed::PLANTNEED_PHONOGRAPH)
+        );
     } else {
         thePottedPlant->mTimesFed = 0;
         thePottedPlant->mPlantNeed = PottedPlantNeed::PLANTNEED_NONE;
@@ -765,7 +768,9 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
     }
 
     if (theCursorType == CursorType::CURSOR_TYPE_CHOCOLATE) {
-        TOD_ASSERT(mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE] > PURCHASE_COUNT_OFFSET);
+        TOD_ASSERT(
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)] > PURCHASE_COUNT_OFFSET
+        );
 
         GridItem *aStinky = GetStinky();
         if (aStinky && aStinky->mHighlighted) {
@@ -775,14 +780,14 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
                 ParticleEffect::PARTICLE_PRESENT_PICKUP
             );
             mApp->mPlayerInfo->mLastStinkyChocolateTime = getTime();
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE]--;
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)]--;
 
             mApp->PlayFoley(FoleyType::FOLEY_WAKEUP);
             mApp->PlaySample(SOUND_MINDCONTROLLED);
         }
 
         if (aPlantToFeed) {
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE]--;
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)]--;
             FeedChocolateToPlant(aPlantToFeed);
             mApp->PlayFoley(FoleyType::FOLEY_WAKEUP);
         }
@@ -798,7 +803,7 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
         aZenTool->mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_ABOVE_UI, 0, 0);
 
         if (theCursorType == CursorType::CURSOR_TYPE_WATERING_CAN) {
-            if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_GOLD_WATERINGCAN]) {
+            if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_GOLD_WATERINGCAN)]) {
                 aZenTool->mPosX = x;
                 aZenTool->mPosY = y;
                 Reanimation *aWateringCanReanim =
@@ -825,8 +830,11 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
             aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_FERTILIZER;
             mApp->PlayFoley(FoleyType::FOLEY_FERTILIZER);
 
-            TOD_ASSERT(mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] > PURCHASE_COUNT_OFFSET);
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER]--;
+            TOD_ASSERT(
+                mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_FERTILIZER)] >
+                PURCHASE_COUNT_OFFSET
+            );
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_FERTILIZER)]--;
         } else if (theCursorType == CursorType::CURSOR_TYPE_BUG_SPRAY) {
             Reanimation *aBugSprayReanim = mApp->AddReanimation(
                 aPlantToFeed->mX + 54, aPlantToFeed->mY, 0, ReanimationType::REANIM_ZENGARDEN_BUGSPRAY
@@ -836,8 +844,10 @@ void ZenGarden::MouseDownWithFeedingTool(int x, int y, CursorType theCursorType)
             aZenTool->mGridItemState = GridItemState::GRIDITEM_STATE_ZEN_TOOL_BUG_SPRAY;
             mApp->PlayFoley(FoleyType::FOLEY_BUGSPRAY);
 
-            TOD_ASSERT(mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_BUG_SPRAY] > PURCHASE_COUNT_OFFSET);
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_BUG_SPRAY]--;
+            TOD_ASSERT(
+                mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_BUG_SPRAY)] > PURCHASE_COUNT_OFFSET
+            );
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_BUG_SPRAY)]--;
         } else if (theCursorType == CursorType::CURSOR_TYPE_PHONOGRAPH) {
             Reanimation *aPhonographReanim = mApp->AddReanimation(
                 aPlantToFeed->mX + 20, aPlantToFeed->mY + 34, 0, ReanimationType::REANIM_ZENGARDEN_PHONOGRAPH
@@ -905,8 +915,9 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType) {
                 );
                 mBoard->mMenuButton->mDisabled = false;
                 mBoard->mMenuButton->mBtnNoDraw = false;
-            } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] == PURCHASE_COUNT_OFFSET) {
-                mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
+            } else if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_FERTILIZER)] == PURCHASE_COUNT_OFFSET) {
+                mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_FERTILIZER)] =
+                    PURCHASE_COUNT_OFFSET + 5;
                 mApp->mBoard->DisplayAdvice(
                     _S("[ADVICE_ZEN_GARDEN_NEED_MORE_FERTILIZER]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST,
                     AdviceType::ADVICE_NONE
@@ -947,7 +958,7 @@ void ZenGarden::MouseDownWithTool(int x, int y, CursorType theCursorType) {
         mBoard->mCursorObject->mType = aPlant->mSeedType;
         mBoard->mCursorObject->mImitaterType = aPlant->mImitaterType;
         mBoard->mCursorObject->mCursorType = CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE;
-        mBoard->mCursorObject->mGlovePlantID = (PlantID)mBoard->mPlants.DataArrayGetID(aPlant);
+        mBoard->mCursorObject->mGlovePlantID = static_cast<PlantID>(mBoard->mPlants.DataArrayGetID(aPlant));
         // mBoard->mIgnoreMouseUp = true;
         mApp->PlaySample(SOUND_TAP);
     }
@@ -1067,7 +1078,7 @@ float ZenGarden::ZenPlantOffsetX(PottedPlant *thePottedPlant) {
 }
 
 bool ZenGarden::HasPurchasedStinky() {
-    return mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] != 0;
+    return mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)] != 0;
 }
 
 // 0x51FB40
@@ -1078,7 +1089,7 @@ void ZenGarden::AddStinky() {
 
     if (!mApp->mPlayerInfo->mHasSeenStinky) {
         mApp->mPlayerInfo->mHasSeenStinky = 1;
-        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] =
+        mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)] =
             std::chrono::duration_cast<std::chrono::seconds>(getTime().time_since_epoch()).count();
     }
 
@@ -1281,7 +1292,7 @@ void ZenGarden::StinkyAnimRateUpdate(GridItem *theStinky) {
 }
 
 void ZenGarden::ResetStinkyTimers() {
-    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] = 2;
+    mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)] = 2;
     mApp->mPlayerInfo->mLastStinkyChocolateTime = {};
 }
 
@@ -1291,8 +1302,9 @@ void ZenGarden::StinkyUpdate(GridItem *theStinky) {
 
     auto aNow = getTime();
     if (mApp->mPlayerInfo->mLastStinkyChocolateTime > aNow ||
-        TimePoint(std::chrono::seconds{mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL]}) >
-            aNow) {
+        TimePoint(std::chrono::seconds{
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)]
+        }) > aNow) {
         ResetStinkyTimers();
     }
 
@@ -1533,27 +1545,27 @@ void ZenGarden::GotoNextGarden() {
 
     bool aGoToTree = false;
     if (mGardenType == GardenType::GARDEN_MAIN) {
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_MUSHROOM_GARDEN]) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_MUSHROOM_GARDEN)]) {
             mGardenType = GardenType::GARDEN_MUSHROOM;
             mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_MUSHROOM_GARDEN;
-        } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_AQUARIUM_GARDEN]) {
+        } else if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_AQUARIUM_GARDEN)]) {
             mGardenType = GardenType::GARDEN_AQUARIUM;
             mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
-        } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
+        } else if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_TREE_OF_WISDOM)]) {
             aGoToTree = true;
         }
     } else if (mGardenType == GardenType::GARDEN_MUSHROOM) {
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_AQUARIUM_GARDEN]) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_AQUARIUM_GARDEN)]) {
             mGardenType = GardenType::GARDEN_AQUARIUM;
             mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_ZOMBIQUARIUM;
-        } else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
+        } else if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_TREE_OF_WISDOM)]) {
             aGoToTree = true;
         } else {
             mGardenType = GardenType::GARDEN_MAIN;
             mBoard->mBoardData.mBackground = BackgroundType::BACKGROUND_GREENHOUSE;
         }
     } else if (mGardenType == GardenType::GARDEN_AQUARIUM) {
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM]) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_TREE_OF_WISDOM)]) {
             aGoToTree = true;
         } else {
             mGardenType = GardenType::GARDEN_MAIN;
@@ -1580,7 +1592,7 @@ void ZenGarden::GotoNextGarden() {
 
     if ((mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
          mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)) {
-        if (!mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_WHEEL_BARROW]) {
+        if (!mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_WHEEL_BARROW)]) {
             mBoard->DisplayAdvice(
                 _S("[ADVICE_NEED_WHEELBARROW]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST,
                 AdviceType::ADVICE_NEED_WHEELBARROW
@@ -1613,8 +1625,8 @@ void ZenGarden::MouseDownWithFullWheelBarrow(int x, int y) {
     aPottedPlant->mWhichZenGarden = mGardenType;
     aPottedPlant->mX = aGridX;
     aPottedPlant->mY = aGridY;
-    intptr_t aPottedPlantIndex =
-        ((intptr_t)aPottedPlant - (intptr_t)mApp->mPlayerInfo->mPottedPlant) / (intptr_t)sizeof(PottedPlant);
+    intptr_t aPottedPlantIndex = ((intptr_t)aPottedPlant - (intptr_t)mApp->mPlayerInfo->mPottedPlant) /
+                                 static_cast<intptr_t>(sizeof(PottedPlant));
     Plant *aPlant = PlacePottedPlant(aPottedPlantIndex);
     mBoard->DoPlantingEffects(aPottedPlant->mX, aPottedPlant->mY, aPlant);
 }
@@ -1762,9 +1774,9 @@ void ZenGarden::AdvanceCrazyDaveDialog() {
         for (int i = 0; i < 2; i++) {
             PottedPlant aPottedPlant;
             aPottedPlant.InitializePottedPlant(SeedType::SEED_MARIGOLD);
-            aPottedPlant.mDrawVariation = (DrawVariation)RandRangeInt(
+            aPottedPlant.mDrawVariation = static_cast<DrawVariation>(RandRangeInt(
                 (int)DrawVariation::VARIATION_MARIGOLD_WHITE, (int)DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN
-            );
+            ));
             aPottedPlant.mFeedingsPerGrow = 3;
             mApp->mZenGarden->AddPottedPlant(&aPottedPlant);
         }
@@ -1960,7 +1972,7 @@ void ZenGarden::DrawPlantOverlay(Graphics *g, Plant *thePlant) {
 
 // 0x521FE0
 void ZenGarden::WakeStinky() {
-    mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL] =
+    mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)] =
         std::chrono::duration_cast<std::chrono::seconds>(getTime().time_since_epoch()).count();
     mApp->PlaySample(SOUND_TAP);
     mBoard->ClearAdvice(AdviceType::ADVICE_STINKY_SLEEPING);
@@ -1986,9 +1998,9 @@ bool ZenGarden::ShouldStinkyBeAwake() {
     if (IsStinkyHighOnChocolate()) {
         return true;
     }
-    return getTime() -
-               TimePoint(std::chrono::seconds(mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_STINKY_THE_SNAIL]
-               )) <
+    return getTime() - TimePoint(std::chrono::seconds(
+                           mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_STINKY_THE_SNAIL)]
+                       )) <
            std::chrono::seconds(180);
 }
 
@@ -1998,7 +2010,7 @@ void ZenGarden::OpenStore() {
     StoreScreen *aStore = mApp->ShowStoreScreen();
     if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_ZEN_GARDEN_VISIT_STORE) {
         aStore->SetupForIntro(2600);
-        mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
+        mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_FERTILIZER)] = PURCHASE_COUNT_OFFSET + 5;
     }
     aStore->mBackButton->SetLabel(_S("[STORE_BACK_TO_GAME]"));
     aStore->mPage = StorePages::STORE_PAGE_ZEN1;
@@ -2038,7 +2050,7 @@ SeedType ZenGarden::PickRandomSeedType() {
     SeedType aSeedList[40];
     int aSeedCount = 0;
     for (int i = 0; i < 40; i++) {
-        SeedType aSeedType = (SeedType)i;
+        auto aSeedType = static_cast<SeedType>(i);
         if (aSeedType != SeedType::SEED_MARIGOLD && aSeedType != SeedType::SEED_FLOWERPOT) {
             aSeedList[aSeedCount] = aSeedType;
             aSeedCount++;

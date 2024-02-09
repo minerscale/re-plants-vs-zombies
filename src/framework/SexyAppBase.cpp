@@ -369,7 +369,7 @@ SexyAppBase::~SexyAppBase() {
         //	RegistryWriteBoolean("Is3D", false);
     }*/
 
-    DialogMap::iterator aDialogItr = mDialogMap.begin();
+    auto aDialogItr = mDialogMap.begin();
     while (aDialogItr != mDialogMap.end()) {
         mWidgetManager->RemoveWidget(aDialogItr->second);
         delete aDialogItr->second;
@@ -443,6 +443,7 @@ SexyAppBase::~SexyAppBase() {
     FreeLibrary(gVersionDLL);
     */
 }
+
 /*
 static BOOL CALLBACK ChangeDisplayWindowEnumProc(HWND hwnd, LPARAM lParam)
 {
@@ -501,7 +502,9 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
 
     struct AutoFile {
         FILE *f;
+
         AutoFile(FILE *file) : f(file) {}
+
         ~AutoFile() { fclose(f); }
     };
     AutoFile aCloseFile(aFP);
@@ -620,8 +623,7 @@ void SexyAppBase::WriteDemoBuffer() {
 
             Buffer aMarkerBuffer;
             aMarkerBuffer.WriteLong(mDemoMarkerList.size());
-            for (DemoMarkerList::iterator aMarkerItr = mDemoMarkerList.begin(); aMarkerItr != mDemoMarkerList.end();
-                 ++aMarkerItr) {
+            for (auto aMarkerItr = mDemoMarkerList.begin(); aMarkerItr != mDemoMarkerList.end(); ++aMarkerItr) {
                 aMarkerBuffer.WriteString(aMarkerItr->first);
                 aMarkerBuffer.WriteLong(aMarkerItr->second);
             }
@@ -651,7 +653,7 @@ void SexyAppBase::DemoSyncBuffer(Buffer *theBuffer) {
         ulong aLen = mDemoBuffer.ReadLong();
 
         theBuffer->Clear();
-        for (int i = 0; i < (int)aLen; i++)
+        for (int i = 0; i < static_cast<int>(aLen); i++)
             theBuffer->WriteByte(mDemoBuffer.ReadByte());
     } else if (mRecordingDemoBuffer) {
         WriteDemoTimingBlock();
@@ -829,7 +831,7 @@ Dialog *SexyAppBase::NewDialog(
     int theDialogId, bool isModal, const SexyString &theDialogHeader, const SexyString &theDialogLines,
     const SexyString &theDialogFooter, int theButtonMode
 ) {
-    Dialog *aDialog =
+    auto aDialog =
         new Dialog(NULL, NULL, theDialogId, isModal, theDialogHeader, theDialogLines, theDialogFooter, theButtonMode);
     return aDialog;
 }
@@ -848,7 +850,7 @@ Dialog *SexyAppBase::DoDialog(
 }
 
 Dialog *SexyAppBase::GetDialog(int theDialogId) {
-    DialogMap::iterator anItr = mDialogMap.find(theDialogId);
+    auto anItr = mDialogMap.find(theDialogId);
 
     if (anItr != mDialogMap.end()) return anItr->second;
 
@@ -856,7 +858,7 @@ Dialog *SexyAppBase::GetDialog(int theDialogId) {
 }
 
 bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidget) {
-    DialogMap::iterator anItr = mDialogMap.find(theDialogId);
+    auto anItr = mDialogMap.find(theDialogId);
 
     if (anItr != mDialogMap.end()) {
         Dialog *aDialog = anItr->second;
@@ -865,7 +867,7 @@ bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidg
         // in case nobody else sets mResult
         if (aDialog->mResult == -1) aDialog->mResult = 0;
 
-        DialogList::iterator aListItr = std::find(mDialogList.begin(), mDialogList.end(), aDialog);
+        auto aListItr = std::find(mDialogList.begin(), mDialogList.end(), aDialog);
         if (aListItr != mDialogList.end()) mDialogList.erase(aListItr);
 
         mDialogMap.erase(anItr);
@@ -1374,7 +1376,7 @@ double SexyAppBase::GetLoadingThreadProgress() {
     if (mLoaded) return 1.0;
     if (!mLoadingThreadStarted) return 0.0;
     if (mNumLoadingThreadTasks == 0) return 0.0;
-    return std::min(mCompletedLoadingThreadTasks / (double)mNumLoadingThreadTasks, 1.0);
+    return std::min(mCompletedLoadingThreadTasks / static_cast<double>(mNumLoadingThreadTasks), 1.0);
 }
 
 bool SexyAppBase::RegistryWrite(
@@ -1399,7 +1401,7 @@ bool SexyAppBase::RegistryWrite(
     std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
     std::string aValueName;
 
-    int aSlashPos = (int)theValueName.rfind('\\');
+    int aSlashPos = static_cast<int>(theValueName.rfind('\\'));
     if (aSlashPos != -1) {
         aKeyName += "\\" + theValueName.substr(0, aSlashPos);
         aValueName = theValueName.substr(aSlashPos + 1);
@@ -1437,8 +1439,8 @@ bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uchar
 }
 
 void SexyAppBase::WriteToRegistry() {
-    RegistryWriteInteger("MusicVolume", (int)(mMusicVolume * 100));
-    RegistryWriteInteger("SfxVolume", (int)(mSfxVolume * 100));
+    RegistryWriteInteger("MusicVolume", static_cast<int>(mMusicVolume * 100));
+    RegistryWriteInteger("SfxVolume", static_cast<int>(mSfxVolume * 100));
     RegistryWriteInteger("Muted", (mMuteCount - mAutoMuteCount > 0) ? 1 : 0);
     RegistryWriteInteger("ScreenMode", mIsWindowed ? 0 : 1);
     RegistryWriteInteger("PreferredX", mPreferredX);
@@ -1626,7 +1628,7 @@ bool SexyAppBase::RegistryRead(
             mDemoBuffer.ReadBytes(theValue.data(), aLen);
             return true;
         } else {
-            for (int i = 0; i < (int)aLen; i++)
+            for (int i = 0; i < static_cast<int>(aLen); i++)
                 mDemoBuffer.ReadByte();
             return false;
         }
@@ -1636,7 +1638,7 @@ bool SexyAppBase::RegistryRead(
         std::string aKeyName = RemoveTrailingSlash("SOFTWARE\\" + mRegKey);
         std::string aValueName;
 
-        int aSlashPos = (int)theValueName.rfind('\\');
+        int aSlashPos = static_cast<int>(theValueName.rfind('\\'));
         if (aSlashPos != -1) {
             aKeyName += "\\" + theValueName.substr(0, aSlashPos);
             aValueName = theValueName.substr(aSlashPos + 1);
@@ -1818,7 +1820,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string &theFileName, Buffer *the
         ulong aLen = mDemoBuffer.ReadLong();
 
         theBuffer->Clear();
-        for (int i = 0; i < (int)aLen; i++)
+        for (int i = 0; i < static_cast<int>(aLen); i++)
             theBuffer->WriteByte(mDemoBuffer.ReadByte());
 
         return true;
@@ -1840,7 +1842,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string &theFileName, Buffer *the
         int aFileSize = p_ftell(aFP);
         p_fseek(aFP, 0, SEEK_SET);
 
-        uchar *aData = new uchar[aFileSize];
+        auto aData = new uchar[aFileSize];
 
         p_fread(aData, 1, aFileSize, aFP);
         p_fclose(aFP);
@@ -2579,7 +2581,8 @@ gSexyAppBase->mDemoMarkerList.end(); ++anItr)
     return FALSE;
 }*/
 
-typedef WORD *LPWORD;
+using LPWORD = WORD *;
+
 [[maybe_unused]] static LPWORD lpdwAlign(LPWORD lpIn) {
     intptr_t ul;
 
@@ -3033,7 +3036,7 @@ certain os's at that time
 
     SEXY_TRACE(StrFormat("Scr shutdown: %s",str).c_str());*/
 // return false;
-//}
+// }
 /*
 LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -3089,7 +3092,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     case WM_DISPLAYCHANGE:
     case WM_SYSCOLORCHANGE:
         {
-*//*			if (aSexyApp!=NULL && aSexyApp->mProcessInTimer && !aSexyApp->mShutdown && aSexyApp->mRunning)
+*/ /*			if (aSexyApp!=NULL && aSexyApp->mProcessInTimer && !aSexyApp->mShutdown && aSexyApp->mRunning)
 			{
 				if (uMsg==WM_TIMER && wParam==101)
 				{
@@ -3271,7 +3274,7 @@ if ((keyDown) && (aSexyApp->DebugKeyDownAsync(wParam, aSexyApp->mCtrlDown, aSexy
                 }
                 else if (uMsg == WM_CLOSE)
                 {
-*/					/*char aStr[256];
+*/ /*char aStr[256];
 					sprintf(aStr, "CLOSED HWND: %d\r\n", hWnd);
 					OutputDebugString(aStr);*/
 
@@ -3519,16 +3522,17 @@ void SexyAppBase::ProcessDemo() {
                         mWidgetManager->MouseWheel(aScroll);
                     } break;
                     case DEMO_KEY_DOWN: {
-                        KeyCode aKeyCode = (KeyCode)mDemoBuffer.ReadNumBits(8, false);
+                        auto aKeyCode = static_cast<KeyCode>(mDemoBuffer.ReadNumBits(8, false));
                         mWidgetManager->KeyDown(aKeyCode);
                     } break;
                     case DEMO_KEY_UP: {
-                        KeyCode aKeyCode = (KeyCode)mDemoBuffer.ReadNumBits(8, false);
+                        auto aKeyCode = static_cast<KeyCode>(mDemoBuffer.ReadNumBits(8, false));
                         mWidgetManager->KeyUp(aKeyCode);
                     } break;
                     case DEMO_KEY_CHAR: {
-                        int sizeMult = (int)mDemoBuffer.ReadNumBits(1, false) + 1; // will be 1 for single, 2 for double
-                        SexyChar aChar = (SexyChar)mDemoBuffer.ReadNumBits(8 * sizeMult, false);
+                        int sizeMult = (int)mDemoBuffer.ReadNumBits(1, false) + 1;
+                        // will be 1 for single, 2 for double
+                        SexyChar aChar = static_cast<SexyChar>(mDemoBuffer.ReadNumBits(8 * sizeMult, false));
                         mWidgetManager->KeyChar(aChar);
                     } break;
                     case DEMO_CLOSE: Shutdown(); break;
@@ -4357,7 +4361,7 @@ void SexyAppBase::LoadingThreadProc() {}
 void SexyAppBase::LoadingThreadCompleted() {}
 
 void SexyAppBase::LoadingThreadProcStub(void *theArg) {
-    SexyAppBase *aSexyApp = (SexyAppBase *)theArg;
+    auto aSexyApp = static_cast<SexyAppBase *>(theArg);
 
     aSexyApp->LoadingThreadProc();
 
@@ -4611,7 +4615,7 @@ void SexyAppBase::EnforceCursor()
 void SexyAppBase::ProcessSafeDeleteList() {
     MTAutoDisallowRand aDisallowRand;
 
-    WidgetSafeDeleteList::iterator anItr = mSafeDeleteList.begin();
+    auto anItr = mSafeDeleteList.begin();
     while (anItr != mSafeDeleteList.end()) {
         WidgetSafeDeleteInfo *aWidgetSafeDeleteInfo = &(*anItr);
         if (mUpdateAppDepth <= aWidgetSafeDeleteInfo->mUpdateAppDepth) {
@@ -4847,8 +4851,10 @@ void SexyAppBase::Start() {
         printf(
             "Avg FPS       = %d\n",
             mDrawCount * 1000 /
-                ((int)(1000 *
-                       (std::chrono::duration_cast<std::chrono::duration<float>>(mDrawTime + mScreenBltTime)).count()))
+                static_cast<int>(
+                    1000 *
+                    (std::chrono::duration_cast<std::chrono::duration<float>>(mDrawTime + mScreenBltTime)).count()
+                )
         );
         // sprintf(aString, "Avg FPS       = %d\r\n", (mDrawCount*1000)/(mDrawTime+mScreenBltTime));
     }
@@ -4886,7 +4892,7 @@ bool SexyAppBase::LoadProperties(const std::string &theFileName, bool required, 
         //{
         // Popup(GetString("PROPERTIES_SIG_FAILED", _S("Signature check failed on ")) + StringToSexyString(theFileName +
         // "'")); return false;
-        //}
+        // }
     }
 
     PropertiesParser aPropertiesParser(this);
@@ -4913,7 +4919,7 @@ void SexyAppBase::ShowResourceError(bool doExit) {
 }
 
 bool SexyAppBase::GetBoolean(const std::string &theId) {
-    StringBoolMap::iterator anItr = mBoolProperties.find(theId);
+    auto anItr = mBoolProperties.find(theId);
     DBG_ASSERTE(anItr != mBoolProperties.end());
 
     if (anItr != mBoolProperties.end()) return anItr->second;
@@ -4921,14 +4927,14 @@ bool SexyAppBase::GetBoolean(const std::string &theId) {
 }
 
 bool SexyAppBase::GetBoolean(const std::string &theId, bool theDefault) {
-    StringBoolMap::iterator anItr = mBoolProperties.find(theId);
+    auto anItr = mBoolProperties.find(theId);
 
     if (anItr != mBoolProperties.end()) return anItr->second;
     else return theDefault;
 }
 
 int SexyAppBase::GetInteger(const std::string &theId) {
-    StringIntMap::iterator anItr = mIntProperties.find(theId);
+    auto anItr = mIntProperties.find(theId);
     DBG_ASSERTE(anItr != mIntProperties.end());
 
     if (anItr != mIntProperties.end()) return anItr->second;
@@ -4936,14 +4942,14 @@ int SexyAppBase::GetInteger(const std::string &theId) {
 }
 
 int SexyAppBase::GetInteger(const std::string &theId, int theDefault) {
-    StringIntMap::iterator anItr = mIntProperties.find(theId);
+    auto anItr = mIntProperties.find(theId);
 
     if (anItr != mIntProperties.end()) return anItr->second;
     else return theDefault;
 }
 
 double SexyAppBase::GetDouble(const std::string &theId) {
-    StringDoubleMap::iterator anItr = mDoubleProperties.find(theId);
+    auto anItr = mDoubleProperties.find(theId);
     DBG_ASSERTE(anItr != mDoubleProperties.end());
 
     if (anItr != mDoubleProperties.end()) return anItr->second;
@@ -4951,14 +4957,14 @@ double SexyAppBase::GetDouble(const std::string &theId) {
 }
 
 double SexyAppBase::GetDouble(const std::string &theId, double theDefault) {
-    StringDoubleMap::iterator anItr = mDoubleProperties.find(theId);
+    auto anItr = mDoubleProperties.find(theId);
 
     if (anItr != mDoubleProperties.end()) return anItr->second;
     else return theDefault;
 }
 
 SexyString SexyAppBase::GetString(const std::string &theId) {
-    StringWStringMap::iterator anItr = mStringProperties.find(theId);
+    auto anItr = mStringProperties.find(theId);
     DBG_ASSERTE(anItr != mStringProperties.end());
 
     if (anItr != mStringProperties.end()) return WStringToSexyString(anItr->second);
@@ -4966,14 +4972,14 @@ SexyString SexyAppBase::GetString(const std::string &theId) {
 }
 
 SexyString SexyAppBase::GetString(const std::string &theId, const SexyString &theDefault) {
-    StringWStringMap::iterator anItr = mStringProperties.find(theId);
+    auto anItr = mStringProperties.find(theId);
 
     if (anItr != mStringProperties.end()) return WStringToSexyString(anItr->second);
     else return theDefault;
 }
 
 StringVector SexyAppBase::GetStringVector(const std::string &theId) {
-    StringStringVectorMap::iterator anItr = mStringVectorProperties.find(theId);
+    auto anItr = mStringVectorProperties.find(theId);
     DBG_ASSERTE(anItr != mStringVectorProperties.end());
 
     if (anItr != mStringVectorProperties.end()) return anItr->second;
@@ -5502,13 +5508,14 @@ int SexyAppBase::GetCursor() { return mCursorNum; }
 void SexyAppBase::EnableCustomCursors(bool enabled) { mCustomCursorsEnabled = enabled; }
 
 std::unordered_map<std::string, std::unique_ptr<Vk::VkImage>> gBaseImageMap;
+
 std::unique_ptr<Sexy::Image> SexyAppBase::GetImage(const ResourceManager::ImageRes &theRes) {
     // printf("new image to load: %s\n", theFileName.c_str());
     std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theRes, true);
 
     if (aLoadedImage == nullptr) return nullptr;
 
-    std::unique_ptr<Vk::VkImage> ret = std::make_unique<Vk::VkImage>(*aLoadedImage);
+    auto ret = std::make_unique<Vk::VkImage>(*aLoadedImage);
     ret->mFilePath = theRes.mPath;
 
     return ret;
@@ -5885,37 +5892,37 @@ ulong SexyAppBase::HSLToRGB(int h, int s, int l) {
 
     switch (aColorDiv) {
     case 0:
-        r = (int)v;
+        r = static_cast<int>(v);
         g = x;
         b = y;
         break;
     case 1:
         r = z;
-        g = (int)v;
+        g = static_cast<int>(v);
         b = y;
         break;
     case 2:
         r = y;
-        g = (int)v;
+        g = static_cast<int>(v);
         b = x;
         break;
     case 3:
         r = y;
         g = z;
-        b = (int)v;
+        b = static_cast<int>(v);
         break;
     case 4:
         r = x;
         g = y;
-        b = (int)v;
+        b = static_cast<int>(v);
         break;
     case 5:
-        r = (int)v;
+        r = static_cast<int>(v);
         g = y;
         b = z;
         break;
     default:
-        r = (int)v;
+        r = static_cast<int>(v);
         g = x;
         b = y;
         break;
@@ -6075,7 +6082,7 @@ void SexyAppBase::DemoSyncRefreshRate() {
         mDemoBuffer.WriteNumBits(0, 1);
         mDemoBuffer.WriteNumBits(DEMO_VIDEO_DATA, 5);
         mDemoBuffer.WriteBoolean(mIsWindowed);
-        uchar aByte = (uchar)mSyncRefreshRate;
+        uchar aByte = static_cast<uchar>(mSyncRefreshRate);
         mDemoBuffer.WriteByte(aByte);
     }
 }

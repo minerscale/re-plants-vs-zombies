@@ -5,9 +5,11 @@
 #include "system/PlayerInfo.h"
 
 class HitResult;
+
 namespace Sexy {
 class Graphics;
 }
+
 using namespace Sexy;
 
 class Coin : public GameObject {
@@ -48,15 +50,18 @@ public:
     void Update();
     void Draw(Graphics *g);
     void Collect();
-    /*inline*/ int GetSunValue();
+    /*inline*/
+    int GetSunValue();
     static /*inline*/ int GetCoinValue(CoinType theCoinType);
     void UpdateFade();
     void UpdateFall();
     void ScoreCoin();
     void UpdateCollected();
     Color GetColor();
-    /*inline*/ bool IsMoney();
-    /*inline*/ bool IsSun();
+    /*inline*/
+    bool IsMoney();
+    /*inline*/
+    bool IsSun();
     float GetSunScale();
     inline bool IsOnGround() { return false; }
     SeedType GetFinalSeedPacketType();

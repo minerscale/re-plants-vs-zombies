@@ -1,4 +1,3 @@
-#include <chrono>
 #include <cstdarg>
 
 #include "Common.h"
@@ -149,14 +148,16 @@ float TodCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPic
         return 0.0f;
     }
 
-    float aExpectedLength1 = 1.0f / aWeight;                        // theLastPicked 的期望值
-    float aExpectedLength2 = aExpectedLength1 * 2.0f;               // theSecondLastPicked 的期望值
-    float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1; // 相较于 theLastPicked 的期望值，提前的轮数
-    float aAdvancedLength2 =
+    const float aExpectedLength1 = 1.0f / aWeight;                        // theLastPicked 的期望值
+    const float aExpectedLength2 = aExpectedLength1 * 2.0f;               // theSecondLastPicked 的期望值
+    const float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1; // 相较于 theLastPicked 的期望值，提前的轮数
+    const float aAdvancedLength2 =
         aSecondLastPicked + 1.0f - aExpectedLength2; // 相较于 theSecondLastPicked 的期望值，提前的轮数
-    float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f; // = aWeight * aLastPicked * 2 + aWeight * 2 - 1
-    float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f; // = aSecondLastPicked * aWeight + aWeight - 1
-    float aFactorFinal = ClampFloat(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
+    const float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f;
+    // = aWeight * aLastPicked * 2 + aWeight * 2 - 1
+    const float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f;
+    // = aSecondLastPicked * aWeight + aWeight - 1
+    const float aFactorFinal = ClampFloat(aFactor1 * 0.75f + aFactor2 * 0.25f, 0.01f, 100.0f);
     return aWeight * aFactorFinal;
 }
 
@@ -167,7 +168,7 @@ int TodPickFromSmoothArray(TodSmoothArray *theArray, int theCount) {
     }
     TOD_ASSERT(aTotalWeight > 0.0f);
 
-    float aNormalizeFactor = 1.0f / aTotalWeight;
+    const float aNormalizeFactor = 1.0f / aTotalWeight;
     float aTotalAdjustedWeight = 0.0f;
     for (int j = 0; j < theCount; j++) {
         aTotalAdjustedWeight += TodCalcSmoothWeight(
@@ -176,7 +177,7 @@ int TodPickFromSmoothArray(TodSmoothArray *theArray, int theCount) {
     }
     TOD_ASSERT(aTotalAdjustedWeight > 0.0f);
 
-    float aRandWeight = Rand(aTotalAdjustedWeight);
+    const float aRandWeight = Rand(aTotalAdjustedWeight);
     float aAccumulatedWeight = 0.0f;
     int k;
     for (k = 0; k < theCount - 1; k++) {
@@ -314,7 +315,7 @@ float TodAnimateCurveFloatTime(
     float theTimeStart, float theTimeEnd, float theTimeAge, float thePositionStart, float thePositionEnd,
     TodCurves theCurve
 ) {
-    float aWarpedAge = (theTimeAge - theTimeStart) / (theTimeEnd - theTimeStart);
+    const float aWarpedAge = (theTimeAge - theTimeStart) / (theTimeEnd - theTimeStart);
     return TodCurveEvaluateClamped(aWarpedAge, thePositionStart, thePositionEnd, theCurve);
 }
 
@@ -325,7 +326,7 @@ float TodAnimateCurveFloat(
     // return TodAnimateCurveFloatTime(theTimeStart, theTimeEnd, theTimeAge, thePositionStart, thePositionEnd,
     // theCurve);
 
-    float aWarpedAge = (theTimeAge - theTimeStart) / (float)(theTimeEnd - theTimeStart);
+    const float aWarpedAge = (theTimeAge - theTimeStart) / static_cast<float>(theTimeEnd - theTimeStart);
     return TodCurveEvaluateClamped(aWarpedAge, thePositionStart, thePositionEnd, theCurve);
 }
 
@@ -355,7 +356,7 @@ void TodDrawString(
     Graphics *g, const SexyString &theText, int thePosX, int thePosY, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification
 ) {
-    SexyString aFinalString = TodStringTranslate(theText);
+    const SexyString aFinalString = TodStringTranslate(theText);
 
     int aPosX = thePosX;
     if (theJustification == DrawStringJustification::DS_ALIGN_RIGHT ||
@@ -376,10 +377,12 @@ void TodDrawImageCelScaled(
     TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
     TOD_ASSERT(theCelRow >= 0 && theCelRow < theImageStrip->mNumRows);
 
-    int aCelWidth = theImageStrip->GetCelWidth();
-    int aCelHeight = theImageStrip->GetCelHeight();
-    Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
-    Rect aDestRect(thePosX, thePosY, FloatRoundToInt(aCelWidth * theScaleX), FloatRoundToInt(aCelHeight * theScaleY));
+    const int aCelWidth = theImageStrip->GetCelWidth();
+    const int aCelHeight = theImageStrip->GetCelHeight();
+    const Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
+    const Rect aDestRect(
+        thePosX, thePosY, FloatRoundToInt(aCelWidth * theScaleX), FloatRoundToInt(aCelHeight * theScaleY)
+    );
     g->DrawImage(theImageStrip, aSrcRect, aDestRect);
 }
 
@@ -399,15 +402,15 @@ void TodDrawStringMatrix(
     /*
     memset(gRenderTail, 0, sizeof(gRenderTail));
     memset(gRenderHead, 0, sizeof(gRenderHead));*/
-    ImageFont *aFont = (ImageFont *)theFont;
+    auto aFont = (ImageFont *)theFont;
     if (!aFont->mFontData->mInitialized) return;
 
     aFont->Prepare();
     int aCurXPos = 0;
-    for (int aCharNum = 0; aCharNum < (int)aFinalString.size(); aCharNum++) {
+    for (int aCharNum = 0; aCharNum < static_cast<int>(aFinalString.size()); aCharNum++) {
         SexyChar aChar = aFont->GetMappedChar(aFinalString[aCharNum]);
         SexyChar aNextChar = '\0';
-        if (aCharNum < (int)aFinalString.size() - 1) {
+        if (aCharNum < static_cast<int>(aFinalString.size()) - 1) {
             aNextChar = aFont->GetMappedChar(aFinalString[aCharNum + 1]);
         }
 
@@ -418,7 +421,7 @@ void TodDrawStringMatrix(
             double aScale = aFont->mScale;
             int aLayerPointSize = aLayer->mPointSize;
             if (aLayerPointSize) {
-                aScale *= (float)aFont->mPointSize / (float)aLayerPointSize;
+                aScale *= static_cast<float>(aFont->mPointSize) / static_cast<float>(aLayerPointSize);
             }
 
             int anImageX, anImageY, aCharWidth, aSpacing;
@@ -506,9 +509,9 @@ void TodDrawImageCelF(Graphics *g, Image *theImageStrip, float thePosX, float th
     TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
     TOD_ASSERT(theCelRow >= 0 && theCelRow < theImageStrip->mNumRows);
 
-    int aCelWidth = theImageStrip->GetCelWidth();
-    int aCelHeight = theImageStrip->GetCelHeight();
-    Rect theSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
+    const int aCelWidth = theImageStrip->GetCelWidth();
+    const int aCelHeight = theImageStrip->GetCelHeight();
+    const Rect theSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
     g->DrawImageF(theImageStrip, thePosX, thePosY, theSrcRect);
 }
 
@@ -543,14 +546,14 @@ void TodScaleRotateTransformMatrix(SexyMatrix3 &m, float x, float y, float rad, 
 }
 
 void SexyMatrix3ExtractScale(const SexyMatrix3 &m, float &theScaleX, float &theScaleY) {
-    float kx = atan2(m.m00, m.m10);
+    const float kx = atan2(m.m00, m.m10);
     if (abs(kx) < PI / 4 || abs(kx) > 4 * PI / 3) {
         theScaleX = m.m10 / cos(kx);
     } else {
         theScaleX = m.m00 / sin(kx);
     }
 
-    float ky = atan2(m.m11, m.m01);
+    const float ky = atan2(m.m11, m.m01);
     if (abs(ky) < PI / 4 || abs(ky) > 4 * PI / 3) {
         theScaleY = m.m01 / cos(ky);
     } else {
@@ -585,15 +588,15 @@ void TodSandImageIfNeeded(Image* theImage)
 
 // 0x512650
 void TodBltMatrix(
-    Graphics *g, Image *theImage, const SexyMatrix3 &theTransform, const Rect &theClipRect, const Color &theColor,
+    const Graphics *g, Image *theImage, const SexyMatrix3 &theTransform, const Rect &theClipRect, const Color &theColor,
     int theDrawMode, const Rect &theSrcRect
 ) {
     // float aOffsetX = 0.0f;
     // float aOffsetY = 0.0f;
     // if (gSexyAppBase->Is3DAccelerated())
     //{
-    float aOffsetX = 0.0;
-    float aOffsetY = 0.0;
+    const float aOffsetX = 0.0;
+    const float aOffsetY = 0.0;
     //}
     /*
     else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE)
@@ -612,15 +615,15 @@ void TodBltMatrix(
             theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend
         );
     } /*
-     else if (DDImage::Check3D(g->mDestImage))
-     {
-         theImage->mDrawn = true;
-         D3DInterface* aInterface = ((DDImage*)g->mDestImage)->mDDInterface->mD3DInterface;
-         aInterface->BltTransformed(theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend,
-     aOffsetX, aOffsetY, true);
-     }*/
+    else if (DDImage::Check3D(g->mDestImage))
+    {
+        theImage->mDrawn = true;
+        D3DInterface* aInterface = ((DDImage*)g->mDestImage)->mDDInterface->mD3DInterface;
+        aInterface->BltTransformed(theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend,
+    aOffsetX, aOffsetY, true);
+    }*/
     else {
-        Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
+        const Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
         g->mDestImage->BltMatrix(
             theImage, aOffsetX, aOffsetY, theTransform, aBufFixClipRect, theColor, theDrawMode, theSrcRect,
             g->mLinearBlend
@@ -636,16 +639,16 @@ void TodDrawImageCelCenterScaledF(
 ) {
     TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
 
-    int aCelWidth = theImageStrip->GetCelWidth();
-    int aCelHeight = theImageStrip->GetCelHeight();
-    Rect aSrcRect(aCelWidth * theCelCol, 0, aCelWidth, aCelHeight);
+    const int aCelWidth = theImageStrip->GetCelWidth();
+    const int aCelHeight = theImageStrip->GetCelHeight();
+    const Rect aSrcRect(aCelWidth * theCelCol, 0, aCelWidth, aCelHeight);
     if (theScaleX == 1.0f && theScaleY == 1.0f) {
         g->DrawImageF(theImageStrip, thePosX, thePosY, aSrcRect);
         return;
     }
 
-    float aTransX = aCelWidth * 0.5f + thePosX + g->mTransX;
-    float aTransY = aCelHeight * 0.5f + thePosY + g->mTransY;
+    const float aTransX = aCelWidth * 0.5f + thePosX + g->mTransX;
+    const float aTransY = aCelHeight * 0.5f + thePosY + g->mTransY;
 
     SexyMatrix3 aTransform;
     aTransform.m00 = theScaleX;
@@ -669,16 +672,16 @@ void TodDrawImageCelScaledF(
 ) {
     TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
 
-    int aCelWidth = theImageStrip->GetCelWidth();
-    int aCelHeight = theImageStrip->GetCelHeight();
-    Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
+    const int aCelWidth = theImageStrip->GetCelWidth();
+    const int aCelHeight = theImageStrip->GetCelHeight();
+    const Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
     if (theScaleX == 1.0f && theScaleY == 1.0f) {
         g->DrawImageF(theImageStrip, thePosX, thePosY, aSrcRect);
         return;
     }
 
-    float aTransX = aCelWidth * 0.5f * theScaleX + thePosX + g->mTransX;
-    float aTransY = aCelHeight * 0.5f * theScaleY + thePosY + g->mTransY;
+    const float aTransX = aCelWidth * 0.5f * theScaleX + thePosX + g->mTransX;
+    const float aTransY = aCelHeight * 0.5f * theScaleY + thePosY + g->mTransY;
 
     SexyMatrix3 aTransform;
     aTransform.m00 = theScaleX;
@@ -703,9 +706,9 @@ void TodDrawImageScaledF(Graphics *g, Image *theImage, float thePosX, float theP
         return;
     }
 
-    Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
-    float aTransX = theImage->mWidth * 0.5f * theScaleX + thePosX + g->mTransX;
-    float aTransY = theImage->mHeight * 0.5f * theScaleY + thePosY + g->mTransY;
+    const Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
+    const float aTransX = theImage->mWidth * 0.5f * theScaleX + thePosX + g->mTransX;
+    const float aTransY = theImage->mHeight * 0.5f * theScaleY + thePosY + g->mTransY;
 
     SexyMatrix3 aTransform;
     aTransform.m00 = theScaleX;
@@ -731,9 +734,9 @@ void TodDrawImageCenterScaledF(
         return;
     }
 
-    Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
-    float aTransX = theImage->mWidth * 0.5f + thePosX + g->mTransX;
-    float aTransY = theImage->mHeight * 0.5f + thePosY + g->mTransY;
+    const Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
+    const float aTransX = theImage->mWidth * 0.5f + thePosX + g->mTransX;
+    const float aTransY = theImage->mHeight * 0.5f + thePosY + g->mTransY;
 
     SexyMatrix3 aTransform;
     aTransform.m00 = theScaleX;
@@ -846,21 +849,21 @@ void SexyMatrix3Multiply(SexyMatrix3 &m, const SexyMatrix3 &l, const SexyMatrix3
 // 0x512F20
 //  GOTY @Patoke: 0x51D2C0
 Color GetFlashingColor(int theCounter, int theFlashTime) {
-    int aTimeAge = theCounter % theFlashTime;
-    int aTimeInf = theFlashTime / 2;
+    const int aTimeAge = theCounter % theFlashTime;
+    const int aTimeInf = theFlashTime / 2;
     // int aTimeDel = abs(aTimeInf - aTimeAge) / aTimeInf;
     //  @Patoke: order wasn't like in binaries
-    int aGrayness = ClampInt(200 * abs(aTimeInf - aTimeAge) / aTimeInf + 55, 0, 255);
+    const int aGrayness = ClampInt(200 * abs(aTimeInf - aTimeAge) / aTimeInf + 55, 0, 255);
     // int aGrayness = ClampInt(55 + 200 * abs(aTimeInf - aTimeAge)/ aTimeInf, 0, 255);
     return Color(aGrayness, aGrayness, aGrayness, 255);
 }
 
 // 0x512F80
 Color ColorAdd(const Color &theColor1, const Color &theColor2) {
-    int r = theColor1.mRed + theColor2.mRed;
-    int g = theColor1.mGreen + theColor2.mGreen;
-    int b = theColor1.mBlue + theColor2.mBlue;
-    int a = theColor1.mAlpha + theColor2.mAlpha;
+    const int r = theColor1.mRed + theColor2.mRed;
+    const int g = theColor1.mGreen + theColor2.mGreen;
+    const int b = theColor1.mBlue + theColor2.mBlue;
+    const int a = theColor1.mAlpha + theColor2.mAlpha;
 
     return Color(ClampInt(r, 0, 255), ClampInt(g, 0, 255), ClampInt(b, 0, 255), ClampInt(a, 0, 255)); // 线性减淡
 }
@@ -891,7 +894,7 @@ bool TodLoadResources(const std::string &theGroup) {
      * Honestly I don't even know what the best way to do this is. Probably implement a
      * constructor in TodResourceManager and use that instead?
      */
-    return ((TodResourceManager *)gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
+    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->TodLoadResources(theGroup);
 }
 
 // 0x513140
@@ -899,7 +902,7 @@ bool TodLoadResources(const std::string &theGroup) {
 bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
     if (IsGroupLoaded(theGroup)) return true;
 
-    auto aTimer = std::chrono::high_resolution_clock::now();
+    const auto aTimer = std::chrono::high_resolution_clock::now();
 
     StartLoadResources(theGroup);
     while (!gSexyAppBase->mShutdown && TodLoadNextResource())
@@ -918,7 +921,7 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 
     mLoadedGroups.insert(theGroup);
 
-    int aDuration =
+    const int aDuration =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count();
     if (aDuration > 20) {
@@ -929,20 +932,22 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 }
 
 void TodAddImageToMap(Image *theImage, const std::string &thePath) {
-    ((TodResourceManager *)gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
+    static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 
 // 0x513230
 void TodResourceManager::AddImageToMap(Image *theImage, const std::string &thePath) {
     TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
 
-    ImageRes *aImageRes = new ImageRes();
+    auto aImageRes = new ImageRes();
     aImageRes->mImage = theImage;
     aImageRes->mPath = thePath;
     mImageMap.insert(ResMap::value_type(thePath, aImageRes));
 }
 
-bool TodLoadNextResource() { return ((TodResourceManager *)gSexyAppBase->mResourceManager)->TodLoadNextResource(); }
+bool TodLoadNextResource() {
+    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->TodLoadNextResource();
+}
 
 // 0x513330
 bool TodResourceManager::TodLoadNextResource() {
@@ -955,7 +960,7 @@ bool TodResourceManager::TodLoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            ImageRes *anImageRes = (ImageRes *)aRes;
+            const ImageRes *anImageRes = static_cast<ImageRes *>(aRes);
             if (anImageRes->mImage != nullptr) {
                 mCurResGroupListItr++;
                 continue;
@@ -965,7 +970,7 @@ bool TodResourceManager::TodLoadNextResource() {
         }
 
         case ResType_Sound: {
-            SoundRes *aSoundRes = (SoundRes *)aRes;
+            const SoundRes *aSoundRes = static_cast<SoundRes *>(aRes);
             if (aSoundRes->mSoundId != -1) {
                 mCurResGroupListItr++;
                 continue;
@@ -975,7 +980,7 @@ bool TodResourceManager::TodLoadNextResource() {
         }
 
         case ResType_Font: {
-            FontRes *aFontRes = (FontRes *)aRes;
+            const FontRes *aFontRes = static_cast<FontRes *>(aRes);
             if (aFontRes->mFont != nullptr) {
                 mCurResGroupListItr++;
                 continue;
@@ -997,18 +1002,18 @@ bool TodResourceManager::TodLoadNextResource() {
 }
 
 bool TodFindImagePath(Image *theImage, std::string *thePath) {
-    return ((TodResourceManager *)gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
+    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
 }
 
 // @Patoke implemented
 bool TodFindFontPath(_Font *theFont, std::string *thePath) {
-    return ((TodResourceManager *)gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
+    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
 }
 
-bool TodResourceManager::FindFontPath(_Font *theFont, std::string *thePath) {
+bool TodResourceManager::FindFontPath(const _Font *theFont, std::string *thePath) {
     for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++) {
-        FontRes *aFontRes = (FontRes *)anItr->second;
-        _Font *aFont = aFontRes->mFont;
+        const FontRes *aFontRes = static_cast<FontRes *>(anItr->second);
+        const _Font *aFont = aFontRes->mFont;
         if (aFont == theFont) {
             *thePath = anItr->first;
             return true;
@@ -1017,10 +1022,10 @@ bool TodResourceManager::FindFontPath(_Font *theFont, std::string *thePath) {
     return false;
 }
 
-bool TodResourceManager::FindImagePath(Image *theImage, std::string *thePath) {
+bool TodResourceManager::FindImagePath(const Image *theImage, std::string *thePath) {
     for (auto anItr = mImageMap.begin(); anItr != mImageMap.end(); anItr++) {
-        ImageRes *aImageRes = (ImageRes *)anItr->second;
-        Image *aImage = (Image *)aImageRes->mImage;
+        const ImageRes *aImageRes = static_cast<ImageRes *>(anItr->second);
+        const Image *aImage = (Image *)aImageRes->mImage;
         if (aImage == theImage) {
             *thePath = anItr->first;
             return true;
@@ -1060,9 +1065,9 @@ void FreeGlobalAllocators() {
 SexyString
 TodReplaceString(const SexyString &theText, const SexyChar *theStringToFind, const SexyString &theStringToSubstitute) {
     SexyString aFinalString = TodStringTranslate(theText);
-    size_t aPos = aFinalString.find(theStringToFind);
+    const size_t aPos = aFinalString.find(theStringToFind);
     if (aPos != SexyString::npos) {
-        SexyString aFinalStringToSubstitute = TodStringTranslate(theStringToSubstitute);
+        const SexyString aFinalStringToSubstitute = TodStringTranslate(theStringToSubstitute);
         aFinalString.replace(aPos, strlen(theStringToFind), aFinalStringToSubstitute);
     }
 
@@ -1072,9 +1077,9 @@ TodReplaceString(const SexyString &theText, const SexyChar *theStringToFind, con
 // 0x513720
 SexyString TodReplaceNumberString(const SexyString &theText, const SexyChar *theStringToFind, int theNumber) {
     SexyString aFinalString = TodStringTranslate(theText);
-    size_t aPos = aFinalString.find(theStringToFind);
+    const size_t aPos = aFinalString.find(theStringToFind);
     if (aPos != SexyString::npos) {
-        SexyString aNumberString = StrFormat(_S("%d"), theNumber);
+        const SexyString aNumberString = StrFormat(_S("%d"), theNumber);
         aFinalString.replace(aPos, strlen(theStringToFind), aNumberString);
     }
 
@@ -1116,7 +1121,7 @@ int TodVsnprintf(char *theBuffer, int theSize, const char *theFormat, va_list th
 int TodSnprintf(char *theBuffer, int theSize, const char *theFormat, ...) {
     va_list argList;
     va_start(argList, theFormat);
-    int aCount = TodVsnprintf(theBuffer, theSize, theFormat, argList);
+    const int aCount = TodVsnprintf(theBuffer, theSize, theFormat, argList);
     va_end(argList);
 
     return aCount;

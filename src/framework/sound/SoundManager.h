@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 class SoundInstance;
 
 #define MAX_SOURCE_SOUNDS 256
@@ -13,6 +12,7 @@ class SoundInstance;
 class SoundManager {
 public:
     SoundManager() {}
+
     virtual ~SoundManager() {}
 
     virtual bool Initialized() = 0;
@@ -39,7 +39,6 @@ public:
     virtual int GetFreeSoundId() = 0;
     virtual int GetNumSounds() = 0;
 };
-
 } // namespace Sexy
 
 #endif //__SOUNDMANAGER_H__

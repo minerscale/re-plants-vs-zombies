@@ -51,9 +51,8 @@ void Attachment::Update() {
         }
 
         case EffectType::EFFECT_ATTACHMENT: {
-            Attachment *aAttachment =
-                gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aAttachment) {
+            if (Attachment *aAttachment =
+                    gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aAttachment->Update();
                 isEmpty = false;
             }
@@ -64,8 +63,7 @@ void Attachment::Update() {
         }
 
         if (isEmpty) {
-            int aNumEffectsRemaining = mNumEffects - i - 1;
-            if (aNumEffectsRemaining > 0) {
+            if (const int aNumEffectsRemaining = mNumEffects - i - 1; aNumEffectsRemaining > 0) {
                 memmove(aAttachEffect, aAttachEffect + 1, aNumEffectsRemaining * sizeof(AttachEffect));
                 --i;
             }
@@ -79,44 +77,40 @@ void Attachment::Update() {
 }
 
 // 0x404610
-void Attachment::SetPosition(const SexyVector2 &thePosition) {
+void Attachment::SetPosition(const SexyVector2 &thePosition) const {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         SexyVector2 aNewPos = aAttachEffect->mOffset * thePosition;
 
         switch (aAttachEffect->mEffectType) {
         case EffectType::EFFECT_PARTICLE: {
-            TodParticleSystem *aParticleSystem =
-                gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aParticleSystem) {
+            if (TodParticleSystem *aParticleSystem =
+                    gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aParticleSystem->SystemMove(aNewPos.x, aNewPos.y);
             }
             break;
         }
 
         case EffectType::EFFECT_TRAIL: {
-            Trail *aTrail = gEffectSystem->mTrailHolder->mTrails.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aTrail) {
+            if (Trail *aTrail = gEffectSystem->mTrailHolder->mTrails.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aTrail->AddPoint(aNewPos.x, aNewPos.y);
             }
             break;
         }
 
         case EffectType::EFFECT_REANIM: {
-            Reanimation *aReanimation =
-                gEffectSystem->mReanimationHolder->mReanimations.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aReanimation) {
+            if (Reanimation *aReanimation =
+                    gEffectSystem->mReanimationHolder->mReanimations.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aReanimation->SetPosition(aNewPos.x, aNewPos.y);
             }
             break;
         }
 
         case EffectType::EFFECT_ATTACHMENT: {
-            Attachment *aAttachment =
-                gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aAttachment) {
+            if (const Attachment *aAttachment =
+                    gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aAttachment->SetPosition(aNewPos);
             }
             break;
@@ -128,16 +122,15 @@ void Attachment::SetPosition(const SexyVector2 &thePosition) {
 }
 
 // 0x404780
-void Attachment::OverrideColor(const Color &theColor) {
+void Attachment::OverrideColor(const Color &theColor) const {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         switch (aAttachEffect->mEffectType) {
         case EffectType::EFFECT_PARTICLE: {
-            TodParticleSystem *aParticleSystem =
-                gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID);
-            if (aParticleSystem) {
+            if (TodParticleSystem *aParticleSystem =
+                    gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID)) {
                 aParticleSystem->OverrideColor("", theColor);
             }
             break;
@@ -174,7 +167,7 @@ void Attachment::PropogateColor(
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         if (aAttachEffect->mDontPropogateColor) {
             continue;
         }
@@ -225,7 +218,7 @@ void Attachment::OverrideScale(float theScale) {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         switch (aAttachEffect->mEffectType) {
         case EffectType::EFFECT_PARTICLE: {
             TodParticleSystem *aParticleSystem =
@@ -264,7 +257,7 @@ void Attachment::CrossFade(const char *theCrossFadeName) {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         if (aAttachEffect->mEffectType == EffectType::EFFECT_PARTICLE) {
             TodParticleSystem *aParticleSystem =
                 gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID);
@@ -280,7 +273,7 @@ void Attachment::SetMatrix(const SexyTransform2D &theMatrix) {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         SexyTransform2D aPosition = theMatrix * aAttachEffect->mOffset;
 
         switch (aAttachEffect->mEffectType) {
@@ -333,7 +326,7 @@ void Attachment::Draw(Graphics *g, bool theParentHidden) {
     DataArray<Attachment> &aAttachments = gEffectSystem->mAttachmentHolder->mAttachments;
 
     for (int i = 0; i < mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &mEffectArray[i];
+        const AttachEffect *aAttachEffect = &mEffectArray[i];
         if (theParentHidden && aAttachEffect->mDontDrawIfParentHidden) {
             continue;
         }
@@ -511,12 +504,12 @@ void AttachmentHolder::DisposeHolder() { mAttachments.DataArrayDispose(); }
 Attachment *AttachmentHolder::AllocAttachment() { return mAttachments.DataArrayAlloc(); }
 
 // 0x4051B0
-void AttachmentUpdateAndSetMatrix(AttachmentID &theAttachmentID, SexyTransform2D &theMatrix) {
+void AttachmentUpdateAndSetMatrix(AttachmentID &theAttachmentID, const SexyTransform2D &theMatrix) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->Update();
         aAttachment->SetMatrix(theMatrix);
@@ -531,7 +524,7 @@ void AttachmentUpdateAndMove(AttachmentID &theAttachmentID, float theX, float th
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->Update();
         aAttachment->SetPosition(SexyVector2(theX, theY));
@@ -540,38 +533,38 @@ void AttachmentUpdateAndMove(AttachmentID &theAttachmentID, float theX, float th
     }
 }
 
-void AttachmentOverrideColor(AttachmentID &theAttachmentID, const Color &theColor) {
+void AttachmentOverrideColor(const AttachmentID &theAttachmentID, const Color &theColor) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->OverrideColor(theColor);
     }
 }
 
-void AttachmentOverrideScale(AttachmentID &theAttachmentID, float theScale) {
+void AttachmentOverrideScale(const AttachmentID &theAttachmentID, float theScale) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->OverrideScale(theScale);
     }
 }
 
 // 0x405270
-void AttachmentReanimTypeDie(AttachmentID &theAttachmentID, ReanimationType theReanimType) {
+void AttachmentReanimTypeDie(const AttachmentID &theAttachmentID, ReanimationType theReanimType) {
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment == nullptr) {
         return;
     }
 
     for (int i = 0; i < aAttachment->mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
+        const AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
         if (aAttachEffect->mEffectType == EffectType::EFFECT_REANIM) {
             Reanimation *aReanimation =
                 gEffectSystem->mReanimationHolder->mReanimations.DataArrayTryToGet(aAttachEffect->mEffectID);
@@ -587,16 +580,16 @@ void AttachmentDetachCrossFadeParticleType(
     AttachmentID &theAttachmentID, ParticleEffect theParticleEffect, const char *theCrossFadeName
 ) {
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment == nullptr) {
         return;
     }
 
     TOD_ASSERT(theParticleEffect >= 0 && theParticleEffect < gParticleDefCount);
-    TodParticleDefinition *aDefinition = &gParticleDefArray[(int)theParticleEffect];
+    const TodParticleDefinition *aDefinition = &gParticleDefArray[static_cast<int>(theParticleEffect)];
 
     for (int i = 0; i < aAttachment->mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
+        const AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
         if (aAttachEffect->mEffectType == EffectType::EFFECT_PARTICLE) {
             TodParticleSystem *aParticleSystem =
                 gEffectSystem->mParticleHolder->mParticleSystems.DataArrayTryToGet(aAttachEffect->mEffectID);
@@ -614,14 +607,14 @@ void AttachmentDetachCrossFadeParticleType(
 }
 
 void AttachmentPropogateColor(
-    AttachmentID &theAttachmentID, const Color &theColor, bool theEnableAdditiveColor, const Color &theAdditiveColor,
-    bool theEnableOverlayColor, const Color &theOverlayColor
+    const AttachmentID &theAttachmentID, const Color &theColor, bool theEnableAdditiveColor,
+    const Color &theAdditiveColor, bool theEnableOverlayColor, const Color &theOverlayColor
 ) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->PropogateColor(
             theColor, theEnableAdditiveColor, theAdditiveColor, theEnableOverlayColor, theOverlayColor
@@ -629,24 +622,24 @@ void AttachmentPropogateColor(
     }
 }
 
-void AttachmentCrossFade(AttachmentID &theAttachmentID, const char *theCrossFadeName) {
+void AttachmentCrossFade(const AttachmentID &theAttachmentID, const char *theCrossFadeName) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->CrossFade(theCrossFadeName);
     }
 }
 
 // 0x4053A0
-void AttachmentDraw(AttachmentID &theAttachmentID, Graphics *g, bool theParentHidden) {
+void AttachmentDraw(const AttachmentID &theAttachmentID, Graphics *g, bool theParentHidden) {
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment) {
         aAttachment->Draw(g, theParentHidden);
     }
@@ -658,7 +651,7 @@ void AttachmentDie(AttachmentID &theAttachmentID) {
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     theAttachmentID = AttachmentID::ATTACHMENTID_NULL;
     if (aAttachment) {
         aAttachment->AttachmentDie();
@@ -671,7 +664,7 @@ void AttachmentDetach(AttachmentID &theAttachmentID) {
 
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     theAttachmentID = AttachmentID::ATTACHMENTID_NULL;
     if (aAttachment) {
         aAttachment->Detach();
@@ -679,16 +672,16 @@ void AttachmentDetach(AttachmentID &theAttachmentID) {
 }
 
 // 0x405480
-Reanimation *FindReanimAttachment(AttachmentID &theAttachmentID) {
+Reanimation *FindReanimAttachment(const AttachmentID &theAttachmentID) {
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment == nullptr) {
         return nullptr;
     }
 
     for (int i = 0; i < aAttachment->mNumEffects; i++) {
-        AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
+        const AttachEffect *aAttachEffect = &aAttachment->mEffectArray[i];
         if (aAttachEffect->mEffectType == EffectType::EFFECT_REANIM) {
             Reanimation *aReanimation =
                 gEffectSystem->mReanimationHolder->mReanimations.DataArrayTryToGet(aAttachEffect->mEffectID);
@@ -702,10 +695,10 @@ Reanimation *FindReanimAttachment(AttachmentID &theAttachmentID) {
 }
 
 // 0x405500
-AttachEffect *FindFirstAttachment(AttachmentID &theAttachmentID) {
+AttachEffect *FindFirstAttachment(const AttachmentID &theAttachmentID) {
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment == nullptr) {
         return nullptr;
     }
@@ -719,10 +712,11 @@ AttachEffect *CreateEffectAttachment(
 ) {
     TOD_ASSERT(gEffectSystem);
     Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     if (aAttachment == nullptr || aAttachment->mDead) {
         aAttachment = gEffectSystem->mAttachmentHolder->AllocAttachment();
-        theAttachmentID = (AttachmentID)gEffectSystem->mAttachmentHolder->mAttachments.DataArrayGetID(aAttachment);
+        theAttachmentID =
+            static_cast<AttachmentID>(gEffectSystem->mAttachmentHolder->mAttachments.DataArrayGetID(aAttachment));
     }
 
     TOD_ASSERT(aAttachment->mNumEffects < MAX_EFFECTS_PER_ATTACHMENT);
@@ -742,7 +736,7 @@ AttachEffect *CreateEffectAttachment(
 // 0x4055D0
 AttachEffect *
 AttachReanim(AttachmentID &theAttachmentID, Reanimation *theReanimation, float theOffsetX, float theOffsetY) {
-    unsigned int aReanimId = gEffectSystem->mReanimationHolder->mReanimations.DataArrayGetID(theReanimation);
+    const unsigned int aReanimId = gEffectSystem->mReanimationHolder->mReanimations.DataArrayGetID(theReanimation);
     AttachEffect *aAttachEffect =
         CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_REANIM, aReanimId, theOffsetX, theOffsetY);
 
@@ -758,7 +752,7 @@ AttachEffect *AttachParticle(
 ) {
     if (theParticleSystem == nullptr) return nullptr;
 
-    unsigned int aParticleId = gEffectSystem->mParticleHolder->mParticleSystems.DataArrayGetID(theParticleSystem);
+    const unsigned int aParticleId = gEffectSystem->mParticleHolder->mParticleSystems.DataArrayGetID(theParticleSystem);
     AttachEffect *aAttachEffect =
         CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_PARTICLE, aParticleId, theOffsetX, theOffsetY);
 
@@ -769,7 +763,7 @@ AttachEffect *AttachParticle(
 }
 
 AttachEffect *AttachTrail(AttachmentID &theAttachmentID, Trail *theTrail, float theOffsetX, float theOffsetY) {
-    unsigned int aTrailId = gEffectSystem->mTrailHolder->mTrails.DataArrayGetID(theTrail);
+    const unsigned int aTrailId = gEffectSystem->mTrailHolder->mTrails.DataArrayGetID(theTrail);
     AttachEffect *aAttachEffect =
         CreateEffectAttachment(theAttachmentID, EffectType::EFFECT_TRAIL, aTrailId, theOffsetX, theOffsetY);
 
@@ -779,9 +773,9 @@ AttachEffect *AttachTrail(AttachmentID &theAttachmentID, Trail *theTrail, float 
     return aAttachEffect;
 }
 
-bool IsFullOfAttachments(AttachmentID &theAttachmentID) {
+bool IsFullOfAttachments(const AttachmentID &theAttachmentID) {
     TOD_ASSERT(gEffectSystem);
-    Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet((unsigned int)theAttachmentID);
+    const Attachment *aAttachment =
+        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
     return aAttachment && aAttachment->mNumEffects >= MAX_EFFECTS_PER_ATTACHMENT;
 }

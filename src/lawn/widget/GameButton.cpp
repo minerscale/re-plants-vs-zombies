@@ -54,7 +54,7 @@ GameButton::GameButton(int theId) {
     mLabel = "";
     mNormalRect = mOverRect = mDownRect = mDisabledRect = Rect();
     mOverAlpha = mOverAlphaSpeed = mOverAlphaFadeInSpeed = 0;
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mId = theId;
     mLabelJustify = 0;
     mFont = nullptr;
@@ -227,7 +227,7 @@ void LawnStoneButton::Draw(Graphics *g) {
 
 // 0x448620
 LawnStoneButton *MakeButton(int theId, ButtonListener *theListener, const SexyString &theText) {
-    LawnStoneButton *aButton = new LawnStoneButton(nullptr, theId, theListener);
+    auto aButton = new LawnStoneButton(nullptr, theId, theListener);
     aButton->SetLabel(theText);
 
     aButton->mTranslateX = 1;
@@ -325,7 +325,7 @@ NewLawnButton *MakeNewButton(
     int theId, ButtonListener *theListener, const SexyString &theText, _Font *theFont, Image *theImageNormal,
     Image *theImageOver, Image *theImageDown
 ) {
-    NewLawnButton *aButton = new NewLawnButton(nullptr, theId, theListener);
+    auto aButton = new NewLawnButton(nullptr, theId, theListener);
     aButton->SetFont(theFont == nullptr ? Sexy::FONT_BRIANNETOD12 : theFont);
     aButton->SetLabel(theText);
 

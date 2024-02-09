@@ -51,7 +51,7 @@ void DialogButton::Draw(Graphics *g) {
             if (mOverAlpha < 1) g->DrawImageBox(mNormalRect, Rect(0, 0, mWidth, mHeight), mComponentImage);
 
             g->SetColorizeImages(true);
-            g->SetColor(Color(255, 255, 255, (int)(mOverAlpha * 255)));
+            g->SetColor(Color(255, 255, 255, static_cast<int>(mOverAlpha * 255)));
             g->DrawImageBox(mOverRect, Rect(0, 0, mWidth, mHeight), mComponentImage);
             g->SetColorizeImages(false);
         } else if (mIsOver) g->DrawImageBox(mOverRect, Rect(0, 0, mWidth, mHeight), mComponentImage);

@@ -31,14 +31,14 @@ void Widget::WidgetRemovedHelper() {
     if (mWidgetManager == NULL) return;
 
     // Call RemovedFromManager on all child widgets and disable them and stuff like that
-    for (WidgetList::iterator aWidgetItr = mWidgets.begin(); aWidgetItr != mWidgets.end(); ++aWidgetItr) {
+    for (auto aWidgetItr = mWidgets.begin(); aWidgetItr != mWidgets.end(); ++aWidgetItr) {
         Widget *aWidget = *aWidgetItr;
         aWidget->WidgetRemovedHelper();
     }
 
     mWidgetManager->DisableWidget(this);
 
-    PreModalInfoList::iterator anItr = mWidgetManager->mPreModalInfoList.begin();
+    auto anItr = mWidgetManager->mPreModalInfoList.begin();
     while (anItr != mWidgetManager->mPreModalInfoList.end()) {
         PreModalInfo *aPreModalInfo = &(*anItr);
         if (aPreModalInfo->mPrevBaseModalWidget == this) aPreModalInfo->mPrevBaseModalWidget = NULL;
@@ -73,6 +73,7 @@ void Widget::SetVisible(bool isVisible) {
 
 // Already translated
 void Widget::Draw(Graphics *) {}
+
 void Widget::DrawOverlay(Graphics *) {}
 
 void Widget::DrawOverlay(Graphics *g, int thePriority) {
@@ -98,7 +99,7 @@ void Widget::SetColors(int theColors[][4], int theNumColors) {
 }
 
 void Widget::SetColor(int theIdx, const Color &theColor) {
-    if (theIdx >= (int)mColors.size()) mColors.resize(theIdx + 1);
+    if (theIdx >= static_cast<int>(mColors.size())) mColors.resize(theIdx + 1);
 
     mColors[theIdx] = theColor;
     MarkDirty();
@@ -106,12 +107,12 @@ void Widget::SetColor(int theIdx, const Color &theColor) {
 
 const Color &Widget::GetColor(int theIdx) {
     static Color aColor;
-    if (theIdx < (int)mColors.size()) return mColors[theIdx];
+    if (theIdx < static_cast<int>(mColors.size())) return mColors[theIdx];
     return aColor;
 }
 
 Color Widget::GetColor(int theIdx, const Color &theDefaultColor) {
-    if (theIdx < (int)mColors.size()) return mColors[theIdx];
+    if (theIdx < static_cast<int>(mColors.size())) return mColors[theIdx];
     return theDefaultColor;
 }
 
@@ -196,6 +197,7 @@ void Widget::MouseMove(int x, int y)
 */
 
 void Widget::MouseMove(int, int) {}
+
 void Widget::MouseDrag(int, int) {}
 
 void Widget::MouseDown(int x, int y, int theClickCount) {
@@ -205,6 +207,7 @@ void Widget::MouseDown(int x, int y, int theClickCount) {
 }
 
 void Widget::MouseDown(int, int, int, int) {}
+
 void Widget::MouseUp(int, int) {}
 
 void Widget::MouseUp(int x, int y, int theLastDownButtonId) {

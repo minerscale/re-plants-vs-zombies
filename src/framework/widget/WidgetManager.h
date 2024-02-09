@@ -6,14 +6,13 @@
 #include "framework/misc/KeyCodes.h"
 
 namespace Sexy {
-
 class Widget;
 class Image;
 // class MemoryImage;
 class SexyAppBase;
 class Graphics;
 
-typedef std::list<Widget *> WidgetList;
+using WidgetList = std::list<Widget *>;
 
 enum {
     WIDGETFLAGS_UPDATE = 1,
@@ -32,9 +31,9 @@ public:
     FlagsMod mPrevBelowModalFlagsMod;
 };
 
-typedef std::list<PreModalInfo> PreModalInfoList;
+using PreModalInfoList = std::list<PreModalInfo>;
 
-typedef std::vector<std::pair<Widget *, int>> DeferredOverlayVector;
+using DeferredOverlayVector = std::vector<std::pair<Widget *, int>>;
 
 class WidgetManager : public WidgetContainer {
 public:
@@ -82,17 +81,17 @@ protected:
 
 public:
     WidgetManager(SexyAppBase *theApplet);
-    virtual ~WidgetManager();
+    ~WidgetManager() override;
 
     void FreeResources();
     void AddBaseModal(Widget *theWidget, const FlagsMod &theBelowFlagsMod);
     void AddBaseModal(Widget *theWidget);
     void RemoveBaseModal(Widget *theWidget);
     void Resize(const Rect &theMouseDestRect, const Rect &theMouseSourceRect);
-    void DisableWidget(Widget *theWidget);
+    void DisableWidget(Widget *theWidget) override;
     Widget *GetAnyWidgetAt(int x, int y, int *theWidgetX, int *theWidgetY);
     Widget *GetWidgetAt(int x, int y, int *theWidgetX, int *theWidgetY);
-    void SetFocus(Widget *aWidget);
+    void SetFocus(Widget *aWidget) override;
     void GotFocus();
     void LostFocus();
     void InitModalFlags(ModalFlags *theModalFlags);
@@ -124,7 +123,6 @@ public:
     bool IsMiddleButtonDown();
     bool IsRightButtonDown();
 };
-
 } // namespace Sexy
 
 #endif // __WIDGETMANAGER_H__

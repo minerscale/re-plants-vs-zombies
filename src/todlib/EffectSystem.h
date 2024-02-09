@@ -18,8 +18,8 @@ public:
 
 class TodTriangleGroup {
 public:
-    typedef std::array<std::array<TriVertex, 3>, MAX_TRIANGLES> VertexArray;
-    typedef std::deque<VertexArray> VertexArrayPool;
+    using VertexArray = std::array<std::array<TriVertex, 3>, MAX_TRIANGLES>;
+    using VertexArrayPool = std::deque<VertexArray>;
 
     static size_t gNumVertArraysInUse;
     static VertexArrayPool gVertArrays;
@@ -34,7 +34,7 @@ public:
 
     TodTriangleGroup();
     ~TodTriangleGroup();
-    void DrawGroup(Graphics *g);
+    void DrawGroup(const Graphics *g);
     void AddTriangle(
         Graphics *g, Image *theImage, const SexyMatrix3 &theMatrix, const Rect &theClipRect, const Color &theColor,
         int theDrawMode, const Rect &theSrcRect
@@ -48,6 +48,7 @@ class TodParticleHolder;
 class TrailHolder;
 class ReanimationHolder;
 class AttachmentHolder;
+
 class EffectSystem {
 public:
     TodParticleHolder *mParticleHolder;
@@ -58,14 +59,16 @@ public:
 public:
     EffectSystem()
         : mParticleHolder(nullptr), mTrailHolder(nullptr), mReanimationHolder(nullptr), mAttachmentHolder(nullptr) {}
+
     ~EffectSystem() {}
 
     void EffectSystemInitialize();
     void EffectSystemDispose();
-    void EffectSystemFreeAll();
-    void ProcessDeleteQueue();
+    void EffectSystemFreeAll() const;
+    void ProcessDeleteQueue() const;
     void Update();
 };
+
 extern EffectSystem *gEffectSystem; //[0x6A9EB8]
 
 #endif

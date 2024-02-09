@@ -52,14 +52,14 @@ public:
     bool mDidPressMoreButton; //+GOTY @Patoke: 0xBC
 
     AchievementsWidget(LawnApp *theApp);
-    virtual ~AchievementsWidget();
+    ~AchievementsWidget() override;
 
-    virtual void Update();
-    virtual void Draw(Graphics *g);
-    virtual void KeyDown(KeyCode theKey);
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseUp(int x, int y, int theClickCount);
-    virtual void MouseWheel(int theDelta);
+    void Update() override;
+    void Draw(Graphics *g) override;
+    void KeyDown(KeyCode theKey) override;
+    void MouseDown(int x, int y, int theClickCount) override;
+    void MouseUp(int x, int y, int theClickCount) override;
+    void MouseWheel(int theDelta) override;
 };
 
 class ReportAchievement {

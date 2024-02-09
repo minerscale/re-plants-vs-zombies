@@ -26,17 +26,12 @@ SexyMatrix3 SexyMatrix3::operator*(const SexyMatrix3 &theMat) const {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 SexyVector2 SexyMatrix3::operator*(const SexyVector2 &theVec) const {
-    return SexyVector2(m00 * theVec.x + m01 * theVec.y + m02, m10 * theVec.x + m11 * theVec.y + m12);
+    return {m00 * theVec.x + m01 * theVec.y + m02, m10 * theVec.x + m11 * theVec.y + m12};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-SexyVector3 SexyMatrix3::operator*(const SexyVector3 &theVec) const {
-    return SexyVector3(
-        m00 * theVec.x + m01 * theVec.y + m02 * theVec.z, m10 * theVec.x + m11 * theVec.y + m12 * theVec.z,
-        m20 * theVec.x + m21 * theVec.y + m22 * theVec.z
-    );
-}
+SexyVector3 SexyMatrix3::operator*(const SexyVector3 &theVec) const { return {theVec.vec * mat}; }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,8 +76,8 @@ void SexyTransform2D::RotateRad(float rot) {
     SexyMatrix3 aMat;
     aMat.LoadIdentity();
 
-    float sinRot = -sinf(rot);
-    float cosRot = cosf(rot);
+    const float sinRot = -sinf(rot);
+    const float cosRot = cosf(rot);
 
     aMat.m00 = cosRot;
     aMat.m01 = -sinRot;

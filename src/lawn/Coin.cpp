@@ -181,13 +181,12 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
                                     SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
                                     SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
 
-            SeedType aSeedType = (SeedType)TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList));
+            auto aSeedType = static_cast<SeedType>(TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList)));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else {
             SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         }
-
     } else if (mType == CoinType::COIN_AWARD_MONEY_BAG || mType == CoinType::COIN_AWARD_BAG_DIAMOND) {
         mWidth = IMAGE_MONEYBAG->GetCelWidth();
         mHeight = IMAGE_MONEYBAG->GetCelHeight();
@@ -502,7 +501,7 @@ void Coin::UpdateCollected() {
 
     if (IsPresentWithAdvice()) {
         if (mCollectionDistance < 15.0f) {
-            if (!mBoard->mBoardData.mHelpDisplayed[(int)AdviceType::ADVICE_UNLOCKED_MODE]) {
+            if (!mBoard->mBoardData.mHelpDisplayed[static_cast<int>(AdviceType::ADVICE_UNLOCKED_MODE)]) {
                 if (mType == CoinType::COIN_PRESENT_MINIGAMES) {
                     // 注：此处的 theMessageStyle 参数，原版中为 MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE，内测版中为
                     // MESSAGE_STYLE_HINT_TALL_8SECONDS
@@ -515,7 +514,8 @@ void Coin::UpdateCollected() {
                         _S("[UNLOCKED_PUZZLE_MODE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE,
                         AdviceType::ADVICE_UNLOCKED_MODE
                     );
-                } else { // @Patoke: add case
+                } else {
+                    // @Patoke: add case
                     mBoard->DisplayAdvice(
                         _S("[UNLOCKED_SURVIVAL_MODE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE,
                         AdviceType::ADVICE_UNLOCKED_MODE
@@ -569,9 +569,8 @@ void Coin::Update() {
         AttachmentOverrideScale(mAttachmentID, mScale);
 
         if ((!mHitGround || mIsBeingCollected) && (mType == CoinType::COIN_SILVER || mType == CoinType::COIN_GOLD)) {
-            AttachmentOverrideColor(
-                mAttachmentID, Color(0, 0, 0, 0)
-            ); // 运动中的金币和银币使用贴图，故以此法隐藏附件的动画
+            AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));
+            // 运动中的金币和银币使用贴图，故以此法隐藏附件的动画
         }
     }
 }
@@ -741,7 +740,10 @@ void Coin::Draw(Graphics *g) {
         }
 
         g->SetColorizeImages(true);
-        DrawSeedPacket(g, (int)mPosX, (int)mPosY, mUsableSeedType, SeedType::SEED_NONE, 0.0f, aGrayness, false, false);
+        DrawSeedPacket(
+            g, static_cast<int>(mPosX), static_cast<int>(mPosY), mUsableSeedType, SeedType::SEED_NONE, 0.0f, aGrayness,
+            false, false
+        );
         g->SetColorizeImages(false);
 
         return;
@@ -762,7 +764,9 @@ void Coin::FanOutCoins(CoinType theCoinType, int theNumCoins) {
         float aAngle = PI / 2 + PI * (i + 1) / (theNumCoins + 1);
         float aPosX = mPosX + 20.0f;
         float aPosY = mPosY;
-        Coin *aCoin = mBoard->AddCoin((int)aPosX, (int)aPosY, theCoinType, CoinMotion::COIN_MOTION_FROM_PRESENT);
+        Coin *aCoin = mBoard->AddCoin(
+            static_cast<int>(aPosX), static_cast<int>(aPosY), theCoinType, CoinMotion::COIN_MOTION_FROM_PRESENT
+        );
         aCoin->mVelX = 5.0f * sin(aAngle);
         aCoin->mVelY = 5.0f * cos(aAngle);
     }
@@ -875,13 +879,14 @@ void Coin::Collect() {
         mBoard->mBoardData.mChocolateCollected++;
         mApp->AddTodParticle(mPosX + 30.0f, mPosY + 30.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_PRESENT_PICKUP);
 
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE] < PURCHASE_COUNT_OFFSET) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)] < PURCHASE_COUNT_OFFSET) {
             mBoard->DisplayAdvice(
                 _S("[ADVICE_FOUND_CHOCOLATE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE
             );
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE] = PURCHASE_COUNT_OFFSET + 1;
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)] =
+                PURCHASE_COUNT_OFFSET + 1;
         } else {
-            mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_CHOCOLATE]++;
+            mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_CHOCOLATE)]++;
         }
 
         mDisappearCounter = 0;
@@ -918,8 +923,9 @@ void Coin::Collect() {
         } else if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 4) {
             mApp->PlaySample(SOUND_SHOVEL);
         }
-        else if (mApp->IsFirstTimeAdventureMode() && (mBoard->mBoardData.mLevel == 24 || mBoard->mBoardData.mLevel == 34 || mBoard->mBoardData.mLevel == 44))
-        {
+		else if (mApp->IsFirstTimeAdventureMode() && (mBoard->mBoardData.mLevel == 24 || mBoard->mBoardData.mLevel == 34
+			|| mBoard->mBoardData.mLevel == 44))
+		{
             mApp->PlaySample(SOUND_TAP2);
         } else if (mType == CoinType::COIN_TROPHY) {
             mApp->PlaySample(SOUND_DIAMOND);
@@ -964,9 +970,9 @@ void Coin::Collect() {
 
         mBoard->mCursorObject->mType = mUsableSeedType;
         mBoard->mCursorObject->mCursorType = CursorType::CURSOR_TYPE_PLANT_FROM_USABLE_COIN;
-        mBoard->mCursorObject->mCoinID = (CoinID)mBoard->mCoins.DataArrayGetID(this);
+        mBoard->mCursorObject->mCoinID = static_cast<CoinID>(mBoard->mCoins.DataArrayGetID(this));
 
-        mGroundY = (int)mPosY;
+        mGroundY = static_cast<int>(mPosY);
         mFadeCount = 0;
         return;
     }
@@ -1105,7 +1111,7 @@ void Coin::MouseDown(int x, int y, int theClickCount) {
 // 0x432DD0
 //  GOTY @Patoke: 0x435B20
 void Coin::Die() {
-    TOD_ASSERT(!mBoard || mBoard->mCursorObject->mCoinID != (CoinID)mBoard->mCoins.DataArrayGetID(this));
+    TOD_ASSERT(!mBoard || mBoard->mCursorObject->mCoinID != static_cast<CoinID>(mBoard->mCoins.DataArrayGetID(this)));
 
     mDead = true;
     AttachmentDie(mAttachmentID);

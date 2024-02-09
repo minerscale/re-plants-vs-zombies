@@ -7,7 +7,6 @@
 #include <string>
 
 namespace Sexy {
-
 class Graphics;
 
 class _Font {
@@ -37,7 +36,6 @@ public:
 
     virtual _Font *Duplicate() = 0;
 };
-
 } // namespace Sexy
 
 #endif //__FONT_H__

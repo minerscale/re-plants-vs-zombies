@@ -10,6 +10,7 @@ using namespace Sexy;
 class LawnApp;
 class ToolTipWidget;
 class NewLawnButton;
+
 class ChallengeScreen : public Widget, public ButtonListener {
 private:
     enum { ChallengeScreen_Back = 100, ChallengeScreen_Mode = 200, ChallengeScreen_Page = 300 };
@@ -30,28 +31,36 @@ public:
 
 public:
     ChallengeScreen(LawnApp *theApp, ChallengePage thePage);
-    virtual ~ChallengeScreen();
+    ~ChallengeScreen() override;
     void SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
     int MoreTrophiesNeeded(int theChallengeIndex);
-    /*inline*/ bool ShowPageButtons();
+    /*inline*/
+    bool ShowPageButtons();
     void UpdateButtons();
     int AccomplishmentsNeeded(int theChallengeIndex);
     void DrawButton(Graphics *g, int theChallengeIndex);
-    virtual void Draw(Graphics *g);
-    virtual void Update();
-    virtual void AddedToManager(WidgetManager *theWidgetManager);
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
-    virtual void ButtonPress(int theId);
-    virtual void ButtonDownTick(int) {}
-    virtual void ButtonMouseEnter(int) {}
-    virtual void ButtonMouseLeave(int) {}
-    virtual void ButtonMouseMove(int, int, int) {}
-    virtual void ButtonDepress(int theId);
+    void Draw(Graphics *g) override;
+    void Update() override;
+    void AddedToManager(WidgetManager *theWidgetManager) override;
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
+    void ButtonPress(int theId) override;
+
+    void ButtonDownTick(int) override {}
+
+    void ButtonMouseEnter(int) override {}
+
+    void ButtonMouseLeave(int) override {}
+
+    void ButtonMouseMove(int, int, int) override {}
+
+    void ButtonDepress(int theId) override;
     void UpdateToolTip();
     //  virtual void                KeyChar(char theChar);
 
-    /*inline*/ bool IsScaryPotterLevel(GameMode theGameMode);
-    /*inline*/ bool IsIZombieLevel(GameMode theGameMode);
+    /*inline*/
+    bool IsScaryPotterLevel(GameMode theGameMode);
+    /*inline*/
+    bool IsIZombieLevel(GameMode theGameMode);
 };
 
 class ChallengeDefinition {
@@ -63,6 +72,7 @@ public:
     int mCol;
     const SexyChar *mChallengeName;
 };
+
 extern ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES];
 
 ChallengeDefinition &GetChallengeDefinition(int theChallengeMode);

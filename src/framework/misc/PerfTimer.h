@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class PerfTimer {
@@ -48,6 +47,7 @@ public:
     bool mIsStarted;
 
     SexyAutoPerf(const char *theName) : mName(theName), mIsStarted(true) { SexyPerf::StartTiming(theName); }
+
     SexyAutoPerf(const char *theName, bool doStart) : mName(theName), mIsStarted(doStart) {
         if (doStart) SexyPerf::StartTiming(theName);
     }
@@ -68,7 +68,6 @@ public:
         }
     }
 };
-
 } // namespace Sexy
 
 #endif

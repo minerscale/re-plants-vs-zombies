@@ -5,8 +5,7 @@
 #include <string>
 
 namespace Sexy {
-
-typedef std::vector<uchar> ByteVector;
+using ByteVector = std::vector<uchar>;
 
 class Buffer {
 public:
@@ -58,7 +57,6 @@ public:
     bool AtEnd() const;
     bool PastEnd() const;
 };
-
 } // namespace Sexy
 
 #endif //__BUFFER_H__

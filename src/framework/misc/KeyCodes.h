@@ -2,9 +2,9 @@
 #define __KEYCODES_INCLUDED__
 
 namespace Sexy {
-
 // Don't need typedef
-/*typedef*/ enum KeyCode : uint8_t {
+/*typedef*/
+enum KeyCode : uint8_t {
     KEYCODE_UNKNOWN = 0x00,
     KEYCODE_LBUTTON = 0x01,
     KEYCODE_RBUTTON = 0x02,
@@ -100,13 +100,13 @@ namespace Sexy {
     KEYCODE_RCONTROL = 0xA3,
     KEYCODE_LMENU = 0xA4,
     KEYCODE_RMENU = 0xA5,
-    KEYCODE_ASCIIBEGIN2 = 0xB3, // ASCII + 0x80
+    KEYCODE_ASCIIBEGIN2 = 0xB3,
+    // ASCII + 0x80
     KEYCODE_ASCIIEND2 = 0xE0
 };
 
 KeyCode GetKeyCodeFromName(const std::string &theKeyName);
 const std::string GetKeyNameFromCode(const KeyCode &theKeyCode);
-
 } // namespace Sexy
 
 #endif //__KEYCODES_INCLUDED__

@@ -4,9 +4,9 @@
 #include <filesystem>
 #include <fstream>
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
+using uchar = unsigned char;
+using ushort = unsigned short;
+using ulong = unsigned long;
 
 enum { FILEFLAGS_END = 0x80 };
 
@@ -21,10 +21,11 @@ static std::string StringToUpper(const std::string &theString) {
     return aString;
 }
 
-PakInterface::PakInterface() { /*
-                                  if (GetPakPtr() == NULL)
-                                      *gPakInterfaceP = this;
-                              */
+PakInterface::PakInterface() {
+    /*
+        if (GetPakPtr() == NULL)
+            *gPakInterfaceP = this;
+    */
 }
 
 PakInterface::~PakInterface() {}
@@ -70,8 +71,7 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
 
     fclose(aFileHandle);
 
-    PakRecordMap::iterator aRecordItr =
-        mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(theFileName), PakRecord())).first;
+    auto aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(theFileName), PakRecord())).first;
     PakRecord *aPakRecord = &(aRecordItr->second);
     aPakRecord->mCollection = aPakCollection;
     aPakRecord->mFileName = theFileName;
@@ -112,8 +112,7 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
         FileTime aFileTime;
         FRead(&aFileTime, sizeof(FileTime), 1, aFP);
 
-        PakRecordMap::iterator aRecordItr =
-            mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(aName), PakRecord())).first;
+        auto aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(aName), PakRecord())).first;
         PakRecord *aPakRecord = &(aRecordItr->second);
         aPakRecord->mCollection = aPakCollection;
         aPakRecord->mFileName = aName;
@@ -170,7 +169,7 @@ static void FixFileName(const char *theFileName, char *theUpperName) {
             aSrc++;
             // 此处将形如“a\b\..\c”的路径简化为“a\c”
         } else {
-            *(aDest++) = toupper((uchar)c);
+            *(aDest++) = toupper(static_cast<uchar>(c));
             if (c == 0) break;
             lastSlash = false;
         }
@@ -183,9 +182,9 @@ PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
         char anUpperName[256];
         FixFileName(theFileName, anUpperName);
 
-        PakRecordMap::iterator anItr = mPakRecordMap.find(anUpperName);
+        auto anItr = mPakRecordMap.find(anUpperName);
         if (anItr != mPakRecordMap.end()) {
-            PFILE *aPFP = new PFILE;
+            auto aPFP = new PFILE;
             aPFP->mRecord = &anItr->second;
             aPFP->mPos = 0;
             aPFP->mFP = NULL;
@@ -195,7 +194,7 @@ PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
 
     FILE *aFP = fcaseopen(theFileName, anAccess);
     if (aFP == NULL) return NULL;
-    PFILE *aPFP = new PFILE;
+    auto aPFP = new PFILE;
     aPFP->mRecord = NULL;
     aPFP->mPos = 0;
     aPFP->mFP = aFP;
@@ -235,8 +234,9 @@ size_t PakInterface::FRead(void *thePtr, int theElemSize, int theCount, PFILE *t
         int aSizeBytes = std::min(theElemSize * theCount, theFile->mRecord->mSize - theFile->mPos);
 
         // 取得在整个 pak 中开始读取的位置的指针
-        uchar *src = (uchar *)theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
-        uchar *dest = (uchar *)thePtr;
+        uchar *src =
+            static_cast<uchar *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos + theFile->mPos;
+        auto dest = static_cast<uchar *>(thePtr);
         for (int i = 0; i < aSizeBytes; i++)
             *(dest++) = (*src++) ^ 0xF7; // 'Decrypt'
         theFile->mPos += aSizeBytes;     // 读取完成后，移动当前读取位置的指针
@@ -250,10 +250,10 @@ int PakInterface::FGetC(PFILE *theFile) {
     if (theFile->mRecord != NULL) {
         for (;;) {
             if (theFile->mPos >= theFile->mRecord->mSize) return EOF;
-            char aChar =
-                *((char *)theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos++) ^
-                0xF7;
-            if (aChar != '\r') return (uchar)aChar;
+            char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
+                           theFile->mPos++) ^
+                         0xF7;
+            if (aChar != '\r') return static_cast<uchar>(aChar);
         }
     }
 
@@ -278,9 +278,9 @@ char *PakInterface::FGetS(char *thePtr, int theSize, PFILE *theFile) {
                 if (anIdx == 0) return NULL;
                 break;
             }
-            char aChar =
-                *((char *)theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos++) ^
-                0xF7;
+            char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
+                           theFile->mPos++) ^
+                         0xF7;
             if (aChar != '\r') thePtr[anIdx++] = aChar;
             if (aChar == '\n') break;
         }

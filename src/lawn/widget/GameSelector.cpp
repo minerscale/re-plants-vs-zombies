@@ -489,7 +489,7 @@ void GameSelector::Draw(Graphics *g) {
         float aStringWidth = Sexy::FONT_BRIANNETOD16->StringWidth(aWelcomeStr);
         SexyTransform2D aOffsetMatrix;
         // @Patoke: add position so it moves when sliding to position
-        aOffsetMatrix.Translate(170.5f - (int)(aStringWidth * 0.5f) + mX, 102.5f + mY);
+        aOffsetMatrix.Translate(170.5f - static_cast<int>(aStringWidth * 0.5f) + mX, 102.5f + mY);
         TodDrawStringMatrix(
             g, Sexy::FONT_BRIANNETOD16, aOverlayMatrix * aOffsetMatrix, aWelcomeStr, Color(255, 245, 200)
         );
@@ -541,7 +541,8 @@ void GameSelector::DrawOverlay(Graphics *g) {
         g->SetColor(mAdventureButton->mColors[ButtonWidget::COLOR_BKG]);
         // @Patoke: changed positions for GOTY adventure icon
         TodDrawImageCelF(
-            g, Sexy::IMAGE_SELECTORSCREEN_LEVELNUMBERS, aTransAreaX + 486.0f, aTransAreaY + 47.f, aStage, 0
+            g, Sexy::IMAGE_SELECTORSCREEN_LEVELNUMBERS, aTransAreaX + 486.0f, aTransAreaY + 47.f, aStage,
+            0
         ); // 绘制大关数
         if (aSub < 10) {
             TodDrawImageCelF(
@@ -847,8 +848,8 @@ void GameSelector::TrackButton(DialogButton *theButton, const char *theTrackName
     ReanimatorTransform aTransform;
     aSelectorReanim->GetCurrentTransform(aTrackIndex, &aTransform);
 
-    theButton->mX = (int)(aTransform.mTransX + theOffsetX);
-    theButton->mY = (int)(aTransform.mTransY + theOffsetY);
+    theButton->mX = static_cast<int>(aTransform.mTransX + theOffsetX);
+    theButton->mY = static_cast<int>(aTransform.mTransY + theOffsetY);
 }
 
 // 0x44BBC0
@@ -993,9 +994,10 @@ void GameSelector::KeyChar(char theChar) {
         mApp->mPlayerInfo->mHasUnlockedSurvivalMode = true;
 
         for (int i = 1; i < 100; i++)
-            if (i != (int)GameMode::GAMEMODE_TREE_OF_WISDOM && i != (int)GameMode::GAMEMODE_SCARY_POTTER_ENDLESS &&
-                i != (int)GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS &&
-                i != (int)GameMode::GAMEMODE_SURVIVAL_ENDLESS_STAGE_3)
+            if (i != static_cast<int>(GameMode::GAMEMODE_TREE_OF_WISDOM) &&
+                i != static_cast<int>(GameMode::GAMEMODE_SCARY_POTTER_ENDLESS) &&
+                i != static_cast<int>(GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS) &&
+                i != static_cast<int>(GameMode::GAMEMODE_SURVIVAL_ENDLESS_STAGE_3))
                 mApp->mPlayerInfo->mChallengeRecords[i - 1] = 20;
         SyncProfile(true);
 
@@ -1265,11 +1267,12 @@ void GameSelector::AddPreviewProfiles() {
         aProfile->mPurchases[StoreItem::STORE_ITEM_AQUARIUM_GARDEN] = 1;
         aProfile->mPurchases[StoreItem::STORE_ITEM_TREE_OF_WISDOM] = 1;
 
-        aProfile->mChallengeRecords[(int)GameMode::GAMEMODE_TREE_OF_WISDOM - 1] = 1;
+        aProfile->mChallengeRecords[static_cast<int>(GameMode::GAMEMODE_TREE_OF_WISDOM) - 1] = 1;
         for (int i = 1; i < 100; i++)
-            if (i != (int)GameMode::GAMEMODE_TREE_OF_WISDOM && i != (int)GameMode::GAMEMODE_SCARY_POTTER_ENDLESS &&
-                i != (int)GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS &&
-                i != (int)GameMode::GAMEMODE_SURVIVAL_ENDLESS_STAGE_3)
+            if (i != static_cast<int>(GameMode::GAMEMODE_TREE_OF_WISDOM) &&
+                i != static_cast<int>(GameMode::GAMEMODE_SCARY_POTTER_ENDLESS) &&
+                i != static_cast<int>(GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS) &&
+                i != static_cast<int>(GameMode::GAMEMODE_SURVIVAL_ENDLESS_STAGE_3))
                 mApp->mPlayerInfo->mChallengeRecords[i - 1] = 20;
 
         aProfile->SaveDetails();

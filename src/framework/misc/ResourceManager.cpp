@@ -69,7 +69,7 @@ bool ResourceManager::IsGroupLoaded(const std::string &theGroup) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 void ResourceManager::DeleteMap(ResMap &theMap) {
-    for (ResMap::iterator anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
+    for (auto anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
         anItr->second->DeleteResource();
         delete anItr->second;
     }
@@ -80,7 +80,7 @@ void ResourceManager::DeleteMap(ResMap &theMap) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 void ResourceManager::DeleteResources(ResMap &theMap, const std::string &theGroup) {
-    for (ResMap::iterator anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
+    for (auto anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
         if (theGroup.empty() || anItr->second->mResGroup == theGroup) anItr->second->DeleteResource();
     }
 }
@@ -161,7 +161,7 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
     } else theRes->mPath = mDefaultPath + SexyStringToStringFast(aPath);
 
     std::string anId;
-    XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("id"));
+    auto anItr = theElement.mAttributes.find(_S("id"));
     if (anItr == theElement.mAttributes.end()) anId = mDefaultIdPrefix + GetFileName(theRes->mPath, true);
     else anId = mDefaultIdPrefix + SexyStringToStringFast(anItr->second);
 
@@ -181,7 +181,7 @@ bool ResourceManager::ParseCommonResource(XMLElement &theElement, BaseRes *theRe
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseSoundResource(XMLElement &theElement) {
-    SoundRes *aRes = new SoundRes;
+    auto aRes = new SoundRes;
     aRes->mSoundId = -1;
     aRes->mVolume = -1;
     aRes->mPanning = 0;
@@ -191,7 +191,7 @@ bool ResourceManager::ParseSoundResource(XMLElement &theElement) {
             mError = "";
             mHasFailed = false;
             SoundRes *oldRes = aRes;
-            aRes = (SoundRes *)mSoundMap[oldRes->mId];
+            aRes = static_cast<SoundRes *>(mSoundMap[oldRes->mId]);
             aRes->mPath = oldRes->mPath;
             aRes->mXMLAttributes = oldRes->mXMLAttributes;
             delete oldRes;
@@ -230,13 +230,13 @@ static void ReadIntVector(const SexyString &theVal, std::vector<int> &theVector)
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseImageResource(XMLElement &theElement) {
-    ImageRes *aRes = new ImageRes;
+    auto aRes = new ImageRes;
     if (!ParseCommonResource(theElement, aRes, mImageMap)) {
         if (mHadAlreadyDefinedError && mAllowAlreadyDefinedResources) {
             mError = "";
             mHasFailed = false;
             ImageRes *oldRes = aRes;
-            aRes = (ImageRes *)mImageMap[oldRes->mId];
+            aRes = static_cast<ImageRes *>(mImageMap[oldRes->mId]);
             aRes->mPath = oldRes->mPath;
             aRes->mXMLAttributes = oldRes->mXMLAttributes;
             delete oldRes;
@@ -321,7 +321,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseFontResource(XMLElement &theElement) {
-    FontRes *aRes = new FontRes;
+    auto aRes = new FontRes;
     aRes->mFont = NULL;
     aRes->mImage = NULL;
 
@@ -330,7 +330,7 @@ bool ResourceManager::ParseFontResource(XMLElement &theElement) {
             mError = "";
             mHasFailed = false;
             FontRes *oldRes = aRes;
-            aRes = (FontRes *)mFontMap[oldRes->mId];
+            aRes = static_cast<FontRes *>(mFontMap[oldRes->mId]);
             aRes->mPath = oldRes->mPath;
             aRes->mXMLAttributes = oldRes->mXMLAttributes;
             delete oldRes;
@@ -534,10 +534,10 @@ void ResourceManager::DeleteImage(const std::string &theName) { ReplaceImage(the
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 Image *ResourceManager::LoadImage(const std::string &theName) {
-    ResMap::iterator anItr = mImageMap.find(theName);
+    auto anItr = mImageMap.find(theName);
     if (anItr == mImageMap.end()) return NULL;
 
-    ImageRes *aRes = (ImageRes *)anItr->second;
+    auto aRes = static_cast<ImageRes *>(anItr->second);
 
     if (aRes->mImage != NULL) return aRes->mImage;
 
@@ -611,7 +611,7 @@ bool ResourceManager::DoLoadFont(FontRes *theRes) {
         aFont = new ImageFont(anImage, theRes->mPath);*/
     }
 
-    ImageFont *anImageFont = dynamic_cast<ImageFont *>(aFont);
+    auto anImageFont = dynamic_cast<ImageFont *>(aFont);
     if (anImageFont != NULL) {
         if (anImageFont->mFontData == NULL || !anImageFont->mFontData->mInitialized) {
             delete aFont;
@@ -641,10 +641,10 @@ bool ResourceManager::DoLoadFont(FontRes *theRes) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 _Font *ResourceManager::LoadFont(const std::string &theName) {
-    ResMap::iterator anItr = mFontMap.find(theName);
+    auto anItr = mFontMap.find(theName);
     if (anItr == mFontMap.end()) return NULL;
 
-    FontRes *aRes = (FontRes *)anItr->second;
+    auto aRes = static_cast<FontRes *>(anItr->second);
     if (aRes->mFont != NULL) return aRes->mFont;
 
     if (aRes->mFromProgram) return NULL;
@@ -671,21 +671,21 @@ bool ResourceManager::LoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            ImageRes *anImageRes = (ImageRes *)aRes;
+            auto anImageRes = static_cast<ImageRes *>(aRes);
             if (anImageRes->mImage != NULL) continue;
 
             return DoLoadImage(anImageRes);
         }
 
         case ResType_Sound: {
-            SoundRes *aSoundRes = (SoundRes *)aRes;
+            auto aSoundRes = static_cast<SoundRes *>(aRes);
             if (aSoundRes->mSoundId != -1) continue;
 
             return DoLoadSound(aSoundRes);
         }
 
         case ResType_Font: {
-            FontRes *aFontRes = (FontRes *)aRes;
+            auto aFontRes = static_cast<FontRes *>(aRes);
             if (aFontRes->mFont != NULL) continue;
 
             return DoLoadFont(aFontRes);
@@ -716,11 +716,11 @@ void ResourceManager::StartLoadResources(const std::string &theGroup) {
 //////////////////////////////////////////////////////////////////////////
 void ResourceManager::DumpCurResGroup(std::string &theDestStr) {
     const ResList *rl = &mResGroupMap.find(mCurResGroup)->second;
-    ResList::const_iterator it = rl->begin();
+    auto it = rl->begin();
     theDestStr =
         StrFormat("About to dump %d elements from current res group name %s\r\n", rl->size(), mCurResGroup.c_str());
 
-    ResList::const_iterator rl_end = rl->end();
+    auto rl_end = rl->end();
     while (it != rl_end) {
         BaseRes *br = *it++;
         std::string prefix = StrFormat("%s: %s\r\n", br->mId.c_str(), br->mPath.c_str());
@@ -756,7 +756,7 @@ int ResourceManager::GetNumResources(const std::string &theGroup, ResMap &theMap
     if (theGroup.empty()) return theMap.size();
 
     int aCount = 0;
-    for (ResMap::iterator anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
+    for (auto anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
         BaseRes *aRes = anItr->second;
         if (aRes->mResGroup == theGroup && !aRes->mFromProgram) ++aCount;
     }
@@ -785,33 +785,33 @@ int ResourceManager::GetNumResources(const std::string &theGroup) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 Image *ResourceManager::GetImage(const std::string &theId) {
-    ResMap::iterator anItr = mImageMap.find(theId);
-    if (anItr != mImageMap.end()) return ((ImageRes *)anItr->second)->mImage;
+    auto anItr = mImageMap.find(theId);
+    if (anItr != mImageMap.end()) return static_cast<ImageRes *>(anItr->second)->mImage;
     else return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 int ResourceManager::GetSound(const std::string &theId) {
-    ResMap::iterator anItr = mSoundMap.find(theId);
-    if (anItr != mSoundMap.end()) return ((SoundRes *)anItr->second)->mSoundId;
+    auto anItr = mSoundMap.find(theId);
+    if (anItr != mSoundMap.end()) return static_cast<SoundRes *>(anItr->second)->mSoundId;
     else return -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 _Font *ResourceManager::GetFont(const std::string &theId) {
-    ResMap::iterator anItr = mFontMap.find(theId);
-    if (anItr != mFontMap.end()) return ((FontRes *)anItr->second)->mFont;
+    auto anItr = mFontMap.find(theId);
+    if (anItr != mFontMap.end()) return static_cast<FontRes *>(anItr->second)->mFont;
     else return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 Image *ResourceManager::GetImageThrow(const std::string &theId) {
-    ResMap::iterator anItr = mImageMap.find(theId);
+    auto anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
-        ImageRes *aRes = (ImageRes *)anItr->second;
+        auto aRes = static_cast<ImageRes *>(anItr->second);
 
         if (aRes->mImage != NULL) return aRes->mImage;
 
@@ -825,9 +825,9 @@ Image *ResourceManager::GetImageThrow(const std::string &theId) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 int ResourceManager::GetSoundThrow(const std::string &theId) {
-    ResMap::iterator anItr = mSoundMap.find(theId);
+    auto anItr = mSoundMap.find(theId);
     if (anItr != mSoundMap.end()) {
-        SoundRes *aRes = (SoundRes *)anItr->second;
+        auto aRes = static_cast<SoundRes *>(anItr->second);
         if (aRes->mSoundId != -1) return aRes->mSoundId;
 
         if (mAllowMissingProgramResources && aRes->mFromProgram) return -1;
@@ -840,9 +840,9 @@ int ResourceManager::GetSoundThrow(const std::string &theId) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 _Font *ResourceManager::GetFontThrow(const std::string &theId) {
-    ResMap::iterator anItr = mFontMap.find(theId);
+    auto anItr = mFontMap.find(theId);
     if (anItr != mFontMap.end()) {
-        FontRes *aRes = (FontRes *)anItr->second;
+        auto aRes = static_cast<FontRes *>(anItr->second);
         if (aRes->mFont != NULL) return aRes->mFont;
 
         if (mAllowMissingProgramResources && aRes->mFromProgram) return NULL;
@@ -859,11 +859,11 @@ void ResourceManager::SetAllowMissingProgramImages(bool allow) { mAllowMissingPr
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage) {
-    ResMap::iterator anItr = mImageMap.find(theId);
+    auto anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
         anItr->second->DeleteResource();
 
-        ((ImageRes *)anItr->second)->mImage = theImage;
+        static_cast<ImageRes *>(anItr->second)->mImage = theImage;
         //((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;
         return true;
     } else return false;
@@ -872,10 +872,10 @@ bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ReplaceSound(const std::string &theId, int theSound) {
-    ResMap::iterator anItr = mSoundMap.find(theId);
+    auto anItr = mSoundMap.find(theId);
     if (anItr != mSoundMap.end()) {
         anItr->second->DeleteResource();
-        ((SoundRes *)anItr->second)->mSoundId = theSound;
+        static_cast<SoundRes *>(anItr->second)->mSoundId = theSound;
         return true;
     } else return false;
 }
@@ -883,10 +883,10 @@ bool ResourceManager::ReplaceSound(const std::string &theId, int theSound) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ReplaceFont(const std::string &theId, _Font *theFont) {
-    ResMap::iterator anItr = mFontMap.find(theId);
+    auto anItr = mFontMap.find(theId);
     if (anItr != mFontMap.end()) {
         anItr->second->DeleteResource();
-        ((FontRes *)anItr->second)->mFont = theFont;
+        static_cast<FontRes *>(anItr->second)->mFont = theFont;
         return true;
     } else return false;
 }
@@ -896,7 +896,7 @@ bool ResourceManager::ReplaceFont(const std::string &theId, _Font *theFont) {
 const XMLParamMap &ResourceManager::GetImageAttributes(const std::string &theId) {
     static XMLParamMap aStrMap;
 
-    ResMap::iterator anItr = mImageMap.find(theId);
+    auto anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) return anItr->second->mXMLAttributes;
     else return aStrMap;
 }

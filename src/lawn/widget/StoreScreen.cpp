@@ -65,7 +65,7 @@ StoreScreen::StoreScreen(LawnApp *theApp)
     Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
     mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
     mPottedPlantSpecs.mDrawVariation =
-        (DrawVariation)RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN);
+        static_cast<DrawVariation>(RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN));
 
     mBackButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Back, this);
     mBackButton->mDoFinger = true;
@@ -316,7 +316,7 @@ void StoreScreen::DrawItemIcon(Graphics *g, int theItemPosition, StoreItem theIt
     } else if (IsPottedPlant(theItemType)) {
         mApp->mZenGarden->DrawPottedPlantIcon(g, aPosX, aPosY, &mPottedPlantSpecs);
     } else {
-        DrawSeedPacket(g, aPosX, aPosY, (SeedType)(theItemType + 40), SEED_NONE, 0, 255, false, false);
+        DrawSeedPacket(g, aPosX, aPosY, static_cast<SeedType>(theItemType + 40), SEED_NONE, 0, 255, false, false);
     }
 
     g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
@@ -385,7 +385,7 @@ void StoreScreen::Draw(Graphics *g) {
     }
     g->DrawImage(Sexy::IMAGE_STORE_SIGN, 285, aStoreSignPosY);
 
-    Graphics gCrazyDave = Graphics(*g);
+    auto gCrazyDave = Graphics(*g);
     gCrazyDave.mTransX -= 42.0f;
     gCrazyDave.mTransY += 68.0f;
     mApp->DrawCrazyDave(&gCrazyDave);
@@ -410,7 +410,8 @@ void StoreScreen::Draw(Graphics *g) {
 
     if (!mPrevButton->mDisabled) {
         int aNumPages = 0;
-        for (StorePages aPage = STORE_PAGE_SLOT_UPGRADES; aPage < NUM_STORE_PAGES; aPage = (StorePages)(aPage + 1)) {
+        for (StorePages aPage = STORE_PAGE_SLOT_UPGRADES; aPage < NUM_STORE_PAGES;
+             aPage = static_cast<StorePages>(aPage + 1)) {
             if (IsPageShown(aPage)) {
                 aNumPages++;
             }
@@ -703,12 +704,12 @@ void StoreScreen::ButtonDepress(int theId) {
         EnableButtons(false);
         do {
             if (theId == StoreScreen::StoreScreen_Prev) {
-                mPage = (StorePages)(mPage - 1);
+                mPage = static_cast<StorePages>(mPage - 1);
                 if (mPage < STORE_PAGE_SLOT_UPGRADES) {
                     mPage = STORE_PAGE_ZEN2;
                 }
             } else {
-                mPage = (StorePages)(mPage + 1);
+                mPage = static_cast<StorePages>(mPage + 1);
                 if (mPage >= NUM_STORE_PAGES) {
                     mPage = STORE_PAGE_SLOT_UPGRADES;
                 }
@@ -783,10 +784,10 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
         aDialog->WaitForResult(true);
         mWaitForDialog = false;
     } else {
-        LawnDialog *aComfirmDialog = (LawnDialog *)mApp->DoDialog(
+        auto aComfirmDialog = static_cast<LawnDialog *>(mApp->DoDialog(
             DIALOG_STORE_PURCHASE, true, _S("Buy this item?"), _S("Are you sure you want to buy this item?"), _S(""),
             BUTTONS_YES_NO
-        );
+        ));
         aComfirmDialog->mLawnYesButton->SetLabel(_S("[DIALOG_BUTTON_YES]"));
         aComfirmDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
 
@@ -836,10 +837,10 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 1;
                 mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM] = 1;
 
-                LawnDialog *aDialog = (LawnDialog *)mApp->DoDialog(
+                auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                     DIALOG_STORE_PURCHASE, true, _S("[VISIT_TREE_HEADER]"), _S("[VISIT_TREE_BODY]"), _S(""),
                     BUTTONS_YES_NO
-                );
+                ));
                 aDialog->mLawnYesButton->SetLabel(_S("[DIALOG_BUTTON_YES]"));
                 aDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
 
@@ -855,7 +856,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
                 mApp->mZenGarden->AddPottedPlant(&mPottedPlantSpecs);
                 mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
                 mPottedPlantSpecs.mDrawVariation =
-                    (DrawVariation)RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN);
+                    static_cast<DrawVariation>(RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN));
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = GetCurrentDaysSince2000();
             } else {
                 TOD_ASSERT(theStoreItem >= STORE_ITEM_PLANT_GATLINGPEA && theStoreItem < (StoreItem)MAX_PURCHASES);
@@ -873,13 +874,12 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
             // @Patoke: implemented
             bool aGiveAchievement = true;
             for (int i = STORE_ITEM_PLANT_GATLINGPEA; i <= STORE_ITEM_PLANT_IMITATER; i++) {
-                if (mApp->SeedTypeAvailable(SeedType(i))) aGiveAchievement = false;
+                if (mApp->SeedTypeAvailable(static_cast<SeedType>(i))) aGiveAchievement = false;
             }
 
             if (aGiveAchievement) {
-                ReportAchievement::GiveAchievement(
-                    mApp, Morticulturalist, aGiveAchievement
-                ); // @Patoke: add achievement
+                ReportAchievement::GiveAchievement(mApp, Morticulturalist, aGiveAchievement);
+                // @Patoke: add achievement
                 SetBubbleText(4000, 800, false);
                 // todo @Patoke: add these?
                 //*(a2 + 412) = 150;

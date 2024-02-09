@@ -66,7 +66,7 @@ bool WidgetContainer::HasWidget(Widget *theWidget) {
 }
 
 void WidgetContainer::RemoveWidget(Widget *theWidget) {
-    WidgetList::iterator anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (anItr != mWidgets.end()) {
         theWidget->WidgetRemovedHelper();
         theWidget->mParent = NULL;
@@ -85,7 +85,7 @@ Widget *WidgetContainer::GetWidgetAtHelper(int x, int y, int theFlags, bool *fou
 
     ModFlags(theFlags, mWidgetFlagsMod);
 
-    WidgetList::reverse_iterator anItr = mWidgets.rbegin();
+    auto anItr = mWidgets.rbegin();
     while (anItr != mWidgets.rend()) {
         Widget *aWidget = *anItr;
 
@@ -126,7 +126,7 @@ Widget *WidgetContainer::GetWidgetAtHelper(int x, int y, int theFlags, bool *fou
 }
 
 bool WidgetContainer::IsBelowHelper(Widget *theWidget1, Widget *theWidget2, bool *found) {
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
 
@@ -155,7 +155,7 @@ bool WidgetContainer::IsBelow(Widget *theWidget1, Widget *theWidget2) {
 void WidgetContainer::MarkAllDirty() {
     MarkDirty();
 
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         (*anItr)->mDirty = true;
         (*anItr)->MarkAllDirty();
@@ -165,12 +165,12 @@ void WidgetContainer::MarkAllDirty() {
 
 void WidgetContainer::InsertWidgetHelper(const WidgetList::iterator &where, Widget *theWidget) {
     // Search forwards
-    WidgetList::iterator anItr = where;
+    auto anItr = where;
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
         if (aWidget->mZOrder >= theWidget->mZOrder) {
             if (anItr != mWidgets.begin()) {
-                WidgetList::iterator anItr2 = anItr;
+                auto anItr2 = anItr;
                 anItr2--;
                 aWidget = *anItr;
                 if (aWidget->mZOrder > theWidget->mZOrder) // need to search backwards
@@ -198,7 +198,7 @@ void WidgetContainer::InsertWidgetHelper(const WidgetList::iterator &where, Widg
 }
 
 void WidgetContainer::BringToFront(Widget *theWidget) {
-    WidgetList::iterator anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
             mUpdateIterator++;
@@ -213,7 +213,7 @@ void WidgetContainer::BringToFront(Widget *theWidget) {
 }
 
 void WidgetContainer::BringToBack(Widget *theWidget) {
-    WidgetList::iterator anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
             mUpdateIterator++;
@@ -228,7 +228,7 @@ void WidgetContainer::BringToBack(Widget *theWidget) {
 }
 
 void WidgetContainer::PutBehind(Widget *theWidget, Widget *theRefWidget) {
-    WidgetList::iterator anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
             mUpdateIterator++;
@@ -244,7 +244,7 @@ void WidgetContainer::PutBehind(Widget *theWidget, Widget *theRefWidget) {
 }
 
 void WidgetContainer::PutInfront(Widget *theWidget, Widget *theRefWidget) {
-    WidgetList::iterator anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
             mUpdateIterator++;
@@ -267,7 +267,7 @@ Point WidgetContainer::GetAbsPos() // relative to top level
 }
 
 void WidgetContainer::AddedToManager(WidgetManager *theWidgetManager) {
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *theWidget = *anItr;
 
@@ -280,7 +280,7 @@ void WidgetContainer::AddedToManager(WidgetManager *theWidgetManager) {
 }
 
 void WidgetContainer::RemovedFromManager(WidgetManager *theWidgetManager) {
-    for (WidgetList::iterator anItr = mWidgets.begin(); anItr != mWidgets.end(); ++anItr) {
+    for (auto anItr = mWidgets.begin(); anItr != mWidgets.end(); ++anItr) {
         Widget *aWidget = *anItr;
 
         // theWidgetManager->DisableWidget(aWidget);
@@ -313,10 +313,10 @@ void WidgetContainer::MarkDirtyFull(WidgetContainer *theWidget) {
     //  causes a parent redraw which always causes all children to redraw
     if (mParent != NULL) return;
 
-    WidgetList::iterator aFoundWidgetItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto aFoundWidgetItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
     if (aFoundWidgetItr == mWidgets.end()) return;
 
-    WidgetList::iterator anItr = aFoundWidgetItr;
+    auto anItr = aFoundWidgetItr;
     if (anItr != mWidgets.begin()) {
         anItr--;
 
@@ -373,7 +373,7 @@ void WidgetContainer::MarkDirty(WidgetContainer *theWidget) {
     if (theWidget->mHasAlpha) MarkDirtyFull(theWidget);
     else {
         bool found = false;
-        WidgetList::iterator anItr = mWidgets.begin();
+        auto anItr = mWidgets.begin();
         while (anItr != mWidgets.end()) {
             Widget *aWidget = *anItr;
             if (aWidget == theWidget) found = true;
@@ -398,7 +398,7 @@ void WidgetContainer::UpdateAll(ModalFlags *theFlags) {
     if (aWidgetManager == NULL) return;
 
     if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE) {
-        if (mLastWMUpdateCount != (ulong)mWidgetManager->mUpdateCnt) {
+        if (mLastWMUpdateCount != static_cast<ulong>(mWidgetManager->mUpdateCnt)) {
             mLastWMUpdateCount = mWidgetManager->mUpdateCnt;
             Update();
         }
@@ -472,7 +472,7 @@ void WidgetContainer::DrawAll(ModalFlags *theFlags, Graphics *g) {
         g->PopState();
     }
 
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
 
@@ -500,7 +500,7 @@ void WidgetContainer::SysColorChangedAll() {
         aDepthCount++;
     */
 
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
 
@@ -510,4 +510,5 @@ void WidgetContainer::SysColorChangedAll() {
 }
 
 void WidgetContainer::DisableWidget(Widget *) {}
+
 void WidgetContainer::SetFocus(Widget *) {}

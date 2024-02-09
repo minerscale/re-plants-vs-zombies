@@ -199,7 +199,7 @@ SeedType gArtChallengeStarFruit[MAX_GRID_SIZE_Y][MAX_GRID_SIZE_X] = {
 
 // 0x41F1B0
 Challenge::Challenge() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mBoard = mApp->mBoard;
     mBeghouledMouseCapture = false;
     mBeghouledMouseDownX = 0;
@@ -222,7 +222,7 @@ Challenge::Challenge() {
     for (int i = 0; i < 6; i++)
         mReanimClouds[i] = REANIMATIONID_NULL;
     memset(mBeghouledEated, 0, sizeof(mBeghouledEated));
-    for (int i = 0; i < (int)BeghouledUpgrade::NUM_BEGHOULED_UPGRADES; i++)
+    for (int i = 0; i < static_cast<int>(BeghouledUpgrade::NUM_BEGHOULED_UPGRADES); i++)
         mBeghouledPurcasedUpgrade[i] = false;
 
     if (mApp->mBoard && mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE) {
@@ -793,15 +793,15 @@ Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *th
         default: TOD_ASSERT(); break;
         }
 
-        if (mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER] &&
+        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)] &&
             aSeedType == SeedType::SEED_PEASHOOTER) {
             aSeedType = SeedType::SEED_REPEATER;
         }
-        if (mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM] &&
+        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)] &&
             aSeedType == SeedType::SEED_PUFFSHROOM) {
             aSeedType = SeedType::SEED_FUMESHROOM;
         }
-        if (mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT] &&
+        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)] &&
             aSeedType == SeedType::SEED_WALLNUT) {
             aSeedType = SeedType::SEED_TALLNUT;
         }
@@ -1069,7 +1069,7 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult *theHitResul
     }
 
     if (mApp->IsScaryPotterLevel() && theHitResult->mObjectType == OBJECT_TYPE_SCARY_POT) {
-        ScaryPotterMalletPot((GridItem *)theHitResult->mObject);
+        ScaryPotterMalletPot(static_cast<GridItem *>(theHitResult->mObject));
         return true;
     }
 
@@ -1521,7 +1521,7 @@ void Challenge::UpdateConveyorBelt() {
 
     for (int i = 0; i < aSeedPickCount; i++) {
         TodWeightedArray<SeedType> &aSeedPick = aSeedPickArray[i];
-        SeedType aSeedType = (SeedType)aSeedPick.mItem;
+        auto aSeedType = (SeedType)aSeedPick.mItem;
         int aCountInBank = mBoard->mSeedBank->CountOfTypeOnConveyorBelt(aSeedType);
         int aTotalCount = mBoard->CountPlantByType(aSeedType) + aCountInBank;
 
@@ -1579,12 +1579,12 @@ void Challenge::UpdateRainingSeeds() {
     Coin *aCoin = mBoard->AddCoin(RandRangeInt(100, 649), 60, COIN_USABLE_SEED_PACKET, COIN_MOTION_FROM_SKY_SLOW);
 
     SeedType aSeedType;
-    do
-        aSeedType = (SeedType)Rand(mApp->GetSeedsAvailable());
-    while (mBoard->SeedNotRecommendedForLevel(aSeedType) || !mApp->SeedTypeAvailable(aSeedType) ||
-           Plant::IsUpgrade(aSeedType) || aSeedType == SEED_SUNFLOWER || aSeedType == SEED_TWINSUNFLOWER ||
-           aSeedType == SEED_INSTANT_COFFEE || aSeedType == SEED_UMBRELLA || aSeedType == SEED_SUNSHROOM ||
-           aSeedType == SEED_IMITATER);
+    do {
+        aSeedType = static_cast<SeedType>(Rand(mApp->GetSeedsAvailable()));
+    } while (mBoard->SeedNotRecommendedForLevel(aSeedType) || !mApp->SeedTypeAvailable(aSeedType) ||
+             Plant::IsUpgrade(aSeedType) || aSeedType == SEED_SUNFLOWER || aSeedType == SEED_TWINSUNFLOWER ||
+             aSeedType == SEED_INSTANT_COFFEE || aSeedType == SEED_UMBRELLA || aSeedType == SEED_SUNSHROOM ||
+             aSeedType == SEED_IMITATER);
     if (Rand(100) < TodAnimateCurve(0, 18, mBoard->CountPlantByType(SEED_LILYPAD), 30, 1, CURVE_LINEAR))
         aSeedType = SEED_LILYPAD;
 
@@ -1628,8 +1628,9 @@ void Challenge::UpdateStormyNight() {
             mChallengeStateCounter = STORM_FLASH_TIME + RandRangeInt(300, aMaxDur);
         }
 
-        mChallengeState =
-            (ChallengeState)RandRangeInt((int)STATECHALLENGE_STORM_FLASH_1, (int)STATECHALLENGE_STORM_FLASH_3);
+        mChallengeState = static_cast<ChallengeState>(
+            RandRangeInt((int)STATECHALLENGE_STORM_FLASH_1, (int)STATECHALLENGE_STORM_FLASH_3)
+        );
     }
 }
 
@@ -1936,7 +1937,7 @@ void Challenge::DrawBeghouled(Graphics *g) {
             );
 
             Image *aImageOverlay = Sexy::IMAGE_BEGHOULED_TWIST_OVERLAY;
-            Rect aSrcRect = Rect(0, 0, aImageOverlay->mWidth, aImageOverlay->mHeight);
+            auto aSrcRect = Rect(0, 0, aImageOverlay->mWidth, aImageOverlay->mHeight);
             TodBltMatrix(g, aImageOverlay, aTransform, g->mClipRect, Color(255, 255, 255, 128), g->mDrawMode, aSrcRect);
         }
     }
@@ -1946,7 +1947,7 @@ void Challenge::DrawBeghouled(Graphics *g) {
 void Challenge::DrawSlotMachine(Graphics *g) {
     if (mApp->mGameScene == SCENE_ZOMBIES_WON) return;
 
-    Graphics gBoardParent = Graphics(*g);
+    auto gBoardParent = Graphics(*g);
     if (mSlotMachineRollCount < 3 && mBoard->mCursorObject->mCursorType == CURSOR_TYPE_NORMAL &&
         mChallengeState != STATECHALLENGE_SLOT_MACHINE_ROLLING && !mBoard->HasLevelAwardDropped()) {
         gBoardParent.SetColor(GetFlashingColor(mBoard->mBoardData.mMainCounter, 75));
@@ -2048,9 +2049,9 @@ PlantingReason Challenge::CanPlantAt(int theGridX, int theGridY, SeedType theSee
 // 0x425690
 void Challenge::InitZombieWavesSurvival() {
     mBoard->mBoardData.mZombieAllowed[ZOMBIE_NORMAL] = true;
-    MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
+    auto aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
 
-    if (aLevelRNG.Next((unsigned long)5) == 0) {
+    if (aLevelRNG.Next(static_cast<unsigned long>(5)) == 0) {
         mBoard->mBoardData.mZombieAllowed[ZOMBIE_NEWSPAPER] = true;
     } else {
         mBoard->mBoardData.mZombieAllowed[ZOMBIE_TRAFFIC_CONE] = true;
@@ -2058,7 +2059,7 @@ void Challenge::InitZombieWavesSurvival() {
 
     int aCapacity = std::min(mSurvivalStage + 1, 9);
     while (aCapacity > 0) {
-        ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((unsigned long)NUM_ZOMBIE_TYPES);
+        auto aRandZombie = static_cast<ZombieType>(aLevelRNG.Next((unsigned long)NUM_ZOMBIE_TYPES));
         if (mBoard->mBoardData.mZombieAllowed[aRandZombie]) continue;
         if (mBoard->IsZombieTypePoolOnly(aRandZombie) && !mBoard->StageHasPool()) continue;
         if (mBoard->StageHasRoof() && (aRandZombie == ZOMBIE_DIGGER || aRandZombie == ZOMBIE_DANCER)) continue;
@@ -2078,7 +2079,7 @@ void Challenge::InitZombieWavesSurvival() {
 
 void Challenge::InitZombieWavesFromList(ZombieType *theZombieList, int theListLength) {
     for (int i = 0; i < theListLength; i++) {
-        mBoard->mBoardData.mZombieAllowed[(int)theZombieList[i]] = true;
+        mBoard->mBoardData.mZombieAllowed[static_cast<int>(theZombieList[i])] = true;
     }
 }
 
@@ -2462,9 +2463,9 @@ void Challenge::SpawnZombieWave() {
 
 // 0x426A20
 void Challenge::DrawStormFlash(Graphics *g, int theTime, int theMaxAmount) {
-    MTRand aDrawRand = MTRand(mBoard->mBoardData.mMainCounter / 6);
+    auto aDrawRand = MTRand(mBoard->mBoardData.mMainCounter / 6);
     int aDarkness = TodAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) +
-                    aDrawRand.NextNoAssert((unsigned long)64) - 32;
+                    aDrawRand.NextNoAssert(static_cast<unsigned long>(64)) - 32;
     // 设置暴风雨阴暗的颜色
     g->SetColor(Color(0, 0, 0, ClampInt(aDarkness, 0, 255)));
     // 绘制暴风雨阴暗的主色
@@ -2839,6 +2840,7 @@ GridItem *Challenge::GetPortalLeftRight(int theGridX, int theGridY, int theToLef
 
     return aGridItemRecord;
 }
+
 // BONUS_END
 
 // 0x4279E0
@@ -2911,8 +2913,10 @@ void Challenge::BeghouledPacketClicked(SeedPacket *theSeedPacket) {
     if (!mBoard->CanTakeSunMoney(aPacketCost)) return;
 
     if (theSeedPacket->mPacketType == SEED_REPEATER &&
-        !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER]) {
-        mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER] = true;
+        !mBoard->mChallenge
+             ->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)]) {
+        mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)] =
+            true;
 
         Plant *aPlant = nullptr;
         while (mBoard->IteratePlants(aPlant)) {
@@ -2921,8 +2925,9 @@ void Challenge::BeghouledPacketClicked(SeedPacket *theSeedPacket) {
                 mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_REPEATER, SEED_NONE);
             }
         }
-    } else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM]) {
-        mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM] = true;
+    } else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)]) {
+        mBoard->mChallenge
+            ->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)] = true;
 
         Plant *aPlant = nullptr;
         while (mBoard->IteratePlants(aPlant)) {
@@ -2931,8 +2936,9 @@ void Challenge::BeghouledPacketClicked(SeedPacket *theSeedPacket) {
                 mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_FUMESHROOM, SEED_NONE);
             }
         }
-    } else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT]) {
-        mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT] = true;
+    } else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)]) {
+        mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)] =
+            true;
 
         Plant *aPlant = nullptr;
         while (mBoard->IteratePlants(aPlant)) {

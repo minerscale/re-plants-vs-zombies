@@ -433,7 +433,7 @@ void DrawSeedPacket(
     case SeedType::SEED_ZOMBIQUARIUM_TROPHY:      aDrawSeedInMiddle = false; break;
     default:                                      break;
     }
-    if (((LawnApp *)gSexyAppBase)->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME) {
+    if (static_cast<LawnApp *>(gSexyAppBase)->mGameMode == GameMode::GAMEMODE_CHALLENGE_BIG_TIME) {
         if (aSeedType == SeedType::SEED_WALLNUT || aSeedType == SeedType::SEED_SUNFLOWER ||
             aSeedType == SeedType::SEED_MARIGOLD) {
             aOffsetX = 16.0f;
@@ -505,7 +505,7 @@ void SeedPacket::Draw(Graphics *g) {
         if (mRefreshTime == 0) {
             aPercentDark = 1.0f;
         } else {
-            aPercentDark = (float)(mRefreshTime - mRefreshCounter) / (float)mRefreshTime;
+            aPercentDark = static_cast<float>(mRefreshTime - mRefreshCounter) / static_cast<float>(mRefreshTime);
         }
     }
 
@@ -539,7 +539,8 @@ void SeedPacket::Draw(Graphics *g) {
             aGrayness = mBoard->mSeedBank->mCutSceneDarken;
             aPercentDark = 0.0f;
         }
-		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER && mBoard->mBoardData.mTutorialTimer == -1 && mPacketType == SeedType::SEED_PEASHOOTER)
+		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER && mBoard->
+			mBoardData.mTutorialTimer == -1 && mPacketType == SeedType::SEED_PEASHOOTER)
 		{
             aGrayness = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75).mRed;
         } else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER && mPacketType == SeedType::SEED_SUNFLOWER) {
@@ -622,7 +623,7 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
         if (!mActive) {
             mApp->PlaySample(SOUND_BUZZER);
             if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 1 &&
-                mBoard->mBoardData.mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
+                mBoard->mBoardData.mHelpDisplayed[static_cast<int>(AdviceType::ADVICE_CLICK_ON_SUN)]) {
                 mBoard->DisplayAdvice(
                     _S("[ADVICE_SEED_REFRESH]"), MessageStyle::MESSAGE_STYLE_TUTORIAL_LEVEL1,
                     AdviceType::ADVICE_SEED_REFRESH
@@ -636,7 +637,7 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
             mApp->PlaySample(SOUND_BUZZER);
             mBoard->mBoardData.mOutOfMoneyCounter = 70;
             if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel == 1 &&
-                mBoard->mBoardData.mHelpDisplayed[(int)AdviceType::ADVICE_CLICK_ON_SUN]) {
+                mBoard->mBoardData.mHelpDisplayed[static_cast<int>(AdviceType::ADVICE_CLICK_ON_SUN)]) {
                 mBoard->DisplayAdvice(
                     _S("[ADVICE_CANT_AFFORD_PLANT]"), MessageStyle::MESSAGE_STYLE_TUTORIAL_LEVEL1,
                     AdviceType::ADVICE_CANT_AFFORD_PLANT
@@ -732,7 +733,8 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
                 mBoard->SetTutorialState(TutorialState::TUTORIAL_MORESUN_REFRESH_SUNFLOWER);
             }
         }
-		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED || mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED)
+		else if (mBoard->mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_PICK_SEED || mBoard->
+			mBoardData.mTutorialState == TutorialState::TUTORIAL_WHACK_A_ZOMBIE_BEFORE_PICK_SEED)
 		{
             mBoard->SetTutorialState(TutorialState::TUTORIAL_WHACK_A_ZOMBIE_COMPLETED);
         }

@@ -9,7 +9,6 @@
 #include "framework/misc/ResourceManager.h"
 
 namespace ImageLib {
-
 class Image {
 public:
     int mWidth = 0;
@@ -31,14 +30,14 @@ bool WriteTGAImage(const std::string &theFileName, Image *theImage);
 bool WriteBMPImage(const std::string &theFileName, Image *theImage);
 extern int gAlphaComposeColor;
 extern bool gAutoLoadAlpha;
-extern bool gIgnoreJPEG2000Alpha; // I've noticed alpha in jpeg2000's that shouldn't have alpha so this defaults to true
+extern bool gIgnoreJPEG2000Alpha;
+// I've noticed alpha in jpeg2000's that shouldn't have alpha so this defaults to true
 
 std::unique_ptr<ImageLib::Image> GetImage(const Sexy::ResourceManager::ImageRes &theFilename, bool lookForAlphaImage);
 
 // void InitJPEG2000();
 // void CloseJPEG2000();
 // void SetJ2KCodecKey(const std::string& theKey);
-
 } // namespace ImageLib
 
 #endif //__IMAGELIB_H__

@@ -94,7 +94,7 @@ std::string casepath(const std::string &path) {
 }
 #endif
 
-FILE *fcaseopen(char const *path, char const *mode) {
+FILE *fcaseopen(const char *path, const char *mode) {
     FILE *f = fopen(path, mode);
 #if !defined(_WIN32)
     if (!f) {

@@ -33,7 +33,6 @@ inline int Ratio::operator/(int theInt) const { return theInt * mDenominator / m
 inline int operator*(int theInt, const Ratio &theRatio) { return theInt * theRatio.mNumerator / theRatio.mDenominator; }
 
 inline int operator/(int theInt, const Ratio &theRatio) { return theInt * theRatio.mDenominator / theRatio.mNumerator; }
-
 } // namespace Sexy
 
 #endif

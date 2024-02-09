@@ -67,6 +67,7 @@ MTRand::MTRand(unsigned long seed) { SRand(seed); }
 MTRand::MTRand() { SRand(4357); }
 
 static int gRandAllowed = 0;
+
 void MTRand::SetRandAllowed(bool allowed) {
     if (allowed) {
         if (gRandAllowed > 0) gRandAllowed--;
@@ -109,7 +110,8 @@ unsigned long MTRand::NextNoAssert() {
     static unsigned long mag01[2] = {0x0, MATRIX_A};
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
-    if (mti >= MTRAND_N) { /* generate MTRAND_N words at one time */
+    if (mti >= MTRAND_N) {
+        /* generate MTRAND_N words at one time */
         int kk;
 
         for (kk = 0; kk < MTRAND_N - MTRAND_M; kk++) {
@@ -148,7 +150,9 @@ unsigned long MTRand::Next(unsigned long range) {
     return NextNoAssert(range);
 }
 
-float MTRand::NextNoAssert(float range) { return (float)((double)NextNoAssert() / (double)0x7FFFFFFF * range); }
+float MTRand::NextNoAssert(float range) {
+    return static_cast<float>((double)NextNoAssert() / (double)0x7FFFFFFF * range);
+}
 
 float MTRand::Next(float range) {
     DBG_ASSERT(gRandAllowed == 0);

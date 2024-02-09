@@ -323,33 +323,33 @@ void TitleScreen::Update() {
 
         if (mQuickLoadKey == KeyCode::KEYCODE_ASCIIEND) {
             mApp->FastLoad(GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN);
-        } else if (mQuickLoadKey == (KeyCode)0x4D) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x4D)) {
             mApp->LoadingCompleted();
-        } else if (mQuickLoadKey == (KeyCode)0x53) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x53)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_SURVIVAL);
-        } else if (mQuickLoadKey == (KeyCode)0x43) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x43)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
-        } else if (mQuickLoadKey == (KeyCode)0x55) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x55)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->PreNewGame(GameMode::GAMEMODE_UPSELL, false);
-        } else if (mQuickLoadKey == (KeyCode)0x49) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x49)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->PreNewGame(GameMode::GAMEMODE_INTRO, false);
-        } else if (mQuickLoadKey == (KeyCode)0x50) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x50)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_PUZZLE);
-        } else if (mQuickLoadKey == (KeyCode)0x52) {
+        } else if (mQuickLoadKey == static_cast<KeyCode>(0x52)) {
             mApp->LoadingCompleted();
             mApp->KillGameSelector();
             mApp->ShowCreditScreen();
-        } else if (mApp->mTodCheatKeys && mApp->mPlayerInfo && mQuickLoadKey == (KeyCode)0x54) {
+        } else if (mApp->mTodCheatKeys && mApp->mPlayerInfo && mQuickLoadKey == static_cast<KeyCode>(0x54)) {
             mApp->FastLoad(GameMode::GAMEMODE_ADVENTURE);
         } else {
             mStartButton->SetVisible(true);

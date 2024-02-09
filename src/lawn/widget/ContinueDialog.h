@@ -13,13 +13,13 @@ public:
 
 public:
     ContinueDialog(LawnApp *theApp);
-    virtual ~ContinueDialog();
+    ~ContinueDialog() override;
 
-    virtual int GetPreferredHeight(int theWidth);
-    virtual void Resize(int theX, int theY, int theWidth, int theHeight);
-    virtual void AddedToManager(WidgetManager *theWidgetManager);
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
-    virtual void ButtonDepress(int theId);
+    int GetPreferredHeight(int theWidth) override;
+    void Resize(int theX, int theY, int theWidth, int theHeight) override;
+    void AddedToManager(WidgetManager *theWidgetManager) override;
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
+    void ButtonDepress(int theId) override;
     void RestartLoopingSounds();
 };
 

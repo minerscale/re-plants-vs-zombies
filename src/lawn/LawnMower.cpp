@@ -8,7 +8,7 @@
 
 // 0x458000
 void LawnMower::LawnMowerInitialize(int theRow) {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mRow = theRow;
     mPosX = -160.0f;
     mBoard = mApp->mBoard;
@@ -26,7 +26,7 @@ void LawnMower::LawnMowerInitialize(int theRow) {
     if (mBoard->StageHasRoof()) {
         mMowerType = LawnMowerType::LAWNMOWER_ROOF;
         aReanimType = ReanimationType::REANIM_ROOF_CLEANER;
-    } else if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL && mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_POOL_CLEANER]) {
+    } else if (mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL && mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_POOL_CLEANER)]) {
         mMowerType = LawnMowerType::LAWNMOWER_POOL;
         aReanimType = ReanimationType::REANIM_POOL_CLEANER;
     } else {

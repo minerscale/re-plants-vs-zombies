@@ -14,9 +14,12 @@
 class TimePoint : public std::chrono::time_point<std::chrono::system_clock> {
 public:
     TimePoint() : std::chrono::time_point<std::chrono::system_clock>() {}
+
     TimePoint(const std::chrono::time_point<std::chrono::system_clock> &t)
         : std::chrono::time_point<std::chrono::system_clock>(t) {}
+
     TimePoint(const std::chrono::seconds &t) : std::chrono::time_point<std::chrono::system_clock>(t) {}
+
     TimePoint(const std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<int64_t, std::nano>> &t) {
         *this = std::chrono::time_point<std::chrono::system_clock>(
             std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch())
@@ -60,6 +63,7 @@ static inline uint32_t TimeToUnixEpoch(const TimePoint &t) {
 static inline TimePoint TimeFromUnixEpoch(const uint32_t &t) { return TimePoint(std::chrono::seconds(t)); }
 
 class DataSync;
+
 class PlayerInfo {
 public:
     SexyString mName;                                                     //+0x0
@@ -99,7 +103,8 @@ public:
     PlayerInfo();
 
     void Reset();
-    /*inline*/ void AddCoins(int theAmount);
+    /*inline*/
+    void AddCoins(int theAmount);
     void SyncSummary(DataSync &theSync);
     void SyncDetails(DataSync &theSync);
     void DeleteUserFiles();
@@ -107,7 +112,8 @@ public:
     void SaveDetails();
     inline int GetLevel() const { return mLevel; }
     inline void SetLevel(int theLevel) { mLevel = theLevel; }
-    /*inline*/ void ResetChallengeRecord(GameMode theGameMode);
+    /*inline*/
+    void ResetChallengeRecord(GameMode theGameMode);
 };
 
 #endif

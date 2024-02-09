@@ -5,10 +5,10 @@ using namespace Sexy;
 
 #define MAX_KEYNAME_LEN 12
 
-typedef struct {
+using KeyNameEntry = struct {
     char mKeyName[MAX_KEYNAME_LEN];
     KeyCode mKeyCode;
-} KeyNameEntry;
+};
 
 KeyNameEntry aKeyCodeArray[] = {
     {"UNKNOWN",    KEYCODE_UNKNOWN   },
@@ -109,19 +109,20 @@ KeyCode Sexy::GetKeyCodeFromName(const std::string &theKeyName) {
 
     char *s = aKeyName;
     while (*s) {
-        *s = toupper((unsigned char)*s);
+        *s = toupper(static_cast<unsigned char>(*s));
         s++;
     }
 
     if (theKeyName.length() == 1) {
         unsigned char aKeyNameChar = aKeyName[0];
 
-        if ((aKeyNameChar >= (unsigned char)KEYCODE_ASCIIBEGIN) && (aKeyNameChar <= (unsigned char)KEYCODE_ASCIIEND))
-            return (KeyCode)aKeyNameChar;
+        if ((aKeyNameChar >= static_cast<unsigned char>(KEYCODE_ASCIIBEGIN)) &&
+            (aKeyNameChar <= static_cast<unsigned char>(KEYCODE_ASCIIEND)))
+            return static_cast<KeyCode>(aKeyNameChar);
 
-        if ((aKeyNameChar >= ((unsigned char)KEYCODE_ASCIIBEGIN2) - 0x80) &&
-            (aKeyNameChar <= ((unsigned char)KEYCODE_ASCIIEND2) - 0x80))
-            return (KeyCode)(aKeyNameChar + 0x80);
+        if ((aKeyNameChar >= static_cast<unsigned char>(KEYCODE_ASCIIBEGIN2) - 0x80) &&
+            (aKeyNameChar <= static_cast<unsigned char>(KEYCODE_ASCIIEND2) - 0x80))
+            return static_cast<KeyCode>(aKeyNameChar + 0x80);
     }
 
     for (size_t i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
@@ -132,12 +133,12 @@ KeyCode Sexy::GetKeyCodeFromName(const std::string &theKeyName) {
 
 const std::string Sexy::GetKeyNameFromCode(const KeyCode &theKeyCode) {
     if ((theKeyCode >= KEYCODE_ASCIIBEGIN) && (theKeyCode <= KEYCODE_ASCIIEND)) {
-        char aStr[2] = {(char)theKeyCode, 0};
+        char aStr[2] = {static_cast<char>(theKeyCode), 0};
         return aStr;
     }
 
     if ((theKeyCode >= KEYCODE_ASCIIBEGIN2) && (theKeyCode <= KEYCODE_ASCIIEND2)) {
-        char aStr[2] = {(char)(((unsigned char)theKeyCode) - 0x80), 0};
+        char aStr[2] = {static_cast<char>(((unsigned char)theKeyCode) - 0x80), 0};
         return aStr;
     }
 

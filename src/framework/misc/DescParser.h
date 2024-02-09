@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 class DataElement {
 public:
     bool mIsList;
@@ -23,12 +22,12 @@ public:
 public:
     SingleDataElement();
     SingleDataElement(const std::string theString);
-    virtual ~SingleDataElement();
+    ~SingleDataElement() override;
 
-    virtual DataElement *Duplicate();
+    DataElement *Duplicate() override;
 };
 
-typedef std::vector<DataElement *> ElementVector;
+using ElementVector = std::vector<DataElement *>;
 
 class ListDataElement : public DataElement {
 public:
@@ -37,17 +36,17 @@ public:
 public:
     ListDataElement();
     ListDataElement(const ListDataElement &theListDataElement);
-    virtual ~ListDataElement();
+    ~ListDataElement() override;
 
     ListDataElement &operator=(const ListDataElement &theListDataElement);
 
-    virtual DataElement *Duplicate();
+    DataElement *Duplicate() override;
 };
 
-typedef std::map<std::string, DataElement *> DataElementMap;
-typedef std::vector<std::string> StringVector;
-typedef std::vector<int> IntVector;
-typedef std::vector<double> DoubleVector;
+using DataElementMap = std::map<std::string, DataElement *>;
+using StringVector = std::vector<std::string>;
+using IntVector = std::vector<int>;
+using DoubleVector = std::vector<double>;
 
 class DescParser {
 public:
@@ -86,7 +85,6 @@ public:
 
     bool LoadDescriptor(const std::string &theFileName);
 };
-
 } // namespace Sexy
 
 #endif //__DESCPARSER_H__

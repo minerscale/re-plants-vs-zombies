@@ -328,7 +328,7 @@ void LawnDialog::Draw(Graphics *g) {
 
 // 0x4579A0
 ReanimationWidget::ReanimationWidget() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mPosX = 0.0f;
     mPosY = 0.0f;
     mReanim = nullptr;

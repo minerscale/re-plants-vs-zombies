@@ -6,12 +6,11 @@
 #include "framework/misc/Rect.h"
 
 namespace Sexy {
-
 class Graphics;
 class Widget;
 class WidgetManager;
 
-typedef std::list<Widget *> WidgetList;
+using WidgetList = std::list<Widget *>;
 
 class WidgetContainer {
 public:
@@ -78,7 +77,6 @@ public:
     virtual void SysColorChangedAll();
     virtual void SysColorChanged();
 };
-
 }; // namespace Sexy
 
 #endif //__WIDGETCONTAINER_H__

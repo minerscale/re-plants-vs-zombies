@@ -3,7 +3,6 @@
 #include <bass.h>
 
 namespace Sexy {
-
 BassSoundInstance::BassSoundInstance(HSAMPLE theSourceSound) : mSample(theSourceSound) {
     mChannel = BASS_SampleGetChannel(mSample, 0);
 }
@@ -52,6 +51,7 @@ void BassSoundInstance::Stop() {
 }
 
 const double ONE_SEMITONE = pow(2.0, 1.0 / 12.0);
+
 void BassSoundInstance::AdjustPitch(double theNumSteps) {
     double aFrequencyMult = pow(ONE_SEMITONE, theNumSteps);
     double aNewFrequency = mDefaultFrequency * aFrequencyMult;
@@ -80,5 +80,4 @@ bool BassSoundInstance::IsReleased() {
 }
 
 double BassSoundInstance::GetVolume() { return mVolume; }
-
 } // namespace Sexy

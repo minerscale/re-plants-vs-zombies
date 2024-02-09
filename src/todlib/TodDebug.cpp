@@ -32,7 +32,7 @@ void TodAssertFailed(const char *theCondition, const char *theFile, int theLine,
     char aFormattedMsg[1024];
     va_list argList;
     va_start(argList, theMsg);
-    int aCount = TodVsnprintf(aFormattedMsg, sizeof(aFormattedMsg), theMsg, argList);
+    const int aCount = TodVsnprintf(aFormattedMsg, sizeof(aFormattedMsg), theMsg, argList);
     va_end(argList);
 
     if (aCount != 0) {
@@ -88,7 +88,7 @@ void TodLog(const char *theFormat, ...) {
     char aButter[1024];
     va_list argList;
     va_start(argList, theFormat);
-    int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+    const int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
     va_end(argList);
 
     if (aButter[aCount - 1] != '\n') {
@@ -120,7 +120,7 @@ void TodTrace(const char *theFormat, ...) {
     char aButter[1024];
     va_list argList;
     va_start(argList, theFormat);
-    int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+    const int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
     va_end(argList);
 
     if (aButter[aCount - 1] != '\n') {
@@ -141,7 +141,7 @@ void TodTraceAndLog(const char *theFormat, ...) {
     char aButter[1024];
     va_list argList;
     va_start(argList, theFormat);
-    int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+    const int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
     va_end(argList);
 
     if (aButter[aCount - 1] != '\n') {
@@ -159,7 +159,7 @@ void TodTraceAndLog(const char *theFormat, ...) {
 
 void TodTraceWithoutSpamming(const char *theFormat, ...) {
     static time_t gLastTraceTime = 0;
-    time_t aTime = time(nullptr);
+    const time_t aTime = time(nullptr);
     if (aTime < gLastTraceTime) {
         return;
     }
@@ -168,7 +168,7 @@ void TodTraceWithoutSpamming(const char *theFormat, ...) {
     char aButter[1024];
     va_list argList;
     va_start(argList, theFormat);
-    int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
+    const int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
     va_end(argList);
 
     if (aButter[aCount - 1] != '\n') {
@@ -210,12 +210,12 @@ long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo)
 
 void TodAssertInitForApp() {
     MkDir(GetAppDataFolder() + "userdata");
-    std::string aRelativeUserPath = GetAppDataFolder() + "userdata/";
+    const std::string aRelativeUserPath = GetAppDataFolder() + "userdata/";
     strcpy(gDebugDataFolder, GetFullPath(aRelativeUserPath).c_str());
     strcpy(gLogFileName, gDebugDataFolder);
     strcpy(gLogFileName + strlen(gLogFileName), "log.txt");
     TOD_ASSERT(strlen(gLogFileName) < MAX_PATH);
 
-    time_t aclock = time(nullptr);
+    const time_t aclock = time(nullptr);
     TodLog("Started %s\n", asctime(localtime(&aclock)));
 }

@@ -7,9 +7,11 @@
 class LawnApp;
 class Board;
 class Zombie;
+
 namespace Sexy {
 class Graphics;
 };
+
 using namespace Sexy;
 
 class LawnMower {
@@ -43,7 +45,8 @@ public:
     void UpdatePool();
     void MowZombie(Zombie *theZombie);
     void SquishMower();
-    /*inline*/ void EnableSuperMower(bool theEnable);
+    /*inline*/
+    void EnableSuperMower(bool theEnable);
 };
 
 #endif

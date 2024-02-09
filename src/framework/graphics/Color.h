@@ -4,7 +4,6 @@
 #include "framework/Common.h"
 
 namespace Sexy {
-
 #pragma pack(push, 1)
 struct SexyRGBA {
     unsigned char b, g, r, a;
@@ -44,7 +43,6 @@ public:
 
 bool operator==(const Color &theColor1, const Color &theColor2);
 bool operator!=(const Color &theColor1, const Color &theColor2);
-
 } // namespace Sexy
 
 #endif //__COLOR_H__

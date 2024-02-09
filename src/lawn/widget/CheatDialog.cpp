@@ -73,7 +73,7 @@ bool CheatDialog::ApplyCheat() {
     int aChallengeIndex;
     if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
         sexysscanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {
-        mApp->mGameMode = (GameMode)ClampInt(aChallengeIndex, 0, NUM_CHALLENGE_MODES);
+        mApp->mGameMode = static_cast<GameMode>(ClampInt(aChallengeIndex, 0, NUM_CHALLENGE_MODES));
         return true;
     }
 
@@ -85,7 +85,8 @@ bool CheatDialog::ApplyCheat() {
         aLevel = (aArea - 1) * LEVELS_PER_AREA + aSubArea;
         aFinishedAdventure = 1;
     }
-	else if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || sexysscanf(mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1)
+	else if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || sexysscanf(
+		mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1)
 	{
         aFinishedAdventure = 1;
     } else if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("%d-%d"), &aArea, &aSubArea) == 2) {

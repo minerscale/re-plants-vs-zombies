@@ -51,7 +51,7 @@ void ProfileMgr::SyncState(DataSync &theSync) {
             mNextProfileId = aMaxProfileId + 1;
             mNextProfileUseSeq = aMaxUseSeq + 1;
         } else {
-            aWriter->WriteShort((short)mProfileMap.size());
+            aWriter->WriteShort(static_cast<short>(mProfileMap.size()));
 
             for (auto anItr = mProfileMap.begin(); anItr != mProfileMap.end(); anItr++)
                 anItr->second.SyncSummary(theSync);
@@ -111,9 +111,8 @@ bool ProfileMgr::RenameProfile(const SexyString &theOldName, const SexyString &t
         if (strcasecmp(theOldName.c_str(), theNewName.c_str()) == 0) anOldItr->second.mName = theNewName;
         else {
             // 向 mProfileMap 中插入一个由新用户名及旧存档组成的对组
-            auto aRet = mProfileMap.emplace(
-                theNewName, anOldItr->second
-            ); // auto aRet = mProfileMap.insert({theNewName, anOldItr->second});
+            auto aRet = mProfileMap.emplace(theNewName, anOldItr->second);
+            // auto aRet = mProfileMap.insert({theNewName, anOldItr->second});
             // 通过返回值检测新用户名是否与原有存档重复，重复则返回 false，插入成功则继续操作
             if (!aRet.second) return false;
             else {

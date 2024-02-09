@@ -66,21 +66,26 @@ public:
 
 public:
     CreditScreen(LawnApp *theApp);
-    virtual ~CreditScreen();
+    ~CreditScreen() override;
 
-    virtual void Update();
-    virtual void Draw(Graphics *g);
-    virtual void KeyChar(SexyChar theChar);
-    virtual void KeyDown(KeyCode theKey);
-    virtual void MouseUp(int x, int y, int theClickCount);
-    virtual void AddedToManager(WidgetManager *theWidgetManager);
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
-    virtual void ButtonPress(int theId);
-    virtual void ButtonDepress(int theId);
-    virtual void ButtonDownTick(int) {}
-    virtual void ButtonMouseEnter(int) {}
-    virtual void ButtonMouseLeave(int) {}
-    virtual void ButtonMouseMove(int, int, int) {}
+    void Update() override;
+    void Draw(Graphics *g) override;
+    void KeyChar(SexyChar theChar) override;
+    void KeyDown(KeyCode theKey) override;
+    void MouseUp(int x, int y, int theClickCount) override;
+    void AddedToManager(WidgetManager *theWidgetManager) override;
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
+    void ButtonPress(int theId) override;
+    void ButtonDepress(int theId) override;
+
+    void ButtonDownTick(int) override {}
+
+    void ButtonMouseEnter(int) override {}
+
+    void ButtonMouseLeave(int) override {}
+
+    void ButtonMouseMove(int, int, int) override {}
+
     Reanimation *PlayReanim(int aIndex);
     void JumpToFrame(CreditsPhase thePhase, float theFrame);
     void GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction);
@@ -89,7 +94,7 @@ public:
     void UpdateBlink();
     void TurnOffTongues(Reanimation *theReanim, int aParentTrack);
     void DrawFinalCredits(Graphics *g);
-    void DrawOverlay(Graphics *g);
+    void DrawOverlay(Graphics *g) override;
     void UpdateMovie();
     void PauseCredits();
     void PreLoadCredits();
@@ -105,7 +110,7 @@ public:
 public:
     CreditsOverlay(CreditScreen *theCreditScreen);
 
-    void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
 };
 
 #endif

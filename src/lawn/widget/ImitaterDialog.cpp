@@ -29,8 +29,8 @@ ImitaterDialog::~ImitaterDialog() { delete mToolTip; }
 
 // 0x482D30
 SeedType ImitaterDialog::SeedHitTest(int x, int y) {
-    for (SeedType aSeedType = (SeedType)0; aSeedType < SeedType::SEED_GATLINGPEA;
-         aSeedType = (SeedType)(aSeedType + 1)) {
+    for (auto aSeedType = static_cast<SeedType>(0); aSeedType < SeedType::SEED_GATLINGPEA;
+         aSeedType = static_cast<SeedType>(aSeedType + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             int aSeedX, aSeedY;
             GetSeedPosition(aSeedType, aSeedX, aSeedY);
@@ -69,8 +69,8 @@ void ImitaterDialog::GetSeedPosition(int theIndex, int &x, int &y) {
 void ImitaterDialog::Draw(Graphics *g) {
     LawnDialog::Draw(g);
     g->SetLinearBlend(true);
-    for (SeedType aSeedType = (SeedType)0; aSeedType < SeedType::SEED_GATLINGPEA;
-         aSeedType = (SeedType)(aSeedType + 1)) {
+    for (auto aSeedType = static_cast<SeedType>(0); aSeedType < SeedType::SEED_GATLINGPEA;
+         aSeedType = static_cast<SeedType>(aSeedType + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             int aSeedX, aSeedY;
             GetSeedPosition(aSeedType, aSeedX, aSeedY);

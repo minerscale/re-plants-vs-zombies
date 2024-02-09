@@ -15,9 +15,11 @@ class Plant;
 class GridItem;
 class HitResult;
 class PottedPlant;
+
 namespace Sexy {
 class Graphics;
 }
+
 using namespace Sexy;
 
 class SpecialGridPlacement {
@@ -38,7 +40,8 @@ public:
     ZenGarden();
 
     void ZenGardenInitLevel();
-    /*inline*/ void DrawPottedPlantIcon(Graphics *g, float x, float y, PottedPlant *thePottedPlant);
+    /*inline*/
+    void DrawPottedPlantIcon(Graphics *g, float x, float y, PottedPlant *thePottedPlant);
     void DrawPottedPlant(Graphics *g, float x, float y, PottedPlant *thePottedPlant, float theScale, bool theDrawPot);
     bool IsZenGardenFull(bool theIncludeDroppedPresents);
     void FindOpenZenGardenSpot(int &theSpotX, int &theSpotY);
@@ -54,7 +57,8 @@ public:
     void MouseDownWithFullWheelBarrow(int x, int y);
     void MouseDownWithEmptyWheelBarrow(Plant *thePlant);
     void GotoNextGarden();
-    /*inline*/ PottedPlant *GetPottedPlantInWheelbarrow();
+    /*inline*/
+    PottedPlant *GetPottedPlantInWheelbarrow();
     void RemovePottedPlant(Plant *thePlant);
     SpecialGridPlacement *GetSpecialGridPlacements(int &theCount);
     int PixelToGridX(int theX, int theY);
@@ -115,9 +119,11 @@ public:
     void RefreshPlantNeeds(PottedPlant *thePottedPlant);
     void PlantSetLaunchCounter(Plant *thePlant);
     int PlantGetMinutesSinceHappy(Plant *thePlant);
-    /*inline*/ bool IsStinkyHighOnChocolate();
+    /*inline*/
+    bool IsStinkyHighOnChocolate();
     void StinkyAnimRateUpdate(GridItem *theStinky);
-    /*inline*/ bool PlantCanBeWatered(Plant *thePlant);
+    /*inline*/
+    bool PlantCanBeWatered(Plant *thePlant);
 };
 
 #endif

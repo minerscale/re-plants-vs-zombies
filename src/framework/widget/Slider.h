@@ -4,7 +4,6 @@
 #include "Widget.h"
 
 namespace Sexy {
-
 class SliderListener;
 
 class Slider : public Widget {
@@ -27,15 +26,14 @@ public:
     virtual void SetValue(double theValue);
 
     virtual bool HasTransparencies();
-    virtual void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
 
-    virtual void MouseMove(int x, int y);
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseDrag(int x, int y);
-    virtual void MouseUp(int x, int y);
-    virtual void MouseLeave();
+    void MouseMove(int x, int y) override;
+    void MouseDown(int x, int y, int theClickCount) override;
+    void MouseDrag(int x, int y) override;
+    void MouseUp(int x, int y) override;
+    void MouseLeave() override;
 };
-
 } // namespace Sexy
 
 #endif //__SLIDER_H__

@@ -16,7 +16,8 @@
 void ReanimatorCache::UpdateReanimationForVariation(Reanimation *theReanim, DrawVariation theDrawVariation) {
     if (theDrawVariation >= DrawVariation::VARIATION_MARIGOLD_WHITE &&
         theDrawVariation <= DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN) {
-        size_t aVariationIndex = (size_t)theDrawVariation - (size_t)DrawVariation::VARIATION_MARIGOLD_WHITE;
+        size_t aVariationIndex =
+            static_cast<size_t>(theDrawVariation) - static_cast<size_t>(DrawVariation::VARIATION_MARIGOLD_WHITE);
         Color MARIGOLD_VARIATIONS[] = {Color(255, 255, 255), Color(230, 30, 195),  Color(250, 125, 5),
                                        Color(255, 145, 215), Color(160, 255, 245), Color(230, 30, 30),
                                        Color(5, 130, 255),   Color(195, 55, 235),  Color(235, 210, 255),
@@ -73,7 +74,7 @@ void ReanimatorCache::DrawReanimatorFrame(
 
 // 0x46F280
 std::unique_ptr<Image> ReanimatorCache::MakeBlankImage(int theWidth, int theHeight) {
-    std::unique_ptr<Vk::VkImage> anImage = std::make_unique<Vk::VkImage>(theWidth, theHeight);
+    auto anImage = std::make_unique<Vk::VkImage>(theWidth, theHeight);
 
     return anImage;
 }
@@ -171,15 +172,15 @@ std::unique_ptr<Image> ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedTyp
         aGraphics.mScaleX = 0.85f;
         aGraphics.mScaleY = 0.85f;
         DrawReanimatorFrame(
-            &aGraphics, -(int)(aOffsetX - 12.0f), -(int)(aOffsetY - 12.0f), aPlantDef.mReanimationType, "anim_armed",
-            theDrawVariation
+            &aGraphics, -static_cast<int>(aOffsetX - 12.0f), -static_cast<int>(aOffsetY - 12.0f),
+            aPlantDef.mReanimationType, "anim_armed", theDrawVariation
         );
     } else if (theSeedType == SeedType::SEED_INSTANT_COFFEE) {
         aGraphics.mScaleX = 0.8f;
         aGraphics.mScaleY = 0.8f;
         DrawReanimatorFrame(
-            &aGraphics, -(int)(aOffsetX - 12.0f), -(int)(aOffsetY - 12.0f), aPlantDef.mReanimationType, "anim_idle",
-            theDrawVariation
+            &aGraphics, -static_cast<int>(aOffsetX - 12.0f), -static_cast<int>(aOffsetY - 12.0f),
+            aPlantDef.mReanimationType, "anim_idle", theDrawVariation
         );
     } else if (theSeedType == SeedType::SEED_EXPLODE_O_NUT) {
         aGraphics.SetColorizeImages(true);
@@ -265,7 +266,7 @@ std::unique_ptr<Image> ReanimatorCache::MakeCachedZombieFrame(ZombieType theZomb
         aReanim.AssignRenderGroupToTrack("boss_head2", RENDER_GROUP_HIDDEN);
         aReanim.Draw(&aGraphics);
     } else {
-        const char *aTrackName = "anim_idle";
+        auto aTrackName = "anim_idle";
         if (theZombieType == ZombieType::ZOMBIE_POGO) {
             aTrackName = "anim_pogo";
         } else if (theZombieType == ZombieType::ZOMBIE_CACHED_POLEVAULTER_WITH_POLE) {
@@ -293,8 +294,8 @@ void ReanimatorCache::DrawCachedPlant(
     if (theDrawVariation != DrawVariation::VARIATION_NORMAL) {
         anImage = mImageVariationMap
                       .insert(std::pair(
-                          ((uint64_t)theSeedType << 32) |
-                              theDrawVariation, // Place the seed type and drawVariation into same key.
+                          (static_cast<uint64_t>(theSeedType) << 32) | theDrawVariation,
+                          // Place the seed type and drawVariation into same key.
                           MakeCachedPlantFrame(theSeedType, theDrawVariation)
                       ))
                       .first->second.get();

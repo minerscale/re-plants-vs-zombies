@@ -5,7 +5,6 @@
 #include "SexyAppBase.h"
 
 namespace Sexy {
-
 class XMLParser;
 
 class PropertiesParser {
@@ -31,7 +30,6 @@ public:
     bool ParsePropertiesBuffer(const Buffer &theBuffer);
     SexyString GetErrorText();
 };
-
 } // namespace Sexy
 
 #endif //__PROPERTIESPARSER_H__

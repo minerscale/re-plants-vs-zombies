@@ -172,6 +172,7 @@ void DataSync::SyncLong(int32_t &theNum) { SyncLong((uint32_t &)theNum); }
 void DataSync::SyncLong(unsigned char &theNum) { SyncLong((uint32_t &)theNum); }
 
 void DataSync::SyncLong(unsigned short &theNum) { SyncLong((uint32_t &)theNum); }
+
 /*
 void DataSync::SyncLong(int& theNum)
 {
@@ -180,15 +181,16 @@ void DataSync::SyncLong(int& theNum)
 
 void DataSync::SyncSLong(int32_t &theNum) {
     if (mReader) {
-        theNum = (int32_t)mReader->ReadLong();
+        theNum = static_cast<int32_t>(mReader->ReadLong());
     } else {
-        mWriter->WriteLong((uint32_t)theNum);
+        mWriter->WriteLong(static_cast<uint32_t>(theNum));
     }
 }
 
 void DataSync::SyncSLong(char &theNum) { SyncSLong((int32_t &)theNum); }
 
 void DataSync::SyncSLong(short &theNum) { SyncSLong((int32_t &)theNum); }
+
 /*
 void DataSync::SyncSLong(int& theNum)
 {
@@ -218,6 +220,7 @@ void DataSync::SyncShort(int32_t &theNum) { SyncShort((unsigned short &)theNum);
 void DataSync::SyncShort(unsigned char &theNum) { SyncShort((unsigned short &)theNum); }
 
 void DataSync::SyncShort(uint32_t &theNum) { SyncShort((unsigned short &)theNum); }
+
 /*
 void DataSync::SyncShort(int& theNum)
 {
@@ -226,9 +229,9 @@ void DataSync::SyncShort(int& theNum)
 
 void DataSync::SyncSShort(short &theNum) {
     if (mReader) {
-        theNum = (short)mReader->ReadShort();
+        theNum = static_cast<short>(mReader->ReadShort());
     } else {
-        mWriter->WriteShort((unsigned short)theNum);
+        mWriter->WriteShort(static_cast<unsigned short>(theNum));
     }
 }
 
@@ -241,6 +244,7 @@ void DataSync::SyncSShort(unsigned char &theNum) { SyncSShort((short &)theNum); 
 void DataSync::SyncSShort(unsigned short &theNum) { SyncSShort((short &)theNum); }
 
 void DataSync::SyncSShort(uint32_t &theNum) { SyncSShort((short &)theNum); }
+
 /*
 void DataSync::SyncSShort(int& theNum)
 {
@@ -264,6 +268,7 @@ void DataSync::SyncByte(int32_t &theChar) { SyncByte((unsigned char &)theChar); 
 void DataSync::SyncByte(unsigned short &theChar) { SyncByte((unsigned char &)theChar); }
 
 void DataSync::SyncByte(uint32_t &theChar) { SyncByte((unsigned char &)theChar); }
+
 /*
 void DataSync::SyncByte(int& theChar)
 {
@@ -272,9 +277,9 @@ void DataSync::SyncByte(int& theChar)
 
 void DataSync::SyncSByte(char &theChar) {
     if (mReader) {
-        theChar = (char)mReader->ReadByte();
+        theChar = static_cast<char>(mReader->ReadByte());
     } else {
-        mWriter->WriteByte((unsigned char)theChar);
+        mWriter->WriteByte(static_cast<unsigned char>(theChar));
     }
 }
 
@@ -287,6 +292,7 @@ void DataSync::SyncSByte(unsigned char &theChar) { SyncByte((char &)theChar); }
 void DataSync::SyncSByte(unsigned short &theChar) { SyncByte((char &)theChar); }
 
 void DataSync::SyncSByte(uint32_t &theChar) { SyncByte((char &)theChar); }
+
 /*
 void DataSync::SyncSByte(int& theChar)
 {
@@ -368,7 +374,7 @@ void DataWriter::EnsureCapacity(uint32_t theNumBytes) {
         } while (mCapacity < theNumBytes);
 
         // 申请新内存
-        char *aData = new char[mCapacity];
+        auto aData = new char[mCapacity];
         // 将原数据迁移至新内存区域中
         memcpy(aData, mData, mDataLen);
         // 释放旧有内存区域
@@ -442,7 +448,7 @@ void DataWriter::WriteDouble(double theDouble) { WriteBytes(&theDouble, sizeof(d
 
 // 0x443810
 void DataWriter::WriteString(const SexyString &theStr) {
-    unsigned short aStrLen = (unsigned short)theStr.length();
+    unsigned short aStrLen = static_cast<unsigned short>(theStr.length());
     WriteShort(aStrLen);
     WriteBytes(theStr.c_str(), (uint32_t)aStrLen);
 }

@@ -90,8 +90,8 @@ bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
     int aTempChar = 0;
     if (p_fread(&aTempChar, 1, 1, mFile) == 1) {
         if ((aTempChar & 0x80) != 0) {
-            if ((aTempChar & 0xC0) != 0xC0)
-                return false; // sanity check: high bit should not be set without the next highest bit being set too.
+            if ((aTempChar & 0xC0) != 0xC0) return false;
+            // sanity check: high bit should not be set without the next highest bit being set too.
 
             int aBytesRead[6];
             int *aBytesReadPtr = &aBytesRead[0];
@@ -99,10 +99,10 @@ bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
             *aBytesReadPtr++ = aTempChar;
 
             int aLen;
-            for (aLen = 0; aLen < (int)(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
+            for (aLen = 0; aLen < static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
                 if ((aTempChar & aMaskData[aLen]) == ((aMaskData[aLen] << 1) & aMaskData[aLen])) break;
             }
-            if (aLen >= (int)(sizeof(aMaskData) / sizeof(*aMaskData))) return false;
+            if (aLen >= static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData))) return false;
 
             aTempChar &= ~aMaskData[aLen];
             int aTotalLen = aLen + 1;
@@ -112,8 +112,8 @@ bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
             int anExtraChar = 0;
             while (aLen > 0) {
                 if (p_fread(&anExtraChar, 1, 1, mFile) != 1) return false;
-                if ((anExtraChar & 0xC0) != 0x80)
-                    return false; // sanity check: high bit set, and next highest bit NOT set.
+                if ((anExtraChar & 0xC0) != 0x80) return false;
+                // sanity check: high bit set, and next highest bit NOT set.
 
                 *aBytesReadPtr++ = anExtraChar;
 
@@ -135,14 +135,14 @@ bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
 
         if ((aTempChar >= 0xD800 && aTempChar <= 0xDFFF) || (aTempChar >= 0xFFFE && aTempChar <= 0xFFFF)) return false;
 
-        if (aTempChar == 0xFEFF &&
-            mFirstChar) // zero-width non breaking space as the first char is a byte order marker.
+        if (aTempChar == 0xFEFF && mFirstChar)
+        // zero-width non breaking space as the first char is a byte order marker.
         {
             mFirstChar = false;
             return GetUTF8Char(theChar, error);
         }
 
-        *theChar = (wchar_t)aTempChar;
+        *theChar = static_cast<wchar_t>(aTempChar);
         *error = false;
         return true;
     }
@@ -165,15 +165,15 @@ bool XMLParser::GetUTF16Char(wchar_t *theChar, bool *error) {
             return GetUTF16Char(theChar, error);
         }
     }
-    if (mByteSwap) aTempChar = (wchar_t)((aTempChar << 8) | (aTempChar >> 8));
+    if (mByteSwap) aTempChar = static_cast<wchar_t>((aTempChar << 8) | (aTempChar >> 8));
 
     if ((aTempChar & 0xD800) == 0xD800) {
         wchar_t aNextChar = 0;
         if (p_fread(&aNextChar, 2, 1, mFile) != 1) return false;
 
-        if (mByteSwap) aNextChar = (wchar_t)((aNextChar << 8) | (aNextChar >> 8));
+        if (mByteSwap) aNextChar = static_cast<wchar_t>((aNextChar << 8) | (aNextChar >> 8));
         if ((aNextChar & 0xDC00) == 0xDC00) {
-            *theChar = (wchar_t)((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
+            *theChar = static_cast<wchar_t>((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
         } else return false;
     } else *theChar = aTempChar;
 
@@ -193,7 +193,7 @@ bool XMLParser::GetUTF16LEChar(wchar_t *theChar, bool *error) {
 
         aNextChar = WORD_LITTLEE_TO_NATIVE(aTempChar);
         if ((aNextChar & 0xDC00) == 0xDC00) {
-            *theChar = (wchar_t)((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
+            *theChar = static_cast<wchar_t>((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
         } else return false;
     }
 
@@ -213,7 +213,7 @@ bool XMLParser::GetUTF16BEChar(wchar_t *theChar, bool *error) {
 
         aNextChar = WORD_BIGE_TO_NATIVE(aTempChar);
         if ((aNextChar & 0xDC00) == 0xDC00) {
-            *theChar = (wchar_t)((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
+            *theChar = static_cast<wchar_t>((((aTempChar & ~0xD800) << 10) | (aNextChar & ~0xDC00)) + 0x10000);
         } else return false;
     }
 
@@ -333,7 +333,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
 
                     SexyString *aStrPtr = &theElement->mInstruction;
 
-                    *aStrPtr += (SexyChar)c;
+                    *aStrPtr += static_cast<SexyChar>(c);
 
                     int aLen = aStrPtr->length();
 
@@ -350,7 +350,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                     if ((theElement->mInstruction.length() != 0) || (::iswspace(c)))
                         aStrPtr = &theElement->mInstruction;
 
-                    *aStrPtr += (SexyChar)c;
+                    *aStrPtr += static_cast<SexyChar>(c);
 
                     int aLen = aStrPtr->length();
 
@@ -448,7 +448,8 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                     mBufferedText.resize(anOldSize + anAddLength);
 
                                     for (int i = 0; i < anAddLength; i++)
-                                        mBufferedText[anOldSize + i] = (wchar_t)(anAddString[anAddLength - i - 1]);
+                                        mBufferedText[anOldSize + i] =
+                                            static_cast<wchar_t>(anAddString[anAddLength - i - 1]);
 
                                     // clear out aAttributeKey, since it contains "/" as its value and will insert
                                     // it into the element's attribute map.
@@ -491,7 +492,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                             theElement->mType = XMLElement::TYPE_END;
                         } else if ((c == L'?') && (theElement->mType == XMLElement::TYPE_START) && (theElement->mValue == _S(""))) {
                             theElement->mType = XMLElement::TYPE_INSTRUCTION;
-                        } else if (::isspace((uchar)c)) {
+                        } else if (::isspace(static_cast<uchar>(c))) {
                             if (theElement->mValue != _S("")) hasSpace = true;
 
                             // It's a comment!
@@ -543,7 +544,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                             std::wstring *aStrPtr = NULL;
 
                             if (!doingAttribute) {
-                                theElement->mValue += (SexyChar)c;
+                                theElement->mValue += static_cast<SexyChar>(c);
                             } else {
                                 if (c == L'=') {
                                     AttributeVal = true;
@@ -563,7 +564,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                 hasSpace = false;
                             }
 
-                            theElement->mValue += (SexyChar)c;
+                            theElement->mValue += static_cast<SexyChar>(c);
                         }
                     }
                 }

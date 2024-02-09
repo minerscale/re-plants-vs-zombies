@@ -46,7 +46,7 @@ EditWidget::~EditWidget() {
 }
 
 void EditWidget::ClearWidthCheckFonts() {
-    for (WidthCheckList::iterator anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr)
+    for (auto anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr)
         delete anItr->mFont;
 
     mWidthCheckList.clear();
@@ -222,7 +222,7 @@ void EditWidget::EnforceMaxPixels() {
         return;
     }
 
-    for (WidthCheckList::iterator anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr) {
+    for (auto anItr = mWidthCheckList.begin(); anItr != mWidthCheckList.end(); ++anItr) {
         int aWidth = anItr->mWidth;
         if (aWidth <= 0) {
             aWidth = mMaxPixels;
@@ -238,7 +238,8 @@ bool EditWidget::IsPartOfWord(SexyChar theChar) {
     return (
         ((theChar >= _S('A')) && (theChar <= _S('Z'))) || ((theChar >= _S('a')) && (theChar <= _S('z'))) ||
         ((theChar >= _S('0')) && (theChar <= _S('9'))) ||
-        (((unsigned int)theChar >= (unsigned int)(L'?')) && ((unsigned int)theChar <= (unsigned int)(L'ÿ'))) ||
+        ((static_cast<unsigned int>(theChar) >= static_cast<unsigned int>(L'?')) &&
+         (static_cast<unsigned int>(theChar) <= static_cast<unsigned int>(L'ÿ'))) ||
         (theChar == _S('_'))
     );
 }
@@ -341,11 +342,11 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
     } else if (theKey == KEYCODE_RIGHT) {
         if (controlDown) {
             // Get to whitespace
-            while ((mCursorPos < (int)mString.length() - 1) && (IsPartOfWord(mString[mCursorPos + 1])))
+            while ((mCursorPos < static_cast<int>(mString.length()) - 1) && (IsPartOfWord(mString[mCursorPos + 1])))
                 mCursorPos++;
 
             // Go beyond the whitespace
-            while ((mCursorPos < (int)mString.length() - 1) && (!IsPartOfWord(mString[mCursorPos + 1])))
+            while ((mCursorPos < static_cast<int>(mString.length()) - 1) && (!IsPartOfWord(mString[mCursorPos + 1])))
                 mCursorPos++;
         }
         if (shiftDown || (mHilitePos == -1)) mCursorPos++;
@@ -383,7 +384,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
                 bigChange = true;
             } else {
                 // Delete char in front of cursor
-                if (mCursorPos < (int)mString.length())
+                if (mCursorPos < static_cast<int>(mString.length()))
                     mString = mString.substr(0, mCursorPos) + mString.substr(mCursorPos + 1);
 
                 if (mCursorPos != mLastModifyIdx) bigChange = true;
@@ -397,8 +398,8 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
     } else if (theKey == KEYCODE_RETURN) {
         mEditListener->EditWidgetText(mId, mString);
     } else {
-        SexyString aString = SexyString(1, theChar);
-        unsigned int uTheChar = (unsigned int)theChar;
+        auto aString = SexyString(1, theChar);
+        unsigned int uTheChar = static_cast<unsigned int>(theChar);
         unsigned int range = 127;
         if (gSexyAppBase->mbAllowExtendedChars) {
             range = 255;
@@ -427,12 +428,12 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
         } else removeHilite = false;
     }
 
-    if ((mMaxChars != -1) && ((int)mString.length() > mMaxChars)) mString = mString.substr(0, mMaxChars);
+    if ((mMaxChars != -1) && (static_cast<int>(mString.length()) > mMaxChars)) mString = mString.substr(0, mMaxChars);
 
     EnforceMaxPixels();
 
     if (mCursorPos < 0) mCursorPos = 0;
-    else if (mCursorPos > (int)mString.length()) mCursorPos = mString.length();
+    else if (mCursorPos > static_cast<int>(mString.length())) mCursorPos = mString.length();
 
     if (anOldCursorPos != mCursorPos) {
         mBlinkAcc = 0;
@@ -471,7 +472,7 @@ int EditWidget::GetCharAt(int x, int y) {
 
     SexyString &aString = GetDisplayString();
 
-    for (int i = mLeftPos; i < (int)aString.length(); i++) {
+    for (int i = mLeftPos; i < static_cast<int>(aString.length()); i++) {
         SexyString aLoSubStr = aString.substr(mLeftPos, i - mLeftPos);
         SexyString aHiSubStr = aString.substr(mLeftPos, i - mLeftPos + 1);
 
@@ -495,8 +496,8 @@ void EditWidget::FocusCursor(bool bigJump) {
         while ((mWidth - 8 > 0) &&
                (mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos)) >=
                 mWidth - 8)) {
-            if (bigJump) mLeftPos = std::min(mLeftPos + 10, (int)mString.length() - 1);
-            else mLeftPos = std::min(mLeftPos + 1, (int)mString.length() - 1);
+            if (bigJump) mLeftPos = std::min(mLeftPos + 10, static_cast<int>(mString.length()) - 1);
+            else mLeftPos = std::min(mLeftPos + 1, static_cast<int>(mString.length()) - 1);
 
             MarkDirty();
         }
@@ -537,16 +538,16 @@ void EditWidget::MouseUp(int x, int y, int theBtnNum, int theClickCount) {
 void EditWidget::HiliteWord() {
     SexyString &aString = GetDisplayString();
 
-    if (mCursorPos < (int)aString.length()) {
+    if (mCursorPos < static_cast<int>(aString.length())) {
         // Find first space before word
         mHilitePos = mCursorPos;
         while ((mHilitePos > 0) && (IsPartOfWord(aString[mHilitePos - 1])))
             mHilitePos--;
 
         // Find first space after word
-        while ((mCursorPos < (int)aString.length() - 1) && (IsPartOfWord(aString[mCursorPos + 1])))
+        while ((mCursorPos < static_cast<int>(aString.length()) - 1) && (IsPartOfWord(aString[mCursorPos + 1])))
             mCursorPos++;
-        if (mCursorPos < (int)aString.length()) mCursorPos++;
+        if (mCursorPos < static_cast<int>(aString.length())) mCursorPos++;
     }
 }
 

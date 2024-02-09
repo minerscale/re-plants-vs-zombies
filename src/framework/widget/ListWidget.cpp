@@ -51,7 +51,7 @@ void ListWidget::RemovedFromManager(WidgetManager *theManager) {
 SexyString ListWidget::GetSortKey(int theIdx) {
     SexyString aString = mLines[theIdx];
 
-    while (aString.length() < (ulong)mMaxNumericPlaces)
+    while (aString.length() < static_cast<ulong>(mMaxNumericPlaces))
         aString = _S("0") + aString;
 
     if (mSortFromChild) return mChild->GetSortKey(theIdx) + aString;
@@ -65,8 +65,8 @@ SexyString ListWidget::GetSortKey(int theIdx) {
 
 void ListWidget::Sort(bool ascending) {
     int aCount = mLines.size();
-    int *aMap = new int[aCount];
-    SexyString *aKeys = new SexyString[aCount];
+    auto aMap = new int[aCount];
+    auto aKeys = new SexyString[aCount];
 
     int i;
     for (i = 0; i < aCount; i++) {
@@ -88,7 +88,7 @@ void ListWidget::Sort(bool ascending) {
             }
         }
 
-    ListWidget *aListWidget = this;
+    auto aListWidget = this;
     while (aListWidget->mParent != NULL)
         aListWidget = aListWidget->mParent;
 
@@ -133,11 +133,11 @@ int ListWidget::AddLine(const SexyString &theLine, bool alphabetical) {
     bool inserted = false;
 
     if (alphabetical) {
-        for (int i = 0; i < (int)mLines.size(); i++)
+        for (int i = 0; i < static_cast<int>(mLines.size()); i++)
             if (sexystrcmp(theLine.c_str(), mLines[i].c_str()) < 0) {
                 anIdx = i;
 
-                ListWidget *aListWidget = this;
+                auto aListWidget = this;
 
                 while (aListWidget->mParent != NULL)
                     aListWidget = aListWidget->mParent;
@@ -160,7 +160,7 @@ int ListWidget::AddLine(const SexyString &theLine, bool alphabetical) {
     if (!inserted) {
         anIdx = mLines.size();
 
-        ListWidget *aListWidget = this;
+        auto aListWidget = this;
 
         while (aListWidget->mParent != NULL)
             aListWidget = aListWidget->mParent;
@@ -203,8 +203,8 @@ void ListWidget::SetColor(const SexyString &theLine, const Color &theColor) {
 void ListWidget::SetColor(int theIdx, const Color &theColor) { Widget::SetColor(theIdx, theColor); }
 
 void ListWidget::SetLineColor(int theIdx, const Color &theColor) {
-    if ((theIdx >= 0) && (theIdx < (int)mLines.size())) {
-        ListWidget *aListWidget = this;
+    if ((theIdx >= 0) && (theIdx < static_cast<int>(mLines.size()))) {
+        auto aListWidget = this;
 
         while (aListWidget->mParent != NULL)
             aListWidget = aListWidget->mParent;
@@ -220,7 +220,7 @@ void ListWidget::SetLineColor(int theIdx, const Color &theColor) {
 
 void ListWidget::RemoveLine(int theIdx) {
     if (theIdx != -1) {
-        ListWidget *aListWidget = this;
+        auto aListWidget = this;
 
         while (aListWidget->mParent != NULL)
             aListWidget = aListWidget->mParent;
@@ -238,7 +238,7 @@ void ListWidget::RemoveLine(int theIdx) {
 }
 
 void ListWidget::RemoveAll() {
-    ListWidget *aListWidget = this;
+    auto aListWidget = this;
 
     while (aListWidget->mParent != NULL)
         aListWidget = aListWidget->mParent;
@@ -290,8 +290,9 @@ void ListWidget::Draw(Graphics *g) {
 
     aClipG.SetFont(mFont);
 
-    int aFirstLine = (int)mPosition;
-    int aLastLine = std::min((int)mLines.size() - 1, (int)mPosition + (int)mPageSize + 1);
+    int aFirstLine = static_cast<int>(mPosition);
+    int aLastLine =
+        std::min(static_cast<int>(mLines.size()) - 1, static_cast<int>(mPosition) + static_cast<int>(mPageSize) + 1);
 
     int anItemHeight, anItemOffset;
     if (mItemHeight != -1) {
@@ -303,7 +304,7 @@ void ListWidget::Draw(Graphics *g) {
     }
 
     for (int i = aFirstLine; i <= aLastLine; i++) {
-        int aDrawY = 4 + (int)((i - mPosition) * anItemHeight);
+        int aDrawY = 4 + static_cast<int>((i - mPosition) * anItemHeight);
 
         if (i == mSelectIdx || (i == mHiliteIdx && mDrawSelectWhenHilited)) {
             aSelectClipG.SetColor(mColors[COLOR_SELECT]);
@@ -349,11 +350,11 @@ void ListWidget::MouseMove(int x, int y) {
     (void)x;
     int anItemHeight = (mItemHeight != -1) ? mItemHeight : mFont->GetHeight();
 
-    int aNewHilite = (int)(((y - 4) / (double)anItemHeight) + mPosition);
-    if ((aNewHilite < 0) || (aNewHilite >= (int)mLines.size())) aNewHilite = -1;
+    int aNewHilite = static_cast<int>(((y - 4) / (double)anItemHeight) + mPosition);
+    if ((aNewHilite < 0) || (aNewHilite >= static_cast<int>(mLines.size()))) aNewHilite = -1;
 
     if (aNewHilite != mHiliteIdx) {
-        ListWidget *aListWidget = this;
+        auto aListWidget = this;
 
         while (aListWidget->mParent != NULL)
             aListWidget = aListWidget->mParent;
@@ -377,7 +378,7 @@ void ListWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount) {
 }
 
 void ListWidget::MouseLeave() {
-    ListWidget *aListWidget = this;
+    auto aListWidget = this;
 
     while (aListWidget->mParent != NULL)
         aListWidget = aListWidget->mParent;
@@ -392,7 +393,7 @@ void ListWidget::MouseLeave() {
 }
 
 void ListWidget::SetSelect(int theSelectIdx) {
-    ListWidget *aListWidget = this;
+    auto aListWidget = this;
 
     while (aListWidget->mParent != NULL)
         aListWidget = aListWidget->mParent;

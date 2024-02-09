@@ -8,6 +8,7 @@
 class LawnApp;
 class Board;
 class Zombie;
+
 namespace Sexy {
 class Graphics;
 };
@@ -67,7 +68,8 @@ public:
     void DrawIZombieBrain(Sexy::Graphics *g);
     void UpdateBrain();
     void DrawStinky(Sexy::Graphics *g);
-    /*inline*/ bool IsOpenPortal();
+    /*inline*/
+    bool IsOpenPortal();
 };
 
 #endif

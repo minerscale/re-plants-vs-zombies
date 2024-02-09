@@ -30,7 +30,6 @@ class Image;
 };
 
 namespace Sexy {
-
 class WidgetManager;
 // class DDInterface;
 class Image;
@@ -50,21 +49,21 @@ public:
     Widget *mWidget;
 };
 
-typedef std::list<WidgetSafeDeleteInfo> WidgetSafeDeleteList;
+using WidgetSafeDeleteList = std::list<WidgetSafeDeleteInfo>;
 // typedef std::set<MemoryImage*> MemoryImageSet;
-typedef std::map<int, Dialog *> DialogMap;
-typedef std::list<Dialog *> DialogList;
+using DialogMap = std::map<int, Dialog *>;
+using DialogList = std::list<Dialog *>;
 // typedef std::list<MSG> WindowsMessageList;
-typedef std::vector<std::string> StringVector;
+using StringVector = std::vector<std::string>;
 // typedef std::basic_string<TCHAR> tstring; // string of TCHARs
 
-typedef std::unordered_map<std::string, SexyString> StringSexyStringMap;
-typedef std::unordered_map<std::string, std::string> StringStringMap;
-typedef std::unordered_map<std::string, std::wstring> StringWStringMap;
-typedef std::unordered_map<std::string, bool> StringBoolMap;
-typedef std::unordered_map<std::string, int> StringIntMap;
-typedef std::unordered_map<std::string, double> StringDoubleMap;
-typedef std::unordered_map<std::string, StringVector> StringStringVectorMap;
+using StringSexyStringMap = std::unordered_map<std::string, SexyString>;
+using StringStringMap = std::unordered_map<std::string, std::string>;
+using StringWStringMap = std::unordered_map<std::string, std::wstring>;
+using StringBoolMap = std::unordered_map<std::string, bool>;
+using StringIntMap = std::unordered_map<std::string, int>;
+using StringDoubleMap = std::unordered_map<std::string, double>;
+using StringStringVectorMap = std::unordered_map<std::string, StringVector>;
 
 enum {
     DEMO_MOUSE_POSITION,
@@ -103,7 +102,7 @@ enum {
 };
 
 // typedef std::map<HANDLE, int> HandleToIntMap;
-typedef std::map<std::string, std::unique_ptr<Image>> SharedImageMap;
+using SharedImageMap = std::map<std::string, std::unique_ptr<Image>>;
 
 class SexyAppBase : public ButtonListener, public DialogListener {
 public:
@@ -273,8 +272,8 @@ public:
     //	HandleToIntMap			mHandleToIntMap; // For waiting on handles
     int mCurHandleNum;
 
-    typedef std::pair<std::string, int> DemoMarker;
-    typedef std::list<DemoMarker> DemoMarkerList;
+    using DemoMarker = std::pair<std::string, int>;
+    using DemoMarkerList = std::list<DemoMarker>;
     DemoMarkerList mDemoMarkerList;
 
     bool mDebugKeysEnabled;
@@ -396,8 +395,8 @@ public:
     virtual void DoParseCmdLine(int argc, char *argv[]);
     virtual void ParseCmdLine(const std::string &theCmdLine);
     virtual void HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue);
-    virtual void HandleNotifyGameMessage(int theType
-    ); // for HWND_BROADCAST of mNotifyGameMessage (0-1000 are reserved for SexyAppBase for theType)
+    virtual void HandleNotifyGameMessage(int theType);
+    // for HWND_BROADCAST of mNotifyGameMessage (0-1000 are reserved for SexyAppBase for theType)
     virtual void HandleGameAlreadyRunning();
 
     virtual void Start();
@@ -476,8 +475,8 @@ public:
     virtual int GetDialogCount();
     virtual void ModalOpen();
     virtual void ModalClose();
-    virtual void DialogButtonPress(int theDialogId, int theButtonId);
-    virtual void DialogButtonDepress(int theDialogId, int theButtonId);
+    void DialogButtonPress(int theDialogId, int theButtonId) override;
+    void DialogButtonDepress(int theDialogId, int theButtonId) override;
 
     virtual void GotFocus();
     virtual void LostFocus();
@@ -553,7 +552,8 @@ public:
 
     // File access methods
     bool WriteBufferToFile(const std::string &theFileName, const Buffer *theBuffer);
-    bool ReadBufferFromFile(const std::string &theFileName, Buffer *theBuffer, bool dontWriteToDemo = false); // UNICODE
+    bool ReadBufferFromFile(const std::string &theFileName, Buffer *theBuffer, bool dontWriteToDemo = false);
+    // UNICODE
     bool WriteBytesToFile(const std::string &theFileName, const void *theData, unsigned long theDataLen);
     bool FileExists(const std::string &theFileName);
     bool EraseFile(const std::string &theFileName);
@@ -570,7 +570,6 @@ public:
 };
 
 extern SexyAppBase *gSexyAppBase;
-
 }; // namespace Sexy
 
 #endif //__SEXYAPPBASE_H__

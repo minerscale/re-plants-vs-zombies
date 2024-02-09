@@ -130,7 +130,7 @@ typedef struct tagBITMAPINFOHEADER {
     unsigned int biClrImportant;
 } BITMAPINFOHEADER, *LPBITMAPINFOHEADER, *PBITMAPINFOHEADER;
 
-typedef enum {
+using Compression = enum {
     BI_RGB = 0x0000,
     BI_RLE8 = 0x0001,
     BI_RLE4 = 0x0002,
@@ -140,7 +140,7 @@ typedef enum {
     BI_CMYK = 0x000B,
     BI_CMYKRLE8 = 0x000C,
     BI_CMYKRLE4 = 0x000D
-} Compression;
+};
 
 bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     FILE *aFile = fopen(theFileName.c_str(), "wb");
@@ -194,7 +194,7 @@ template <typename T, size_t N> constexpr std::array<T, N> createLUT(auto fn) {
 
     for (size_t i = 0; i < N; ++i) {
         // Subtracting one here ensures highest number is 1
-        double v = (double)i / (N - 1);
+        double v = static_cast<double>(i) / (N - 1);
         // Use the full range of our type given to us for max precision.
         ret[i] = std::numeric_limits<T>::max() * fn(v);
     }
@@ -207,7 +207,7 @@ const auto linearToSRGBLut = createLUT<uint8_t, 1024>(linearToSRGB);
 
 std::unique_ptr<ImageLib::Image> GetAnImage(const std::string &theFilename) {
     int aLastDotPos = theFilename.rfind('.');
-    int aLastSlashPos = std::max((int)theFilename.rfind('\\'), (int)theFilename.rfind('/'));
+    int aLastSlashPos = std::max(static_cast<int>(theFilename.rfind('\\')), static_cast<int>(theFilename.rfind('/')));
 
     std::string anExt;
     std::string aFilename;
@@ -240,7 +240,8 @@ std::unique_ptr<ImageLib::Image> GetAlphaImage(const std::string &theFilename) {
 
     // Check _ImageName
     if (!anAlphaImage) {
-        int aLastSlashPos = std::max((int)theFilename.rfind('\\'), (int)theFilename.rfind('/'));
+        int aLastSlashPos =
+            std::max(static_cast<int>(theFilename.rfind('\\')), static_cast<int>(theFilename.rfind('/')));
 
         anAlphaImage = GetAnImage(
             theFilename.substr(0, aLastSlashPos + 1) + "_" +

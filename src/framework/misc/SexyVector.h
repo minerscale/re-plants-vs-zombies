@@ -9,21 +9,23 @@
 #include <math.h>
 
 namespace Sexy {
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class SexyVector2 {
 public:
     union {
-
         struct {
             float x, y;
         };
+
         glm::vec2 vec;
     };
 
 public:
     SexyVector2() : x(0), y(0) {}
+
+    SexyVector2(const glm::vec2 &theVec) : vec(theVec) {}
+
     SexyVector2(float theX, float theY) : x(theX), y(theY) {}
 
     float Dot(const SexyVector2 &v) const { return x * v.x + y * v.y; }
@@ -32,18 +34,22 @@ public:
     SexyVector2 operator-() const { return SexyVector2(-x, -y); }
     SexyVector2 operator*(float t) const { return SexyVector2(t * x, t * y); }
     SexyVector2 operator/(float t) const { return SexyVector2(x / t, y / t); }
+
     void operator+=(const SexyVector2 &v) {
         x += v.x;
         y += v.y;
     }
+
     void operator-=(const SexyVector2 &v) {
         x -= v.x;
         y -= v.y;
     }
+
     void operator*=(float t) {
         x *= t;
         y *= t;
     }
+
     void operator/=(float t) {
         x /= t;
         y /= t;
@@ -67,16 +73,27 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 class SexyVector3 {
 public:
-    float x, y, z;
+    union {
+        struct {
+            float x, y, z;
+        };
+
+        glm::vec3 vec;
+    };
 
 public:
     SexyVector3() : x(0), y(0), z(0) {}
+
+    SexyVector3(const glm::vec3 &theVec) : vec(theVec) {}
+
     SexyVector3(float theX, float theY, float theZ) : x(theX), y(theY), z(theZ) {}
 
     float Dot(const SexyVector3 &v) const { return x * v.x + y * v.y + z * v.z; }
+
     SexyVector3 Cross(const SexyVector3 &v) const {
         return SexyVector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
     }
+
     SexyVector3 operator+(const SexyVector3 &v) const { return SexyVector3(x + v.x, y + v.y, z + v.z); }
     SexyVector3 operator-(const SexyVector3 &v) const { return SexyVector3(x - v.x, y - v.y, z - v.z); }
     SexyVector3 operator*(float t) const { return SexyVector3(t * x, t * y, t * z); }
@@ -88,7 +105,6 @@ public:
         return aMag != 0 ? (*this) / aMag : *this;
     }
 };
-
 }; // namespace Sexy
 
 #endif

@@ -20,6 +20,7 @@ class Zombie;
 class LawnApp;
 class GameButton;
 class Reanimation;
+
 class AlmanacDialog : public LawnDialog {
 private:
     enum { ALMANAC_BUTTON_CLOSE = 0, ALMANAC_BUTTON_PLANT = 1, ALMANAC_BUTTON_ZOMBIE = 2, ALMANAC_BUTTON_INDEX = 3 };
@@ -40,36 +41,42 @@ public:
 
 public:
     AlmanacDialog(LawnApp *theApp);
-    virtual ~AlmanacDialog();
+    ~AlmanacDialog() override;
 
     void ClearPlantsAndZombies();
-    virtual void RemovedFromManager(WidgetManager *theWidgetManager);
+    void RemovedFromManager(WidgetManager *theWidgetManager) override;
     void SetupPlant();
     void SetupZombie();
     void SetPage(AlmanacPage thePage);
-    virtual void Update();
+    void Update() override;
     void DrawIndex(Graphics *g);
     void DrawPlants(Graphics *g);
     void DrawZombies(Graphics *g);
-    virtual void Draw(Graphics *g);
+    void Draw(Graphics *g) override;
     void GetSeedPosition(SeedType theSeedType, int &x, int &y);
     SeedType SeedHitTest(int x, int y);
-    /*inline*/ bool ZombieHasSilhouette(ZombieType theZombieType);
+    /*inline*/
+    bool ZombieHasSilhouette(ZombieType theZombieType);
     bool ZombieIsShown(ZombieType theZombieType);
     bool ZombieHasDescription(ZombieType theZombieType);
     void GetZombiePosition(ZombieType theZombieType, int &x, int &y);
     ZombieType ZombieHitTest(int x, int y);
-    virtual void MouseUp(int x, int y, int theClickCount);
-    virtual void MouseDown(int x, int y, int theClickCount);
+    void MouseUp(int x, int y, int theClickCount) override;
+    void MouseDown(int x, int y, int theClickCount) override;
     //	virtual void				KeyChar(char theChar);
 
     static ZombieType GetZombieType(int theIndex);
-    /*inline*/ void ShowPlant(SeedType theSeedType);
-    /*inline*/ void ShowZombie(ZombieType theZombieType);
+    /*inline*/
+    void ShowPlant(SeedType theSeedType);
+    /*inline*/
+    void ShowZombie(ZombieType theZombieType);
 };
+
 extern bool gZombieDefeated[NUM_ZOMBIE_TYPES];
 
-/*inline*/ void AlmanacInitForPlayer();
-/*inline*/ void AlmanacPlayerDefeatedZombie(ZombieType theZombieType);
+/*inline*/
+void AlmanacInitForPlayer();
+/*inline*/
+void AlmanacPlayerDefeatedZombie(ZombieType theZombieType);
 
 #endif

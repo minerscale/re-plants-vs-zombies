@@ -2213,7 +2213,7 @@ bool Sexy::ExtractLoadingSoundsResources(ResourceManager *theManager) {
 bool (*gExtractResourcesByName)(Sexy::ResourceManager *theResourceManager, const char *theName);
 
 // @Patoke: updated these
-void *gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX] = {
+void *gResources[static_cast<int>(Sexy::ResourceId::RESOURCE_ID_MAX)] = {
     &Sexy::IMAGE_BLANK, &Sexy::IMAGE_POPCAP_LOGO, &Sexy::IMAGE_PARTNER_LOGO, &Sexy::IMAGE_TITLESCREEN,
     &Sexy::IMAGE_LOADBAR_DIRT, &Sexy::IMAGE_LOADBAR_GRASS, &Sexy::IMAGE_PVZ_LOGO, &Sexy::IMAGE_REANIM_SODROLLCAP,
     &Sexy::FONT_BRIANNETOD16, &Sexy::SOUND_BUTTONCLICK, &Sexy::SOUND_LOADINGBAR_FLOWER, &Sexy::SOUND_LOADINGBAR_ZOMBIE,
@@ -2518,17 +2518,17 @@ void *gResources[(int)Sexy::ResourceId::RESOURCE_ID_MAX] = {
     &Sexy::IMAGE_ZOMBATAR_VIEW_BUTTON_HIGHLIGHT
 };
 
-Sexy::Image *Sexy::GetImageById(ResourceId theId) { return *(Sexy::Image **)gResources[(int)theId]; }
+Sexy::Image *Sexy::GetImageById(ResourceId theId) { return *static_cast<Sexy::Image **>(gResources[(int)theId]); }
 
-Sexy::_Font *Sexy::GetFontById(ResourceId theId) { return *(Sexy::_Font **)gResources[(int)theId]; }
+Sexy::_Font *Sexy::GetFontById(ResourceId theId) { return *static_cast<Sexy::_Font **>(gResources[(int)theId]); }
 
-int Sexy::GetSoundById(ResourceId theId) { return *(int *)gResources[(int)theId]; }
+int Sexy::GetSoundById(ResourceId theId) { return *static_cast<int *>(gResources[(int)theId]); }
 
-Image *&Sexy::GetImageRefById(ResourceId theId) { return *(Image **)gResources[(int)theId]; }
+Image *&Sexy::GetImageRefById(ResourceId theId) { return *static_cast<Image **>(gResources[(int)theId]); }
 
-_Font *&Sexy::GetFontRefById(ResourceId theId) { return *(_Font **)gResources[(int)theId]; }
+_Font *&Sexy::GetFontRefById(ResourceId theId) { return *static_cast<_Font **>(gResources[(int)theId]); }
 
-int &Sexy::GetSoundRefById(ResourceId theId) { return *(int *)gResources[(intptr_t)theId]; }
+int &Sexy::GetSoundRefById(ResourceId theId) { return *static_cast<int *>(gResources[(intptr_t)theId]); }
 
 Sexy::ResourceId Sexy::GetIdByImage(Image *theImage) { return GetIdByVariable(theImage); }
 
@@ -2543,13 +2543,14 @@ Sexy::ResourceId Sexy::GetIdByVariable(void *theVariable) {
     if (gNeedRecalcVariableToIdMap) {
         gNeedRecalcVariableToIdMap = false;
         aMap.clear();
-        for (int i = 0; i < (int)ResourceId::RESOURCE_ID_MAX; i++)
+        for (int i = 0; i < static_cast<int>(ResourceId::RESOURCE_ID_MAX); i++)
             aMap[gResources[i]] = i;
     }
 
     auto anIter = aMap.find(theVariable);
-    return anIter == aMap.end() ? ResourceId::RESOURCE_ID_MAX : (ResourceId)anIter->second;
+    return anIter == aMap.end() ? ResourceId::RESOURCE_ID_MAX : static_cast<ResourceId>(anIter->second);
 }
+
 /*
     *aMap.end() => __asm
     {

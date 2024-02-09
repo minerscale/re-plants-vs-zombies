@@ -15,9 +15,11 @@ class TodParticleEmitter;
 class ReanimatorDefinition;
 class TodParticleDefinition;
 class TrailDefinition;
+
 namespace Sexy {
 class Image;
 }
+
 using namespace Sexy;
 
 struct SaveFileHeader {

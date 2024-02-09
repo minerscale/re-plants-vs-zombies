@@ -105,7 +105,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
     for (;;) {
         int aNextMinPriority = 0x7FFFFFFF;
 
-        for (int i = 0; i < (int)mDeferredOverlayWidgets.size(); i++) {
+        for (int i = 0; i < static_cast<int>(mDeferredOverlayWidgets.size()); i++) {
             Widget *aWidget = mDeferredOverlayWidgets[i].first;
             if (aWidget != NULL) {
                 int aPriority = mDeferredOverlayWidgets[i].second;
@@ -274,7 +274,7 @@ void WidgetManager::LostFocus() {
     if (mHasFocus) {
         mActualDownButtons = 0;
         for (int aKeyNum = 0; aKeyNum < 0xFF; aKeyNum++) {
-            if (mKeyDown[aKeyNum]) KeyUp((KeyCode)aKeyNum);
+            if (mKeyDown[aKeyNum]) KeyUp(static_cast<KeyCode>(aKeyNum));
         }
 
         mHasFocus = false;
@@ -295,7 +295,7 @@ void WidgetManager::DrawWidgetsTo(Graphics *g) {
     ModalFlags aModalFlags;
     InitModalFlags(&aModalFlags);
 
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
 
@@ -327,7 +327,7 @@ bool WidgetManager::DrawScreen() {
     // bool hasDirtyTransients = false;
 
     // Survey
-    WidgetList::iterator anItr = mWidgets.begin();
+    auto anItr = mWidgets.begin();
     while (anItr != mWidgets.end()) {
         Widget *aWidget = *anItr;
         if (aWidget->mDirty) aDirtyCount++;
@@ -350,7 +350,7 @@ bool WidgetManager::DrawScreen() {
         Graphics g(aScrG);
         g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
 
-        WidgetList::iterator anItr = mWidgets.begin();
+        auto anItr = mWidgets.begin();
         while (anItr != mWidgets.end()) {
             Widget *aWidget = *anItr;
 

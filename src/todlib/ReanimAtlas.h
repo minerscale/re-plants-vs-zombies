@@ -8,6 +8,7 @@ using namespace Sexy;
 #define MAX_REANIM_IMAGES 64
 
 class ReanimatorDefinition;
+
 namespace Sexy {
 class Image;
 //    class MemoryImage;
@@ -36,16 +37,20 @@ public:
 public:
     ReanimAtlas();
 
-    void ReanimAtlasCreate(ReanimatorDefinition *theReanimDef);
+    void ReanimAtlasCreate(const ReanimatorDefinition *theReanimDef);
     void ReanimAtlasDispose();
-    /*inline*/ void AddImage(Image *theImage);
-    /*inline*/ int FindImage(Image *theImage);
-    bool ImageFits(int theImageCount, const Rect &rectTest, int theMaxWidth);
+    /*inline*/
+    void AddImage(Image *theImage);
+    /*inline*/
+    int FindImage(const Image *theImage);
+    bool ImageFits(int theImageCount, const Rect &rectTest, int theMaxWidth) const;
     bool
     ImageFindPlaceOnSide(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight);
-    /*inline*/ bool ImageFindPlace(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
-    /*inline*/ bool PlaceAtlasImage(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
-    int PickAtlasWidth();
+    /*inline*/
+    bool ImageFindPlace(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    /*inline*/
+    bool PlaceAtlasImage(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    int PickAtlasWidth() const;
     void ArrangeImages(int &theAtlasWidth, int &theAtlasHeight);
     ReanimAtlasImage *GetEncodedReanimAtlas(Image *theImage);
 };

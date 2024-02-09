@@ -9,35 +9,38 @@
 #include <memory>
 
 namespace Sexy {
-
 class BassSoundManager : public Sexy::SoundManager {
 public:
     BassSoundManager(HWND theHWnd);
     static double PanDBToNorm(int dbpan);
 
-    virtual bool Initialized() { return Sexy::BassMusicInterface::gBassLoaded; }
+    bool Initialized() override { return Sexy::BassMusicInterface::gBassLoaded; }
 
-    virtual bool LoadSound(unsigned int theSfxID, const std::string &theFilename);
-    virtual int LoadSound(const std::string &theFilename);
-    virtual void ReleaseSound(unsigned int theSfxID);
+    bool LoadSound(unsigned int theSfxID, const std::string &theFilename) override;
+    int LoadSound(const std::string &theFilename) override;
+    void ReleaseSound(unsigned int theSfxID) override;
 
-    virtual void SetVolume(double theVolume);
-    virtual bool SetBaseVolume(unsigned int theSfxID, double theBaseVolume);
-    virtual bool SetBasePan(unsigned int theSfxID, int theBasePan);
+    void SetVolume(double theVolume) override;
+    bool SetBaseVolume(unsigned int theSfxID, double theBaseVolume) override;
+    bool SetBasePan(unsigned int theSfxID, int theBasePan) override;
 
-    virtual Sexy::SoundInstance *GetSoundInstance(unsigned int theSfxID);
+    Sexy::SoundInstance *GetSoundInstance(unsigned int theSfxID) override;
 
-    virtual void ReleaseSounds();
-    virtual void ReleaseChannels() {}
+    void ReleaseSounds() override;
 
-    virtual double GetMasterVolume() { return 1.0; }
-    virtual void SetMasterVolume(double) {}
+    void ReleaseChannels() override {}
 
-    virtual void Flush() {}
+    double GetMasterVolume() override { return 1.0; }
+
+    void SetMasterVolume(double) override {}
+
+    void Flush() override {}
+
     //  virtual void            SetCooperativeWindow(HWND theHWnd) {}
-    virtual void StopAllSounds() {}
-    virtual int GetFreeSoundId();
-    virtual int GetNumSounds();
+    void StopAllSounds() override {}
+
+    int GetFreeSoundId() override;
+    int GetNumSounds() override;
 
 private:
     std::array<std::optional<std::unique_ptr<BassSoundInstance>>, MAX_CHANNELS> mPlayingSounds;
@@ -51,7 +54,6 @@ private:
     int FindFreeChannel();
     void ReleaseFreeChannels();
 };
-
 } // namespace Sexy
 
 #endif // __BASS_SOUND_MANAGER_H__

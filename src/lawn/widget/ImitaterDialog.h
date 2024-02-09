@@ -4,6 +4,7 @@
 #include "LawnDialog.h"
 
 class ToolTipWidget;
+
 class ImitaterDialog : public LawnDialog {
 public:
     ToolTipWidget *mToolTip;
@@ -11,17 +12,20 @@ public:
 
 public:
     ImitaterDialog();
-    virtual ~ImitaterDialog();
+    ~ImitaterDialog() override;
 
     SeedType SeedHitTest(int x, int y);
     void UpdateCursor();
-    virtual void Update();
-    /*inline*/ void GetSeedPosition(int theIndex, int &x, int &y);
-    virtual void Draw(Graphics *g);
+    void Update() override;
+    /*inline*/
+    void GetSeedPosition(int theIndex, int &x, int &y);
+    void Draw(Graphics *g) override;
     void ShowToolTip();
-    /*inline*/ void RemoveToolTip();
-    virtual void MouseDown(int x, int y, int theClickCount);
-    virtual void MouseUp(int, int, int) {}
+    /*inline*/
+    void RemoveToolTip();
+    void MouseDown(int x, int y, int theClickCount) override;
+
+    void MouseUp(int, int, int) override {}
 };
 
 #endif

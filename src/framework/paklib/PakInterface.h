@@ -28,7 +28,7 @@ public:
     int mSize;     //+0x2C：资源文件的大小，单位为 Byte（字节数）
 };
 
-typedef std::map<std::string, PakRecord> PakRecordMap;
+using PakRecordMap = std::map<std::string, PakRecord>;
 
 // ====================================================================================================
 // ★ 一个 PakCollection 实例对应一个 pak 资源包在内存中的映射文件
@@ -44,13 +44,14 @@ public:
     ~PakCollection() { free(mDataPtr); }
 };
 
-typedef std::list<PakCollection> PakCollectionList;
+using PakCollectionList = std::list<PakCollection>;
 
 struct PFILE {
     PakRecord *mRecord;
     int mPos;
     FILE *mFP;
 };
+
 /*
 struct PFindData
 {
@@ -93,15 +94,15 @@ public:
     ~PakInterface();
 
     bool AddPakFile(const std::string &theFileName);
-    PFILE *FOpen(const char *theFileName, const char *theAccess);
-    int FClose(PFILE *theFile);
-    int FSeek(PFILE *theFile, long theOffset, int theOrigin);
-    int FTell(PFILE *theFile);
-    size_t FRead(void *thePtr, int theElemSize, int theCount, PFILE *theFile);
-    int FGetC(PFILE *theFile);
-    int UnGetC(int theChar, PFILE *theFile);
-    char *FGetS(char *thePtr, int theSize, PFILE *theFile);
-    int FEof(PFILE *theFile);
+    PFILE *FOpen(const char *theFileName, const char *theAccess) override;
+    int FClose(PFILE *theFile) override;
+    int FSeek(PFILE *theFile, long theOffset, int theOrigin) override;
+    int FTell(PFILE *theFile) override;
+    size_t FRead(void *thePtr, int theElemSize, int theCount, PFILE *theFile) override;
+    int FGetC(PFILE *theFile) override;
+    int UnGetC(int theChar, PFILE *theFile) override;
+    char *FGetS(char *thePtr, int theSize, PFILE *theFile) override;
+    int FEof(PFILE *theFile) override;
     /*
         HANDLE					FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData);
         BOOL					FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData);

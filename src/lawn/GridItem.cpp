@@ -17,7 +17,7 @@ using namespace Sexy;
 
 // 0x44CFA0
 GridItem::GridItem() {
-    mApp = (LawnApp *)gSexyAppBase;
+    mApp = static_cast<LawnApp *>(gSexyAppBase);
     mPosX = 0.0f;
     mPosY = 0.0f;
     mBoard = mApp->mBoard;
@@ -78,10 +78,8 @@ void GridItem::DrawGridItem(Graphics *g) {
     case GridItemType::GRIDITEM_ZEN_TOOL:      break;
     case GridItemType::GRIDITEM_RAKE:          break;
     case GridItemType::GRIDITEM_BRAIN:         g->DrawImageF(IMAGE_BRAIN, mPosX, mPosY); break;
-    case GridItemType::GRIDITEM_SCARY_POT:
-        DrawScaryPot(g);
-        break;
-        //  case GridItemType::GRIDITEM_SQUIRREL:           DrawSquirrel(g);                                break;
+    case GridItemType::GRIDITEM_SCARY_POT:     DrawScaryPot(g); break;
+    //  case GridItemType::GRIDITEM_SQUIRREL:           DrawSquirrel(g);                                break;
     case GridItemType::GRIDITEM_STINKY:        DrawStinky(g); break;
     case GridItemType::GRIDITEM_IZOMBIE_BRAIN: DrawIZombieBrain(g); break;
     default:                                   TOD_ASSERT(); break;
@@ -259,7 +257,8 @@ void GridItem::DrawCrater(Graphics *g) {
 
 // 0x44DB00
 void GridItem::DrawScaryPot(Graphics *g) {
-    int aImageCol = (int)mGridItemState - (int)GridItemState::GRIDITEM_STATE_SCARY_POT_QUESTION;
+    int aImageCol =
+        static_cast<int>(mGridItemState) - static_cast<int>(GridItemState::GRIDITEM_STATE_SCARY_POT_QUESTION);
     TOD_ASSERT(aImageCol >= 0 && aImageCol < 3);
 
     int aXPos = mBoard->GridToPixelX(mGridX, mGridY) - 5;
@@ -472,7 +471,7 @@ void GridItem::UpdatePortal() {
 
 // 0x44E520
 void GridItem::UpdateScaryPot() {
-    if (mApp->mTodCheatKeys && mApp->mWidgetManager->mKeyDown[(int)KeyCode::KEYCODE_SHIFT]) {
+    if (mApp->mTodCheatKeys && mApp->mWidgetManager->mKeyDown[static_cast<int>(KeyCode::KEYCODE_SHIFT)]) {
         if (mTransparentCounter < 50) {
             mTransparentCounter++;
         }

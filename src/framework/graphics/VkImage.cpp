@@ -21,8 +21,8 @@
 #include <avir_float4_sse.h>
 #include <avir_float8_avx.h>
 #include <lancir.h>
-namespace Vk {
 
+namespace Vk {
 ::VkImage createImage(int width, int height, VkImageUsageFlags usage) {
     static VkImageCreateInfo imageInfo{
         VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -167,6 +167,7 @@ void beginCommandBuffer() {
 
 bool inRenderpass = false;
 int cachedDrawMode = -1;
+
 void endRenderPass() {
     if (inRenderpass) {
         vkCmdEndRenderPass(imageCommandBuffers[imageBufferIdx]);
@@ -177,6 +178,7 @@ void endRenderPass() {
 void doDeleteInfo(deleteInfo info) { deleteList[imageBufferIdx].emplace_back(info); }
 
 avir::CImageResizer<> ImageResizer(8);
+
 VkImage::VkImage(const ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
     mHeight = theImage.mHeight;
@@ -211,7 +213,8 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     if (SCALE != 1) {
         // Upscaling is done here
         ImageResizer.resizeImage(
-            (uint8_t *)theImage.mBits.get(), mWidth, mHeight, 0, (uint8_t *)data, mWidth * SCALE, mHeight * SCALE, 4, 0
+            (uint8_t *)theImage.mBits.get(), mWidth, mHeight, 0, static_cast<uint8_t *>(data), mWidth * SCALE,
+            mHeight * SCALE, 4, 0
         );
     } else {
         memcpy(data, theImage.mBits.get(), imageSize);
@@ -411,7 +414,7 @@ void VkImage::applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEf
 }
 
 std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterEffect) {
-    std::unique_ptr<VkImage> newImage = std::make_unique<VkImage>(mWidth, mHeight, false);
+    auto newImage = std::make_unique<VkImage>(mWidth, mHeight, false);
     newImage->CopyAttributes(this);
 
     applyEffects(this, newImage.get(), theFilterEffect);
@@ -424,8 +427,8 @@ void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) {
     vkCmdSetViewport(imageCommandBuffers[imageBufferIdx], 0, 1, &viewport);
 
     VkRect2D scissor = {
-        {static_cast<int32_t>(theClipRect.x * SCALE), static_cast<int32_t>(theClipRect.y * SCALE)},
-        {(uint32_t)(theClipRect.z * SCALE),           (uint32_t)(theClipRect.w * SCALE)          }
+        {static_cast<int32_t>(theClipRect.x * SCALE),  static_cast<int32_t>(theClipRect.y * SCALE) },
+        {static_cast<uint32_t>(theClipRect.z * SCALE), static_cast<uint32_t>(theClipRect.w * SCALE)}
     };
     vkCmdSetScissor(imageCommandBuffers[imageBufferIdx], 0, 1, &scissor);
 }
@@ -526,11 +529,12 @@ constexpr inline std::array<glm::vec4, 4> generateVertices(glm::vec4 dr, glm::ve
  *================*/
 
 std::unique_ptr<VkImage> blankImage;
+
 void VkImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMode) {
     if (blankImage == nullptr) {
         auto bits = std::make_unique<uint32_t[]>(1);
         bits[0] = 0xFFFFFFFF;
-        ImageLib::Image inputImage = ImageLib::Image(1, 1, std::move(bits));
+        auto inputImage = ImageLib::Image(1, 1, std::move(bits));
         blankImage = std::make_unique<VkImage>(inputImage);
     }
 
@@ -718,7 +722,6 @@ bool VkImage::PolyFill3D(const Point *, int, const Rect *, const Color &, int, i
 
     return false;
 }
-
 } // namespace Vk
 
 /*

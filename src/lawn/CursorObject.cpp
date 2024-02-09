@@ -64,7 +64,7 @@ void CursorObject::Draw(Graphics *g) {
     case CursorType::CURSOR_TYPE_SHOVEL: g->DrawImage(IMAGE_SHOVEL, 10, -30); break;
 
     case CursorType::CURSOR_TYPE_WATERING_CAN:
-        if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_GOLD_WATERINGCAN]) {
+        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_GOLD_WATERINGCAN)]) {
             g->DrawImage(IMAGE_ZEN_GOLDTOOLRETICLE, -62, -37);
             g->DrawImage(IMAGE_WATERINGCANGOLD, -3, 12);
         } else {

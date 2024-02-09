@@ -9,7 +9,6 @@
 #define SCALE 2
 
 namespace Vk {
-
 extern VkDevice device;
 
 class VkImage;
@@ -104,9 +103,9 @@ struct deleteInfo {
     std::optional<VkDescriptorSet> set;
     std::optional<VkBuffer> buffer;
 };
+
 void doDeleteInfo(deleteInfo info);
 void deferredDelete(size_t idx);
-
 } // namespace Vk
 
 #endif // VK_COMMON_H
