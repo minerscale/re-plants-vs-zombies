@@ -177,7 +177,14 @@ void endRenderPass() {
 
 void doDeleteInfo(deleteInfo info) { deleteList[imageBufferIdx].emplace_back(info); }
 
-avir::CImageResizer<> ImageResizer(8);
+#ifdef LANCIR_SSE2
+using ImageResizerType = avir::CImageResizer<avir::fpclass_def<avir::float4>>;
+#else
+using ImageResizerType = avir::CImageResizer<>;
+#endif
+ImageResizerType ImageResizer(8);
+
+avir::CImageResizerVars resizeVars;
 
 VkImage::VkImage(const ImageLib::Image &theImage) {
     mWidth = theImage.mWidth;
@@ -211,10 +218,14 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     void *data;
     vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
     if (SCALE != 1) {
+        if constexpr (SCALE == 2) {
+            resizeVars.IsResize2 = true;
+        }
+
         // Upscaling is done here
         ImageResizer.resizeImage(
-            (uint8_t *)theImage.mBits.get(), mWidth, mHeight, 0, static_cast<uint8_t *>(data), mWidth * SCALE,
-            mHeight * SCALE, 4, 0
+            reinterpret_cast<uint8_t *>(theImage.mBits.get()), mWidth, mHeight, 0, static_cast<uint8_t *>(data),
+            mWidth * SCALE, mHeight * SCALE, 4, 0, &resizeVars
         );
     } else {
         memcpy(data, theImage.mBits.get(), imageSize);

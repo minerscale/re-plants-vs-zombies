@@ -15,21 +15,21 @@
 using namespace ImageLib;
 
 std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
-    std::string corrected_path = casepath(theFileName.c_str());
-    if (corrected_path == "") return nullptr;
+    const std::string corrected_path = casepath(theFileName);
+    if (corrected_path.empty()) return nullptr;
 
     SDL_Surface *aSurface = IMG_Load(corrected_path.c_str());
 
     if (!aSurface) return nullptr;
 
-    auto aSurface32 = SDL_ConvertSurfaceFormat(aSurface, SDL_PIXELFORMAT_ARGB8888, 0);
+    const auto aSurface32 = SDL_ConvertSurfaceFormat(aSurface, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(aSurface);
 
     if (!aSurface32) return nullptr;
 
     auto anImage = std::make_unique<Image>(aSurface32->w, aSurface32->h);
 
-    auto bufferSize = aSurface32->w * aSurface32->h;
+    const auto bufferSize = aSurface32->w * aSurface32->h;
 
     // Copy the pixels
     SDL_memcpy(anImage->mBits.get(), aSurface32->pixels, bufferSize * sizeof(uint32_t));
@@ -40,23 +40,23 @@ std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
 }
 
 bool ImageLib::WriteJPEGImage(const std::string &theFileName, Image *theImage) {
-    auto aSurface = SDL_CreateRGBSurfaceFrom(
+    const auto aSurface = SDL_CreateRGBSurfaceFrom(
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
     );
     if (aSurface == NULL) return false;
-    auto aResult = IMG_SaveJPG(aSurface, theFileName.c_str(), 80);
+    const auto aResult = IMG_SaveJPG(aSurface, theFileName.c_str(), 80);
     if (aResult != 0) return false;
     return true;
 }
 
 bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
-    auto aSurface = SDL_CreateRGBSurfaceFrom(
+    const auto aSurface = SDL_CreateRGBSurfaceFrom(
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
     );
     if (aSurface == NULL) return false;
-    auto aResult = IMG_SavePNG(aSurface, theFileName.c_str());
+    const auto aResult = IMG_SavePNG(aSurface, theFileName.c_str());
     if (aResult != 0) return false;
     return true;
 }
@@ -65,40 +65,40 @@ bool ImageLib::WriteTGAImage(const std::string &theFileName, Image *theImage) {
     FILE *aTGAFile = fopen(theFileName.c_str(), "wb");
     if (aTGAFile == NULL) return false;
 
-    unsigned char aHeaderIDLen = 0;
+    constexpr unsigned char aHeaderIDLen = 0;
     fwrite(&aHeaderIDLen, sizeof(unsigned char), 1, aTGAFile);
 
-    unsigned char aColorMapType = 0;
+    constexpr unsigned char aColorMapType = 0;
     fwrite(&aColorMapType, sizeof(unsigned char), 1, aTGAFile);
 
-    unsigned char anImageType = 2;
+    constexpr unsigned char anImageType = 2;
     fwrite(&anImageType, sizeof(unsigned char), 1, aTGAFile);
 
-    uint16_t aFirstEntryIdx = 0;
+    constexpr uint16_t aFirstEntryIdx = 0;
     fwrite(&aFirstEntryIdx, sizeof(uint16_t), 1, aTGAFile);
 
-    uint16_t aColorMapLen = 0;
+    constexpr uint16_t aColorMapLen = 0;
     fwrite(&aColorMapLen, sizeof(uint16_t), 1, aTGAFile);
 
-    unsigned char aColorMapEntrySize = 0;
+    constexpr unsigned char aColorMapEntrySize = 0;
     fwrite(&aColorMapEntrySize, sizeof(unsigned char), 1, aTGAFile);
 
-    uint16_t anXOrigin = 0;
+    constexpr uint16_t anXOrigin = 0;
     fwrite(&anXOrigin, sizeof(uint16_t), 1, aTGAFile);
 
-    uint16_t aYOrigin = 0;
+    constexpr uint16_t aYOrigin = 0;
     fwrite(&aYOrigin, sizeof(uint16_t), 1, aTGAFile);
 
-    uint16_t anImageWidth = theImage->mWidth;
+    const uint16_t anImageWidth = theImage->mWidth;
     fwrite(&anImageWidth, sizeof(uint16_t), 1, aTGAFile);
 
-    uint16_t anImageHeight = theImage->mHeight;
+    const uint16_t anImageHeight = theImage->mHeight;
     fwrite(&anImageHeight, sizeof(uint16_t), 1, aTGAFile);
 
-    unsigned char aBitCount = 32;
+    constexpr unsigned char aBitCount = 32;
     fwrite(&aBitCount, sizeof(unsigned char), 1, aTGAFile);
 
-    unsigned char anImageDescriptor = 8 | (1 << 5);
+    constexpr unsigned char anImageDescriptor = 8 | (1 << 5);
     fwrite(&anImageDescriptor, sizeof(unsigned char), 1, aTGAFile);
 
     fwrite(theImage->mBits.get(), 4, theImage->mWidth * theImage->mHeight, aTGAFile);
@@ -144,7 +144,7 @@ using Compression = enum {
 
 bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     FILE *aFile = fopen(theFileName.c_str(), "wb");
-    if (aFile == NULL) return false;
+    if (aFile == nullptr) return false;
 
     BITMAPFILEHEADER aFileHeader;
     BITMAPINFOHEADER aHeader;
@@ -152,7 +152,7 @@ bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     memset(&aFileHeader, 0, sizeof(aFileHeader));
     memset(&aHeader, 0, sizeof(aHeader));
 
-    int aNumBytes = theImage->mWidth * theImage->mHeight * 4;
+    const int aNumBytes = theImage->mWidth * theImage->mHeight * 4;
 
     aFileHeader.bfType = ('M' << 8) | 'B';
     aFileHeader.bfSize = sizeof(aFileHeader) + sizeof(aHeader) + aNumBytes;
@@ -168,7 +168,7 @@ bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
     fwrite(&aFileHeader, sizeof(aFileHeader), 1, aFile);
     fwrite(&aHeader, sizeof(aHeader), 1, aFile);
     unsigned int *aRow = theImage->mBits.get() + (theImage->mHeight - 1) * theImage->mWidth;
-    int aRowSize = theImage->mWidth * 4;
+    const int aRowSize = theImage->mWidth * 4;
     (void)aRowSize; // Unused
     for (int i = 0; i < theImage->mHeight; i++, aRow -= theImage->mWidth)
         fwrite(aRow, 4, theImage->mWidth, aFile);
@@ -206,8 +206,9 @@ const auto sRGBToLinearLut = createLUT<uint16_t, 256>(sRGBToLinear);
 const auto linearToSRGBLut = createLUT<uint8_t, 1024>(linearToSRGB);
 
 std::unique_ptr<ImageLib::Image> GetAnImage(const std::string &theFilename) {
-    int aLastDotPos = theFilename.rfind('.');
-    int aLastSlashPos = std::max(static_cast<int>(theFilename.rfind('\\')), static_cast<int>(theFilename.rfind('/')));
+    const int aLastDotPos = theFilename.rfind('.');
+    const int aLastSlashPos =
+        std::max(static_cast<int>(theFilename.rfind('\\')), static_cast<int>(theFilename.rfind('/')));
 
     std::string anExt;
     std::string aFilename;
@@ -219,16 +220,22 @@ std::unique_ptr<ImageLib::Image> GetAnImage(const std::string &theFilename) {
 
     std::unique_ptr<Image> anImage = nullptr;
 
-    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".tga") == 0) || (anExt.length() == 0)))
-        anImage = GetImageWithSDL(aFilename + ".tga");
-    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".jpg") == 0) || (anExt.length() == 0)))
-        anImage = GetImageWithSDL(aFilename + ".jpg");
-    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".png") == 0) || (anExt.length() == 0)))
-        anImage = GetImageWithSDL(aFilename + ".png");
-    if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".gif") == 0) || (anExt.length() == 0)))
-        anImage = GetImageWithSDL(aFilename + ".gif");
-    if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".j2k") == 0)) anImage = GetImageWithSDL(aFilename + ".j2k");
-    if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".jp2") == 0)) anImage = GetImageWithSDL(aFilename + ".jp2");
+    const std::array<const std::string, 7> supportImageExtensions = {".bmp", ".tga", ".jpg", ".png",
+                                                                     ".gif", ".j2k", ".jp2"};
+
+    if (anExt.length() == 0) {
+        for (const auto &ext : supportImageExtensions) {
+            anImage = GetImageWithSDL(aFilename + ext);
+            if (anImage) break;
+        }
+    } else {
+        for (const auto &ext : supportImageExtensions) {
+            if (strcasecmp(anExt.c_str(), ext.c_str()) == 0) {
+                anImage = GetImageWithSDL(theFilename);
+                break;
+            }
+        }
+    }
 
     return anImage;
 }
@@ -240,7 +247,7 @@ std::unique_ptr<ImageLib::Image> GetAlphaImage(const std::string &theFilename) {
 
     // Check _ImageName
     if (!anAlphaImage) {
-        int aLastSlashPos =
+        const int aLastSlashPos =
             std::max(static_cast<int>(theFilename.rfind('\\')), static_cast<int>(theFilename.rfind('/')));
 
         anAlphaImage = GetAnImage(
@@ -257,8 +264,8 @@ composeAlphaImage(std::unique_ptr<ImageLib::Image> theImage, std::unique_ptr<Ima
     if (theImage != NULL) {
         if ((theImage->mWidth == theAlphaImage->mWidth) && (theImage->mHeight == theAlphaImage->mHeight)) {
             uint32_t *aBits1 = theImage->mBits.get();
-            uint32_t *aBits2 = theAlphaImage->mBits.get();
-            int aSize = theImage->mWidth * theImage->mHeight;
+            const uint32_t *aBits2 = theAlphaImage->mBits.get();
+            const int aSize = theImage->mWidth * theImage->mHeight;
 
             for (int i = 0; i < aSize; i++) {
                 *aBits1 = (*aBits1 & 0x00FFFFFF) | ((*aBits2 & 0xFF) << 24);
@@ -272,7 +279,7 @@ composeAlphaImage(std::unique_ptr<ImageLib::Image> theImage, std::unique_ptr<Ima
 
         uint32_t *aBits1 = theImage->mBits.get();
 
-        int aSize = theImage->mWidth * theImage->mHeight;
+        const int aSize = theImage->mWidth * theImage->mHeight;
         for (int i = 0; i < aSize; i++) {
             *aBits1 = (0x00FFFFFF) | ((*aBits1 & 0xFF) << 24);
             //*aBits1 = (0x00FFFFFF) | (sRGBTolinearLut[(*aBits1 & 0xFF)] << 24);
@@ -284,7 +291,7 @@ composeAlphaImage(std::unique_ptr<ImageLib::Image> theImage, std::unique_ptr<Ima
 
         uint32_t *aBits1 = theImage->mBits.get();
 
-        int aSize = theImage->mWidth * theImage->mHeight;
+        const int aSize = theImage->mWidth * theImage->mHeight;
         for (int i = 0; i < aSize; i++) {
             *aBits1 = aColor | ((*aBits1 & 0xFF) << 24);
             //*aBits1 = aColor | (sRGBTolinearLut[(*aBits1 & 0xFF)] << 24);
@@ -324,8 +331,8 @@ ImageLib::GetImage(const Sexy::ResourceManager::ImageRes &theRes, bool lookForAl
             throw std::runtime_error("AlphaImage size mismatch between " + theRes.mPath + " and " + theRes.mAlphaImage);
 
         uint32_t *aBits1 = anImage->mBits.get();
-        uint32_t *aBits2 = anAlphaImage->mBits.get();
-        int aSize = anImage->mWidth * anImage->mHeight;
+        const uint32_t *aBits2 = anAlphaImage->mBits.get();
+        const int aSize = anImage->mWidth * anImage->mHeight;
 
         for (int i = 0; i < aSize; i++) {
             *aBits1 = (*aBits1 & 0x00FFFFFF) | ((*aBits2 & 0xFF) << 24);
@@ -342,11 +349,11 @@ ImageLib::GetImage(const Sexy::ResourceManager::ImageRes &theRes, bool lookForAl
         if (anAlphaImagesAlphaImage)
             anAlphaImage = composeAlphaImage(std::move(anAlphaImage), std::move(anAlphaImagesAlphaImage));
 
-        int aNumRows = theRes.mRows;
-        int aNumCols = theRes.mCols;
+        const int aNumRows = theRes.mRows;
+        const int aNumCols = theRes.mCols;
 
-        int aCelWidth = anImage->mWidth / aNumCols;
-        int aCelHeight = anImage->mHeight / aNumRows;
+        const int aCelWidth = anImage->mWidth / aNumCols;
+        const int aCelHeight = anImage->mHeight / aNumRows;
 
         if (anAlphaImage->mWidth != aCelWidth || anAlphaImage->mHeight != aCelHeight)
             throw std::runtime_error(
@@ -358,7 +365,7 @@ ImageLib::GetImage(const Sexy::ResourceManager::ImageRes &theRes, bool lookForAl
             uint32_t *aMasterColPtr = aMasterRowPtr;
             for (int j = 0; j < aNumCols; j++) {
                 uint32_t *aRowPtr = aMasterColPtr;
-                uint32_t *anAlphaBits = anAlphaImage->mBits.get();
+                const uint32_t *anAlphaBits = anAlphaImage->mBits.get();
                 for (int y = 0; y < aCelHeight; y++) {
                     uint32_t *aDestPtr = aRowPtr;
                     for (int x = 0; x < aCelWidth; x++) {
@@ -382,12 +389,12 @@ ImageLib::GetImage(const Sexy::ResourceManager::ImageRes &theRes, bool lookForAl
 
         for (int y = 0; y < anImage->mHeight; y++) {
             for (int x = 0; x < anImage->mWidth; x++) {
-                uint32_t pixel = *aBitsPtr;
+                const uint32_t pixel = *aBitsPtr;
                 // sRGBToLinearLut
-                uint32_t r = sRGBToLinearLut[(pixel & 0x00FF0000) >> 16];
-                uint32_t g = sRGBToLinearLut[(pixel & 0x0000FF00) >> 8];
-                uint32_t b = sRGBToLinearLut[pixel & 0x000000FF];
-                uint32_t alpha = sRGBToLinearLut[((*aBitsPtr & 0xFF000000) >> 24)];
+                const uint32_t r = sRGBToLinearLut[(pixel & 0x00FF0000) >> 16];
+                const uint32_t g = sRGBToLinearLut[(pixel & 0x0000FF00) >> 8];
+                const uint32_t b = sRGBToLinearLut[pixel & 0x000000FF];
+                const uint32_t alpha = sRGBToLinearLut[((*aBitsPtr & 0xFF000000) >> 24)];
                 *aBitsPtr =
                     // 16 bit fixed * 16 bit fixed = 32 bit fixed.
                     // Shift 22 places to fit in a 10 bit LUT.

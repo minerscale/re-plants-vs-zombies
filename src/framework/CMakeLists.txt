@@ -34,7 +34,7 @@ include(FetchContent)
 FetchContent_Declare(
     zlib
     GIT_REPOSITORY          https://github.com/madler/zlib.git
-    GIT_TAG                 v1.3
+    GIT_TAG                 v1.3.1
     OVERRIDE_FIND_PACKAGE
     GIT_PROGRESS            TRUE
     GIT_SHALLOW             TRUE
@@ -62,7 +62,7 @@ include_directories(${SDL2_SOURCE_DIR}/include)
 FetchContent_Declare(
     SDL2_image
     GIT_REPOSITORY          https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG                 release-2.8.2
+    GIT_TAG                 release-2.8.x
     OVERRIDE_FIND_PACKAGE
     GIT_PROGRESS            TRUE
     GIT_SHALLOW             TRUE

@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cwctype>
+#include <execution>
 #include <list>
 #include <map>
 #include <mutex>

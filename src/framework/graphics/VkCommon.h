@@ -6,7 +6,11 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#if defined(NDEBUG)
 #define SCALE 2
+#else
+#define SCALE 1
+#endif
 
 namespace Vk {
 extern VkDevice device;

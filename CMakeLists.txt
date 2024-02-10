@@ -21,12 +21,17 @@ set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
 
 # @Patoke todo: probably add MSVC counterparts?
 if(MSVC)
-   if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(universal_compiler_flags "${universal_compiler_flags} /Ob2 /GL /Ox")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(universal_link_flags 
+            "/MT /LTCG"
+        )
+        set(universal_compiler_flags 
+            "/Ob2" "/GL" "/Ox"
+        )
     else()
+        set(universal_link_flags "/MTd")
         set(universal_compiler_flags "")
     endif()
-    set(universal_link_flags "")
 else()
     set(universal_compiler_flags
         "-Wno-unused-command-line-argument"
@@ -79,9 +84,9 @@ else()
 endif()
 
 add_compile_options(${universal_compiler_flags})
-add_link_options(${universal_compiler_flags} ${universal_link_flags})
-#set(CMAKE_CXX_FLAGS "${universal_compiler_flags}")
-#set(CMAKE_C_FLAGS   "${universal_compiler_flags}")
+add_link_options(${universal_link_flags})
+# set(CMAKE_CXX_FLAGS "${universal_compiler_flags}")
+# set(CMAKE_C_FLAGS   "${universal_compiler_flags}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 if(MSVC)
@@ -92,6 +97,7 @@ endif()
 add_executable(${PROJECT_NAME})
 target_compile_options(${PROJECT_NAME} PRIVATE ${warn_flags})
 target_link_options(${PROJECT_NAME} PRIVATE ${warn_flags})
+
 
 ################################################################################
 # Sub-projects
