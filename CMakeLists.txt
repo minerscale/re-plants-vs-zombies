@@ -26,7 +26,7 @@ if(MSVC)
             "/MT /LTCG"
         )
         set(universal_compiler_flags 
-            "/Ob2" "/GL" "/Ox"
+            "/Ob2" "/GL" "/Ox" "/arch:AVX2" "/flavor:INTEL64"
         )
     else()
         set(universal_link_flags "/MTd")
