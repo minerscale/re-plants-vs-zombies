@@ -60,11 +60,15 @@ static unsigned long UpdateCRC(unsigned long crc_accum, const char *data_blk_ptr
 //----------------------------------------------------------------------------
 static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
     static const unsigned short aMaskData[] = {
-        0xC0, // 1 extra byte
-        0xE0, // 2 extra bytes
-        0xF0, // 3 extra bytes
-        0xF8, // 4 extra bytes
-        0xFC  // 5 extra bytes
+        0xC0,
+        // 1 extra byte
+        0xE0,
+        // 2 extra bytes
+        0xF0,
+        // 3 extra bytes
+        0xF8,
+        // 4 extra bytes
+        0xFC // 5 extra bytes
     };
 
     if (theLen == 0) return 0;

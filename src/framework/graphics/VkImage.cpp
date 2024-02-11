@@ -30,12 +30,14 @@ namespace Vk {
         0,
         VK_IMAGE_TYPE_2D,
         pixelFormat,
-        {0, 0, 1}, // to be filled in later
+        {0, 0, 1},
+ // to be filled in later
         1,
         1,
         VK_SAMPLE_COUNT_1_BIT,
         VK_IMAGE_TILING_OPTIMAL,
-        0, // to be filled in later
+        0,
+ // to be filled in later
         VK_SHARING_MODE_EXCLUSIVE,
         0,
         nullptr,

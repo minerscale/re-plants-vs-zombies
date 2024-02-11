@@ -79,11 +79,15 @@ bool XMLParser::GetAsciiChar(wchar_t *theChar, bool *error) {
 
 bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
     static const unsigned short aMaskData[] = {
-        0xC0, // 1 extra byte
-        0xE0, // 2 extra bytes
-        0xF0, // 3 extra bytes
-        0xF8, // 4 extra bytes
-        0xFC  // 5 extra bytes
+        0xC0,
+        // 1 extra byte
+        0xE0,
+        // 2 extra bytes
+        0xF0,
+        // 3 extra bytes
+        0xF8,
+        // 4 extra bytes
+        0xFC // 5 extra bytes
     };
     *error = true;
 

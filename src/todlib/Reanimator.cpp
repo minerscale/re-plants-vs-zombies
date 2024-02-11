@@ -72,7 +72,8 @@ ReanimationParams gLawnReanimationArray[static_cast<int>(ReanimationType::NUM_RE
     {ReanimationType::REANIM_BLOVER,                     "Blover.reanim",                    0},
     {ReanimationType::REANIM_FLOWER_POT,                 "Pot.reanim",                       0},
     {ReanimationType::REANIM_CACTUS,                     "Cactus.reanim",                    0},
-    {ReanimationType::REANIM_DANCER,                     "Zombie_disco.reanim",              0}, // @Patoke: GOTY has different reanim name
+    {ReanimationType::REANIM_DANCER,                     "Zombie_disco.reanim",              0},
+ // @Patoke: GOTY has different reanim name
     {ReanimationType::REANIM_TANGLEKELP,                 "Tanglekelp.reanim",                0},
     {ReanimationType::REANIM_STARFRUIT,                  "Starfruit.reanim",                 0},
     {ReanimationType::REANIM_POLEVAULTER,                "Zombie_polevaulter.reanim",        0},
@@ -83,7 +84,8 @@ ReanimationParams gLawnReanimationArray[static_cast<int>(ReanimationType::NUM_RE
     {ReanimationType::REANIM_DIGGER_DIRT,                "Digger_rising_dirt.reanim",        0},
     {ReanimationType::REANIM_ZOMBIE_DOLPHINRIDER,        "Zombie_dolphinrider.reanim",       0},
     {ReanimationType::REANIM_POGO,                       "Zombie_pogo.reanim",               0},
-    {ReanimationType::REANIM_BACKUP_DANCER,              "Zombie_backup.reanim",             0}, // @Patoke: GOTY has different reanim name
+    {ReanimationType::REANIM_BACKUP_DANCER,              "Zombie_backup.reanim",             0},
+ // @Patoke: GOTY has different reanim name
     {ReanimationType::REANIM_BOBSLED,                    "Zombie_bobsled.reanim",            0},
     {ReanimationType::REANIM_JACKINTHEBOX,               "Zombie_jackbox.reanim",            0},
     {ReanimationType::REANIM_SNORKEL,                    "Zombie_snorkle.reanim",            0},
