@@ -83,7 +83,7 @@ void PlayerInfo::SyncDetails(DataSync &theSync) {
 void PlayerInfo::LoadDetails() {
     try {
         Buffer aBuffer;
-        std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+        const std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
         if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false)) {
             return;
         }
@@ -107,13 +107,13 @@ void PlayerInfo::SaveDetails() {
     SyncDetails(aSync);
 
     MkDir(GetAppDataFolder() + "userdata");
-    std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+    const std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
     gSexyAppBase->WriteBytesToFile(aFileName, aWriter.GetDataPtr(), aWriter.GetDataLen());
 }
 
 // 0x469810
-void PlayerInfo::DeleteUserFiles() {
-    std::string aFilename = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+void PlayerInfo::DeleteUserFiles() const {
+    const std::string aFilename = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
     gSexyAppBase->EraseFile(aFilename);
 
     for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++) {
@@ -165,7 +165,7 @@ void PlayerInfo::AddCoins(int theAmount) {
 }
 
 void PlayerInfo::ResetChallengeRecord(GameMode theGameMode) {
-    int aGameMode = static_cast<int>(theGameMode) - static_cast<int>(GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1);
+    const int aGameMode = static_cast<int>(theGameMode) - static_cast<int>(GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1);
     TOD_ASSERT(aGameMode >= 0 && aGameMode <= NUM_CHALLENGE_MODES);
     mChallengeRecords[aGameMode] = 0;
 }

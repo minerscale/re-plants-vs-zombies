@@ -179,7 +179,7 @@ public:
     void DoRegisterError();
     bool CanDoRegisterDialog();
     /*inline*/
-    bool WriteCurrentUserConfig();
+    bool WriteCurrentUserConfig() const;
     void DoNeedRegisterDialog();
     void DoContinueDialog();
     void DoPauseDialog();

@@ -50,19 +50,19 @@ void PoolEffect::PoolEffectDispose() {
 }
 
 // 0x469BC0
-unsigned int PoolEffect::BilinearLookupFixedPoint(unsigned int u, unsigned int v) {
-    unsigned int timeU = u & 0xFFFF0000;
-    unsigned int timeV = v & 0xFFFF0000;
-    unsigned int factorU1 = ((u - timeU) & 0x0000FFFE) + 1;
-    unsigned int factorV1 = ((v - timeV) & 0x0000FFFE) + 1;
-    unsigned int factorU0 = 65536 - factorU1;
-    unsigned int factorV0 = 65536 - factorV1;
-    unsigned int indexU0 = (timeU >> 16) % 256;
-    unsigned int indexU1 = ((timeU >> 16) + 1) % 256;
-    unsigned int indexV0 = (timeV >> 16) % 256;
-    unsigned int indexV1 = ((timeV >> 16) + 1) % 256;
+unsigned int PoolEffect::BilinearLookupFixedPoint(unsigned int u, unsigned int v) const {
+    const unsigned int timeU = u & 0xFFFF0000;
+    const unsigned int timeV = v & 0xFFFF0000;
+    const unsigned int factorU1 = ((u - timeU) & 0x0000FFFE) + 1;
+    const unsigned int factorV1 = ((v - timeV) & 0x0000FFFE) + 1;
+    const unsigned int factorU0 = 65536 - factorU1;
+    const unsigned int factorV0 = 65536 - factorV1;
+    const unsigned int indexU0 = (timeU >> 16) % 256;
+    const unsigned int indexU1 = ((timeU >> 16) + 1) % 256;
+    const unsigned int indexV0 = (timeV >> 16) % 256;
+    const unsigned int indexV1 = ((timeV >> 16) + 1) % 256;
 
-    uint32_t *aBits = mCausticGrayscaleImage->mBits.get();
+    const uint32_t *aBits = mCausticGrayscaleImage->mBits.get();
     return ((((factorU0 * factorV1) >> 16) * (aBits[indexV1 * 256 + indexU0] & 0xFF000000 >> 24)) >> 16) +
            ((((factorU1 * factorV1) >> 16) * (aBits[indexV1 * 256 + indexU1] & 0xFF000000 >> 24)) >> 16) +
            ((((factorU0 * factorV0) >> 16) * (aBits[indexV0 * 256 + indexU0] & 0xFF000000 >> 24)) >> 16) +
@@ -80,21 +80,21 @@ void PoolEffect::UpdateWaterEffect() {
 
     int idx = 0;
     for (int y = 0; y < CAUSTIC_IMAGE_HEIGHT * SCALE; y++) {
-        int timeV1 = (256 - y) << 17;
-        int timeV0 = y << 17;
+        const int timeV1 = (256 - y) << 17;
+        const int timeV0 = y << 17;
 
         for (int x = 0; x < CAUSTIC_IMAGE_WIDTH * SCALE; x++) {
             uint32_t *pix = &data[idx];
 
-            int timeU = x << 17;
-            int timePool0 = mPoolCounter << 16;
-            int timePool1 = ((mPoolCounter & 65535) + 1) << 16;
-            int a1 = static_cast<unsigned char>(
+            const int timeU = x << 17;
+            const int timePool0 = mPoolCounter << 16;
+            const int timePool1 = ((mPoolCounter & 65535) + 1) << 16;
+            const int a1 = static_cast<unsigned char>(
                 BilinearLookupFixedPoint((timeU - timePool1 / 6) / SCALE, (timeV1 + timePool0 / 8) / SCALE)
             );
-            int a0 =
+            const int a0 =
                 static_cast<unsigned char>(BilinearLookupFixedPoint((timeU + timePool0 / 10) / SCALE, timeV0 / SCALE));
-            unsigned char a = static_cast<unsigned char>((a0 + a1) / 2);
+            const unsigned char a = static_cast<unsigned char>((a0 + a1) / 2);
 
             unsigned char alpha;
             if (a >= 160U) {
@@ -105,7 +105,7 @@ void PoolEffect::UpdateWaterEffect() {
                 alpha = 0;
             }
 
-            uint8_t v = alpha / 3;
+            const uint8_t v = alpha / 3;
             // data is premultiplied so all values are the same.
             *pix = v | v << 8 | v << 16 | v << 24;
             idx++;
@@ -135,22 +135,22 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics *g, bool theIsNight) {
         return;
     }*/
 
-    float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
-    float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;
+    const float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
+    const float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;
     float aOffsetArray[3][16][6][2] = {{{{0}}}};
     for (int x = 0; x <= 15; x++) {
         for (int y = 0; y <= 5; y++) {
             aOffsetArray[2][x][y][0] = x / 15.0f;
             aOffsetArray[2][x][y][1] = y / 5.0f;
             if (x != 0 && x != 15 && y != 0 && y != 5) {
-                float aPoolPhase = mPoolCounter * 2 * PI;
-                float aWaveTime1 = aPoolPhase / 800.0;
-                float aWaveTime2 = aPoolPhase / 150.0;
-                float aWaveTime3 = aPoolPhase / 900.0;
-                float aWaveTime4 = aPoolPhase / 800.0;
-                float aWaveTime5 = aPoolPhase / 110.0;
-                float xPhase = x * 3.0f * 2 * PI / 15.0f;
-                float yPhase = y * 3.0f * 2 * PI / 5.0f;
+                const float aPoolPhase = mPoolCounter * 2 * PI;
+                const float aWaveTime1 = aPoolPhase / 800.0;
+                const float aWaveTime2 = aPoolPhase / 150.0;
+                const float aWaveTime3 = aPoolPhase / 900.0;
+                const float aWaveTime4 = aPoolPhase / 800.0;
+                const float aWaveTime5 = aPoolPhase / 110.0;
+                const float xPhase = x * 3.0f * 2 * PI / 15.0f;
+                const float yPhase = y * 3.0f * 2 * PI / 5.0f;
 
                 aOffsetArray[0][x][y][0] = sin(yPhase + aWaveTime2) * 0.002f + sin(yPhase + aWaveTime1) * 0.005f;
                 aOffsetArray[0][x][y][1] = sin(xPhase + aWaveTime5) * 0.01f + sin(xPhase + aWaveTime3) * 0.015f +
@@ -174,8 +174,8 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics *g, bool theIsNight) {
         }
     }
 
-    int aIndexOffsetX[6] = {0, 0, 1, 0, 1, 1};
-    int aIndexOffsetY[6] = {0, 1, 1, 0, 1, 0};
+    const int aIndexOffsetX[6] = {0, 0, 1, 0, 1, 1};
+    const int aIndexOffsetY[6] = {0, 1, 1, 0, 1, 0};
     // TriVertex aVertArray[3][150][3];
 
     std::array<std::array<std::array<TriVertex, 3>, 150>, 3> aVertArray;
@@ -185,8 +185,8 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics *g, bool theIsNight) {
             for (int aLayer = 0; aLayer < 3; aLayer++) {
                 TriVertex *pVert = &aVertArray[aLayer][x * 10 + y * 2][0];
                 for (int aVertIndex = 0; aVertIndex < 6; aVertIndex++, pVert++) {
-                    int aIndexX = x + aIndexOffsetX[aVertIndex];
-                    int aIndexY = y + aIndexOffsetY[aVertIndex];
+                    const int aIndexX = x + aIndexOffsetX[aVertIndex];
+                    const int aIndexY = y + aIndexOffsetY[aVertIndex];
                     if (aLayer == 2) {
                         pVert->x = (704.0f / 15.0f) * aIndexX + 45.0f;
                         pVert->y = 30.0f * aIndexY + 288.0f;

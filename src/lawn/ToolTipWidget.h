@@ -31,7 +31,7 @@ public:
     void SetTitle(const SexyString &theTitle);
     void SetWarningText(const SexyString &theWarningText);
     void CalculateSize();
-    void GetLines(std::vector<SexyString> &theLines);
+    void GetLines(std::vector<SexyString> &theLines) const;
     inline void FlashWarning() { mWarningFlashCounter = 70; }
     inline void Update() {
         if (mWarningFlashCounter > 0) mWarningFlashCounter--;

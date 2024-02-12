@@ -32,9 +32,9 @@ CheatDialog::CheatDialog(LawnApp *theApp)
 
 CheatDialog::~CheatDialog() { delete mLevelEditWidget; }
 
-int CheatDialog::GetPreferredHeight(int theWidth) { return LawnDialog::GetPreferredHeight(theWidth); }
+int CheatDialog::GetPreferredHeight(const int theWidth) { return LawnDialog::GetPreferredHeight(theWidth); }
 
-void CheatDialog::Resize(int theX, int theY, int theWidth, int theHeight) {
+void CheatDialog::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     LawnDialog::Resize(theX, theY, theWidth, theHeight);
     mLevelEditWidget->Resize(
         mContentInsets.mLeft + 12, mHeight - 155, mWidth - mContentInsets.mLeft - mContentInsets.mRight - 24, 28
@@ -57,19 +57,19 @@ void CheatDialog::Draw(Graphics *g) {
     DrawEditBox(g, mLevelEditWidget);
 }
 
-void CheatDialog::EditWidgetText(int theId, const SexyString &theString) {
+void CheatDialog::EditWidgetText(const int theId, const SexyString &theString) {
     (void)theId;
     (void)theString;
     mApp->ButtonDepress(mId + 2000);
 }
 
-bool CheatDialog::AllowChar(int theId, SexyChar theChar) {
+bool CheatDialog::AllowChar(const int theId, const SexyChar theChar) {
     (void)theId;
     return sexyisdigit(theChar) || theChar == _S('-') || theChar == _S('c') || theChar == _S('C') ||
            theChar == _S('f') || theChar == _S('F');
 }
 
-bool CheatDialog::ApplyCheat() {
+bool CheatDialog::ApplyCheat() const {
     int aChallengeIndex;
     if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
         sexysscanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {

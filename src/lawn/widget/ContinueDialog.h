@@ -20,7 +20,7 @@ public:
     void AddedToManager(WidgetManager *theWidgetManager) override;
     void RemovedFromManager(WidgetManager *theWidgetManager) override;
     void ButtonDepress(int theId) override;
-    void RestartLoopingSounds();
+    void RestartLoopingSounds() const;
 };
 
 #endif

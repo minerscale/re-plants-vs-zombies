@@ -68,7 +68,7 @@ struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsAndComputeFamily;
     std::optional<uint32_t> presentFamily;
 
-    bool isComplete() { return graphicsAndComputeFamily.has_value() && presentFamily.has_value(); }
+    bool isComplete() const { return graphicsAndComputeFamily.has_value() && presentFamily.has_value(); }
 };
 
 struct SwapChainSupportDetails {
@@ -229,7 +229,7 @@ public:
         cursor = SDL_CreateCursor(data, mask, w, h, hot_x, hot_y);
     }
 
-    sdlCursor(SDL_SystemCursor shape) { cursor = SDL_CreateSystemCursor(shape); }
+    explicit sdlCursor(SDL_SystemCursor shape) { cursor = SDL_CreateSystemCursor(shape); }
 
     ~sdlCursor() { SDL_FreeCursor(cursor); }
 };
@@ -844,7 +844,7 @@ void createComputePipeline() {
         0,
     };
 
-    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
+    if (vkCreateComputePipelines(device, nullptr, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
         throw std::runtime_error("filed to create compute pipeline!");
     }
 
@@ -968,10 +968,10 @@ void createGraphicsPipelines() {
     pipelineInfo.layout = pipelineLayout;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-    pipelineInfo.basePipelineIndex = -1;              // Optional
+    pipelineInfo.basePipelineHandle = nullptr; // Optional
+    pipelineInfo.basePipelineIndex = -1;       // Optional
 
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
@@ -982,7 +982,7 @@ void createGraphicsPipelines() {
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipelineAdditive) !=
+    if (vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &graphicsPipelineAdditive) !=
         VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
@@ -1123,7 +1123,7 @@ void createSwapChain() {
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
+    createInfo.oldSwapchain = nullptr;
 
     if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
         throw std::runtime_error("failed to create swap chain!");
@@ -1762,7 +1762,7 @@ void VkInterface::Draw() {
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
-        device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex
+        device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], nullptr, &imageIndex
     );
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {

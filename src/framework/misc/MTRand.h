@@ -24,7 +24,7 @@ public:
     float NextNoAssert(float range);
     float Next(float range);
 
-    std::string Serialize();
+    std::string Serialize() const;
 
     static void SetRandAllowed(bool allowed);
 };

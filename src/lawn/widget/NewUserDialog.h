@@ -21,8 +21,8 @@ public:
     void Draw(Graphics *g) override;
     void EditWidgetText(int theId, const SexyString &theString) override;
     virtual bool AllowChar(int, SexyChar theChar);
-    SexyString GetName();
-    void SetName(const SexyString &theName);
+    SexyString GetName() const;
+    void SetName(const SexyString &theName) const;
 };
 
 #endif

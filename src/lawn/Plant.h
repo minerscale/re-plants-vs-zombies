@@ -218,8 +218,8 @@ public:
     /*inline*/
     bool MakesSun();
     static void DrawSeedType(
-        Graphics *g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX,
-        float thePosY
+        const Graphics *g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation,
+        float thePosX, float thePosY
     );
     void KillAllPlantsNearDoom();
     bool IsOnHighGround();
@@ -236,7 +236,7 @@ public:
     void UpdateDoomShroom();
     void UpdateIceShroom();
     void UpdatePotato();
-    int CalcRenderOrder();
+    int CalcRenderOrder() const;
     void AnimateNuts();
     void SetSleeping(bool theIsAsleep);
     void UpdateShooting();
@@ -285,7 +285,7 @@ public:
     bool DrawMagnetItemsOnTop();
 };
 
-float PlantDrawHeightOffset(Board *theBoard, Plant *thePlant, SeedType theSeedType, int theCol, int theRow);
+float PlantDrawHeightOffset(Board *theBoard, const Plant *thePlant, SeedType theSeedType, int theCol, int theRow);
 float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale);
 
 class PlantDefinition {

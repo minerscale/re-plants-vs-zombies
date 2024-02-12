@@ -28,7 +28,7 @@ ImitaterDialog::ImitaterDialog()
 ImitaterDialog::~ImitaterDialog() { delete mToolTip; }
 
 // 0x482D30
-SeedType ImitaterDialog::SeedHitTest(int x, int y) {
+SeedType ImitaterDialog::SeedHitTest(const int x, const int y) const {
     for (auto aSeedType = static_cast<SeedType>(0); aSeedType < SeedType::SEED_GATLINGPEA;
          aSeedType = static_cast<SeedType>(aSeedType + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
@@ -44,7 +44,8 @@ SeedType ImitaterDialog::SeedHitTest(int x, int y) {
 
 // 0x482DD0
 void ImitaterDialog::UpdateCursor() {
-    SeedType aSeedType = SeedHitTest(mApp->mWidgetManager->mLastMouseX - mX, mApp->mWidgetManager->mLastMouseY - mY);
+    const SeedType aSeedType =
+        SeedHitTest(mApp->mWidgetManager->mLastMouseX - mX, mApp->mWidgetManager->mLastMouseY - mY);
     if (aSeedType != SeedType::SEED_NONE && !mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType)) {
         mApp->SetCursor(CURSOR_HAND);
     } else {
@@ -60,7 +61,7 @@ void ImitaterDialog::Update() {
 }
 
 // 0x482E70
-void ImitaterDialog::GetSeedPosition(int theIndex, int &x, int &y) {
+void ImitaterDialog::GetSeedPosition(const int theIndex, int &x, int &y) const {
     x = (theIndex % 8) * (SEED_PACKET_WIDTH + 1) + mWidth / 2 - 210;
     y = (theIndex / 8) * (SEED_PACKET_HEIGHT + 1) + 112;
 }
@@ -74,8 +75,8 @@ void ImitaterDialog::Draw(Graphics *g) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             int aSeedX, aSeedY;
             GetSeedPosition(aSeedType, aSeedX, aSeedY);
-            bool aGrayed = mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType) ||
-                           mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
+            const bool aGrayed = mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType) ||
+                                 mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
             DrawSeedPacket(g, aSeedX, aSeedY, SeedType::SEED_IMITATER, aSeedType, 0, aGrayed ? 115 : 255, true, false);
         }
     }
@@ -89,12 +90,13 @@ void ImitaterDialog::ShowToolTip() {
         return;
     }
 
-    SeedType aSeedType = SeedHitTest(mApp->mWidgetManager->mLastMouseX - mX, mApp->mWidgetManager->mLastMouseY - mY);
+    const SeedType aSeedType =
+        SeedHitTest(mApp->mWidgetManager->mLastMouseX - mX, mApp->mWidgetManager->mLastMouseY - mY);
     if (aSeedType == SeedType::SEED_NONE) {
         RemoveToolTip();
     } else if (aSeedType != mToolTipSeed) {
         RemoveToolTip();
-        uint aRecFlags = mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
+        const uint aRecFlags = mApp->mSeedChooserScreen->SeedNotRecommendedToPick(aSeedType);
         if (mApp->mSeedChooserScreen->SeedNotAllowedToPick(aSeedType)) // 如果不能携带
         {
             mToolTip->SetWarningText(_S("[NOT_ALLOWED_ON_THIS_LEVEL]"));
@@ -126,8 +128,8 @@ void ImitaterDialog::RemoveToolTip() {
 }
 
 // 0x483270
-void ImitaterDialog::MouseDown(int x, int y, int theClickCount) {
-    SeedType aSeedType = SeedHitTest(x, y);
+void ImitaterDialog::MouseDown(const int x, const int y, const int theClickCount) {
+    const SeedType aSeedType = SeedHitTest(x, y);
     if (aSeedType != SeedType::SEED_NONE) {
         SeedChooserScreen *aSeedChooser = mApp->mSeedChooserScreen;
         if (!aSeedChooser->SeedNotAllowedToPick(aSeedType)) {

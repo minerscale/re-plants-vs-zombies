@@ -16,11 +16,11 @@
 using namespace Sexy;
 
 // 0x45C050
-NewOptionsDialog::NewOptionsDialog(LawnApp *theApp, bool theFromGameSelector)
+NewOptionsDialog::NewOptionsDialog(LawnApp *theApp, const bool theFromGameSelector)
     : Dialog(nullptr, nullptr, Dialogs::DIALOG_NEWOPTIONS, true, _S("Options"), _S(""), _S(""), Dialog::BUTTONS_NONE) {
     mApp = theApp;
     mFromGameSelector = theFromGameSelector;
-    SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
+    Dialog::SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
     mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, _S("[VIEW_ALMANAC_BUTTON]"));
     mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, _S("[RESTART_LEVEL]"));
     // @Patoke: wrong local name
@@ -96,7 +96,7 @@ NewOptionsDialog::~NewOptionsDialog() {
 }
 
 // 0x45C880
-int NewOptionsDialog::GetPreferredHeight(int theWidth) {
+int NewOptionsDialog::GetPreferredHeight(const int theWidth) {
     (void)theWidth;
     return IMAGE_OPTIONS_MENUBACK->mWidth;
 }
@@ -128,7 +128,7 @@ void NewOptionsDialog::RemovedFromManager(Sexy::WidgetManager *theWidgetManager)
 }
 
 // 0x45C9D0
-void NewOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight) {
+void NewOptionsDialog::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     Dialog::Resize(theX, theY, theWidth, theHeight);
     mMusicVolumeSlider->Resize(199, 116, 135, 40);
     mSfxVolumeSlider->Resize(199, 143, 135, 40);
@@ -166,7 +166,7 @@ void NewOptionsDialog::Draw(Sexy::Graphics *g) {
         a3DAccelOffset = 15;
         aFullScreenOffset = 20;
     }
-    Sexy::Color aTextColor(107, 109, 145);
+    const Sexy::Color aTextColor(107, 109, 145);
 
     TodDrawString(
         g, _S("Music"), 186, 140 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor,
@@ -187,7 +187,7 @@ void NewOptionsDialog::Draw(Sexy::Graphics *g) {
 }
 
 // 0x45CF50
-void NewOptionsDialog::SliderVal(int theId, double theVal) {
+void NewOptionsDialog::SliderVal(const int theId, const double theVal) {
     switch (theId) {
     case NewOptionsDialog::NewOptionsDialog_MusicVolume:
         mApp->SetMusicVolume(theVal);
@@ -205,7 +205,7 @@ void NewOptionsDialog::SliderVal(int theId, double theVal) {
 }
 
 // 0x45CFF0
-void NewOptionsDialog::CheckboxChecked(int theId, bool checked) {
+void NewOptionsDialog::CheckboxChecked(const int theId, const bool checked) {
     switch (theId) {
     case NewOptionsDialog::NewOptionsDialog_Fullscreen:
         if (!checked && mApp->mForceFullscreen) {
@@ -258,7 +258,7 @@ void NewOptionsDialog::CheckboxChecked(int theId, bool checked) {
 }
 
 // 0x45D290
-void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey) {
+void NewOptionsDialog::KeyDown(const Sexy::KeyCode theKey) {
     if (mApp->mBoard) {
         mApp->mBoard->DoTypingCheck(theKey);
     }
@@ -271,13 +271,13 @@ void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey) {
 }
 
 // 0x45D2F0
-void NewOptionsDialog::ButtonPress(int theId) {
+void NewOptionsDialog::ButtonPress(const int theId) {
     (void)theId;
     mApp->PlaySample(SOUND_GRAVEBUTTON);
 }
 
 // 0x45D310
-void NewOptionsDialog::ButtonDepress(int theId) {
+void NewOptionsDialog::ButtonDepress(const int theId) {
     Dialog::ButtonDepress(theId);
 
     switch (theId) {
@@ -321,7 +321,7 @@ void NewOptionsDialog::ButtonDepress(int theId) {
                 aDialogMessage = _S("[RESTART_LEVEL_BODY]");
             }
 
-            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
+            const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_CONFIRM_RESTART, true, aDialogTitle, aDialogMessage, _S(""), Dialog::BUTTONS_YES_NO
             ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[RESTART_BUTTON]"));

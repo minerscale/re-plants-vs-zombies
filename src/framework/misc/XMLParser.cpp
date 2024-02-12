@@ -5,7 +5,7 @@
 using namespace Sexy;
 
 XMLParser::XMLParser() {
-    mFile = NULL;
+    mFile = nullptr;
     mLineNum = 0;
     mAllowComments = false;
     mGetCharFunc = &XMLParser::GetUTF8Char;
@@ -13,7 +13,7 @@ XMLParser::XMLParser() {
 }
 
 XMLParser::~XMLParser() {
-    if (mFile != NULL) p_fclose(mFile);
+    if (mFile != nullptr) p_fclose(mFile);
 }
 
 void XMLParser::SetEncodingType(XMLEncodingType theEncoding) {
@@ -58,9 +58,8 @@ void XMLParser::Init() {
 bool XMLParser::AddAttribute(
     XMLElement *theElement, const SexyString &theAttributeKey, const SexyString &theAttributeValue
 ) {
-    std::pair<XMLParamMap::iterator, bool> aRet;
-
-    aRet = theElement->mAttributes.insert(XMLParamMap::value_type(theAttributeKey, theAttributeValue));
+    std::pair<XMLParamMap::iterator, bool> aRet =
+        theElement->mAttributes.insert(XMLParamMap::value_type(theAttributeKey, theAttributeValue));
     if (!aRet.second) aRet.first->second = theAttributeValue;
 
     if (theAttributeKey != _S("/")) theElement->mAttributeIteratorList.push_back(aRet.first);
@@ -103,10 +102,10 @@ bool XMLParser::GetUTF8Char(wchar_t *theChar, bool *error) {
             *aBytesReadPtr++ = aTempChar;
 
             int aLen;
-            for (aLen = 0; aLen < static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
+            for (aLen = 0; aLen < static_cast<int>(std::size(aMaskData)); ++aLen) {
                 if ((aTempChar & aMaskData[aLen]) == ((aMaskData[aLen] << 1) & aMaskData[aLen])) break;
             }
-            if (aLen >= static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData))) return false;
+            if (aLen >= static_cast<int>(std::size(aMaskData))) return false;
 
             aTempChar &= ~aMaskData[aLen];
             int aTotalLen = aLen + 1;
@@ -227,7 +226,7 @@ bool XMLParser::GetUTF16BEChar(wchar_t *theChar, bool *error) {
 bool XMLParser::OpenFile(const std::string &theFileName) {
     mFile = p_fopen(theFileName.c_str(), "r");
 
-    if (mFile == NULL) {
+    if (mFile == nullptr) {
         mLineNum = 0;
         Fail(StringToSexyString("Unable to open file " + theFileName));
         return false;
@@ -312,7 +311,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
 
                 aVal = 1;
             } else {
-                if (mFile != NULL) {
+                if (mFile != nullptr) {
                     bool error = false;
                     if ((this->*mGetCharFunc)(&c, &error)) {
                         aVal = 1;
@@ -545,7 +544,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                 hasSpace = false;
                             }
 
-                            std::wstring *aStrPtr = NULL;
+                            std::wstring *aStrPtr = nullptr;
 
                             if (!doingAttribute) {
                                 theElement->mValue += static_cast<SexyChar>(c);
@@ -559,7 +558,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                 }
                             }
 
-                            if (aStrPtr != NULL) {
+                            if (aStrPtr != nullptr) {
                                 *aStrPtr += c;
                             }
                         } else {
@@ -579,7 +578,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
             }
         }
 
-        if (aAttributeKey.length() > 0) {
+        if (!aAttributeKey.empty()) {
             aAttributeKey = XMLDecodeString(aAttributeKey);
             aAttributeValue = XMLDecodeString(aAttributeValue);
             //			theElement->mAttributes[aAttributeKey] = aAttributeValue;

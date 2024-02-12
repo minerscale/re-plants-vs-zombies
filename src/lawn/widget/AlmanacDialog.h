@@ -26,18 +26,18 @@ private:
     enum { ALMANAC_BUTTON_CLOSE = 0, ALMANAC_BUTTON_PLANT = 1, ALMANAC_BUTTON_ZOMBIE = 2, ALMANAC_BUTTON_INDEX = 3 };
 
 public:
-    LawnApp *mApp;                //+0x16C
-    GameButton *mCloseButton;     //+0x170
-    GameButton *mIndexButton;     //+0x174
-    GameButton *mPlantButton;     //+0x178
-    GameButton *mZombieButton;    //+0x17C
-    AlmanacPage mOpenPage;        //+0x180
-    Reanimation *mReanim[4];      //+0x184
-    SeedType mSelectedSeed;       //+0x194
-    ZombieType mSelectedZombie;   //+0x198
-    Plant *mPlant;                //+0x19C
-    Zombie *mZombie;              //+0x1A0
-    Zombie *mZombiePerfTest[400]; //+0x1A4
+    LawnApp *mApp;                  //+0x16C
+    GameButton *mCloseButton;       //+0x170
+    GameButton *mIndexButton;       //+0x174
+    GameButton *mPlantButton;       //+0x178
+    GameButton *mZombieButton;      //+0x17C
+    AlmanacPage mOpenPage;          //+0x180
+    Reanimation *mReanim[4]{};      //+0x184
+    SeedType mSelectedSeed;         //+0x194
+    ZombieType mSelectedZombie;     //+0x198
+    Plant *mPlant;                  //+0x19C
+    Zombie *mZombie;                //+0x1A0
+    Zombie *mZombiePerfTest[400]{}; //+0x1A4
 
 public:
     AlmanacDialog(LawnApp *theApp);
@@ -49,18 +49,18 @@ public:
     void SetupZombie();
     void SetPage(AlmanacPage thePage);
     void Update() override;
-    void DrawIndex(Graphics *g);
-    void DrawPlants(Graphics *g);
+    void DrawIndex(Graphics *g) const;
+    void DrawPlants(Graphics *g) const;
     void DrawZombies(Graphics *g);
     void Draw(Graphics *g) override;
-    void GetSeedPosition(SeedType theSeedType, int &x, int &y);
-    SeedType SeedHitTest(int x, int y);
+    static void GetSeedPosition(SeedType theSeedType, int &x, int &y);
+    SeedType SeedHitTest(int x, int y) const;
     /*inline*/
-    bool ZombieHasSilhouette(ZombieType theZombieType);
-    bool ZombieIsShown(ZombieType theZombieType);
-    bool ZombieHasDescription(ZombieType theZombieType);
-    void GetZombiePosition(ZombieType theZombieType, int &x, int &y);
-    ZombieType ZombieHitTest(int x, int y);
+    bool ZombieHasSilhouette(ZombieType theZombieType) const;
+    bool ZombieIsShown(ZombieType theZombieType) const;
+    bool ZombieHasDescription(ZombieType theZombieType) const;
+    static void GetZombiePosition(ZombieType theZombieType, int &x, int &y);
+    ZombieType ZombieHitTest(int x, int y) const;
     void MouseUp(int x, int y, int theClickCount) override;
     void MouseDown(int x, int y, int theClickCount) override;
     //	virtual void				KeyChar(char theChar);

@@ -374,7 +374,7 @@ void TodFoley::RehookupSoundWithMusicVolume() {
         const FoleyParams *aFoleyParams = LookupFoley(static_cast<FoleyType>(aFoleyType));
         if (TestBit(aFoleyParams->mFoleyFlags, FoleyFlags::FOLEYFLAGS_USES_MUSIC_VOLUME)) // 如果规定了使用音乐音量
         {
-            FoleyTypeData *aFoleyData = &mFoleyTypeData[aFoleyType];
+            const FoleyTypeData *aFoleyData = &mFoleyTypeData[aFoleyType];
             for (int i = 0; i < MAX_FOLEY_INSTANCES; i++) // 设定每一个音效实例的音量
             {
                 const FoleyInstance *aFoleyInstance = &aFoleyData->mFoleyInstances[i];

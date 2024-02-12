@@ -937,7 +937,7 @@ void TodAddImageToMap(Image *theImage, const std::string &thePath) {
 
 // 0x513230
 void TodResourceManager::AddImageToMap(Image *theImage, const std::string &thePath) {
-    TOD_ASSERT(mImageMap.find(thePath) == mImageMap.end());
+    TOD_ASSERT(!mImageMap.contains(thePath));
 
     auto aImageRes = new ImageRes();
     aImageRes->mImage = theImage;

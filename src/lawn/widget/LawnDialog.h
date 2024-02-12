@@ -58,8 +58,8 @@ public:
     );
     ~LawnDialog() override;
 
-    int GetLeft();
-    int GetWidth();
+    int GetLeft() const;
+    int GetWidth() const;
     int GetTop();
     virtual void SetButtonDelay(int theDelay);
     void Update() override;

@@ -21,13 +21,13 @@ DialogButton::DialogButton(Image *theComponentImage, int theId, ButtonListener *
     mTranslateX = mTranslateY = 1;
     mDoFinger = true;
 
-    SetColors(gDialogButtonColors, NUM_COLORS);
+    Widget::SetColors(gDialogButtonColors, NUM_COLORS);
 }
 
 void DialogButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
-    if (mComponentImage == NULL) {
+    if (mComponentImage == nullptr) {
         ButtonWidget::Draw(g);
         return;
     }
@@ -60,7 +60,7 @@ void DialogButton::Draw(Graphics *g) {
         if (doTranslate) g->Translate(mTranslateX, mTranslateY);
     }
 
-    if (mFont != NULL) {
+    if (mFont != nullptr) {
         g->SetFont(mFont);
 
         if (mIsOver) g->SetColor(mColors[COLOR_LABEL_HILITE]);

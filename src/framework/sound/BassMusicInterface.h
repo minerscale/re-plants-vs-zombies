@@ -3,6 +3,7 @@
 
 #include "MusicInterface.h"
 #include "bass.h"
+#include <map>
 
 namespace Sexy {
 #ifndef _WIN32

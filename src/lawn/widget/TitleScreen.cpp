@@ -144,8 +144,8 @@ void TitleScreen::Draw(Graphics *g) {
     }
     g->DrawImage(IMAGE_PVZ_LOGO, mWidth / 2 - IMAGE_PVZ_LOGO->mWidth / 2, aLogoY);
 
-    int aGrassX = mStartButton->mX;
-    int aGrassY = mStartButton->mY - 17;
+    const int aGrassX = mStartButton->mX;
+    const int aGrassY = mStartButton->mY - 17;
     g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY + 18);
 
     if (mCurBarWidth >= mTotalBarWidth) {
@@ -159,14 +159,15 @@ void TitleScreen::Draw(Graphics *g) {
         aClipG.ClipRect(240, aGrassY, mCurBarWidth, IMAGE_LOADBAR_GRASS->mHeight);
         aClipG.DrawImage(IMAGE_LOADBAR_GRASS, aGrassX, aGrassY);
 
-        float aRollLen = mCurBarWidth * 0.94f;
-        float aRotation = -aRollLen / 180 * PI * 2;
-        float aScale = TodAnimateCurveFloatTime(0, mTotalBarWidth, mCurBarWidth, 1, 0.5f, TodCurves::CURVE_LINEAR);
+        const float aRollLen = mCurBarWidth * 0.94f;
+        const float aRotation = -aRollLen / 180 * PI * 2;
+        const float aScale =
+            TodAnimateCurveFloatTime(0, mTotalBarWidth, mCurBarWidth, 1, 0.5f, TodCurves::CURVE_LINEAR);
         SexyTransform2D aTransform;
         TodScaleRotateTransformMatrix(
             aTransform, aGrassX + 11.0f + aRollLen, aGrassY - 3.0f - 35.0f * aScale + 35.0f, aRotation, aScale, aScale
         );
-        Rect aSrcRect(0, 0, IMAGE_REANIM_SODROLLCAP->mWidth, IMAGE_REANIM_SODROLLCAP->mHeight);
+        const Rect aSrcRect(0, 0, IMAGE_REANIM_SODROLLCAP->mWidth, IMAGE_REANIM_SODROLLCAP->mHeight);
         TodBltMatrix(g, IMAGE_REANIM_SODROLLCAP, aTransform, g->mClipRect, Color::White, g->mDrawMode, aSrcRect);
     }
 
@@ -242,7 +243,7 @@ void TitleScreen::Update() {
         return;
     }
 
-    float aCurrentProgress = mApp->GetLoadingThreadProgress();
+    const float aCurrentProgress = mApp->GetLoadingThreadProgress();
     if (mNeedToInit) {
         mNeedToInit = false;
 
@@ -264,7 +265,7 @@ void TitleScreen::Update() {
         mBarStartProgress = std::min(aCurrentProgress, 0.9f);
     }
 
-    float aLoadingPercent = (aCurrentProgress - mBarStartProgress) / (1 - mBarStartProgress);
+    const float aLoadingPercent = (aCurrentProgress - mBarStartProgress) / (1 - mBarStartProgress);
 
     int aButtonY;
     if (mTitleStateCounter > 10) {
@@ -280,7 +281,7 @@ void TitleScreen::Update() {
 
     mApp->mEffectSystem->Update();
 
-    float aPrevWidth = mCurBarWidth;
+    const float aPrevWidth = mCurBarWidth;
     mCurBarWidth += mBarVel;
     if (!mLoadingThreadComplete) {
         if (mCurBarWidth > mTotalBarWidth * 0.99f) {
@@ -292,8 +293,9 @@ void TitleScreen::Update() {
     }
 
     if (aLoadingPercent > mPrevLoadingPercent + 0.01f || mLoadingThreadComplete) {
-        float aBarWidth = TodAnimateCurveFloatTime(0, 1, aLoadingPercent, 0, mTotalBarWidth, TodCurves::CURVE_EASE_IN);
-        float aDiff = aBarWidth - mCurBarWidth;
+        const float aBarWidth =
+            TodAnimateCurveFloatTime(0, 1, aLoadingPercent, 0, mTotalBarWidth, TodCurves::CURVE_EASE_IN);
+        const float aDiff = aBarWidth - mCurBarWidth;
         float aAcceleration =
             TodAnimateCurveFloatTime(0, 1, aLoadingPercent, 0.0001f, 0.00001f, TodCurves::CURVE_LINEAR);
         if (mLoadingThreadComplete) {
@@ -356,19 +358,19 @@ void TitleScreen::Update() {
         }
     }
 
-    float aTriggerPoint[] = {
+    const float aTriggerPoint[] = {
         mTotalBarWidth * 0.11f, mTotalBarWidth * 0.32f, mTotalBarWidth * 0.54f, mTotalBarWidth * 0.72f,
         mTotalBarWidth * 0.91f
     };
 
-    for (size_t i = 0; i < LENGTH(aTriggerPoint); i++) {
+    for (size_t i = 0; i < std::size(aTriggerPoint); i++) {
         if (aPrevWidth < aTriggerPoint[i] && mCurBarWidth >= aTriggerPoint[i]) {
             ReanimationType aReanimType = ReanimationType::REANIM_LOADBAR_SPROUT;
             if (i == 4) {
                 aReanimType = ReanimationType::REANIM_LOADBAR_ZOMBIEHEAD;
             }
-            float aPosX = aTriggerPoint[i] + 225.0f;
-            float aPosY = 511.0f;
+            const float aPosX = aTriggerPoint[i] + 225.0f;
+            const float aPosY = 511.0f;
             Reanimation *aSproutReanim = mApp->AddReanimation(aPosX, aPosY, 0, aReanimType);
             aSproutReanim->mAnimRate = 18.0f;
             aSproutReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
@@ -392,7 +394,7 @@ void TitleScreen::Update() {
     }
 }
 
-void TitleScreen::Resize(int theX, int theY, int theWidth, int theHeight) {
+void TitleScreen::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     Widget::Resize(theX, theY, theWidth, theHeight);
 }
 
@@ -409,13 +411,13 @@ void TitleScreen::RemovedFromManager(Sexy::WidgetManager *theWidgetManager) {
 }
 
 // 0x48E600
-void TitleScreen::ButtonPress(int theId) {
+void TitleScreen::ButtonPress(const int theId) {
     (void)theId;
     mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
 }
 
 // 0x48E620
-void TitleScreen::ButtonDepress(int theId) {
+void TitleScreen::ButtonDepress(const int theId) {
     switch (theId) {
     case TitleScreen::TitleScreen_Start: mApp->LoadingCompleted(); break;
 
@@ -424,7 +426,7 @@ void TitleScreen::ButtonDepress(int theId) {
 }
 
 // 0x48E650
-void TitleScreen::MouseDown(int x, int y, int theClickCount) {
+void TitleScreen::MouseDown(const int x, const int y, const int theClickCount) {
     (void)x;
     (void)y;
     (void)theClickCount;
@@ -435,7 +437,7 @@ void TitleScreen::MouseDown(int x, int y, int theClickCount) {
 }
 
 // 0x48E690
-void TitleScreen::KeyDown(KeyCode theKey) {
+void TitleScreen::KeyDown(const KeyCode theKey) {
     if (mLoadingThreadComplete) {
         mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
         mApp->LoadingCompleted();

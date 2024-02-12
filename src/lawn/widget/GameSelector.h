@@ -109,10 +109,10 @@ public:
     void KeyChar(char theChar) override;
     void MouseDown(int x, int y, int theClickCount) override;
     void TrackButton(DialogButton *theButton, const char *theTrackName, float theOffsetX, float theOffsetY);
-    void SyncButtons();
+    void SyncButtons() const;
     void AddTrophySparkle();
     void ClickedAdventure();
-    void UpdateTooltip();
+    void UpdateTooltip() const;
     /*inline*/
     bool ShouldDoZenTuturialBeforeAdventure();
     void AddPreviewProfiles();

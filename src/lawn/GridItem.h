@@ -55,7 +55,7 @@ public:
     void GridItemDie();
     void AddGraveStoneParticles();
     void DrawGridItem(Sexy::Graphics *g);
-    void DrawGridItemOverlay(Sexy::Graphics *g);
+    void DrawGridItemOverlay(Sexy::Graphics *g) const;
     void OpenPortal();
     void Update();
     void ClosePortal();

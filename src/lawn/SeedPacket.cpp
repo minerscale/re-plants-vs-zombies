@@ -31,16 +31,16 @@ SeedPacket::SeedPacket() {
 
 // 0x487070
 void SeedPacket::PickNextSlotMachineSeed() {
-    int aPeasCount = mBoard->CountPlantByType(SeedType::SEED_PEASHOOTER);
+    const int aPeasCount = mBoard->CountPlantByType(SeedType::SEED_PEASHOOTER);
 
-    SeedType SLOT_SEED_TYPES[] = {SeedType::SEED_SUNFLOWER,        SeedType::SEED_PEASHOOTER,
-                                  SeedType::SEED_SNOWPEA,          SeedType::SEED_WALLNUT,
-                                  SeedType::SEED_SLOT_MACHINE_SUN, SeedType::SEED_SLOT_MACHINE_DIAMOND};
+    const SeedType SLOT_SEED_TYPES[] = {SeedType::SEED_SUNFLOWER,        SeedType::SEED_PEASHOOTER,
+                                        SeedType::SEED_SNOWPEA,          SeedType::SEED_WALLNUT,
+                                        SeedType::SEED_SLOT_MACHINE_SUN, SeedType::SEED_SLOT_MACHINE_DIAMOND};
 
     int aSeedsCount = 0;
     TodWeightedArray<SeedType> aSeedWeightArray[SeedType::NUM_SEED_TYPES];
-    for (size_t i = 0; i < LENGTH(SLOT_SEED_TYPES); i++) {
-        SeedType aSeedType = SLOT_SEED_TYPES[i];
+    for (size_t i = 0; i < std::size(SLOT_SEED_TYPES); i++) {
+        const SeedType aSeedType = SLOT_SEED_TYPES[i];
 
         int aWeight = 100;
         if (aSeedType == SeedType::SEED_PEASHOOTER) {
@@ -75,7 +75,7 @@ void SeedPacket::FlashIfReady() {
     if (!CanPickUp() || mApp->mEasyPlantingCheat) return;
 
     if (!mBoard->HasConveyorBeltSeedBank()) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_UI_BOTTOM, 0, 2);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_UI_BOTTOM, 0, 2);
         mApp->AddTodParticle(
             mX + mBoard->mSeedBank->mX, mY + mBoard->mSeedBank->mY, aRenderPosition,
             ParticleEffect::PARTICLE_SEED_PACKET_FLASH
@@ -133,7 +133,7 @@ void SeedPacket::Update() {
 
     if (mSlotMachineCountDown > 0) {
         mSlotMachineCountDown--;
-        float aFlipsPerSecont =
+        const float aFlipsPerSecont =
             TodAnimateCurveFloat(SLOT_MACHINE_TIME, 0, mSlotMachineCountDown, 6.0f, 2.0f, TodCurves::CURVE_LINEAR);
         mSlotMachiningPosition += aFlipsPerSecont * 0.01f;
 
@@ -499,7 +499,7 @@ void DrawSeedPacket(
 }
 
 // 0x488220
-void SeedPacket::Draw(Graphics *g) {
+void SeedPacket::Draw(Graphics *g) const {
     float aPercentDark = 0.0f;
     if (!mActive) {
         if (mRefreshTime == 0) {
@@ -510,7 +510,7 @@ void SeedPacket::Draw(Graphics *g) {
     }
 
     if (mSlotMachineCountDown > 0) {
-        int aOffsetY = FloatRoundToInt(-mHeight * mSlotMachiningPosition);
+        const int aOffsetY = FloatRoundToInt(-mHeight * mSlotMachiningPosition);
 
         Graphics aClipG(*g);
         aClipG.ClipRect(0, 0, mWidth, mHeight);
@@ -529,7 +529,7 @@ void SeedPacket::Draw(Graphics *g) {
         if (mBoard->HasConveyorBeltSeedBank() || mApp->IsSlotMachineLevel()) {
             aDrawCost = false;
         }
-        int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
+        const int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
 
         int aGrayness = 255;
         if ((mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED && !mActive) ||
@@ -580,7 +580,7 @@ bool SeedPacket::CanPickUp() {
             return false;
         }
 
-        int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
+        const int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
         if (!mBoard->CanTakeSunMoney(aCost) && !mBoard->HasConveyorBeltSeedBank()) {
             return false;
         }
@@ -632,7 +632,7 @@ void SeedPacket::MouseDown(int x, int y, int theClickCount) {
             return;
         }
 
-        int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
+        const int aCost = mBoard->GetCurrentPlantCost(mPacketType, mImitaterType);
         if (!mBoard->CanTakeSunMoney(aCost) && !mBoard->HasConveyorBeltSeedBank()) {
             mApp->PlaySample(SOUND_BUZZER);
             mBoard->mBoardData.mOutOfMoneyCounter = 70;
@@ -809,8 +809,8 @@ void SeedBank::Draw(Graphics *g) {
         g->DrawImageCel(IMAGE_CONVEYORBELT, 90, 63, mConveyorBeltCounter / 4 % 6);
         g->SetClipRect(90, 0, 501, BOARD_HEIGHT);
     } else {
-        int aExtraWidth = mBoard->GetSeedBankExtraWidth();
-        Rect theSrcRect(IMAGE_SEEDBANK->mWidth - aExtraWidth - 12, 0, aExtraWidth + 12, IMAGE_SEEDBANK->mHeight);
+        const int aExtraWidth = mBoard->GetSeedBankExtraWidth();
+        const Rect theSrcRect(IMAGE_SEEDBANK->mWidth - aExtraWidth - 12, 0, aExtraWidth + 12, IMAGE_SEEDBANK->mHeight);
         g->DrawImage(IMAGE_SEEDBANK, 0, 0);
         g->DrawImage(IMAGE_SEEDBANK, IMAGE_SEEDBANK->mWidth - 12, 0, theSrcRect);
     }
@@ -829,7 +829,7 @@ void SeedBank::Draw(Graphics *g) {
     }
 
     if (!mBoard->HasConveyorBeltSeedBank()) {
-        SexyString aMoneyLabel = StrFormat(_S("%d"), std::max(mBoard->mBoardData.mSunMoney, 0));
+        const SexyString aMoneyLabel = StrFormat(_S("%d"), std::max(mBoard->mBoardData.mSunMoney, 0));
         Color aMoneyColor(0, 0, 0);
         if (mBoard->mBoardData.mOutOfMoneyCounter > 0 && mBoard->mBoardData.mOutOfMoneyCounter % 20 < 10) {
             aMoneyColor = Color(255, 0, 0);
@@ -871,7 +871,7 @@ void SeedBank::AddSeed(SeedType theSeedType, bool thePlaceOnLeft) {
     TOD_ASSERT(mBoard->HasConveyorBeltSeedBank());
     TOD_ASSERT(theSeedType != SeedType::SEED_NONE);
 
-    int aNumSeeds = GetNumSeedsOnConveyorBelt();
+    const int aNumSeeds = GetNumSeedsOnConveyorBelt();
     if (aNumSeeds == mNumPackets) {
         return;
     }
@@ -887,7 +887,7 @@ void SeedBank::AddSeed(SeedType theSeedType, bool thePlaceOnLeft) {
         aSeedPacket->mOffsetX = 0;
     }
     if (aNumSeeds > 0) {
-        SeedPacket *aPrevPacket = &mSeedPackets[aNumSeeds - 1];
+        const SeedPacket *aPrevPacket = &mSeedPackets[aNumSeeds - 1];
         if (aSeedPacket->mOffsetX < aPrevPacket->mOffsetX) {
             aSeedPacket->mOffsetX = aPrevPacket->mOffsetX + 40;
         }
@@ -909,7 +909,7 @@ void SeedBank::RemoveSeed(int theIndex) {
             aSeedPacket->mPacketType = SeedType::SEED_NONE;
             aSeedPacket->mOffsetX = 0;
         } else {
-            SeedPacket *aNextPacket = &mSeedPackets[i + 1];
+            const SeedPacket *aNextPacket = &mSeedPackets[i + 1];
             aSeedPacket->mPacketType = aNextPacket->mPacketType;
             aSeedPacket->mOffsetX = aNextPacket->mOffsetX + SEED_PACKET_WIDTH + 1;
         }

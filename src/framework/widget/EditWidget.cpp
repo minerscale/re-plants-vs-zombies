@@ -19,7 +19,7 @@ static int gEditWidgetColors[][3] = {
 EditWidget::EditWidget(int theId, EditListener *theEditListener) {
     mId = theId;
     mEditListener = theEditListener;
-    mFont = NULL;
+    mFont = nullptr;
 
     mHadDoubleClick = false;
     mHilitePos = -1;
@@ -37,7 +37,7 @@ EditWidget::EditWidget(int theId, EditListener *theEditListener) {
     mPasswordChar = 0;
     mBlinkDelay = 40;
 
-    SetColors(gEditWidgetColors, NUM_COLORS);
+    Widget::SetColors(gEditWidgetColors, NUM_COLORS);
 }
 
 EditWidget::~EditWidget() {
@@ -95,7 +95,7 @@ void EditWidget::SetFont(_Font *theFont, _Font *theWidthCheckFont) {
     mFont = theFont->Duplicate();
 
     ClearWidthCheckFonts();
-    if (theWidthCheckFont != NULL) AddWidthCheckFont(theWidthCheckFont);
+    if (theWidthCheckFont != nullptr) AddWidthCheckFont(theWidthCheckFont);
 }
 
 void EditWidget::Draw(Graphics *g) // Already translated
@@ -491,7 +491,7 @@ void EditWidget::FocusCursor(bool bigJump) {
         MarkDirty();
     }
 
-    if (mFont != NULL) {
+    if (mFont != nullptr) {
         SexyString &aString = GetDisplayString();
         while ((mWidth - 8 > 0) &&
                (mFont->StringWidth(aString.substr(0, mCursorPos)) - mFont->StringWidth(aString.substr(0, mLeftPos)) >=

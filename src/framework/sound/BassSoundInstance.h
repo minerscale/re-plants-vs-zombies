@@ -31,7 +31,7 @@ public:
     double GetVolume() override;
 
 private:
-    void RehupVolume();
+    void RehupVolume() const;
     void RehupPan();
 
     HSAMPLE mSample;

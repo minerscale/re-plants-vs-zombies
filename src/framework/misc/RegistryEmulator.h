@@ -35,7 +35,7 @@ public:
     bool Read(const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength);
     void Write(const std::string &theValueName, uint32_t theType, const uchar *theValue, uint32_t theLength);
     bool Erase(const std::string &theValueName);
-    size_t Flush();
+    size_t Flush() const;
 
 private:
     const std::string mREG_FILENAME;

@@ -5,7 +5,7 @@
 
 using namespace Sexy;
 
-SexyApp *Sexy::gSexyApp = NULL;
+SexyApp *Sexy::gSexyApp = nullptr;
 
 // Groups of 80-byte data
 const char DYNAMIC_DATA_BLOCK[400] = "DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
@@ -35,7 +35,7 @@ SexyApp::SexyApp() {
     mCompanyName = "PopCap";
 
     mInternetManager = nullptr; // new InternetManager();
-    mBetaSupport = NULL;
+    mBetaSupport = nullptr;
     mBetaValidate = false;
 
     SetString(
@@ -120,7 +120,7 @@ void SexyApp::ReadFromRegistry() {
 
         // read popcinfo.dat from current directory instead
         FILE *fp = fopen("popcinfo.dat", "rb");
-        if (fp != NULL) {
+        if (fp != nullptr) {
             for (;;) {
                 ushort aLen;
                 if (fread(&aLen, 1, sizeof(short), fp) == 0) break;

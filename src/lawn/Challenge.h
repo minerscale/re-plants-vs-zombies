@@ -74,11 +74,11 @@ public:
 
     void StartLevel();
     void BeghouledPopulateBoard();
-    void LoadBeghouledBoardState(BeghouledBoardState *theState);
+    void LoadBeghouledBoardState(BeghouledBoardState *theState) const;
     SeedType BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches);
     int BeghouledBoardHasMatch(BeghouledBoardState *theBoardState);
     /*inline*/
-    SeedType BeghouledGetPlantAt(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
+    SeedType BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     int BeghouledVerticalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     int BeghouledHorizontalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     /*inline*/
@@ -86,7 +86,7 @@ public:
     void BeghouledDragUpdate(int x, int y);
     inline void BeghouledDragCancel() { mBeghouledMouseCapture = false; }
     int MouseMove(int x, int y);
-    int MouseDown(int x, int y, int theClickCount, HitResult *theHitResult);
+    int MouseDown(int x, int y, int theClickCount, const HitResult *theHitResult);
     int MouseUp(int x, int y);
     void ClearCursor();
     void BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
@@ -97,13 +97,13 @@ public:
     int UpdateBeghouledPlant(Plant *thePlant);
     void BeghouledFallIntoSquare(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     void BeghouledMakePlantsFall(BeghouledBoardState *theBoardState);
-    void ZombieAtePlant(/*Zombie* theZombie,*/ Plant *thePlant);
+    void ZombieAtePlant(/*Zombie* theZombie,*/ const Plant *thePlant);
     void DrawBackdrop(Graphics *g);
     void DrawArtChallenge(Graphics *g);
     void CheckForCompleteArtChallenge(int theGridX, int theGridY);
     /*inline*/
     SeedType GetArtChallengeSeed(int theGridX, int theGridY);
-    void PlantAdded(Plant *thePlant);
+    void PlantAdded(const Plant *thePlant);
     PlantingReason CanPlantAt(int theGridX, int theGridY, SeedType theSeedType);
     void DrawBeghouled(Graphics *g);
     int BeghouledIsValidMove(int theFromX, int theFromY, int theToX, int theToY, BeghouledBoardState *theBoardState);
@@ -111,7 +111,7 @@ public:
     void BeghouledCheckStuckState();
     void InitZombieWavesSurvival();
     /*inline*/
-    void InitZombieWavesFromList(ZombieType *theZombieList, int theListLength);
+    void InitZombieWavesFromList(const ZombieType *theZombieList, int theListLength) const;
     void InitZombieWaves();
     /*inline*/
     Rect SlotMachineGetHandleRect();
@@ -137,22 +137,22 @@ public:
     void UpdateConveyorBelt();
     void PortalStart();
     void UpdatePortalCombat();
-    GridItem *GetOtherPortal(GridItem *thePortal);
+    GridItem *GetOtherPortal(const GridItem *thePortal);
     void UpdatePortal(GridItem *thePortal);
     float PortalCombatRowSpawnWeight(int theGridY);
-    int CanTargetZombieWithPortals(Plant *thePlant, Zombie *theZombie);
+    int CanTargetZombieWithPortals(const Plant *thePlant, const Zombie *theZombie);
     GridItem *GetPortalToRight(int theGridX, int theGridY);
     GridItem *GetPortalAt(int theGridX, int theGridY);
     void MoveAPortal();
     int GetPortalDistanceToMower(int theGridY);
     GridItem *GetPortalToLeft(int theGridX, int theGridY);
-    void BeghouledPacketClicked(SeedPacket *theSeedPacket);
+    void BeghouledPacketClicked(const SeedPacket *theSeedPacket);
     void BeghouledShuffle();
     /*inline*/
     int BeghouledCanClearCrater();
     void BeghouledUpdateCraters();
     Zombie *ZombiquariumSpawnSnorkle();
-    void ZombiquariumPacketClicked(SeedPacket *theSeedPacket);
+    void ZombiquariumPacketClicked(const SeedPacket *theSeedPacket);
     void ZombiquariumMouseDown(int x, int y);
     void ZombiquariumDropBrain(int x, int y);
     void ZombiquariumUpdate();
@@ -160,7 +160,7 @@ public:
     void ShovelAddWallnuts();
     void ScaryPotterPlacePot(
         ScaryPotType theScaryPotType, ZombieType theZombieType, SeedType theSeedType, int theCount,
-        TodWeightedGridArray *theGridArray, int theGridArrayCount
+        const TodWeightedGridArray *theGridArray, int theGridArrayCount
     );
     void ScaryPotterStart();
     void ScaryPotterUpdate();
@@ -175,7 +175,7 @@ public:
         int theCol, SeedType theSeedType, TodWeightedGridArray *theGridArray, int theGridArrayCount
     );
     void PuzzleNextStageClear();
-    void ScaryPotterMalletPot(GridItem *theScaryPot);
+    void ScaryPotterMalletPot(const GridItem *theScaryPot);
     static ZombieType IZombieSeedTypeToZombieType(SeedType theSeedType);
     static /*inline*/ int IsZombieSeedType(SeedType theSeedType);
     void IZombieMouseDownWithZombie(int theX, int theY, int theClickCount);
@@ -183,9 +183,9 @@ public:
     void IZombiePlacePlants(SeedType theSeedType, int theCount, int theGridY = -1);
     void IZombieUpdate();
     void IZombieDrawPlant(Graphics *g, Plant *thePlant);
-    void IZombieSetPlantFilterEffect(Plant *thePlant, FilterEffect theFilterEffect);
+    void IZombieSetPlantFilterEffect(const Plant *thePlant, FilterEffect theFilterEffect);
     /*inline*/
-    int ScaryPotterCountSunInPot(GridItem *theScaryPot);
+    int ScaryPotterCountSunInPot(const GridItem *theScaryPot);
     int ScaryPotterCountPots();
     void IZombieInitLevel();
     void DrawRain(Graphics *g);
@@ -210,13 +210,13 @@ public:
     int BeghouledFlashFromBoardState(
         BeghouledBoardState *theBoardState, int theFromX, int theFromY, int theToX, int theToY
     );
-    void IZombiePlantDropRemainingSun(Plant *thePlant);
+    void IZombiePlantDropRemainingSun(const Plant *thePlant);
     void IZombieSquishBrain(GridItem *theBrain);
-    void IZombieScoreBrain(GridItem *theBrain);
+    void IZombieScoreBrain(const GridItem *theBrain);
     void LastStandUpdate();
-    void WhackAZombiePlaceGraves(int theGraveCount);
+    void WhackAZombiePlaceGraves(int theGraveCount) const;
     int BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY);
-    int BeghouledTwistValidMove(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
+    int BeghouledTwistValidMove(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     void BeghouledTwistMouseDown(int x, int y);
     int BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     int BeghouledTwistFlashMatch(BeghouledBoardState *theBoardState, int theGridX, int theGridY);
@@ -226,7 +226,8 @@ public:
     void BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches);
     /*inline*/
     void BeghouledMakeStartBoard();
-    void BeghouledCreatePlants(BeghouledBoardState *theOldBoardState, BeghouledBoardState *theNewBoardState);
+    void
+    BeghouledCreatePlants(const BeghouledBoardState *theOldBoardState, const BeghouledBoardState *theNewBoardState);
     void PuzzlePhaseComplete(int theGridX, int theGridY);
     /*inline*/
     int PuzzleIsAwardStage();

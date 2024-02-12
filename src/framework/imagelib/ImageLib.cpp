@@ -44,7 +44,7 @@ bool ImageLib::WriteJPEGImage(const std::string &theFileName, Image *theImage) {
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
     );
-    if (aSurface == NULL) return false;
+    if (aSurface == nullptr) return false;
     const auto aResult = IMG_SaveJPG(aSurface, theFileName.c_str(), 80);
     if (aResult != 0) return false;
     return true;
@@ -55,7 +55,7 @@ bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
     );
-    if (aSurface == NULL) return false;
+    if (aSurface == nullptr) return false;
     const auto aResult = IMG_SavePNG(aSurface, theFileName.c_str());
     if (aResult != 0) return false;
     return true;
@@ -63,7 +63,7 @@ bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
 
 bool ImageLib::WriteTGAImage(const std::string &theFileName, Image *theImage) {
     FILE *aTGAFile = fopen(theFileName.c_str(), "wb");
-    if (aTGAFile == NULL) return false;
+    if (aTGAFile == nullptr) return false;
 
     constexpr unsigned char aHeaderIDLen = 0;
     fwrite(&aHeaderIDLen, sizeof(unsigned char), 1, aTGAFile);
@@ -261,7 +261,7 @@ std::unique_ptr<ImageLib::Image> GetAlphaImage(const std::string &theFilename) {
 
 std::unique_ptr<ImageLib::Image>
 composeAlphaImage(std::unique_ptr<ImageLib::Image> theImage, std::unique_ptr<ImageLib::Image> theAlphaImage) {
-    if (theImage != NULL) {
+    if (theImage != nullptr) {
         if ((theImage->mWidth == theAlphaImage->mWidth) && (theImage->mHeight == theAlphaImage->mHeight)) {
             uint32_t *aBits1 = theImage->mBits.get();
             const uint32_t *aBits2 = theAlphaImage->mBits.get();
@@ -383,7 +383,7 @@ ImageLib::GetImage(const Sexy::ResourceManager::ImageRes &theRes, bool lookForAl
     }
 
     // Premultiply the alpha channel.
-    if (anImage != NULL) {
+    if (anImage != nullptr) {
         // Premultiply alpha
         uint32_t *aBitsPtr = anImage->mBits.get();
 

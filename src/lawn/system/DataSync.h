@@ -97,7 +97,7 @@ public:
     inline void SetWriter(DataWriter *theWriter) { mWriter = theWriter; }
     inline DataReader *GetReader() { return mReader; }
     inline DataWriter *GetWriter() { return mWriter; }
-    void SyncBytes(void *theData, uint32_t theDataLen);
+    void SyncBytes(void *theData, uint32_t theDataLen) const;
     void SyncLong(char &theNum);
     void SyncLong(short &theNum);
     void SyncLong(int32_t &theNum);

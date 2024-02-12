@@ -78,7 +78,7 @@ ReanimationType SaveGameContext::SyncReanimationDef(ReanimatorDefinition *&theDe
     } else {
         aReanimType = ReanimationType::REANIM_NONE;
         for (int i = 0; i < ReanimationType::NUM_REANIMS; i++) {
-            ReanimatorDefinition *aDef = &gReanimatorDefArray[i];
+            const ReanimatorDefinition *aDef = &gReanimatorDefArray[i];
             if (theDefinition == aDef) {
                 aReanimType = static_cast<ReanimationType>(i);
                 break;
@@ -105,7 +105,7 @@ void SaveGameContext::SyncParticleDef(TodParticleDefinition *&theDefinition) {
     } else {
         int aParticleType = (int)ParticleEffect::PARTICLE_NONE;
         for (int i = 0; i < static_cast<int>(ParticleEffect::NUM_PARTICLES); i++) {
-            TodParticleDefinition *aDef = &gParticleDefArray[i];
+            const TodParticleDefinition *aDef = &gParticleDefArray[i];
             if (theDefinition == aDef) {
                 aParticleType = i;
                 break;
@@ -130,7 +130,7 @@ void SaveGameContext::SyncTrailDef(TrailDefinition *&theDefinition) {
     } else {
         int aTrailType = TrailType::TRAIL_NONE;
         for (int i = 0; i < TrailType::NUM_TRAILS; i++) {
-            TrailDefinition *aDef = &gTrailDefArray[i];
+            const TrailDefinition *aDef = &gTrailDefArray[i];
             if (theDefinition == aDef) {
                 aTrailType = i;
                 break;
@@ -182,7 +182,8 @@ void SyncDataIDList(TodList<unsigned int> *theDataIDList, SaveGameContext &theCo
         } else {
             int aCount = theDataIDList->mSize;
             theContext.SyncInt(aCount);
-            for (TodListNode<unsigned int> *aNode = theDataIDList->mHead; aNode != nullptr; aNode = aNode->mNext) {
+            for (const TodListNode<unsigned int> *aNode = theDataIDList->mHead; aNode != nullptr;
+                 aNode = aNode->mNext) {
                 unsigned int aDataID = aNode->mValue;
                 theContext.SyncBytes(&aDataID, sizeof(aDataID));
             }
@@ -213,7 +214,7 @@ void SyncParticleEmitter(
         (TodList<unsigned int> *)&theParticleEmitter->mParticleList, theContext,
         &theParticleSystem->mParticleHolder->mParticleListNodeAllocator
     );
-    for (TodListNode<ParticleID> *aNode = theParticleEmitter->mParticleList.mHead; aNode != nullptr;
+    for (const TodListNode<ParticleID> *aNode = theParticleEmitter->mParticleList.mHead; aNode != nullptr;
          aNode = aNode->mNext) {
         TodParticle *aParticle =
             theParticleSystem->mParticleHolder->mParticles.DataArrayGet((unsigned int)aNode->mValue);
@@ -224,7 +225,7 @@ void SyncParticleEmitter(
 }
 
 // 0x481880
-void SyncParticleSystem(Board *theBoard, TodParticleSystem *theParticleSystem, SaveGameContext &theContext) {
+void SyncParticleSystem(const Board *theBoard, TodParticleSystem *theParticleSystem, SaveGameContext &theContext) {
     theContext.SyncParticleDef(theParticleSystem->mParticleDef);
     if (theContext.mReading) {
         theParticleSystem->mParticleHolder = theBoard->mApp->mEffectSystem->mParticleHolder;
@@ -234,7 +235,7 @@ void SyncParticleSystem(Board *theBoard, TodParticleSystem *theParticleSystem, S
         (TodList<unsigned int> *)&theParticleSystem->mEmitterList, theContext,
         &theParticleSystem->mParticleHolder->mEmitterListNodeAllocator
     );
-    for (TodListNode<ParticleEmitterID> *aNode = theParticleSystem->mEmitterList.mHead; aNode != nullptr;
+    for (const TodListNode<ParticleEmitterID> *aNode = theParticleSystem->mEmitterList.mHead; aNode != nullptr;
          aNode = aNode->mNext) {
         TodParticleEmitter *aEmitter =
             theParticleSystem->mParticleHolder->mEmitters.DataArrayGet((unsigned int)aNode->mValue);
@@ -243,11 +244,11 @@ void SyncParticleSystem(Board *theBoard, TodParticleSystem *theParticleSystem, S
 }
 
 // 0x4818F0
-void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameContext &theContext) {
+void SyncReanimation(const Board *theBoard, Reanimation *theReanimation, SaveGameContext &theContext) {
     // @ Minerscale, ensure Reanimation reloaded in same configuration as before.
     theContext.SyncBytes(&theReanimation->mIsAtlased, sizeof(bool));
 
-    ReanimationType aType = theContext.SyncReanimationDef(theReanimation->mDefinition);
+    const ReanimationType aType = theContext.SyncReanimationDef(theReanimation->mDefinition);
 
     if (theContext.mReading) {
         theReanimation->mReanimationHolder = theBoard->mApp->mEffectSystem->mReanimationHolder;
@@ -260,7 +261,7 @@ void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameConte
     }
 
     if (theReanimation->mDefinition->mTracks.count != 0) {
-        int aSize = theReanimation->mDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
+        const int aSize = theReanimation->mDefinition->mTracks.count * sizeof(ReanimatorTrackInstance);
         if (theContext.mReading) {
             theReanimation->mTrackInstances =
                 static_cast<ReanimatorTrackInstance *>(FindGlobalAllocator(aSize)->Calloc(aSize));
@@ -284,7 +285,7 @@ void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameConte
     }
 }
 
-void SyncTrail(Board *theBoard, Trail *theTrail, SaveGameContext &theContext) {
+void SyncTrail(const Board *theBoard, Trail *theTrail, SaveGameContext &theContext) {
     theContext.SyncTrailDef(theTrail->mDefinition);
     if (theContext.mReading) {
         theTrail->mTrailHolder = theBoard->mApp->mEffectSystem->mTrailHolder;

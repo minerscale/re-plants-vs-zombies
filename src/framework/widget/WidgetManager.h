@@ -72,7 +72,7 @@ public:
     int mWidgetFlags;
 
 protected:
-    int GetWidgetFlags();
+    int GetWidgetFlags() const;
     void MouseEnter(Widget *theWidget);
     void MouseLeave(Widget *theWidget);
 

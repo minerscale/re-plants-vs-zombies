@@ -1,9 +1,9 @@
 #include "BassLoader.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace Sexy;
 
-BASS_INSTANCE *Sexy::gBass = NULL;
+BASS_INSTANCE *Sexy::gBass = nullptr;
 static long gBassLoadCount = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ static void CheckBassFunction(unsigned int theFunc, const char *theName) {
     if (theFunc == 0) {
         char aBuf[1024];
         sprintf(aBuf, "%s function not found in bass.dll", theName);
-        MessageBoxA(NULL, aBuf, "Error", MB_OK | MB_ICONERROR);
+        MessageBoxA(nullptr, aBuf, "Error", MB_OK | MB_ICONERROR);
         exit(0);
     }
 }
@@ -33,8 +33,8 @@ BASS_INSTANCE::BASS_INSTANCE(const char *dllName) {
     //*((uintptr_t*) &BASS_SetGlobalVolumes) = (uintptr_t) GetProcAddress(mModule, "BASS_SetGlobalVolumes");
     *((uintptr_t *)&BASS_SetVolume) = (uintptr_t)GetProcAddress(mModule, "BASS_SetVolume");
 
-    if (BASS_SetVolume == NULL /*&& (BASS_SetGlobalVolumes == NULL)*/) {
-        MessageBoxA(NULL, "Whoops! You forgot to put the CD in your computer.", "Error", MB_OK | MB_ICONERROR);
+    if (BASS_SetVolume == nullptr /*&& (BASS_SetGlobalVolumes == NULL)*/) {
+        MessageBoxA(nullptr, "Whoops! You forgot to put the CD in your computer.", "Error", MB_OK | MB_ICONERROR);
         exit(0);
     }
 
@@ -128,14 +128,14 @@ BASS_INSTANCE::~BASS_INSTANCE() {
     if (mModule) FreeLibrary(mModule);
 }
 
-BOOL BASS_INSTANCE::BASS_MusicSetAmplify(HMUSIC handle, DWORD amp) {
+BOOL BASS_INSTANCE::BASS_MusicSetAmplify(HMUSIC handle, DWORD amp) const {
     BASS_ChannelSetAttribute(handle, BASS_ATTRIB_MUSIC_AMPLIFY, amp);
     return true;
 }
 
-BOOL BASS_INSTANCE::BASS_MusicPlay(HMUSIC handle) { return BASS_ChannelPlay(handle, true); }
+BOOL BASS_INSTANCE::BASS_MusicPlay(HMUSIC handle) const { return BASS_ChannelPlay(handle, true); }
 
-BOOL BASS_INSTANCE::BASS_MusicPlayEx(HMUSIC handle, DWORD pos, int flags, BOOL reset) {
+BOOL BASS_INSTANCE::BASS_MusicPlayEx(HMUSIC handle, DWORD pos, int flags, BOOL reset) const {
     (void)reset;
     // int anOffset = MAKEMUSICPOS(pos,0);
 
@@ -146,9 +146,9 @@ BOOL BASS_INSTANCE::BASS_MusicPlayEx(HMUSIC handle, DWORD pos, int flags, BOOL r
     return BASS_ChannelPlay(handle, false /*reset*/); // What's wrong with actually using the reset flag?
 }
 
-BOOL BASS_INSTANCE::BASS_ChannelResume(DWORD handle) { return BASS_ChannelPlay(handle, false); }
+BOOL BASS_INSTANCE::BASS_ChannelResume(DWORD handle) const { return BASS_ChannelPlay(handle, false); }
 
-BOOL BASS_INSTANCE::BASS_StreamPlay(HSTREAM handle, BOOL flush, DWORD flags) {
+BOOL BASS_INSTANCE::BASS_StreamPlay(HSTREAM handle, BOOL flush, DWORD flags) const {
     BASS_ChannelFlags(handle, flags, -1);
     return BASS_ChannelPlay(handle, flush);
 }
@@ -157,11 +157,11 @@ BOOL BASS_INSTANCE::BASS_StreamPlay(HSTREAM handle, BOOL flush, DWORD flags) {
 ///////////////////////////////////////////////////////////////////////////////
 void Sexy::LoadBassDLL() {
     InterlockedIncrement(&gBassLoadCount);
-    if (gBass != NULL) return;
+    if (gBass != nullptr) return;
 
     gBass = new BASS_INSTANCE("bass.dll");
-    if (gBass->mModule == NULL) {
-        MessageBoxA(NULL, "Can't find bass.dll.", "Error", MB_OK | MB_ICONERROR);
+    if (gBass->mModule == nullptr) {
+        MessageBoxA(nullptr, "Can't find bass.dll.", "Error", MB_OK | MB_ICONERROR);
         exit(0);
     }
 }
@@ -169,10 +169,10 @@ void Sexy::LoadBassDLL() {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 void Sexy::FreeBassDLL() {
-    if (gBass != NULL) {
+    if (gBass != nullptr) {
         if (InterlockedDecrement(&gBassLoadCount) <= 0) {
             delete gBass;
-            gBass = NULL;
+            gBass = nullptr;
         }
     }
 }

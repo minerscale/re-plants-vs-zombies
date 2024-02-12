@@ -107,7 +107,7 @@ public:
     void AddCoins(int theAmount);
     void SyncSummary(DataSync &theSync);
     void SyncDetails(DataSync &theSync);
-    void DeleteUserFiles();
+    void DeleteUserFiles() const;
     void LoadDetails();
     void SaveDetails();
     inline int GetLevel() const { return mLevel; }

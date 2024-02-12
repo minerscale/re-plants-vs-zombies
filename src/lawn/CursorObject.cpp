@@ -56,7 +56,7 @@ void CursorObject::Update() {
     mY = mApp->mWidgetManager->mLastMouseY - 35;
 }
 
-void CursorObject::Die() { mApp->RemoveReanimation(mReanimCursorID); }
+void CursorObject::Die() const { mApp->RemoveReanimation(mReanimCursorID); }
 
 // 0x438820
 void CursorObject::Draw(Graphics *g) {
@@ -105,7 +105,7 @@ void CursorObject::Draw(Graphics *g) {
     }
 
     case CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE: {
-        Plant *aPlant = mBoard->mPlants.DataArrayGet((unsigned int)mGlovePlantID);
+        const Plant *aPlant = mBoard->mPlants.DataArrayGet((unsigned int)mGlovePlantID);
         PottedPlant *aPottedPlant = &mApp->mPlayerInfo->mPottedPlant[aPlant->mPottedPlantIndex];
         if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_MUSHROOM_GARDEN ||
             mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM) {
@@ -180,9 +180,9 @@ void CursorPreview::Update() {
         return;
     }
 
-    SeedType aSeedType = mBoard->GetSeedTypeInCursor();
-    int aMouseX = mApp->mWidgetManager->mLastMouseX;
-    int aMouseY = mApp->mWidgetManager->mLastMouseY;
+    const SeedType aSeedType = mBoard->GetSeedTypeInCursor();
+    const int aMouseX = mApp->mWidgetManager->mLastMouseX;
+    const int aMouseY = mApp->mWidgetManager->mLastMouseY;
     mGridX = mBoard->PlantingPixelToGridX(aMouseX, aMouseY, aSeedType);
     mGridY = mBoard->PlantingPixelToGridY(aMouseX, aMouseY, aSeedType);
     if (mGridX >= 0 && mGridX < MAX_GRID_SIZE_X && mGridY >= 0 && mGridY <= MAX_GRID_SIZE_Y) {
@@ -209,7 +209,7 @@ void CursorPreview::Update() {
 
 // 0x438EB0
 void CursorPreview::Draw(Graphics *g) {
-    SeedType aSeedType = mBoard->GetSeedTypeInCursor();
+    const SeedType aSeedType = mBoard->GetSeedTypeInCursor();
     if (aSeedType == SeedType::SEED_NONE) return;
 
     g->SetColorizeImages(true);
@@ -256,7 +256,8 @@ void CursorPreview::Draw(Graphics *g) {
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_COLUMN) {
         for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
             if (y != mGridY && mBoard->CanPlantAt(mGridX, y, aSeedType) == PlantingReason::PLANTING_OK) {
-                float aOffsetY = 85.0f * (y - mGridY) + PlantDrawHeightOffset(mBoard, nullptr, aSeedType, mGridX, y);
+                const float aOffsetY =
+                    85.0f * (y - mGridY) + PlantDrawHeightOffset(mBoard, nullptr, aSeedType, mGridX, y);
                 Plant::DrawSeedType(
                     g, mBoard->mCursorObject->mType, mBoard->mCursorObject->mImitaterType,
                     DrawVariation::VARIATION_NORMAL, 0.0f, aOffsetY

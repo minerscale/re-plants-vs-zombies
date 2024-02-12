@@ -23,7 +23,7 @@ public:
     /*inline*/
     GameObject();
     /*inline*/
-    bool BeginDraw(Graphics *g);
+    bool BeginDraw(Graphics *g) const;
     /*inline*/
     void EndDraw(Graphics *g);
     /*inline*/

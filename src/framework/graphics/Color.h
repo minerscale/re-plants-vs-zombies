@@ -22,13 +22,13 @@ public:
 
 public:
     Color();
-    Color(int theColor);
+    explicit Color(int theColor);
     Color(int theColor, int theAlpha);
     Color(int theRed, int theGreen, int theBlue);
     Color(int theRed, int theGreen, int theBlue, int theAlpha);
-    Color(const SexyRGBA &theColor);
-    Color(const uchar *theElements);
-    Color(const int *theElements);
+    explicit Color(const SexyRGBA &theColor);
+    explicit Color(const uchar *theElements);
+    explicit Color(const int *theElements);
 
     int GetRed() const;
     int GetGreen() const;

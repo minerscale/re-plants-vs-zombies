@@ -17,12 +17,12 @@ static int gButtonWidgetColors[][3] = {
 
 ButtonWidget::ButtonWidget(int theId, ButtonListener *theButtonListener) {
     mId = theId;
-    mFont = NULL;
+    mFont = nullptr;
     mLabelJustify = BUTTON_LABEL_CENTER;
-    mButtonImage = NULL;
-    mOverImage = NULL;
-    mDownImage = NULL;
-    mDisabledImage = NULL;
+    mButtonImage = nullptr;
+    mOverImage = nullptr;
+    mDownImage = nullptr;
+    mDisabledImage = nullptr;
     mInverted = false;
     mBtnNoDraw = false;
     mFrameNoDraw = false;
@@ -33,7 +33,7 @@ ButtonWidget::ButtonWidget(int theId, ButtonListener *theButtonListener) {
     mOverAlphaSpeed = 0;
     mOverAlphaFadeInSpeed = 0;
 
-    SetColors(gButtonWidgetColors, NUM_COLORS);
+    Widget::SetColors(gButtonWidgetColors, NUM_COLORS);
 }
 
 ButtonWidget::~ButtonWidget() { delete mFont; }
@@ -45,8 +45,8 @@ void ButtonWidget::SetFont(_Font *theFont) {
 
 bool ButtonWidget::IsButtonDown() { return mIsDown && mIsOver && !mDisabled; }
 
-bool ButtonWidget::HaveButtonImage(Image *theImage, const Rect &theRect) {
-    return (theImage != NULL || theRect.mWidth != 0);
+bool ButtonWidget::HaveButtonImage(const Image *theImage, const Rect &theRect) {
+    return (theImage != nullptr || theRect.mWidth != 0);
 }
 
 void ButtonWidget::DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, int x, int y) {
@@ -68,7 +68,7 @@ void ButtonWidget::Draw(Graphics *g) {
     int aFontX = 0; // BUTTON_LABEL_LEFT
     int aFontY = 0;
 
-    if (mFont != NULL) {
+    if (mFont != nullptr) {
         if (mLabelJustify == BUTTON_LABEL_CENTER) aFontX = (mWidth - mFont->StringWidth(mLabel)) / 2;
         else if (mLabelJustify == BUTTON_LABEL_RIGHT) aFontX = mWidth - mFont->StringWidth(mLabel);
         aFontY = (mHeight + mFont->GetAscent() - mFont->GetAscent() / 6 - 1) / 2;
@@ -79,7 +79,7 @@ void ButtonWidget::Draw(Graphics *g) {
 
     g->SetFont(mFont);
 
-    if ((mButtonImage == NULL) && (mDownImage == NULL)) {
+    if ((mButtonImage == nullptr) && (mDownImage == nullptr)) {
         if (!mFrameNoDraw) {
             g->SetColor(mColors[COLOR_BKG]);
             g->FillRect(0, 0, mWidth, mHeight);

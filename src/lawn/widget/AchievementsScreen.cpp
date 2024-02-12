@@ -48,7 +48,7 @@ AchievementsWidget::AchievementsWidget(LawnApp *theApp) {
 }
 
 // GOTY @Patoke: 0x4010E0
-AchievementsWidget::~AchievementsWidget() {}
+AchievementsWidget::~AchievementsWidget() = default;
 
 // GOTY @Patoke: 0x401A10
 void AchievementsWidget::Update() {
@@ -63,12 +63,12 @@ void AchievementsWidget::Update() {
     // if (aNewY >= mApp->mHeight)
     //	aNewY = mApp->mHeight;
 
-    int aMaxScroll = 2 * mApp->mHeight + 50 - mHeight;
+    const int aMaxScroll = 2 * mApp->mHeight + 50 - mHeight;
     if (aNewY <= aMaxScroll) aNewY = aMaxScroll;
 
     mY = aNewY;
 
-    int aDelta = aNewY - mY;
+    const int aDelta = aNewY - mY;
     mMoreRockRect.mY += aDelta;
     aBackButtonRect.mY += aDelta;
 
@@ -79,7 +79,7 @@ void AchievementsWidget::Update() {
 void AchievementsWidget::Draw(Graphics *g) {
     g->DrawImage(IMAGE_SELECTORSCREEN_ACHIEVEMENTS_BG, 0, 0);
 
-    int aHeight = IMAGE_SELECTORSCREEN_ACHIEVEMENTS_BG->mHeight;
+    const int aHeight = IMAGE_SELECTORSCREEN_ACHIEVEMENTS_BG->mHeight;
     for (int i = 1; i <= 70; i++)
         g->DrawImage(IMAGE_ACHEESEMENTS_HOLE_TILE, 0, aHeight * i);
 
@@ -100,11 +100,11 @@ void AchievementsWidget::Draw(Graphics *g) {
         if (mApp->mPlayerInfo) aHasAchievement = mApp->mPlayerInfo->mEarnedAchievements[i];
         else aHasAchievement = false;
 
-        int aCurrAchievementOff = 57 * static_cast<int>(i / 2);
-        int aImageXPos = i % 2 == 0 ? 120 : 410;
-        int aImageYPos = 178 + aCurrAchievementOff;
-        int aTextXPos = aImageXPos + 70;
-        int aTextYPos = aImageYPos + 16;
+        const int aCurrAchievementOff = 57 * static_cast<int>(i / 2);
+        const int aImageXPos = i % 2 == 0 ? 120 : 410;
+        const int aImageYPos = 178 + aCurrAchievementOff;
+        const int aTextXPos = aImageXPos + 70;
+        const int aTextYPos = aImageYPos + 16;
 
         // Achievement images
         Rect aSrcRect(70 * (i % 7), 70 * (i / 7), 70, 70);
@@ -133,7 +133,8 @@ void AchievementsWidget::Draw(Graphics *g) {
 
     g->DrawImage(IMAGE_ACHEESEMENTS_MORE_ROCK, 700, 450);
 
-    bool aIsHighlight = mMoreRockRect.Contains(mWidgetManager->mLastMouseX - mX, mWidgetManager->mLastMouseY - mY);
+    const bool aIsHighlight =
+        mMoreRockRect.Contains(mWidgetManager->mLastMouseX - mX, mWidgetManager->mLastMouseY - mY);
     if (mDidPressMoreButton) {
         g->DrawImage(aIsHighlight ? IMAGE_ACHEESEMENTS_TOP_BUTTON_HIGHLIGHT : IMAGE_ACHEESEMENTS_TOP_BUTTON, 700, 450);
     } else {
@@ -144,7 +145,7 @@ void AchievementsWidget::Draw(Graphics *g) {
 }
 
 // GOTY @Patoke: 0x4019D0
-void AchievementsWidget::KeyDown(KeyCode theKey) {
+void AchievementsWidget::KeyDown(const KeyCode theKey) {
     if (theKey == KEYCODE_UP) {
         mScrollValue = mDefaultScrollValue;
         mScrollDirection = 1;
@@ -155,7 +156,7 @@ void AchievementsWidget::KeyDown(KeyCode theKey) {
 }
 
 // GOTY @Patoke: 0x4017F0
-void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
+void AchievementsWidget::MouseDown(const int x, const int y, const int theClickCount) {
     (void)theClickCount;
     if (aBackButtonRect.Contains(x, y)) mApp->PlaySample(SOUND_GRAVEBUTTON);
 
@@ -163,9 +164,9 @@ void AchievementsWidget::MouseDown(int x, int y, int theClickCount) {
 }
 
 // GOTY @Patoke: 0x401890
-void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
+void AchievementsWidget::MouseUp(const int x, const int y, const int theClickCount) {
     (void)theClickCount;
-    auto aPos = Point(x, y);
+    const auto aPos = Point(x, y);
     if (aBackButtonRect.Contains(aPos)) {
         mApp->mGameSelector->SlideTo(0, 0);
         mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
@@ -179,7 +180,7 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 }
 
 // GOTY @Patoke: 0x4019A0
-void AchievementsWidget::MouseWheel(int theDelta) {
+void AchievementsWidget::MouseWheel(const int theDelta) {
     mScrollValue = mDefaultScrollValue;
 
     if (theDelta > 0) mScrollDirection = 1;
@@ -188,7 +189,7 @@ void AchievementsWidget::MouseWheel(int theDelta) {
 
 bool ReportAchievement::mAchievementToShow = false;
 // GOTY @Patoke: 0x459670
-void ReportAchievement::GiveAchievement(LawnApp *theApp, int theAchievement, bool theForceGive) {
+void ReportAchievement::GiveAchievement(LawnApp *theApp, const int theAchievement, const bool theForceGive) {
     // todo @Patoke: finish adding the achievement give events
     if (!theApp->mPlayerInfo) return;
 
@@ -225,7 +226,8 @@ void ReportAchievement::AchievementInitForPlayer(LawnApp *theApp) {
         GiveAchievement(theApp, AchievementId::Zombologist, false);
     }
 
-    int aTreeSize = theApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - GAMEMODE_SURVIVAL_NORMAL_STAGE_1];
+    const int aTreeSize =
+        theApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM - GAMEMODE_SURVIVAL_NORMAL_STAGE_1];
     if (aTreeSize >= 100) {
         GiveAchievement(theApp, AchievementId::ToweringWisdom, false);
     }

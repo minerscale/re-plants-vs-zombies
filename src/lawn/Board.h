@@ -230,7 +230,7 @@ public:
     Board(LawnApp *theApp);
     ~Board() override;
 
-    void DisposeBoard();
+    void DisposeBoard() const;
     int CountSunBeingCollected();
     void DrawGameObjects(Graphics *g);
     void ClearCursor();
@@ -249,7 +249,7 @@ public:
     Coin *AddCoin(int theX, int theY, CoinType theCoinType, CoinMotion theCoinMotion);
     void RefreshSeedPacketFromCursor();
     ZombieType PickGraveRisingZombieType();
-    ZombieType PickZombieType(int theZombiePoints, int theWaveIndex, ZombiePicker *theZombiePicker);
+    ZombieType PickZombieType(int theZombiePoints, int theWaveIndex, const ZombiePicker *theZombiePicker);
     int PickRowForNewZombie(ZombieType theZombieType);
     /*inline*/
     Zombie *AddZombie(ZombieType theZombieType, int theFromWave);
@@ -370,7 +370,7 @@ public:
     void DrawDebugObjectRects(Graphics *g);
     void UpdateIce();
     /*inline*/
-    int GetIceZPos(int theRow);
+    static int GetIceZPos(int theRow);
     /*inline*/
     bool CanAddBobSled();
     /*inline*/
@@ -472,7 +472,7 @@ public:
     void TutorialArrowShow(int theX, int theY);
     void TutorialArrowRemove();
     int CountCoinsBeingCollected();
-    void BungeeDropZombie(BungeeDropGrid *theBungeeDropGrid, ZombieType theZombieType);
+    void BungeeDropZombie(const BungeeDropGrid *theBungeeDropGrid, ZombieType theZombieType);
     void SetupBungeeDrop(BungeeDropGrid *theBungeeDropGrid);
     /*inline*/
     void PutZombieInWave(ZombieType theZombieType, int theWaveNumber, ZombiePicker *theZombiePicker);
@@ -481,7 +481,7 @@ public:
     Rect GetShovelButtonRect();
     void GetZenButtonRect(GameObjectType theObjectType, Rect &theRect);
     Plant *NewPlant(int theGridX, int theGridY, SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
-    void DoPlantingEffects(int theGridX, int theGridY, Plant *thePlant);
+    void DoPlantingEffects(int theGridX, int theGridY, const Plant *thePlant);
     bool IsFinalSurvivalStage();
     void SurvivalSaveScore();
     int CountZombiesOnScreen();
@@ -504,7 +504,7 @@ public:
     /*inline*/
     bool IsPlantInCursor();
     void HighlightPlantsForMouse(int theMouseX, int theMouseY);
-    void ClearFogAroundPlant(Plant *thePlant, int theSize);
+    void ClearFogAroundPlant(const Plant *thePlant, int theSize);
     /*inline*/
     void RemoveParticleByType(ParticleEffect theEffectType);
     /*inline*/
@@ -518,7 +518,7 @@ public:
     void DisplayAdviceAgain(const SexyString &theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex);
     GridItem *GetSquirrelAt(int theGridX, int theGridY);
     GridItem *GetZenToolAt(int theGridX, int theGridY);
-    bool IsPlantInGoldWateringCanRange(int theMouseX, int theMouseY, Plant *thePlant);
+    bool IsPlantInGoldWateringCanRange(int theMouseX, int theMouseY, const Plant *thePlant);
     bool StageHasZombieWalkInFromRight();
     void PlaceRake();
     GridItem *GetRake();

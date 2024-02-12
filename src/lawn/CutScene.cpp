@@ -105,7 +105,7 @@ CutScene::~CutScene() {
 }
 
 // 0x439140
-void CutScene::PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY) {
+void CutScene::PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY) const {
     bool aPutOnDuckyTube = false;
     if (theZombieType == ZombieType::ZOMBIE_DUCKY_TUBE &&
         mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_WAR_AND_PEAS_2) {
@@ -238,7 +238,7 @@ void CutScene::FindPlaceForStreetZombies(
         thePosX = 2;
         thePosY = 2;
     } else {
-        TodWeightedGridArray *aGrid = TodPickFromWeightedGridArray(aPicks, aPicksCount);
+        const TodWeightedGridArray *aGrid = TodPickFromWeightedGridArray(aPicks, aPicksCount);
         thePosX = aGrid->mX;
         thePosY = aGrid->mY;
     }
@@ -283,11 +283,11 @@ void CutScene::PreloadResources() {
     /*
     PerfTimer aTimer;
     aTimer.Start();*/
-    auto aTimer = std::chrono::high_resolution_clock::now();
+    const auto aTimer = std::chrono::high_resolution_clock::now();
 
     for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++) {
-            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
+            const ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
             if (aZombieType == ZombieType::ZOMBIE_INVALID) {
                 break;
             }
@@ -296,7 +296,7 @@ void CutScene::PreloadResources() {
     }
 
     for (SeedType aSeedType = SeedType::SEED_PEASHOOTER; aSeedType < SeedType::NUM_SEED_TYPES;
-         aSeedType = static_cast<SeedType>((int)aSeedType + 1)) {
+         aSeedType = static_cast<SeedType>(static_cast<int>(aSeedType) + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             Plant::PreloadPlantResources(aSeedType);
         }
@@ -432,7 +432,7 @@ void CutScene::PlaceStreetZombies() {
 
     for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++) {
-            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
+            const ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][aZombieIndex];
             if (aZombieType == ZombieType::ZOMBIE_INVALID) {
                 break;
             }
@@ -483,17 +483,17 @@ void CutScene::PlaceStreetZombies() {
 
     // 优先放置较大体型的僵尸，然后再放置较小体型的僵尸
     for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES;
-         aZombieType = static_cast<ZombieType>((int)aZombieType + 1)) {
+         aZombieType = static_cast<ZombieType>(static_cast<int>(aZombieType) + 1)) {
         if (aZombieTypeCount[static_cast<int>(aZombieType)] &&
             (Is2x2Zombie(aZombieType) || aZombieType == ZombieType::ZOMBIE_ZAMBONI)) {
             FindAndPlaceZombie(aZombieType, aZombieGrid);
         }
     }
     for (ZombieType aZombieType = ZombieType::ZOMBIE_NORMAL; aZombieType < ZombieType::NUM_ZOMBIE_TYPES;
-         aZombieType = static_cast<ZombieType>((int)aZombieType + 1)) {
+         aZombieType = static_cast<ZombieType>(static_cast<int>(aZombieType) + 1)) {
         if (aZombieTypeCount[static_cast<int>(aZombieType)] && !Is2x2Zombie(aZombieType) &&
             aZombieType != ZombieType::ZOMBIE_ZAMBONI) {
-            int aZombieNumInWave = aZombieTypeCount[static_cast<int>(aZombieType)];
+            const int aZombieNumInWave = aZombieTypeCount[static_cast<int>(aZombieType)];
             int aZombiePreviewNum = aZombieNumInWave * aPreviewCapacity / aTotalZombieCount;
             aZombiePreviewNum = ClampInt(aZombiePreviewNum, 1, aZombieNumInWave);
             for (int i = 0; i < aZombiePreviewNum; i++) {
@@ -548,7 +548,7 @@ bool CutScene::IsScrolledLeftAtStart() {
 
 // 0x43A820
 bool CutScene::CanGetPacketUpgrade() {
-    int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
+    const int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
     return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == 0 &&
            mApp->mPlayerInfo->mCoins >= aCost && mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
@@ -556,14 +556,14 @@ bool CutScene::CanGetPacketUpgrade() {
 
 // 0x43A890
 bool CutScene::CanGetSecondPacketUpgrade() {
-    int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
+    const int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
     return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == 1 &&
            mApp->mPlayerInfo->mCoins >= aCost && mApp->mPlayerInfo->mDidntPurchasePacketUpgrade < 2;
 }
 
 bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex) {
-    int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
+    const int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
 
     return mApp->mPlayerInfo->mPurchases[StoreItem::STORE_ITEM_PACKET_UPGRADE] == theUpgradeIndex &&
            // theUpgradeIndex 从首次为 0 开始计算
@@ -586,7 +586,7 @@ void CutScene::StartLevelIntro() {
     mPlacedLawnItems = false;
     mApp->mWidgetManager->SetFocus(mBoard);
 
-    int aLevel = mBoard->mBoardData.mLevel;
+    const int aLevel = mBoard->mBoardData.mLevel;
     if (mApp->IsFirstTimeAdventureMode() && (aLevel == 1 || aLevel == 2 || aLevel == 4)) {
         mSodTime = TimeRollSodEnd - TimeRollSodStart;
         mBoard->mBoardData.mSodPosition = 0;
@@ -859,10 +859,10 @@ int CutScene::CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStar
 
 // 0x43B7D0
 void CutScene::AnimateBoard() {
-    int aTimePanRightStart = TimePanRightStart + mCrazyDaveTime;
-    int aTimePanRightEnd = TimePanRightEnd + mCrazyDaveTime;
-    int aTimePanLeftStart = TimePanLeftStart + mCrazyDaveTime;
-    int aTimePanLeftEnd = TimePanLeftEnd + mCrazyDaveTime;
+    const int aTimePanRightStart = TimePanRightStart + mCrazyDaveTime;
+    const int aTimePanRightEnd = TimePanRightEnd + mCrazyDaveTime;
+    const int aTimePanLeftStart = TimePanLeftStart + mCrazyDaveTime;
+    const int aTimePanLeftEnd = TimePanLeftEnd + mCrazyDaveTime;
 
     // ====================================================================================================
     // ▲ 疯狂戴夫动态的更新
@@ -890,12 +890,12 @@ void CutScene::AnimateBoard() {
     // ====================================================================================================
     // ▲ 关卡界面右移的更新
     // ====================================================================================================
-    int aBoardOffset = IsScrolledLeftAtStart() ? BOARD_OFFSET : 0;
+    const int aBoardOffset = IsScrolledLeftAtStart() ? BOARD_OFFSET : 0;
     if (mCutsceneTime <= aTimePanRightStart) {
         mBoard->Move(aBoardOffset, 0);
     }
     if (mCutsceneTime > aTimePanRightStart && mCutsceneTime <= aTimePanRightEnd) {
-        int aPanOffset =
+        const int aPanOffset =
             CalcPosition(aTimePanRightStart, aTimePanRightEnd, -aBoardOffset, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth);
         mBoard->Move(-aPanOffset, 0);
     }
@@ -904,8 +904,8 @@ void CutScene::AnimateBoard() {
     // ▲ 选卡界面动态的更新
     // ====================================================================================================
     if (mBoard->ChooseSeedsOnCurrentLevel()) {
-        int aTimeSeedChoserSlideOnStart = TimeSeedChoserSlideOnStart + mCrazyDaveTime;
-        int aTimeSeedChoserSlideOnEnd = TimeSeedChoserSlideOnEnd + mCrazyDaveTime;
+        const int aTimeSeedChoserSlideOnStart = TimeSeedChoserSlideOnStart + mCrazyDaveTime;
+        const int aTimeSeedChoserSlideOnEnd = TimeSeedChoserSlideOnEnd + mCrazyDaveTime;
         SeedChooserScreen *aSeedChoser = mApp->mSeedChooserScreen;
         // ====================================================================================================
         // △ 选卡界面滑出
@@ -921,8 +921,8 @@ void CutScene::AnimateBoard() {
         // ====================================================================================================
         // △ 选卡界面滑落
         // ====================================================================================================
-        int aTimeSeedChoserSlideOffStart = TimeSeedChoserSlideOffStart + mCrazyDaveTime;
-        int aTimeSeedChoserSlideOffEnd = TimeSeedChoserSlideOffEnd + mCrazyDaveTime;
+        const int aTimeSeedChoserSlideOffStart = TimeSeedChoserSlideOffStart + mCrazyDaveTime;
+        const int aTimeSeedChoserSlideOffEnd = TimeSeedChoserSlideOffEnd + mCrazyDaveTime;
         if (mCutsceneTime > aTimeSeedChoserSlideOffStart && mCutsceneTime <= aTimeSeedChoserSlideOffEnd) {
             aSeedChoser->Move(
                 0, CalcPosition(aTimeSeedChoserSlideOffStart, aTimeSeedChoserSlideOffEnd, 0, SEED_CHOOSER_OFFSET_Y)
@@ -935,7 +935,8 @@ void CutScene::AnimateBoard() {
     // ▲ 关卡界面左移的更新
     // ====================================================================================================
     if (mCutsceneTime > aTimePanLeftStart) {
-        int aPanOffset = CalcPosition(aTimePanLeftStart, aTimePanLeftEnd, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth, 0);
+        const int aPanOffset =
+            CalcPosition(aTimePanLeftStart, aTimePanLeftEnd, BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth, 0);
         mBoard->Move(-aPanOffset, 0);
     }
 
@@ -947,19 +948,19 @@ void CutScene::AnimateBoard() {
         aTimePrepareEnd =
             mBossTime + mFogTime + mGraveStoneTime + mSodTime - TimeSeedChoserSlideOnStart + TimePanLeftEnd;
     }
-    int aTimeSeedBankOnStart = TimeSeedBankOnStart + aTimePrepareEnd + mCrazyDaveTime;
-    int aTimeSeedBankOnEnd = TimeSeedBankOnEnd + aTimePrepareEnd + mCrazyDaveTime;
+    const int aTimeSeedBankOnStart = TimeSeedBankOnStart + aTimePrepareEnd + mCrazyDaveTime;
+    const int aTimeSeedBankOnEnd = TimeSeedBankOnEnd + aTimePrepareEnd + mCrazyDaveTime;
     if (!mApp->IsChallengeWithoutSeedBank() && mCutsceneTime > aTimeSeedBankOnStart &&
         mCutsceneTime <= aTimeSeedBankOnEnd) {
-        int aSeedBankY = CalcPosition(aTimeSeedBankOnStart, aTimeSeedBankOnEnd, -IMAGE_SEEDBANK->GetHeight(), 0);
+        const int aSeedBankY = CalcPosition(aTimeSeedBankOnStart, aTimeSeedBankOnEnd, -IMAGE_SEEDBANK->GetHeight(), 0);
         mBoard->mSeedBank->Move(SEED_BANK_OFFSET_X, aSeedBankY);
     }
-    int aTimeSeedBankRightStart = TimeSeedBankRightStart + mCrazyDaveTime;
-    int aTimeSeedBankRightEnd = TimeSeedBankRightEnd + mCrazyDaveTime;
+    const int aTimeSeedBankRightStart = TimeSeedBankRightStart + mCrazyDaveTime;
+    const int aTimeSeedBankRightEnd = TimeSeedBankRightEnd + mCrazyDaveTime;
     if (mCutsceneTime > aTimeSeedBankRightStart) {
-        int aSeedBankX =
+        const int aSeedBankX =
             CalcPosition(aTimeSeedBankRightStart, aTimeSeedBankRightEnd, SEED_BANK_OFFSET_X, SEED_BANK_OFFSET_X_END);
-        int aDarken = TodAnimateCurve(
+        const int aDarken = TodAnimateCurve(
             aTimeSeedBankRightStart, aTimeSeedBankRightEnd, mCutsceneTime, 255, 128, TodCurves::CURVE_EASE_OUT
         );
         mBoard->mSeedBank->mCutSceneDarken = aDarken;
@@ -970,8 +971,8 @@ void CutScene::AnimateBoard() {
     // ▲ 冒险模式初期关卡铺草皮的更新
     // ====================================================================================================
     if (mSodTime > 0) {
-        int aTimeRollSodStart = TimeRollSodStart + mCrazyDaveTime;
-        int aTimeRollSodEnd = TimeRollSodEnd + mCrazyDaveTime;
+        const int aTimeRollSodStart = TimeRollSodStart + mCrazyDaveTime;
+        const int aTimeRollSodEnd = TimeRollSodEnd + mCrazyDaveTime;
         mBoard->mBoardData.mSodPosition =
             TodAnimateCurve(aTimeRollSodStart, aTimeRollSodEnd, mCutsceneTime, 0, 1000, TodCurves::CURVE_LINEAR);
 
@@ -1030,7 +1031,7 @@ void CutScene::AnimateBoard() {
     // ▲ 黑夜关卡出现墓碑的特效的更新
     // ====================================================================================================
     if (mGraveStoneTime > 0) {
-        int aTimeGraveStoneStart = mSodTime + TimeGraveStoneStart + mCrazyDaveTime;
+        const int aTimeGraveStoneStart = mSodTime + TimeGraveStoneStart + mCrazyDaveTime;
         if (mCutsceneTime == aTimeGraveStoneStart) {
             mBoard->mBoardData.mEnableGraveStones = true;
             AddGraveStoneParticles();
@@ -1049,7 +1050,7 @@ void CutScene::AnimateBoard() {
     // ====================================================================================================
     if (!IsSurvivalRepick()) {
         for (int aGridY = 0; aGridY < MAX_GRID_SIZE_Y; aGridY++) {
-            int aTimeLawnMowerStart = TimeLawnMowerStart[aGridY] + mSodTime + mGraveStoneTime + mCrazyDaveTime;
+            const int aTimeLawnMowerStart = TimeLawnMowerStart[aGridY] + mSodTime + mGraveStoneTime + mCrazyDaveTime;
             if (mCutsceneTime > aTimeLawnMowerStart) {
                 LawnMower *aLawnMower = mBoard->FindLawnMowerInRow(aGridY);
                 if (aLawnMower) {
@@ -1065,7 +1066,7 @@ void CutScene::AnimateBoard() {
     // ▲ 浓雾的更新
     // ====================================================================================================
     if (mBoard->mBoardData.mFogBlownCountDown > 0) {
-        int aTimeFogRollIn = TimeFogRollIn + mSodTime + mGraveStoneTime + mCrazyDaveTime;
+        const int aTimeFogRollIn = TimeFogRollIn + mSodTime + mGraveStoneTime + mCrazyDaveTime;
         if (mCutsceneTime > aTimeFogRollIn) {
             if (mBoard->mBoardData.mFogBlownCountDown > 200) {
                 mBoard->mBoardData.mFogBlownCountDown = 200;
@@ -1086,7 +1087,7 @@ void CutScene::AnimateBoard() {
     // ▲ 僵王博士的入场
     // ====================================================================================================
     if (mBossTime > 0) {
-        int aTimeBossEnter = TimeReadySetPlantStart + mLawnMowerTime + mCrazyDaveTime;
+        const int aTimeBossEnter = TimeReadySetPlantStart + mLawnMowerTime + mCrazyDaveTime;
         if (mCutsceneTime == aTimeBossEnter) {
             mBoard->mChallenge->PlayBossEnter();
         }
@@ -1102,7 +1103,7 @@ void CutScene::AnimateBoard() {
     // ====================================================================================================
     // ▲ Ready Set Plant 动画的播放
     // ====================================================================================================
-    int aTimeReadySetPlant =
+    const int aTimeReadySetPlant =
         TimeReadySetPlantStart + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime + mBossTime;
     if (mReadySetPlantTime > 0 && mCutsceneTime == aTimeReadySetPlant) {
         mApp->AddReanimation(
@@ -1224,8 +1225,8 @@ void CutScene::Update() {
     }
 
     // 过场结束的判定
-    int aTimeStart = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime +
-                     mBossTime + mReadySetPlantTime;
+    const int aTimeStart = TimeIntroEnd + mLawnMowerTime + mSodTime + mGraveStoneTime + mCrazyDaveTime + mFogTime +
+                           mBossTime + mReadySetPlantTime;
     if (mCutsceneTime >= aTimeStart) {
         mBoard->RemoveCutsceneZombies();
         if (mBoard->mBoardData.mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER) {
@@ -1265,7 +1266,7 @@ void CutScene::UpdateZombiesWon() {
     // 食脑的动画及惨叫的音效
     if (mCutsceneTime == LostTimeBrainGraphicStart) {
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIES_WON, true);
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_SCREEN_FADE, 0, 0);
         Reanimation *aReanimation =
             mApp->AddReanimation(-BOARD_OFFSET, 0, aRenderPosition, ReanimationType::REANIM_ZOMBIES_WON);
         aReanimation->mAnimRate = 12.0f;
@@ -1292,13 +1293,13 @@ void CutScene::UpdateZombiesWon() {
     // 过场结束，游戏失败
     if (mCutsceneTime == LostTimeEnd) {
         if (mApp->IsSurvivalMode()) {
-            int aFlagsCompleted = mBoard->GetSurvivalFlagsCompleted();
-            SexyString aFlagsStr = mApp->Pluralize(aFlagsCompleted, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
-            SexyString aStr = TodReplaceString(_S("[SURVIVAL_DEATH_MESSAGE]"), _S("{FLAGS}"), aFlagsStr);
-            auto aDialog = new GameOverDialog(aStr, true);
+            const int aFlagsCompleted = mBoard->GetSurvivalFlagsCompleted();
+            const SexyString aFlagsStr = mApp->Pluralize(aFlagsCompleted, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
+            const SexyString aStr = TodReplaceString(_S("[SURVIVAL_DEATH_MESSAGE]"), _S("{FLAGS}"), aFlagsStr);
+            const auto aDialog = new GameOverDialog(aStr, true);
             mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
         } else {
-            auto aDialog = new GameOverDialog(_S(""), false);
+            const auto aDialog = new GameOverDialog(_S(""), false);
             mApp->AddDialog(Dialogs::DIALOG_GAME_OVER, aDialog);
         }
     }
@@ -1357,7 +1358,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     }
 
     // 更新为最新的一句话的编号
-    int aMessageIndex = mApp->mCrazyDaveMessageIndex;
+    const int aMessageIndex = mApp->mCrazyDaveMessageIndex;
     // Now_Unused
     if (aMessageIndex == 107 || aMessageIndex == 2407) {
         mBoard->mChallenge->ShovelAddWallnuts();
@@ -1368,10 +1369,11 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     }
     // （推销卡槽）“听起来怎么样”
     if ((aMessageIndex == 1503 || aMessageIndex == 1553) && !theJustSkipping) {
-        int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
-        int aNumPackets = mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)];
-        SexyString aBodyString = TodReplaceNumberString(_S("[UPGRADE_DIALOG_BODY]"), _S("{SLOTS}"), aNumPackets + 1);
-        SexyString aAmountString = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
+        const int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
+        const int aNumPackets = mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)];
+        const SexyString aBodyString =
+            TodReplaceNumberString(_S("[UPGRADE_DIALOG_BODY]"), _S("{SLOTS}"), aNumPackets + 1);
+        const SexyString aAmountString = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
         // 创建询问是否升级卡槽格数的对话
         Dialog *aDialog = mApp->DoDialog(
             Dialogs::DIALOG_PURCHASE_PACKET_SLOT, true, aAmountString, aBodyString, _S(""), Dialog::BUTTONS_YES_NO
@@ -1380,7 +1382,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
         aDialog->mY += 130;
         mBoard->ShowCoinBank(100);
         // 等待返回选择的选项
-        int aResult = aDialog->WaitForResult();
+        const int aResult = aDialog->WaitForResult();
         if (aResult == Dialog::ID_YES) {
             mApp->mPlayerInfo->AddCoins(-aCost);
             mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)]++;
@@ -1436,7 +1438,7 @@ void CutScene::KeyDown(KeyCode theKey) {
             mApp->PlaySample(SOUND_PAUSE);
             mApp->mMusic->GameMusicPause(true);
 
-            int aResult = mApp->LawnMessageBox(
+            const int aResult = mApp->LawnMessageBox(
                 Dialogs::DIALOG_MESSAGE, _S("[UPSELL_PAUSE_HEADER]"), _S("[UPSELL_PAUSE_BODY]"),
                 _S("[UPSELL_RESUME_BUTTON]"), _S("[MAIN_MENU_BUTTON]"), Dialog::BUTTONS_YES_NO
             );
@@ -1459,9 +1461,9 @@ void CutScene::KeyDown(KeyCode theKey) {
 // 0x43D830
 int CutScene::ParseDelayTimeFromMessage() {
     SexyString aCrazyDaveText = mApp->GetCrazyDaveText(mCrazyDaveLastTalkIndex);
-    size_t anIndex = aCrazyDaveText.find(_S("{DELAY_"));
+    const size_t anIndex = aCrazyDaveText.find(_S("{DELAY_"));
     if (anIndex != SexyString::npos) {
-        SexyString aDelayTimeStr = aCrazyDaveText.substr(anIndex + 7, aCrazyDaveText.find(_S("}")) - anIndex - 7);
+        const SexyString aDelayTimeStr = aCrazyDaveText.substr(anIndex + 7, aCrazyDaveText.find(_S("}")) - anIndex - 7);
         mCrazyDaveCountDown = sexyatoi(aDelayTimeStr.c_str());
         return mCrazyDaveCountDown;
     }
@@ -1471,9 +1473,9 @@ int CutScene::ParseDelayTimeFromMessage() {
 // 0x43D940
 int CutScene::ParseTalkTimeFromMessage() {
     SexyString aCrazyDaveText = mApp->GetCrazyDaveText(mCrazyDaveLastTalkIndex);
-    int anIndex = aCrazyDaveText.find(_S("{TIME_"));
+    const int anIndex = aCrazyDaveText.find(_S("{TIME_"));
     if (anIndex != -1) {
-        SexyString aTalkTimeStr = aCrazyDaveText.substr(anIndex + 6, aCrazyDaveText.find(_S("}")) - anIndex - 6);
+        const SexyString aTalkTimeStr = aCrazyDaveText.substr(anIndex + 6, aCrazyDaveText.find(_S("}")) - anIndex - 6);
         mCrazyDaveCountDown = sexyatoi(aTalkTimeStr.c_str());
         return mCrazyDaveCountDown;
     }
@@ -1965,7 +1967,7 @@ void CutScene::UpdateIntro() {
         mApp->mMusic->FadeOut(250);
     }
     if (mCutsceneTime == TimeIntro_LogoEnd) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 0);
         mApp->AddTodParticle(400, 300, aRenderPosition, ParticleEffect::PARTICLE_SCREEN_FLASH);
 
         mApp->mMuteSoundsForCutscene = false;
@@ -1990,9 +1992,9 @@ void CutScene::DrawIntro(Graphics *g) {
     }
 
     // 绘制“PopCap Games 出品”字样
-    int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
+    const int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
     if (mCutsceneTime > TimeIntro_PresentsFadeIn && mCutsceneTime <= aTimePanRightStart) {
-        int anAlpha =
+        const int anAlpha =
             mCutsceneTime < aTimePanRightStart - 600
                 ? TodAnimateCurve(
                       TimeIntro_PresentsFadeIn, TimeIntro_PresentsFadeIn + 300, mCutsceneTime, 0, 255,
@@ -2010,12 +2012,12 @@ void CutScene::DrawIntro(Graphics *g) {
 
     // 绘制“Plants Vs Zombies”的 Logo
     if (mCutsceneTime > TimeIntro_LogoStart && mCutsceneTime <= TimeIntro_PanRightEnd) {
-        float aScale = TodAnimateCurveFloat(
+        const float aScale = TodAnimateCurveFloat(
             TimeIntro_LogoStart, TimeIntro_LogoEnd, mCutsceneTime, 5, 1, TodCurves::CURVE_EASE_OUT
         );
-        float aCenter = aScale * 0.5;
+        const float aCenter = aScale * 0.5;
         int aOffsetX = BOARD_WIDTH / 2 - mBoard->mX, aOffsetY = BOARD_HEIGHT / 2 - mBoard->mY;
-        Rect aRect(aOffsetX - BOARD_WIDTH * aCenter, aOffsetY - 75 * aScale, BOARD_WIDTH * aScale, 150 * aScale);
+        const Rect aRect(aOffsetX - BOARD_WIDTH * aCenter, aOffsetY - 75 * aScale, BOARD_WIDTH * aScale, 150 * aScale);
         g->SetColor(Color(0, 0, 0, 128));
         g->FillRect(aRect);
         Image *aImage = IMAGE_PVZ_LOGO;

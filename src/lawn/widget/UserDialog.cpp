@@ -24,7 +24,7 @@ UserDialog::UserDialog(LawnApp *theApp)
       ) {
     mVerticalCenterText = false;
     mUserList = new ListWidget(0, FONT_BRIANNETOD16, this);
-    mUserList->SetColors(gUserListWidgetColors, LENGTH(gUserListWidgetColors));
+    mUserList->SetColors(gUserListWidgetColors, std::size(gUserListWidgetColors));
     mUserList->mDrawOutline = true;
     mUserList->mJustify = ListWidget::JUSTIFY_CENTER;
     mUserList->mItemHeight = 24;
@@ -64,7 +64,7 @@ UserDialog::~UserDialog() {
 }
 
 // 0x51CC80
-void UserDialog::Resize(int theX, int theY, int theWidth, int theHeight) {
+void UserDialog::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     LawnDialog::Resize(theX, theY, theWidth, theHeight);
     mUserList->Resize(GetLeft() + 30, GetTop() + 4, GetWidth() - 60, 200);
     mRenameButton->Layout(
@@ -78,7 +78,7 @@ void UserDialog::Resize(int theX, int theY, int theWidth, int theHeight) {
 }
 
 // 0x51CD20
-int UserDialog::GetPreferredHeight(int theWidth) { return LawnDialog::GetPreferredHeight(theWidth) + 190; }
+int UserDialog::GetPreferredHeight(const int theWidth) { return LawnDialog::GetPreferredHeight(theWidth) + 190; }
 
 // 0x51CD40
 void UserDialog::AddedToManager(WidgetManager *theWidgetManager) {
@@ -97,7 +97,7 @@ void UserDialog::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x51CE10
-SexyString UserDialog::GetSelName() {
+SexyString UserDialog::GetSelName() const {
     if (mUserList->mSelectIdx < 0 || mUserList->mSelectIdx >= mNumUsers) {
         return _S("");
     }
@@ -123,7 +123,7 @@ void UserDialog::FinishDeleteUser() {
     }
 }
 
-void UserDialog::FinishRenameUser(const SexyString &theNewName) {
+void UserDialog::FinishRenameUser(const SexyString &theNewName) const {
     if (mUserList->mSelectIdx < mNumUsers) {
         mUserList->SetLine(mUserList->mSelectIdx, theNewName);
     }
@@ -133,7 +133,7 @@ void UserDialog::FinishRenameUser(const SexyString &theNewName) {
 void UserDialog::Draw(Graphics *g) { LawnDialog::Draw(g); }
 
 // 0x51CF60
-void UserDialog::ListClicked(int theId, int theIdx, int theClickCount) {
+void UserDialog::ListClicked(const int theId, const int theIdx, const int theClickCount) {
     (void)theId;
     if (theIdx == mNumUsers) {
         mApp->DoCreateUserDialog();
@@ -148,9 +148,9 @@ void UserDialog::ListClicked(int theId, int theIdx, int theClickCount) {
 
 // 0x51CFA0
 //  GOTY @Patoke: 0x5278C0
-void UserDialog::ButtonDepress(int theId) {
+void UserDialog::ButtonDepress(const int theId) {
     LawnDialog::ButtonDepress(theId);
-    SexyString aSelName = GetSelName();
+    const SexyString aSelName = GetSelName();
     if (!aSelName.empty()) {
         switch (theId) {
         case UserDialog::UserDialog_RenameUser: mApp->DoRenameUserDialog(aSelName); break;
@@ -161,14 +161,14 @@ void UserDialog::ButtonDepress(int theId) {
 }
 
 // 0x51D060
-void UserDialog::EditWidgetText(int theId, const SexyString &theString) {
+void UserDialog::EditWidgetText(const int theId, const SexyString &theString) {
     (void)theId;
     (void)theString;
     mApp->ButtonDepress(mId + 2000);
 }
 
 // 0x51D080
-bool UserDialog::AllowChar(int theId, SexyChar theChar) {
+bool UserDialog::AllowChar(const int theId, const SexyChar theChar) {
     (void)theId;
     return sexyisdigit(theChar);
 }

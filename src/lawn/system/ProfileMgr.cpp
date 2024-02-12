@@ -53,7 +53,7 @@ void ProfileMgr::SyncState(DataSync &theSync) {
         } else {
             aWriter->WriteShort(static_cast<short>(mProfileMap.size()));
 
-            for (auto anItr = mProfileMap.begin(); anItr != mProfileMap.end(); anItr++)
+            for (auto anItr = mProfileMap.begin(); anItr != mProfileMap.end(); ++anItr)
                 anItr->second.SyncSummary(theSync);
         }
     }
@@ -62,7 +62,7 @@ void ProfileMgr::SyncState(DataSync &theSync) {
 // 0x46ABC0
 void ProfileMgr::Load() {
     Buffer aBuffer;
-    std::string aFileName = GetAppDataFolder() + "userdata/users.dat";
+    const std::string aFileName = GetAppDataFolder() + "userdata/users.dat";
 
     try {
         if (gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false)) {
@@ -84,7 +84,7 @@ void ProfileMgr::Save() {
     SyncState(aSync);
 
     MkDir(GetAppDataFolder() + "userdata");
-    std::string aFileName = GetAppDataFolder() + "userdata/users.dat";
+    const std::string aFileName = GetAppDataFolder() + "userdata/users.dat";
     gSexyAppBase->WriteBytesToFile(aFileName, aWriter.GetDataPtr(), aWriter.GetDataLen());
 }
 
@@ -95,7 +95,7 @@ void ProfileMgr::DeleteProfile(ProfileMap::iterator theProfile) {
 
 // 0x46AF70
 bool ProfileMgr::DeleteProfile(const SexyString &theName) {
-    auto anItr = mProfileMap.find(theName);
+    const auto anItr = mProfileMap.find(theName);
     if (anItr == mProfileMap.end()) return false;
 
     DeleteProfile(anItr);
@@ -104,14 +104,14 @@ bool ProfileMgr::DeleteProfile(const SexyString &theName) {
 
 // 0x46AFF0
 bool ProfileMgr::RenameProfile(const SexyString &theOldName, const SexyString &theNewName) {
-    auto anOldItr = mProfileMap.find(theOldName);
+    const auto anOldItr = mProfileMap.find(theOldName);
     if (anOldItr == mProfileMap.end()) return false;
     else {
         // 判断修改前后的用户名是否一致，一致则直接在原存档中进行修改，否则需要额外操作
         if (strcasecmp(theOldName.c_str(), theNewName.c_str()) == 0) anOldItr->second.mName = theNewName;
         else {
             // 向 mProfileMap 中插入一个由新用户名及旧存档组成的对组
-            auto aRet = mProfileMap.emplace(theNewName, anOldItr->second);
+            const auto aRet = mProfileMap.emplace(theNewName, anOldItr->second);
             // auto aRet = mProfileMap.insert({theNewName, anOldItr->second});
             // 通过返回值检测新用户名是否与原有存档重复，重复则返回 false，插入成功则继续操作
             if (!aRet.second) return false;
@@ -141,7 +141,7 @@ void ProfileMgr::DeleteOldestProfile() {
 // 0x46B290
 //  GOTY @Patoke: 0x46F7C0
 PlayerInfo *ProfileMgr::GetProfile(const SexyString &theName) {
-    auto anItr = mProfileMap.find(theName);
+    const auto anItr = mProfileMap.find(theName);
     if (anItr != mProfileMap.end()) {
         PlayerInfo *aProfile = &anItr->second;
         aProfile->LoadDetails();
@@ -153,7 +153,7 @@ PlayerInfo *ProfileMgr::GetProfile(const SexyString &theName) {
 
 // 0x46B310
 PlayerInfo *ProfileMgr::AddProfile(const SexyString &theName) {
-    auto aRet = mProfileMap.emplace(theName, PlayerInfo());
+    const auto aRet = mProfileMap.emplace(theName, PlayerInfo());
     if (aRet.second) {
         PlayerInfo *aProfile = &aRet.first->second;
         aProfile->mName = theName;

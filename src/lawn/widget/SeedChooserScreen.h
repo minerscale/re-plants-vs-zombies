@@ -76,8 +76,8 @@ public:
     static T
     PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArray<T> theArray[], int theCount, MTRand &theLevelRNG);
     void CrazyDavePickSeeds();
-    bool Has7Rows();
-    void GetSeedPositionInChooser(int theIndex, int &x, int &y);
+    bool Has7Rows() const;
+    void GetSeedPositionInChooser(int theIndex, int &x, int &y) const;
     /*inline*/
     void GetSeedPositionInBank(int theIndex, int &x, int &y);
     /*inline*/

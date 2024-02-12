@@ -9,7 +9,7 @@ ScrollbarWidget::ScrollbarWidget(int theId, ScrollListener *theScrollListener) {
     mId = theId;
     mScrollListener = theScrollListener;
 
-    SetDisabled(true);
+    Widget::SetDisabled(true);
 
     mUpButton = new ScrollbuttonWidget(0, this);
     mUpButton->SetDisabled(true);
@@ -27,11 +27,11 @@ ScrollbarWidget::ScrollbarWidget(int theId, ScrollListener *theScrollListener) {
     mUpdateMode = 0;
     mHorizontal = false;
 
-    AddWidget(mUpButton);
-    AddWidget(mDownButton);
+    WidgetContainer::AddWidget(mUpButton);
+    WidgetContainer::AddWidget(mDownButton);
 }
 
-ScrollbarWidget::~ScrollbarWidget() { RemoveAllWidgets(true); }
+ScrollbarWidget::~ScrollbarWidget() { WidgetContainer::RemoveAllWidgets(true); }
 
 void ScrollbarWidget::SetInvisIfNoScroll(bool invisIfNoScroll) {
     mInvisIfNoScroll = invisIfNoScroll;

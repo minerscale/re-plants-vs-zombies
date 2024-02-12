@@ -42,7 +42,7 @@ void MessageWidget::ClearLabel() {
 // 0x459010
 //  GOTY @Patoke: inlined 0x459715
 void MessageWidget::SetLabel(const SexyString &theNewLabel, MessageStyle theMessageStyle) {
-    SexyString aLabel = TodStringTranslate(theNewLabel);
+    const SexyString aLabel = TodStringTranslate(theNewLabel);
     TOD_ASSERT(aLabel.length() < MAX_MESSAGE_LENGTH - 1);
 
     if (mReanimType != ReanimationType::REANIM_NONE && mDuration > 0) {
@@ -102,7 +102,7 @@ void MessageWidget::LayoutReanimText() {
     float aMaxWidth = 0;
     int aCurLine = 0, aCurPos = 0;
     _Font *aFont = GetFont();
-    int aLabelLen = sexystrlen(mLabel);
+    const int aLabelLen = sexystrlen(mLabel);
     mSlideOffTime = aLabelLen + 100;
 
     float aLineWidth[MAX_REANIM_LINES];
@@ -110,8 +110,8 @@ void MessageWidget::LayoutReanimText() {
         if (aPos == aLabelLen || mLabel[aPos] == _S('\n')) {
             TOD_ASSERT(aCurLine < MAX_REANIM_LINES);
 
-            int aLen = aPos - aCurPos;
-            int aOff = aCurPos;
+            const int aLen = aPos - aCurPos;
+            const int aOff = aCurPos;
             aCurPos = aPos + 1;
             SexyString aLine(&mLabel[aOff], aLen);
 
@@ -159,7 +159,7 @@ void MessageWidget::Update() {
         }
     }
 
-    int aLabelLen = sexystrlen(mLabel);
+    const int aLabelLen = sexystrlen(mLabel);
     // 以下遍历每个文字的动画，设置其动画速率并更新其动画
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
         Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
@@ -168,7 +168,7 @@ void MessageWidget::Update() {
         }
 
         // 设置动画速率
-        int aTextSpeed = mReanimType == ReanimationType::REANIM_TEXT_FADE_ON ? 100 : 1;
+        const int aTextSpeed = mReanimType == ReanimationType::REANIM_TEXT_FADE_ON ? 100 : 1;
         if (mDuration > mSlideOffTime) {
             if (mReanimType == ReanimationType::REANIM_TEXT_FADE_ON) {
                 aTextReanim->mAnimRate = 60.0f;
@@ -191,10 +191,10 @@ void MessageWidget::Update() {
 }
 
 // 0x459710
-void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color &theColor, float thePosY) {
-    int aLabelLen = sexystrlen(mLabel);
+void MessageWidget::DrawReanimatedText(Graphics *g, const _Font *theFont, const Color &theColor, float thePosY) const {
+    const int aLabelLen = sexystrlen(mLabel);
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
-        Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
+        const Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {
             break; // 当不存在文本动画时，跳出循环，直接返回
         }
@@ -202,7 +202,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
         ReanimatorTransform aTransform;
         aTextReanim->GetCurrentTransform(2, &aTransform);
 
-        int anAlpha = ClampInt(FloatRoundToInt(theColor.mAlpha * aTransform.mAlpha), 0, 255);
+        const int anAlpha = ClampInt(FloatRoundToInt(theColor.mAlpha * aTransform.mAlpha), 0, 255);
         if (anAlpha <= 0) {
             break; // 文本动画完全透明时，直接返回
         }
@@ -212,7 +212,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
         aTransform.mTransX += aTextReanim->mOverlayMatrix.m02;
         aTransform.mTransY += aTextReanim->mOverlayMatrix.m12 + thePosY - BOARD_HEIGHT / 2.0;
         if (mReanimType == ReanimationType::REANIM_TEXT_FADE_ON && mDisplayTime - mDuration < mSlideOffTime) {
-            float aStretch = 1.0f - aTextReanim->mAnimTime;
+            const float aStretch = 1.0f - aTextReanim->mAnimTime;
             aTransform.mTransX += aStretch * aTextReanim->mOverlayMatrix.m02;
         }
 

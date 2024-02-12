@@ -49,7 +49,7 @@ public:
     int CalcPosition(int theTimeStart, int theTimeEnd, int thePositionStart, int thePositionEnd);
     void PlaceStreetZombies();
     void AddGraveStoneParticles();
-    void PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY);
+    void PlaceAZombie(ZombieType theZombieType, int theGridX, int theGridY) const;
     bool CanZombieGoInGridSpot(ZombieType theZombieType, int theGridX, int theGridY, bool theZombieGrid[5][5]);
     /*inline*/
     bool IsSurvivalRepick();

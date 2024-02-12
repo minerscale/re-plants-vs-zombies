@@ -14,11 +14,11 @@ public:
     ImitaterDialog();
     ~ImitaterDialog() override;
 
-    SeedType SeedHitTest(int x, int y);
+    SeedType SeedHitTest(int x, int y) const;
     void UpdateCursor();
     void Update() override;
     /*inline*/
-    void GetSeedPosition(int theIndex, int &x, int &y);
+    void GetSeedPosition(int theIndex, int &x, int &y) const;
     void Draw(Graphics *g) override;
     void ShowToolTip();
     /*inline*/

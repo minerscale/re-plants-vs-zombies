@@ -1,5 +1,7 @@
 #include "KeyCodes.h"
 #include <cctype>
+#include <cstring>
+#include <string>
 
 using namespace Sexy;
 
@@ -125,24 +127,24 @@ KeyCode Sexy::GetKeyCodeFromName(const std::string &theKeyName) {
             return static_cast<KeyCode>(aKeyNameChar + 0x80);
     }
 
-    for (size_t i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
-        if (strcmp(aKeyName, aKeyCodeArray[i].mKeyName) == 0) return aKeyCodeArray[i].mKeyCode;
+    for (auto &i : aKeyCodeArray)
+        if (strcmp(aKeyName, i.mKeyName) == 0) return i.mKeyCode;
 
     return KEYCODE_UNKNOWN;
 }
 
-const std::string Sexy::GetKeyNameFromCode(const KeyCode &theKeyCode) {
+std::string Sexy::GetKeyNameFromCode(const KeyCode &theKeyCode) {
     if ((theKeyCode >= KEYCODE_ASCIIBEGIN) && (theKeyCode <= KEYCODE_ASCIIEND)) {
         char aStr[2] = {static_cast<char>(theKeyCode), 0};
         return aStr;
     }
 
     if ((theKeyCode >= KEYCODE_ASCIIBEGIN2) && (theKeyCode <= KEYCODE_ASCIIEND2)) {
-        char aStr[2] = {static_cast<char>(((unsigned char)theKeyCode) - 0x80), 0};
+        char aStr[2] = {static_cast<char>(static_cast<unsigned char>(theKeyCode) - 0x80), 0};
         return aStr;
     }
 
-    for (size_t i = 0; i < sizeof(aKeyCodeArray) / sizeof(aKeyCodeArray[0]); i++)
+    for (size_t i = 0; i < std::size(aKeyCodeArray); i++)
         if (theKeyCode == aKeyCodeArray[i].mKeyCode) return aKeyCodeArray[i].mKeyName;
 
     return "UNKNOWN";

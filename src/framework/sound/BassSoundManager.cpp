@@ -16,7 +16,7 @@ BassSoundManager::BassSoundManager(HWND theHWnd) { BassMusicInterface::InitBass(
 
 bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename) {
     PFILE *aFile = p_fopen(theFilename.c_str(), "rb");
-    if (aFile == NULL) return false;
+    if (aFile == nullptr) return false;
 
     p_fseek(aFile, 0, SEEK_END);
     size_t aLength = p_ftell(aFile);
@@ -61,7 +61,6 @@ inline uint16_t Snack_Mulaw2Lin(uint8_t u_val) {
     constexpr uint32_t SEG_MASK = 0x70;
     constexpr uint8_t SEG_SHIFT = 4;
     constexpr uint8_t SIGN_BIT = 0x80;
-    uint16_t t;
 
     /* Complement to obtain normal u-law value. */
     u_val = ~u_val;
@@ -70,18 +69,16 @@ inline uint16_t Snack_Mulaw2Lin(uint8_t u_val) {
      * Extract and bias the quantization bits. Then
      * shift up by the segment number and subtract out the bias.
      */
-    t = ((u_val & QUANT_MASK) << 3) + BIAS;
+    uint16_t t = ((u_val & QUANT_MASK) << 3) + BIAS;
     t <<= (static_cast<uint32_t>(u_val) & SEG_MASK) >> SEG_SHIFT;
 
     return ((u_val & SIGN_BIT) ? (BIAS - t) : (t - BIAS));
 }
 
 bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &theFilename) {
-    PFILE *fp;
+    PFILE *fp = p_fopen(theFilename.c_str(), "rb");
 
-    fp = p_fopen(theFilename.c_str(), "rb");
-
-    if (fp == NULL) return false;
+    if (fp == nullptr) return false;
 
     char aHeaderId[4];
     p_fread(aHeaderId, 1, 4, fp);
@@ -160,7 +157,7 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
         aDestSize,
     };
 
-    auto aDestBuffer = (short *)((char *)aDestHeader + sizeof(WavHeader));
+    auto aDestBuffer = reinterpret_cast<short *>(reinterpret_cast<char *>(aDestHeader) + sizeof(WavHeader));
 
     if (ulaw) {
         auto aSrcBuffer = new uint8_t[aDataSize];
@@ -253,7 +250,7 @@ void BassSoundManager::ReleaseSounds() {
     }
 }
 
-inline bool BassSoundManager::Exists(unsigned int theSfxID) {
+inline bool BassSoundManager::Exists(unsigned int theSfxID) const {
     return (theSfxID < MAX_SOURCE_SOUNDS) && (mSourceSounds[theSfxID].has_value());
 }
 

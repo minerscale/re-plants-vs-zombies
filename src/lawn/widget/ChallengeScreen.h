@@ -35,8 +35,8 @@ public:
     void SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie = false);
     int MoreTrophiesNeeded(int theChallengeIndex);
     /*inline*/
-    bool ShowPageButtons();
-    void UpdateButtons();
+    bool ShowPageButtons() const;
+    void UpdateButtons() const;
     int AccomplishmentsNeeded(int theChallengeIndex);
     void DrawButton(Graphics *g, int theChallengeIndex);
     void Draw(Graphics *g) override;
@@ -58,7 +58,7 @@ public:
     //  virtual void                KeyChar(char theChar);
 
     /*inline*/
-    bool IsScaryPotterLevel(GameMode theGameMode);
+    static bool IsScaryPotterLevel(GameMode theGameMode);
     /*inline*/
     bool IsIZombieLevel(GameMode theGameMode);
 };

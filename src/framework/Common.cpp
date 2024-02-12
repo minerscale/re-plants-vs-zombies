@@ -104,11 +104,10 @@ void Sexy::SetAppDataFolder(const std::string &thePath) {
 }
 
 std::string Sexy::URLEncode(const std::string &theString) {
-    auto aHexChars = (char *)"0123456789ABCDEF";
-
     std::string aString;
 
     for (unsigned i = 0; i < theString.length(); i++) {
+        const auto aHexChars = "0123456789ABCDEF";
         switch (theString[i]) {
         case ' ': aString.insert(aString.end(), '+'); break;
         case '?':
@@ -492,15 +491,12 @@ std::string Sexy::GetPathFrom(const std::string &theRelPath, const std::string &
     }
 
     // Append a trailing slash if necessary
-    if ((aNewPath.length() > 0) && (aNewPath[aNewPath.length() - 1] != '\\') &&
-        (aNewPath[aNewPath.length() - 1] != '/'))
+    if ((!aNewPath.empty()) && (aNewPath[aNewPath.length() - 1] != '\\') && (aNewPath[aNewPath.length() - 1] != '/'))
         aNewPath += aSlashChar;
 
     std::string aTempRelPath = theRelPath;
 
-    for (;;) {
-        if (aNewPath.length() == 0) break;
-
+    while (aNewPath.length() != 0) {
         int aFirstSlash = aTempRelPath.find('\\');
         int aFirstForwardSlash = aTempRelPath.find('/');
 
@@ -816,7 +812,7 @@ std::string Sexy::vformat(const char *fmt, va_list argPtr) {
     }
 
     // Now use the heap.
-    char *heapBuffer = NULL;
+    char *heapBuffer = nullptr;
 
     while (((numChars == -1) || (numChars > attemptedSize)) && (attemptedSize < maxSize)) {
         // Try a bigger size
@@ -877,7 +873,7 @@ std::wstring Sexy::vformat(const wchar_t *fmt, va_list argPtr) {
     }
 
     // Now use the heap.
-    wchar_t *heapBuffer = NULL;
+    wchar_t *heapBuffer = nullptr;
 
     while (((numChars == -1) || (numChars > attemptedSize)) && (attemptedSize < maxSize)) {
         // Try a bigger size
@@ -1086,38 +1082,37 @@ std::wstring Sexy::XMLEncodeString(const std::wstring &theString) {
 
 std::string Sexy::Upper(const std::string &_data) {
     std::string s = _data;
-    std::transform(s.begin(), s.end(), s.begin(), toupper);
+    std::ranges::transform(s, s.begin(), toupper);
     return s;
 }
 
 std::wstring Sexy::Upper(const std::wstring &_data) {
     std::wstring s = _data;
-    std::transform(s.begin(), s.end(), s.begin(), towupper);
+    std::ranges::transform(s, s.begin(), towupper);
     return s;
 }
 
 std::string Sexy::Lower(const std::string &_data) {
     std::string s = _data;
-    std::transform(s.begin(), s.end(), s.begin(), tolower);
+    std::ranges::transform(s, s.begin(), tolower);
     return s;
 }
 
 std::wstring Sexy::Lower(const std::wstring &_data) {
     std::wstring s = _data;
-    std::transform(s.begin(), s.end(), s.begin(), towlower);
+    std::ranges::transform(s, s.begin(), towlower);
     return s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 int Sexy::StrFindNoCase(const char *theStr, const char *theFind) {
-    int p1, p2;
     int cp = 0;
     const int len1 = static_cast<int>(strlen(theStr));
     const int len2 = static_cast<int>(strlen(theFind));
     while (cp < len1) {
-        p1 = cp;
-        p2 = 0;
+        int p1 = cp;
+        int p2 = 0;
         while (p1 < len1 && p2 < len2) {
             if (tolower(theStr[p1]) != tolower(theFind[p2])) break;
 
@@ -1164,7 +1159,7 @@ std::wstring Sexy::UTF8StringToWString(const std::string theString) {
 
 void Sexy::SMemR(void *&_Src, void *_Dst, size_t _Size) {
     memcpy(_Dst, _Src, _Size);
-    _Src = (void *)((size_t)_Src + _Size);
+    _Src = reinterpret_cast<void *>(reinterpret_cast<size_t>(_Src) + _Size);
 }
 
 void Sexy::SMemRStr(void *&_Src, std::string &theString) {

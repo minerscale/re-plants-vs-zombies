@@ -360,7 +360,7 @@ void LawnApp::ReadFromRegistry() { SexyApp::ReadFromRegistry(); }
 
 // 0x44F540
 //  GOTY @Patoke: 0x452800
-bool LawnApp::WriteCurrentUserConfig() {
+bool LawnApp::WriteCurrentUserConfig() const {
     if (mPlayerInfo) mPlayerInfo->SaveDetails();
 
     return true;
@@ -1537,7 +1537,7 @@ void LawnApp::LoadingThreadProc() {
     mPoolEffect->PoolEffectInitialize();
     mZenGarden = new ZenGarden();
     mReanimatorCache = new ReanimatorCache();
-    TodFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
+    TodFoleyInitialize(gLawnFoleyParamArray, std::size(gLawnFoleyParamArray));
     TodTrace(
         "loading: '%s' %d ms", "stuff",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
@@ -1545,7 +1545,7 @@ void LawnApp::LoadingThreadProc() {
     );
 
     aTimer = std::chrono::high_resolution_clock::now();
-    TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
+    TrailLoadDefinitions(gLawnTrailArray, std::size(gLawnTrailArray));
     TodTrace(
         "loading: '%s' %d ms", "trail",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
@@ -1553,7 +1553,7 @@ void LawnApp::LoadingThreadProc() {
     );
     TodHesitationTrace("trail");
 
-    TodParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
+    TodParticleLoadDefinitions(gLawnParticleArray, std::size(gLawnParticleArray));
     // aDuration = max(aTimer.GetDuration(), 0.0);
 
     PreloadForUser();
@@ -2792,11 +2792,11 @@ SexyString LawnApp::GetMoneyString(int theAmount) {
             _S("$%d,%03d,%03d"), aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000,
             aValue - aValue / 1000 * 1000
         );
-    } else if (aValue > 9999) {
-        return StrFormat(_S("$%d,%03d"), aValue / 1000, aValue - aValue / 1000 * 1000);
-    } else {
-        return StrFormat(_S("$%d"), aValue);
     }
+    if (aValue > 9999) {
+        return StrFormat(_S("$%d,%03d"), aValue / 1000, aValue - aValue / 1000 * 1000);
+    }
+    return StrFormat(_S("$%d"), aValue);
 }
 
 // 0x455EE0

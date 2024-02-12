@@ -51,7 +51,7 @@ using namespace Sexy;
 const int DEMO_FILE_ID = 0x42BEEF78;
 const int DEMO_VERSION = 2;
 
-SexyAppBase *Sexy::gSexyAppBase = NULL;
+SexyAppBase *Sexy::gSexyAppBase = nullptr;
 
 static bool gScreenSaverActive = false;
 
@@ -169,7 +169,7 @@ SexyAppBase::SexyAppBase() {
     mAllowMonitorPowersave = true;
     // mHWnd = NULL;
     //	mDDInterface = NULL;
-    mMusicInterface = NULL;
+    mMusicInterface = nullptr;
     // mInvisHWnd = NULL;
     mFrameTime = std::chrono::milliseconds(10);
     //	mNonDrawCount = 0;
@@ -189,7 +189,7 @@ SexyAppBase::SexyAppBase() {
     mFastForwardToUpdateNum = 0;
     mFastForwardToMarker = false;
     mFastForwardStep = false;
-    mSoundManager = NULL;
+    mSoundManager = nullptr;
     mCursorNum = CURSOR_POINTER;
     mMouseIn = false;
     mRunning = false;
@@ -353,7 +353,7 @@ SexyAppBase::SexyAppBase() {
 }
 
 SexyAppBase::~SexyAppBase() {
-    Shutdown();
+    SexyAppBase::Shutdown();
 
     /*
     if (!showedMsgBox && gD3DInterfacePreDrawError && !IsScreenSaver())
@@ -428,7 +428,7 @@ SexyAppBase::~SexyAppBase() {
     DestroyCursor(mDraggingCursor);
     */
 
-    gSexyAppBase = NULL;
+    gSexyAppBase = nullptr;
 
     WriteDemoBuffer();
 
@@ -488,14 +488,14 @@ void SexyAppBase::ClearUpdateBacklog(bool relaxForASecond)
         mRelaxUpdateBacklogCount = 1000;
 }*/
 
-bool SexyAppBase::IsScreenSaver() { return mIsScreenSaver; }
+bool SexyAppBase::IsScreenSaver() const { return mIsScreenSaver; }
 
 bool SexyAppBase::AppCanRestore() { return !mIsDisabled; }
 
 bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
     FILE *aFP = fopen(mDemoFileName.c_str(), "rb");
 
-    if (aFP == NULL) {
+    if (aFP == nullptr) {
         theError = "Demo file not found: " + mDemoFileName;
         return false;
     }
@@ -503,7 +503,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
     struct AutoFile {
         FILE *f;
 
-        AutoFile(FILE *file) : f(file) {}
+        explicit AutoFile(FILE *file) : f(file) {}
 
         ~AutoFile() { fclose(f); }
     };
@@ -606,7 +606,7 @@ void SexyAppBase::WriteDemoBuffer() {
     if (mRecordingDemoBuffer) {
         FILE *aFP = fopen(mDemoFileName.c_str(), "w+b");
 
-        if (aFP != NULL) {
+        if (aFP != nullptr) {
             ulong aFileID = DEMO_FILE_ID;
             fwrite(&aFileID, 4, 1, aFP);
 
@@ -831,8 +831,9 @@ Dialog *SexyAppBase::NewDialog(
     int theDialogId, bool isModal, const SexyString &theDialogHeader, const SexyString &theDialogLines,
     const SexyString &theDialogFooter, int theButtonMode
 ) {
-    auto aDialog =
-        new Dialog(NULL, NULL, theDialogId, isModal, theDialogHeader, theDialogLines, theDialogFooter, theButtonMode);
+    auto aDialog = new Dialog(
+        nullptr, nullptr, theDialogId, isModal, theDialogHeader, theDialogLines, theDialogFooter, theButtonMode
+    );
     return aDialog;
 }
 
@@ -854,7 +855,7 @@ Dialog *SexyAppBase::GetDialog(int theDialogId) {
 
     if (anItr != mDialogMap.end()) return anItr->second;
 
-    return NULL;
+    return nullptr;
 }
 
 bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidget) {
@@ -867,7 +868,7 @@ bool SexyAppBase::KillDialog(int theDialogId, bool removeWidget, bool deleteWidg
         // in case nobody else sets mResult
         if (aDialog->mResult == -1) aDialog->mResult = 0;
 
-        auto aListItr = std::find(mDialogList.begin(), mDialogList.end(), aDialog);
+        auto aListItr = std::ranges::find(mDialogList, aDialog);
         if (aListItr != mDialogList.end()) mDialogList.erase(aListItr);
 
         mDialogMap.erase(anItr);
@@ -1761,7 +1762,7 @@ bool SexyAppBase::WriteBytesToFile(const std::string &theFileName, const void *t
     MkDir(GetFileDir(theFileName));
     FILE *aFP = fopen(theFileName.c_str(), "w+b");
 
-    if (aFP == NULL) {
+    if (aFP == nullptr) {
         if (mRecordingDemoBuffer) {
             WriteDemoTimingBlock();
             mDemoBuffer.WriteNumBits(0, 1);
@@ -1827,7 +1828,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string &theFileName, Buffer *the
     } else {
         PFILE *aFP = p_fopen(theFileName.c_str(), "rb");
 
-        if (aFP == NULL) {
+        if (aFP == nullptr) {
             if ((mRecordingDemoBuffer) && (!dontWriteToDemo)) {
                 WriteDemoTimingBlock();
                 mDemoBuffer.WriteNumBits(0, 1);
@@ -1884,10 +1885,10 @@ bool SexyAppBase::FileExists(const std::string &theFileName) {
             WriteDemoTimingBlock();
             mDemoBuffer.WriteNumBits(0, 1);
             mDemoBuffer.WriteNumBits(DEMO_FILE_EXISTS, 5);
-            mDemoBuffer.WriteNumBits((aFP != NULL) ? 1 : 0, 1);
+            mDemoBuffer.WriteNumBits((aFP != nullptr) ? 1 : 0, 1);
         }
 
-        if (aFP == NULL) return false;
+        if (aFP == nullptr) return false;
 
         p_fclose(aFP);
         return true;
@@ -1960,7 +1961,7 @@ void SexyAppBase::Shutdown() {
             //Sleep(10);
         }*/
 
-        if (mMusicInterface != NULL) mMusicInterface->StopAllMusic();
+        if (mMusicInterface != nullptr) mMusicInterface->StopAllMusic();
 
         // RestoreScreenResolution();
 
@@ -2240,7 +2241,7 @@ bool SexyAppBase::DrawDirtyStuff() {
         switch (mShowFPSMode) {
         case FPS_ShowFPS: CalculateFPS(); break;
         case FPS_ShowCoords:
-            if (mWidgetManager != NULL) FPSDrawCoords(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
+            if (mWidgetManager != nullptr) FPSDrawCoords(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
             break;
         }
 
@@ -2584,9 +2585,7 @@ gSexyAppBase->mDemoMarkerList.end(); ++anItr)
 using LPWORD = WORD *;
 
 [[maybe_unused]] static LPWORD lpdwAlign(LPWORD lpIn) {
-    intptr_t ul;
-
-    ul = (intptr_t)lpIn;
+    intptr_t ul = (intptr_t)lpIn;
     ul += 3;
     ul >>= 2;
     ul <<= 2;
@@ -3404,7 +3403,7 @@ void SexyAppBase::HandleNotifyGameMessage(int /*theType*/) {
 }
 
 void SexyAppBase::ClearKeysDown() {
-    if (mWidgetManager != NULL) // fix stuck alt-key problem
+    if (mWidgetManager != nullptr) // fix stuck alt-key problem
     {
         for (int aKeyNum = 0; aKeyNum < 0xFF; aKeyNum++)
             mWidgetManager->mKeyDown[aKeyNum] = false;
@@ -3551,7 +3550,7 @@ void SexyAppBase::ProcessDemo() {
                         mSyncRefreshRate = mDemoBuffer.ReadByte();
                         break;
                     case DEMO_IDLE: break;
-                    default:        DBG_ASSERTE("Invalid Demo Command" == 0); break;
+                    default:        DBG_ASSERTE("Invalid Demo Command" == nullptr); break;
                     }
                 }
             }
@@ -4366,10 +4365,10 @@ void SexyAppBase::LoadingThreadProcStub(void *theArg) {
     aSexyApp->LoadingThreadProc();
 
     printf(
-        "Resource Loading Time: %ldms\n", std::chrono::duration_cast<std::chrono::milliseconds>(
-                                              std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
-                                          )
-                                              .count()
+        "Resource Loading Time: %lldms\n", std::chrono::duration_cast<std::chrono::milliseconds>(
+                                               std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
+                                           )
+                                               .count()
     );
 
     aSexyApp->mLoadingThreadCompleted = true;
@@ -4724,7 +4723,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     constexpr auto frame_length =
         std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 80));
 
-    if (updated != NULL) *updated = false;
+    if (updated != nullptr) *updated = false;
 
     if (mExitToTop) return false;
 
@@ -4735,7 +4734,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
 
         mWindowInterface->PollEvents();
     } else if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
-        if (updated != NULL) *updated = true;
+        if (updated != nullptr) *updated = true;
         mUpdateAppState = UPDATESTATE_PROCESS_2;
 
         if (mLoadingFailed) Shutdown();
@@ -4841,9 +4840,9 @@ void SexyAppBase::Start() {
     // sprintf(aString, "Draw Count    = %d\r\n", mDrawCount);
     printf("Draw Count    = %d\n", mDrawCount);
     // OutputDebugStringA(aString);
-    printf("Draw Time     = %ld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
+    printf("Draw Time     = %lld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
     // sprintf(aString, "Draw Time     = %d\r\n", mDrawTime);
-    printf("Screen Blt    = %ld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
+    printf("Screen Blt    = %lld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
     // sprintf(aString, "Screen Blt    = %d\r\n", mScreenBltTime);
 
     // OutputDebugStringA(aString);
@@ -5136,7 +5135,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string &theParamName, const std:
         }
     } else if (theParamName == "-crash") {
         // Try to access NULL
-        char *a = 0;
+        char *a = nullptr;
         *a = '!';
     } else if (theParamName == "-screensaver") {
         mIsScreenSaver = true;
@@ -5175,7 +5174,7 @@ MusicInterface *SexyAppBase::CreateMusicInterface() {
         return new FModMusicInterface();*/
     } else {
         printf("Bass dll currently loaded without HWnd, likely to cause problems on Windows\n");
-        return new BassMusicInterface(NULL);
+        return new BassMusicInterface(nullptr);
     }
 }
 
@@ -5401,9 +5400,9 @@ void SexyAppBase::Init() {
         mSyncRefreshRate = mDemoBuffer.ReadByte();
     }
 
-    if (mSoundManager == NULL) {
+    if (mSoundManager == nullptr) {
         // TODO add HWnd information to bass
-        mSoundManager = new BassSoundManager(NULL);
+        mSoundManager = new BassSoundManager(nullptr);
     }
 
     SetSfxVolume(mSfxVolume);
@@ -5989,7 +5988,7 @@ void SexyAppBase::PlaySample(int theSoundNum) {
     if (!mSoundManager) return;
 
     SoundInstance *aSoundInstance = mSoundManager->GetSoundInstance(theSoundNum);
-    if (aSoundInstance != NULL) {
+    if (aSoundInstance != nullptr) {
         aSoundInstance->Play(false, true);
     }
 }
@@ -5998,7 +5997,7 @@ void SexyAppBase::PlaySample(int theSoundNum, int thePan) {
     if (!mSoundManager) return;
 
     SoundInstance *aSoundInstance = mSoundManager->GetSoundInstance(theSoundNum);
-    if (aSoundInstance != NULL) {
+    if (aSoundInstance != nullptr) {
         aSoundInstance->SetPan(thePan);
         aSoundInstance->Play(false, true);
     }
@@ -6029,7 +6028,7 @@ double SexyAppBase::GetMusicVolume() { return mMusicVolume; }
 void SexyAppBase::SetMusicVolume(double theVolume) {
     mMusicVolume = theVolume;
 
-    if (mMusicInterface != NULL) mMusicInterface->SetVolume((mMuteCount > 0) ? 0.0 : mMusicVolume);
+    if (mMusicInterface != nullptr) mMusicInterface->SetVolume((mMuteCount > 0) ? 0.0 : mMusicVolume);
 }
 
 double SexyAppBase::GetSfxVolume() { return mSfxVolume; }
@@ -6037,7 +6036,7 @@ double SexyAppBase::GetSfxVolume() { return mSfxVolume; }
 void SexyAppBase::SetSfxVolume(double theVolume) {
     mSfxVolume = theVolume;
 
-    if (mSoundManager != NULL) mSoundManager->SetVolume((mMuteCount > 0) ? 0.0 : mSfxVolume);
+    if (mSoundManager != nullptr) mSoundManager->SetVolume((mMuteCount > 0) ? 0.0 : mSfxVolume);
 }
 
 double SexyAppBase::GetMasterVolume() { return mSoundManager->GetMasterVolume(); }

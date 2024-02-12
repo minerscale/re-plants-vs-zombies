@@ -28,7 +28,7 @@ public:
     SeedPacket();
 
     void Update();
-    void Draw(Graphics *g);
+    void Draw(Graphics *g) const;
     void MouseDown(int x, int y, int theClickCount);
     bool MouseHitTest(int theX, int theY, HitResult *theHitResult);
     void Deactivate();

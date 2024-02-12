@@ -21,7 +21,7 @@ public:
 
     void Update();
     void Draw(Graphics *g);
-    void Die();
+    void Die() const;
 };
 
 class CursorPreview : public GameObject {

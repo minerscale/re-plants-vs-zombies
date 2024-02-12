@@ -17,7 +17,7 @@ DataElement *DescParser::Dereference(const std::string &theString) {
 
     auto anItr = mDefineMap.find(aDefineName);
     if (anItr != mDefineMap.end()) return anItr->second;
-    else return NULL;
+    else return nullptr;
 }
 
 bool DescParser::IsImmediate(const std::string &theString) {
@@ -116,7 +116,7 @@ bool DescParser::DataToString(DataElement *theSource, std::string *theString) {
 
     DataElement *aDataElement = Dereference(aDefName);
 
-    if (aDataElement != NULL) {
+    if (aDataElement != nullptr) {
         if (aDataElement->mIsList) return false;
 
         *theString = Unquote(static_cast<SingleDataElement *>(aDataElement)->mString);
@@ -151,7 +151,7 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
 
         DataElement *aDataElement = Dereference(aDefName);
 
-        if (aDataElement == NULL) {
+        if (aDataElement == nullptr) {
             Error("Unable to Dereference \"" + aDefName + "\"");
             return false;
         }
@@ -182,7 +182,7 @@ bool DescParser::DataToList(DataElement *theSource, ListDataElement *theValues) 
 
     DataElement *aDataElement = Dereference(static_cast<SingleDataElement *>(theSource)->mString);
 
-    if ((aDataElement == NULL) || (!aDataElement->mIsList)) return false;
+    if ((aDataElement == nullptr) || (!aDataElement->mIsList)) return false;
 
     auto aListElement = static_cast<ListDataElement *>(aDataElement);
 
@@ -230,11 +230,11 @@ bool DescParser::ParseToList(
     bool inDoubleQuotes = false;
     bool escaped = false;
 
-    SingleDataElement *aCurSingleDataElement = NULL;
+    SingleDataElement *aCurSingleDataElement = nullptr;
 
     int aStringPos = 0;
 
-    if (theStringPos == NULL) theStringPos = &aStringPos;
+    if (theStringPos == nullptr) theStringPos = &aStringPos;
 
     while (*theStringPos < static_cast<int>(theString.length())) {
         bool addSingleChar = false;
@@ -259,7 +259,7 @@ bool DescParser::ParseToList(
                         return false;
                     }
                 } else if (aChar == '(') {
-                    if (aCurSingleDataElement != NULL) {
+                    if (aCurSingleDataElement != nullptr) {
                         Error("Unexpected List Start");
                         return false;
                     } else {
@@ -270,13 +270,13 @@ bool DescParser::ParseToList(
                         theList->mElementVector.push_back(aChildList);
                     }
                 } else if (isSeperator) {
-                    if (aCurSingleDataElement != NULL) aCurSingleDataElement = NULL;
+                    if (aCurSingleDataElement != nullptr) aCurSingleDataElement = nullptr;
                 } else addSingleChar = true;
             } else addSingleChar = true;
         }
 
         if (addSingleChar) {
-            if (aCurSingleDataElement == NULL) {
+            if (aCurSingleDataElement == nullptr) {
                 aCurSingleDataElement = new SingleDataElement();
                 theList->mElementVector.push_back(aCurSingleDataElement);
             }
@@ -305,7 +305,7 @@ bool DescParser::ParseToList(
 
 bool DescParser::ParseDescriptorLine(const std::string &theDescriptorLine) {
     ListDataElement aParams;
-    if (!ParseToList(theDescriptorLine, &aParams, false, NULL)) return false;
+    if (!ParseToList(theDescriptorLine, &aParams, false, nullptr)) return false;
 
     if (aParams.mElementVector.size() > 0) {
         if (aParams.mElementVector[0]->mIsList) {
@@ -330,7 +330,7 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
     // mError.erase(mError.begin());
 
     PFILE *aStream = p_fopen(theFileName.c_str(), "r");
-    if (aStream == NULL) return false;
+    if (aStream == nullptr) return false;
 
     char aBuffChar = 0;
 

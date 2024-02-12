@@ -12,8 +12,8 @@ WidgetContainer::WidgetContainer() {
     mY = 0;
     mWidth = 0;
     mHeight = 0;
-    mParent = NULL;
-    mWidgetManager = NULL;
+    mParent = nullptr;
+    mWidgetManager = nullptr;
     mUpdateIteratorModified = false;
     mUpdateIterator = mWidgets.end();
     mLastWMUpdateCount = 0;
@@ -46,12 +46,12 @@ Rect WidgetContainer::GetRect() { return Rect(mX, mY, mWidth, mHeight); }
 bool WidgetContainer::Intersects(WidgetContainer *theWidget) { return GetRect().Intersects(theWidget->GetRect()); }
 
 void WidgetContainer::AddWidget(Widget *theWidget) {
-    if (std::find(mWidgets.begin(), mWidgets.end(), theWidget) == mWidgets.end()) {
+    if (std::ranges::find(mWidgets, theWidget) == mWidgets.end()) {
         InsertWidgetHelper(mWidgets.end(), theWidget);
         theWidget->mWidgetManager = mWidgetManager;
         theWidget->mParent = this;
 
-        if (mWidgetManager != NULL) {
+        if (mWidgetManager != nullptr) {
             theWidget->AddedToManager(mWidgetManager);
             theWidget->MarkDirtyFull();
             mWidgetManager->RehupMouse();
@@ -61,15 +61,13 @@ void WidgetContainer::AddWidget(Widget *theWidget) {
     }
 }
 
-bool WidgetContainer::HasWidget(Widget *theWidget) {
-    return std::find(mWidgets.begin(), mWidgets.end(), theWidget) != mWidgets.end();
-}
+bool WidgetContainer::HasWidget(Widget *theWidget) { return std::ranges::find(mWidgets, theWidget) != mWidgets.end(); }
 
 void WidgetContainer::RemoveWidget(Widget *theWidget) {
-    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::ranges::find(mWidgets, theWidget);
     if (anItr != mWidgets.end()) {
         theWidget->WidgetRemovedHelper();
-        theWidget->mParent = NULL;
+        theWidget->mParent = nullptr;
 
         bool erasedCur = (anItr == mUpdateIterator);
         mWidgets.erase(anItr++);
@@ -99,7 +97,7 @@ Widget *WidgetContainer::GetWidgetAtHelper(int x, int y, int theFlags, bool *fou
                 Widget *aCheckWidget = aWidget->GetWidgetAtHelper(
                     x - aWidget->mX, y - aWidget->mY, aCurFlags, &childFound, theWidgetX, theWidgetY
                 );
-                if ((aCheckWidget != NULL) || (childFound)) {
+                if ((aCheckWidget != nullptr) || (childFound)) {
                     *found = true;
                     return aCheckWidget;
                 }
@@ -122,7 +120,7 @@ Widget *WidgetContainer::GetWidgetAtHelper(int x, int y, int theFlags, bool *fou
     }
 
     *found = false;
-    return NULL;
+    return nullptr;
 }
 
 bool WidgetContainer::IsBelowHelper(Widget *theWidget1, Widget *theWidget2, bool *found) {
@@ -171,7 +169,7 @@ void WidgetContainer::InsertWidgetHelper(const WidgetList::iterator &where, Widg
         if (aWidget->mZOrder >= theWidget->mZOrder) {
             if (anItr != mWidgets.begin()) {
                 auto anItr2 = anItr;
-                anItr2--;
+                --anItr2;
                 aWidget = *anItr;
                 if (aWidget->mZOrder > theWidget->mZOrder) // need to search backwards
                     break;
@@ -198,10 +196,10 @@ void WidgetContainer::InsertWidgetHelper(const WidgetList::iterator &where, Widg
 }
 
 void WidgetContainer::BringToFront(Widget *theWidget) {
-    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::ranges::find(mWidgets, theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
-            mUpdateIterator++;
+            ++mUpdateIterator;
             mUpdateIteratorModified = true;
         }
 
@@ -213,10 +211,10 @@ void WidgetContainer::BringToFront(Widget *theWidget) {
 }
 
 void WidgetContainer::BringToBack(Widget *theWidget) {
-    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::ranges::find(mWidgets, theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
-            mUpdateIterator++;
+            ++mUpdateIterator;
             mUpdateIteratorModified = true;
         }
 
@@ -228,15 +226,15 @@ void WidgetContainer::BringToBack(Widget *theWidget) {
 }
 
 void WidgetContainer::PutBehind(Widget *theWidget, Widget *theRefWidget) {
-    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::ranges::find(mWidgets, theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
-            mUpdateIterator++;
+            ++mUpdateIterator;
             mUpdateIteratorModified = true;
         }
 
         mWidgets.erase(anItr);
-        anItr = std::find(mWidgets.begin(), mWidgets.end(), theRefWidget);
+        anItr = std::ranges::find(mWidgets, theRefWidget);
         InsertWidgetHelper(anItr, theWidget);
 
         theWidget->OrderInManagerChanged();
@@ -244,16 +242,16 @@ void WidgetContainer::PutBehind(Widget *theWidget, Widget *theRefWidget) {
 }
 
 void WidgetContainer::PutInfront(Widget *theWidget, Widget *theRefWidget) {
-    auto anItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto anItr = std::ranges::find(mWidgets, theWidget);
     if (anItr != mWidgets.end()) {
         if (anItr == mUpdateIterator) {
-            mUpdateIterator++;
+            ++mUpdateIterator;
             mUpdateIteratorModified = true;
         }
 
         mWidgets.erase(anItr);
-        anItr = std::find(mWidgets.begin(), mWidgets.end(), theRefWidget);
-        if (anItr != mWidgets.end()) anItr++;
+        anItr = std::ranges::find(mWidgets, theRefWidget);
+        if (anItr != mWidgets.end()) ++anItr;
         InsertWidgetHelper(anItr, theWidget);
 
         theWidget->OrderInManagerChanged();
@@ -262,7 +260,7 @@ void WidgetContainer::PutInfront(Widget *theWidget, Widget *theRefWidget) {
 
 Point WidgetContainer::GetAbsPos() // relative to top level
 {
-    if (mParent == NULL) return Point(mX, mY);
+    if (mParent == nullptr) return {mX, mY};
     else return Point(mX, mY) + mParent->GetAbsPos();
 }
 
@@ -285,19 +283,19 @@ void WidgetContainer::RemovedFromManager(WidgetManager *theWidgetManager) {
 
         // theWidgetManager->DisableWidget(aWidget);
         aWidget->RemovedFromManager(theWidgetManager);
-        aWidget->mWidgetManager = NULL;
+        aWidget->mWidgetManager = nullptr;
     }
 
-    if (theWidgetManager->mPopupCommandWidget == this) theWidgetManager->mPopupCommandWidget = NULL;
+    if (theWidgetManager->mPopupCommandWidget == this) theWidgetManager->mPopupCommandWidget = nullptr;
 }
 
 void WidgetContainer::MarkDirty() {
-    if (mParent != NULL) mParent->MarkDirty(this);
+    if (mParent != nullptr) mParent->MarkDirty(this);
     else mDirty = true;
 }
 
 void WidgetContainer::MarkDirtyFull() {
-    if (mParent != NULL) mParent->MarkDirtyFull(this);
+    if (mParent != nullptr) mParent->MarkDirtyFull(this);
     else mDirty = true;
 }
 
@@ -311,14 +309,14 @@ void WidgetContainer::MarkDirtyFull(WidgetContainer *theWidget) {
 
     // Top-level windows are treated differently, as marking a child dirty always
     //  causes a parent redraw which always causes all children to redraw
-    if (mParent != NULL) return;
+    if (mParent != nullptr) return;
 
-    auto aFoundWidgetItr = std::find(mWidgets.begin(), mWidgets.end(), theWidget);
+    auto aFoundWidgetItr = std::ranges::find(mWidgets, theWidget);
     if (aFoundWidgetItr == mWidgets.end()) return;
 
     auto anItr = aFoundWidgetItr;
     if (anItr != mWidgets.begin()) {
-        anItr--;
+        --anItr;
 
         for (;;) {
             Widget *aWidget = *anItr;
@@ -368,7 +366,7 @@ void WidgetContainer::MarkDirty(WidgetContainer *theWidget) {
 
     // Top-level windows are treated differently, as marking a child dirty always
     //  causes a parent redraw which always causes all children to redraw
-    if (mParent != NULL) return;
+    if (mParent != nullptr) return;
 
     if (theWidget->mHasAlpha) MarkDirtyFull(theWidget);
     else {
@@ -395,7 +393,7 @@ void WidgetContainer::UpdateAll(ModalFlags *theFlags) {
 
     // Can update?
     WidgetManager *aWidgetManager = mWidgetManager;
-    if (aWidgetManager == NULL) return;
+    if (aWidgetManager == nullptr) return;
 
     if (theFlags->GetFlags() & WIDGETFLAGS_UPDATE) {
         if (mLastWMUpdateCount != static_cast<ulong>(mWidgetManager->mUpdateCnt)) {

@@ -34,7 +34,7 @@ bool GridInRange(int x1, int y1, int x2, int y2, int theRangeX, int theRangeY) {
 
 void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int theWidth) {
     while (theWidth > 0) {
-        int aImageWidth = std::min(theWidth, theImage->GetWidth());
+        const int aImageWidth = std::min(theWidth, theImage->GetWidth());
         g->DrawImage(theImage, theX, theY, Rect(0, 0, aImageWidth, theImage->GetHeight()));
         theX += aImageWidth;
         theWidth -= aImageWidth;
@@ -43,7 +43,7 @@ void TileImageHorizontally(Graphics *g, Image *theImage, int theX, int theY, int
 
 void TileImageVertically(Graphics *g, Image *theImage, int theX, int theY, int theHeight) {
     while (theHeight > 0) {
-        int aImageHeight = std::min(theHeight, theImage->GetHeight());
+        const int aImageHeight = std::min(theHeight, theImage->GetHeight());
         g->DrawImage(theImage, theX, theY, Rect(0, 0, theImage->GetWidth(), aImageHeight));
         theY += aImageHeight;
         theHeight -= aImageHeight;
@@ -77,7 +77,7 @@ void LawnEditWidget::KeyChar(char theChar) {
 
 // 0x4567B0
 LawnEditWidget *CreateEditWidget(int theId, EditListener *theListener, Dialog *theDialog) {
-    auto aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
+    const auto aEditWidget = new LawnEditWidget(theId, theListener, theDialog);
     aEditWidget->SetFont(Sexy::FONT_BRIANNETOD16);
     aEditWidget->SetColors(gLawnEditWidgetColors, EditWidget::NUM_COLORS);
     aEditWidget->mBlinkDelay = 14;
@@ -85,14 +85,15 @@ LawnEditWidget *CreateEditWidget(int theId, EditListener *theListener, Dialog *t
     return aEditWidget;
 }
 
-void DrawEditBox(Graphics *g, EditWidget *theWidget) {
-    Rect aDest(theWidget->mX - 8, theWidget->mY - 4, theWidget->mWidth + 16, theWidget->mHeight + 8);
+void DrawEditBox(Graphics *g, const EditWidget *theWidget) {
+    const Rect aDest(theWidget->mX - 8, theWidget->mY - 4, theWidget->mWidth + 16, theWidget->mHeight + 8);
     g->DrawImageBox(aDest, IMAGE_EDITBOX);
 }
 
 // 0x456860
 Checkbox *MakeNewCheckbox(int theId, CheckboxListener *theListener, bool theDefault) {
-    auto aCheckbox = new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
+    const auto aCheckbox =
+        new Checkbox(Sexy::IMAGE_OPTIONS_CHECKBOX0, Sexy::IMAGE_OPTIONS_CHECKBOX1, theId, theListener);
     aCheckbox->mChecked = theDefault;
     aCheckbox->mHasAlpha = true;
     aCheckbox->mHasTransparencies = true;
@@ -108,9 +109,9 @@ std::string GetSavedGameName(GameMode theGameMode, int theProfileId) {
 
 // 0x456980
 int GetCurrentDaysSince2000() {
-    auto aLocalNow = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
+    const auto aLocalNow = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
 
-    auto Jan1st2000 = std::chrono::current_zone()->to_local(std::chrono::sys_days(
+    const auto Jan1st2000 = std::chrono::current_zone()->to_local(std::chrono::sys_days(
         std::chrono::year_month_day(std::chrono::year(2000), std::chrono::month(1), std::chrono::day(1))
     ));
 

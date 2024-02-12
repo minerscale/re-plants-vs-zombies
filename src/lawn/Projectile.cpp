@@ -38,7 +38,7 @@ Projectile::~Projectile() { AttachmentDie(mAttachmentID); }
 void Projectile::ProjectileInitialize(
     int theX, int theY, int theRenderOrder, int theRow, ProjectileType theProjectileType
 ) {
-    int aGridX = mBoard->PixelToGridXKeepOnBoard(theX, theY);
+    const int aGridX = mBoard->PixelToGridXKeepOnBoard(theX, theY);
     mProjectileType = theProjectileType;
     mPosX = theX;
     mPosY = theY;
@@ -113,7 +113,7 @@ void Projectile::ProjectileInitialize(
 
 // 0x46CAA0
 Plant *Projectile::FindCollisionTargetPlant() {
-    Rect aProjectileRect = GetProjectileRect();
+    const Rect aProjectileRect = GetProjectileRect();
 
     Plant *aPlant = nullptr;
     while (mBoard->IteratePlants(aPlant)) {
@@ -169,7 +169,7 @@ Zombie *Projectile::FindCollisionTarget() {
     if (PeaAboutToHitTorchwood()) // “卡火炬”的原理，这段代码在两版内测版中均不存在
         return nullptr;
 
-    Rect aProjectileRect = GetProjectileRect();
+    const Rect aProjectileRect = GetProjectileRect();
     Zombie *aBestZombie = nullptr;
     int aMinX = 0;
 
@@ -214,8 +214,8 @@ void Projectile::CheckForCollision() {
     if (mMotionType == ProjectileMotion::MOTION_HOMING) {
         Zombie *aZombie = mBoard->ZombieTryToGet(mTargetZombieID);
         if (aZombie && aZombie->EffectedByDamage(static_cast<unsigned int>(mDamageRangeFlags))) {
-            Rect aProjectileRect = GetProjectileRect();
-            Rect aZombieRect = aZombie->GetZombieRect();
+            const Rect aProjectileRect = GetProjectileRect();
+            const Rect aZombieRect = aZombie->GetZombieRect();
             if (GetRectOverlap(aProjectileRect, aZombieRect) >= 0 && mPosY > aZombieRect.mY &&
                 mPosY < aZombieRect.mY + aZombieRect.mHeight) {
                 DoImpact(aZombie);
@@ -263,7 +263,7 @@ void Projectile::CheckForCollision() {
 }
 
 // 0x46D090
-bool Projectile::CantHitHighGround() {
+bool Projectile::CantHitHighGround() const {
     if (mMotionType == ProjectileMotion::MOTION_BACKWARDS || mMotionType == ProjectileMotion::MOTION_HOMING)
         return false;
 
@@ -276,7 +276,7 @@ bool Projectile::CantHitHighGround() {
 
 // 0x46D0D0
 void Projectile::CheckForHighGround() {
-    float aShadowDelta = mShadowY - mPosY;
+    const float aShadowDelta = mShadowY - mPosY;
 
     if (mProjectileType == ProjectileType::PROJECTILE_PEA || mProjectileType == ProjectileType::PROJECTILE_SNOWPEA ||
         mProjectileType == ProjectileType::PROJECTILE_FIREBALL || mProjectileType == ProjectileType::PROJECTILE_SPIKE ||
@@ -298,7 +298,7 @@ void Projectile::CheckForHighGround() {
     }
 
     if (CantHitHighGround()) {
-        int aGridX = mBoard->PixelToGridXKeepOnBoard(mPosX + 30, mPosY);
+        const int aGridX = mBoard->PixelToGridXKeepOnBoard(mPosX + 30, mPosY);
         if (mBoard->mBoardData.mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
             DoImpact(nullptr);
         }
@@ -342,7 +342,7 @@ bool Projectile::IsZombieHitBySplash(Zombie *theZombie) {
     }
 
     int aRowDeviation = theZombie->mRow - mRow;
-    Rect aZombieRect = theZombie->GetZombieRect();
+    const Rect aZombieRect = theZombie->GetZombieRect();
     if (theZombie->IsFireResistant() && mProjectileType == ProjectileType::PROJECTILE_FIREBALL) {
         return false;
     }
@@ -363,7 +363,7 @@ bool Projectile::IsZombieHitBySplash(Zombie *theZombie) {
 }
 
 // 0x46D390
-void Projectile::DoSplashDamage(Zombie *theZombie) {
+void Projectile::DoSplashDamage(const Zombie *theZombie) {
     const ProjectileDefinition &aProjectileDef = GetProjectileDef();
 
     int aZombiesGetSplashed = 0;
@@ -374,13 +374,13 @@ void Projectile::DoSplashDamage(Zombie *theZombie) {
         }
     }
 
-    int aOriginalDamage = aProjectileDef.mDamage;
+    const int aOriginalDamage = aProjectileDef.mDamage;
     int aSplashDamage = aProjectileDef.mDamage / 3;
     int aMaxSplashDamageAmount = aSplashDamage * 7;
     if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL) {
         aMaxSplashDamageAmount = aOriginalDamage;
     }
-    int aSplashDamageAmount = aSplashDamage * aZombiesGetSplashed;
+    const int aSplashDamageAmount = aSplashDamage * aZombiesGetSplashed;
     if (aSplashDamageAmount > aMaxSplashDamageAmount) {
         // aSplashDamage *= aMaxSplashDamageAmount / aSplashDamage;
         aSplashDamage = aOriginalDamage * aMaxSplashDamageAmount / (aSplashDamageAmount * 3);
@@ -390,7 +390,7 @@ void Projectile::DoSplashDamage(Zombie *theZombie) {
     aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
         if (IsZombieHitBySplash(aZombie)) {
-            unsigned int aDamageFlags = GetDamageFlags(aZombie);
+            const unsigned int aDamageFlags = GetDamageFlags(aZombie);
             if (aZombie == theZombie) {
                 aZombie->TakeDamage(aOriginalDamage, aDamageFlags);
             } else {
@@ -407,7 +407,7 @@ void Projectile::UpdateLobMotion() {
         mVelZ = 8.0f;
         mRow = mCobTargetRow;
         mPosX = mCobTargetX;
-        int aCobTargetCol = mBoard->PixelToGridXKeepOnBoard(mCobTargetX, 0);
+        const int aCobTargetCol = mBoard->PixelToGridXKeepOnBoard(mCobTargetX, 0);
         mPosY = mBoard->GridToPixelY(aCobTargetCol, mCobTargetRow);
         mShadowY = mPosY + 67.0f;
         mRotation = -PI / 2;
@@ -421,7 +421,7 @@ void Projectile::UpdateLobMotion() {
     mPosY += mVelY;
     mPosZ += mVelZ;
 
-    bool isRising = mVelZ < 0.0f;
+    const bool isRising = mVelZ < 0.0f;
     if (isRising && (mProjectileType == ProjectileType::PROJECTILE_BASKETBALL ||
                      mProjectileType == ProjectileType::PROJECTILE_COBBIG)) {
         return;
@@ -465,7 +465,7 @@ void Projectile::UpdateLobMotion() {
     if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
         aGroundZ = -40.0f;
     }
-    bool hitGround = mPosZ > aGroundZ;
+    const bool hitGround = mPosZ > aGroundZ;
     if (aZombie == nullptr && aPlant == nullptr && !hitGround) {
         return;
     }
@@ -475,7 +475,7 @@ void Projectile::UpdateLobMotion() {
         if (aUmbrellaPlant) {
             if (aUmbrellaPlant->mState == PlantState::STATE_UMBRELLA_REFLECTING) {
                 mApp->PlayFoley(FoleyType::FOLEY_SPLAT);
-                int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 1);
+                const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_TOP, 0, 1);
                 mApp->AddTodParticle(
                     mPosX + 20.0f, mPosY + 20.0f, aRenderPosition, ParticleEffect::PARTICLE_UMBRELLA_REFLECT
                 );
@@ -492,9 +492,9 @@ void Projectile::UpdateLobMotion() {
         }
     } else if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
         // @Patoke: implemented
-        int aBeforeGargantuarCount = mBoard->GetLiveGargantuarCount();
+        const int aBeforeGargantuarCount = mBoard->GetLiveGargantuarCount();
         mBoard->KillAllZombiesInRadius(mRow, mPosX + 80, mPosY + 40, 115, 1, true, mDamageRangeFlags);
-        int aAfterGargantuarCount = mBoard->GetLiveGargantuarCount();
+        const int aAfterGargantuarCount = mBoard->GetLiveGargantuarCount();
         mBoard->mBoardData.mGargantuarsKillsByCornCob += aBeforeGargantuarCount - aAfterGargantuarCount;
         if (mBoard->mBoardData.mGargantuarsKillsByCornCob >= 2)
             ReportAchievement::GiveAchievement(mApp, PopcornParty, true);
@@ -512,10 +512,12 @@ void Projectile::UpdateNormalMotion() {
     } else if (mMotionType == ProjectileMotion::MOTION_HOMING) {
         Zombie *aZombie = mBoard->ZombieTryToGet(mTargetZombieID);
         if (aZombie && aZombie->EffectedByDamage(static_cast<unsigned int>(mDamageRangeFlags))) {
-            Rect aZombieRect = aZombie->GetZombieRect();
-            SexyVector2 aTargetCenter(aZombie->ZombieTargetLeadX(0.0f), aZombieRect.mY + aZombieRect.mHeight / 2.0);
-            SexyVector2 aProjectileCenter(mPosX + mWidth / 2.0, mPosY + mHeight / 2.0);
-            SexyVector2 aToTarget = (aTargetCenter - aProjectileCenter).Normalize();
+            const Rect aZombieRect = aZombie->GetZombieRect();
+            const SexyVector2 aTargetCenter(
+                aZombie->ZombieTargetLeadX(0.0f), aZombieRect.mY + aZombieRect.mHeight / 2.0
+            );
+            const SexyVector2 aProjectileCenter(mPosX + mWidth / 2.0, mPosY + mHeight / 2.0);
+            const SexyVector2 aToTarget = (aTargetCenter - aProjectileCenter).Normalize();
             SexyVector2 aMotion(mVelX, mVelY);
 
             aMotion += aToTarget * (0.001f * mProjectileAge);
@@ -587,8 +589,8 @@ void Projectile::UpdateMotion() {
         mFrame = mAnimCounter / mAnimTicksPerFrame;
     }
 
-    int aOldRow = mRow;
-    float aOldY = mBoard->GetPosYBasedOnRow(mPosX, mRow);
+    const int aOldRow = mRow;
+    const float aOldY = mBoard->GetPosYBasedOnRow(mPosX, mRow);
     if (mMotionType == ProjectileMotion::MOTION_LOBBED) {
         UpdateLobMotion();
     } else {
@@ -658,12 +660,12 @@ void Projectile::DoImpact(Zombie *theZombie) {
 
         DoSplashDamage(theZombie);
     } else if (theZombie) {
-        unsigned int aDamageFlags = GetDamageFlags(theZombie);
+        const unsigned int aDamageFlags = GetDamageFlags(theZombie);
         theZombie->TakeDamage(GetProjectileDef().mDamage, aDamageFlags);
     }
 
-    float aLastPosX = mPosX - mVelX;
-    float aLastPosY = mPosY + mPosZ - mVelY - mVelZ;
+    const float aLastPosX = mPosX - mVelX;
+    const float aLastPosY = mPosY + mPosZ - mVelY - mVelZ;
     ParticleEffect aEffect = ParticleEffect::PARTICLE_NONE;
     float aSplatPosX = mPosX + 12.0f;
     float aSplatPosY = mPosY + 12.0f;
@@ -676,7 +678,7 @@ void Projectile::DoImpact(Zombie *theZombie) {
             aLastPosX + 30.0f, aLastPosY + 30.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_WINTERMELON
         );
     } else if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
-        int aRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_GROUND, mCobTargetRow, 2);
+        const int aRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_GROUND, mCobTargetRow, 2);
         mApp->AddTodParticle(mPosX + 80.0f, mPosY + 40.0f, aRenderOrder, ParticleEffect::PARTICLE_BLASTMARK);
         mApp->AddTodParticle(mPosX + 80.0f, mPosY + 40.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_POPCORNSPLASH);
         mApp->PlaySample(SOUND_DOOMSHROOM);
@@ -820,15 +822,15 @@ void Projectile::Draw(Graphics *g) {
         TOD_ASSERT(aProjectileDef.mImageRow < aImage->mNumRows);
         TOD_ASSERT(mFrame < aImage->mNumCols);
 
-        int aCelWidth = aImage->GetCelWidth();
-        int aCelHeight = aImage->GetCelHeight();
-        Rect aSrcRect(aCelWidth * mFrame, aCelHeight * aProjectileDef.mImageRow, aCelWidth, aCelHeight);
+        const int aCelWidth = aImage->GetCelWidth();
+        const int aCelHeight = aImage->GetCelHeight();
+        const Rect aSrcRect(aCelWidth * mFrame, aCelHeight * aProjectileDef.mImageRow, aCelWidth, aCelHeight);
         if (FloatApproxEqual(mRotation, 0.0f) && FloatApproxEqual(aScale, 1.0f)) {
-            Rect aDestRect(0, 0, aCelWidth, aCelHeight);
+            const Rect aDestRect(0, 0, aCelWidth, aCelHeight);
             g->DrawImageMirror(aImage, aDestRect, aSrcRect, aMirror);
         } else {
-            float aOffsetX = mPosX + aCelWidth * 0.5f;
-            float aOffsetY = mPosZ + mPosY + aCelHeight * 0.5f;
+            const float aOffsetX = mPosX + aCelWidth * 0.5f;
+            const float aOffsetY = mPosZ + mPosY + aCelHeight * 0.5f;
             SexyTransform2D aTransform;
             TodScaleRotateTransformMatrix(
                 aTransform, aOffsetX + mBoard->mX, aOffsetY + mBoard->mY, mRotation, aScale, aScale
@@ -852,7 +854,7 @@ void Projectile::DrawShadow(Graphics *g) {
     float aOffsetX = mPosX - mX;
     float aOffsetY = mPosY - mY;
 
-    int aGridX = mBoard->PixelToGridXKeepOnBoard(mX, mY);
+    const int aGridX = mBoard->PixelToGridXKeepOnBoard(mX, mY);
     bool isHighGround = false;
     if (mBoard->mBoardData.mGridSquareType[aGridX][mRow] == GridSquareType::GRIDSQUARE_HIGH_GROUND) {
         isHighGround = true;
@@ -901,7 +903,7 @@ void Projectile::DrawShadow(Graphics *g) {
     }
 
     if (mMotionType == ProjectileMotion::MOTION_LOBBED) {
-        float aHeight = ClampFloat(-mPosZ, 0.0f, 200.0f);
+        const float aHeight = ClampFloat(-mPosZ, 0.0f, 200.0f);
         aScale *= 200.0f / (aHeight + 200.0f);
     }
 
@@ -924,20 +926,34 @@ void Projectile::Die() {
 
 // 0x46EBC0
 Rect Projectile::GetProjectileRect() {
-    if (mProjectileType == ProjectileType::PROJECTILE_PEA || mProjectileType == ProjectileType::PROJECTILE_SNOWPEA ||
-        mProjectileType == ProjectileType::PROJECTILE_ZOMBIE_PEA) {
-        return Rect(mX - 15, mY, mWidth + 15, mHeight);
-    } else if (mProjectileType == ProjectileType::PROJECTILE_COBBIG) {
-        return Rect(mX + mWidth / 2 - 115, mY + mHeight / 2 - 115, 230, 230);
-    } else if (mProjectileType == ProjectileType::PROJECTILE_MELON || mProjectileType == ProjectileType::PROJECTILE_WINTERMELON) {
-        return Rect(mX + 20, mY, 60, mHeight);
-    } else if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL) {
-        return Rect(mX, mY, mWidth - 10, mHeight);
-    } else if (mProjectileType == ProjectileType::PROJECTILE_SPIKE) {
-        return Rect(mX - 25, mY, mWidth + 25, mHeight);
-    } else {
-        return Rect(mX, mY, mWidth, mHeight);
+    int offsetX = 0, offsetY = 0, rectWidth = mWidth, rectHeight = mHeight;
+
+    switch (mProjectileType) {
+    case ProjectileType::PROJECTILE_PEA:
+    case ProjectileType::PROJECTILE_SNOWPEA:
+    case ProjectileType::PROJECTILE_ZOMBIE_PEA:
+        offsetX = -15;
+        rectWidth += 15;
+        break;
+    case ProjectileType::PROJECTILE_COBBIG:
+        offsetX = mWidth / 2 - 115;
+        offsetY = mHeight / 2 - 115;
+        rectWidth = rectHeight = 230;
+        break;
+    case ProjectileType::PROJECTILE_MELON:
+    case ProjectileType::PROJECTILE_WINTERMELON:
+        offsetX = 20;
+        rectWidth = 60;
+        break;
+    case ProjectileType::PROJECTILE_FIREBALL: rectWidth -= 10; break;
+    case ProjectileType::PROJECTILE_SPIKE:
+        offsetX = -25;
+        rectWidth += 25;
+        break;
+    default: break;
     }
+
+    return Rect(mX + offsetX, mY + offsetY, rectWidth, rectHeight);
 }
 
 // 0x46ECB0
@@ -949,7 +965,7 @@ void Projectile::ConvertToFireball(int theGridX) {
     mApp->PlayFoley(FoleyType::FOLEY_FIREPEA);
 
     float aOffsetX = -25.0f;
-    float aOffsetY = -25.0f;
+    const float aOffsetY = -25.0f;
     Reanimation *aFirePeaReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_FIRE_PEA);
     if (mMotionType == ProjectileMotion::MOTION_BACKWARDS) {
         aFirePeaReanim->OverrideScale(-1.0f, 1.0f);

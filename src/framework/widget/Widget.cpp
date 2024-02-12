@@ -11,7 +11,7 @@ using namespace Sexy;
 bool Widget::mWriteColoredString = true;
 
 Widget::Widget() {
-    mWidgetManager = NULL;
+    mWidgetManager = nullptr;
     mVisible = true;
     mDisabled = false;
     mIsDown = false;
@@ -21,14 +21,14 @@ Widget::Widget() {
     mHasFocus = false;
     mHasTransparencies = false;
     mWantsFocus = false;
-    mTabPrev = NULL;
-    mTabNext = NULL;
+    mTabPrev = nullptr;
+    mTabNext = nullptr;
 }
 
 Widget::~Widget() { mColors.clear(); }
 
 void Widget::WidgetRemovedHelper() {
-    if (mWidgetManager == NULL) return;
+    if (mWidgetManager == nullptr) return;
 
     // Call RemovedFromManager on all child widgets and disable them and stuff like that
     for (auto aWidgetItr = mWidgets.begin(); aWidgetItr != mWidgets.end(); ++aWidgetItr) {
@@ -41,15 +41,15 @@ void Widget::WidgetRemovedHelper() {
     auto anItr = mWidgetManager->mPreModalInfoList.begin();
     while (anItr != mWidgetManager->mPreModalInfoList.end()) {
         PreModalInfo *aPreModalInfo = &(*anItr);
-        if (aPreModalInfo->mPrevBaseModalWidget == this) aPreModalInfo->mPrevBaseModalWidget = NULL;
-        if (aPreModalInfo->mPrevFocusWidget == this) aPreModalInfo->mPrevFocusWidget = NULL;
+        if (aPreModalInfo->mPrevBaseModalWidget == this) aPreModalInfo->mPrevBaseModalWidget = nullptr;
+        if (aPreModalInfo->mPrevFocusWidget == this) aPreModalInfo->mPrevFocusWidget = nullptr;
         ++anItr;
     }
 
     RemovedFromManager(mWidgetManager);
     MarkDirtyFull(this);
 
-    mWidgetManager = NULL;
+    mWidgetManager = nullptr;
 }
 
 void Widget::OrderInManagerChanged() {}
@@ -68,7 +68,7 @@ void Widget::SetVisible(bool isVisible) {
     if (mVisible) MarkDirty();
     else MarkDirtyFull();
 
-    if (mWidgetManager != NULL) mWidgetManager->RehupMouse();
+    if (mWidgetManager != nullptr) mWidgetManager->RehupMouse();
 }
 
 // Already translated
@@ -130,7 +130,7 @@ void Widget::Resize(int theX, int theY, int theWidth, int theHeight) {
     // Mark things dirty that are over the new position
     MarkDirty();
 
-    if (mWidgetManager != NULL) mWidgetManager->RehupMouse();
+    if (mWidgetManager != nullptr) mWidgetManager->RehupMouse();
 }
 
 void Widget::Resize(const Rect &theRect) { Resize(theRect.mX, theRect.mY, theRect.mWidth, theRect.mHeight); }
@@ -144,12 +144,12 @@ void Widget::SetDisabled(bool isDisabled) {
 
     mDisabled = isDisabled;
 
-    if ((isDisabled) && (mWidgetManager != NULL)) mWidgetManager->DisableWidget(this);
+    if ((isDisabled) && (mWidgetManager != nullptr)) mWidgetManager->DisableWidget(this);
 
     MarkDirty();
 
     // Incase a widget is enabled right under our cursor
-    if ((!isDisabled) && (mWidgetManager != NULL) &&
+    if ((!isDisabled) && (mWidgetManager != nullptr) &&
         (Contains(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY)))
         mWidgetManager->MousePosition(mWidgetManager->mLastMouseX, mWidgetManager->mLastMouseY);
 }
@@ -165,9 +165,9 @@ void Widget::KeyChar(SexyChar) {}
 void Widget::KeyDown(KeyCode theKey) {
     if (theKey == KEYCODE_TAB) {
         if (mWidgetManager->mKeyDown[KEYCODE_SHIFT]) {
-            if (mTabPrev != NULL) mWidgetManager->SetFocus(mTabPrev);
+            if (mTabPrev != nullptr) mWidgetManager->SetFocus(mTabPrev);
         } else {
-            if (mTabNext != NULL) mWidgetManager->SetFocus(mTabNext);
+            if (mTabNext != nullptr) mWidgetManager->SetFocus(mTabNext);
         }
     }
 }
@@ -175,7 +175,7 @@ void Widget::KeyDown(KeyCode theKey) {
 void Widget::KeyUp(KeyCode) {}
 
 void Widget::ShowFinger(bool on) {
-    if (mWidgetManager == NULL) return;
+    if (mWidgetManager == nullptr) return;
 
     if (on) mWidgetManager->mApp->SetCursor(CURSOR_HAND);
     else mWidgetManager->mApp->SetCursor(CURSOR_POINTER);

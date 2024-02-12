@@ -405,7 +405,7 @@ void VkImage::applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEf
     std::array<VkDescriptorSet, 2> descriptorSetsToBind = {theSrcImage->descriptor, theDestImage->descriptor};
     vkCmdBindDescriptorSets(
         imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 2,
-        descriptorSetsToBind.data(), 0, 0
+        descriptorSetsToBind.data(), 0, nullptr
     );
 
     ComputePushConstants constants = {theFilterEffect};
@@ -435,7 +435,7 @@ std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterE
     return newImage;
 }
 
-void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) {
+void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) const {
     VkViewport viewport = {0, 0, static_cast<float>(mWidth * SCALE), static_cast<float>(mHeight * SCALE), 0.0, 1.0};
     vkCmdSetViewport(imageCommandBuffers[imageBufferIdx], 0, 1, &viewport);
 

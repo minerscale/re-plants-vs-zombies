@@ -49,9 +49,9 @@ void SyncDataIDList(TodList<unsigned int> *theDataIDList, SaveGameContext &theCo
 void SyncParticleEmitter(
     TodParticleSystem *theParticleSystem, TodParticleEmitter *theParticleEmitter, SaveGameContext &theContext
 );
-void SyncParticleSystem(Board *theBoard, TodParticleSystem *theParticleSystem, SaveGameContext &theContext);
-void SyncReanimation(Board *theBoard, Reanimation *theReanimation, SaveGameContext &theContext);
-void SyncTrail(Board *theBoard, Trail *theTrail, SaveGameContext &theContext);
+void SyncParticleSystem(const Board *theBoard, TodParticleSystem *theParticleSystem, SaveGameContext &theContext);
+void SyncReanimation(const Board *theBoard, Reanimation *theReanimation, SaveGameContext &theContext);
+void SyncTrail(const Board *theBoard, Trail *theTrail, SaveGameContext &theContext);
 void SyncBoard(SaveGameContext &theContext, Board *theBoard);
 void FixBoardAfterLoad(Board *theBoard);
 bool LawnLoadGame(Board *theBoard, const std::string &theFilePath);

@@ -151,7 +151,7 @@ unsigned long MTRand::Next(unsigned long range) {
 }
 
 float MTRand::NextNoAssert(float range) {
-    return static_cast<float>((double)NextNoAssert() / (double)0x7FFFFFFF * range);
+    return static_cast<float>(static_cast<double>(NextNoAssert()) / static_cast<double>(0x7FFFFFFF) * range);
 }
 
 float MTRand::Next(float range) {
@@ -159,7 +159,7 @@ float MTRand::Next(float range) {
     return NextNoAssert(range);
 }
 
-std::string MTRand::Serialize() {
+std::string MTRand::Serialize() const {
     std::string aString;
 
     aString.resize(MTRAND_N * 4);

@@ -29,11 +29,9 @@ static int gWebDecodeMap[256] = {
 static void GenerateCRCTable(void) {
     bCrcTableGenerated = true;
 
-    int i, j;
-    unsigned long crc_accum;
-    for (i = 0; i < 256; i++) {
-        crc_accum = (static_cast<unsigned long>(i) << 24);
-        for (j = 0; j < 8; j++) {
+    for (int i = 0; i < 256; i++) {
+        unsigned long crc_accum = (static_cast<unsigned long>(i) << 24);
+        for (int j = 0; j < 8; j++) {
             if (crc_accum & 0x80000000L) crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
             else crc_accum = (crc_accum << 1);
         }
@@ -47,9 +45,8 @@ static void GenerateCRCTable(void) {
 static unsigned long UpdateCRC(unsigned long crc_accum, const char *data_blk_ptr, int data_blk_size) {
     if (!bCrcTableGenerated) GenerateCRCTable();
 
-    int i, j;
-    for (j = 0; j < data_blk_size; j++) {
-        i = (static_cast<int>(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
+    for (int j = 0; j < data_blk_size; j++) {
+        int i = (static_cast<int>(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
         crc_accum = (crc_accum << 8) ^ crc_table[i];
     }
     return crc_accum;
@@ -75,7 +72,7 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
 
     const char *aBuffer = *theBuffer;
 
-    int aTempChar = static_cast<int>((unsigned char)*aBuffer++);
+    int aTempChar = static_cast<int>(static_cast<unsigned char>(*aBuffer++));
     if ((aTempChar & 0x80) != 0) {
         if ((aTempChar & 0xC0) != 0xC0) return 0;
         // sanity check: high bit should not be set without the next highest bit being set, too.
@@ -86,10 +83,10 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
         *aBytesReadPtr++ = aTempChar;
 
         int aLen;
-        for (aLen = 0; aLen < static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData)); ++aLen) {
+        for (aLen = 0; aLen < static_cast<int>(std::size(aMaskData)); ++aLen) {
             if ((aTempChar & aMaskData[aLen]) == ((aMaskData[aLen] << 1) & aMaskData[aLen])) break;
         }
-        if (aLen >= static_cast<int>(sizeof(aMaskData) / sizeof(*aMaskData))) return 0;
+        if (aLen >= static_cast<int>(std::size(aMaskData))) return 0;
 
         aTempChar &= ~aMaskData[aLen];
         int aTotalLen = aLen + 1;
@@ -98,7 +95,7 @@ static int GetUTF8Char(const char **theBuffer, int theLen, wchar_t *theChar) {
 
         int anExtraChar = 0;
         while (aLen > 0 && (aBuffer - *theBuffer) < theLen) {
-            anExtraChar = static_cast<int>((unsigned char)*aBuffer++);
+            anExtraChar = static_cast<int>(static_cast<unsigned char>(*aBuffer++));
             if ((anExtraChar & 0xC0) != 0x80) return 0; // sanity check: high bit set, and next highest bit NOT set.
 
             *aBytesReadPtr++ = anExtraChar;
@@ -159,7 +156,7 @@ std::string Buffer::ToWebString() const {
 }
 
 std::wstring Buffer::UTF8ToWideString() const {
-    auto aData = (const char *)GetDataPtr();
+    auto aData = reinterpret_cast<const char *>(GetDataPtr());
     int aLen = GetDataLen();
 
     bool firstChar = true;
@@ -304,7 +301,7 @@ void Buffer::WriteUTF8String(const std::wstring &theString) {
 }
 
 void Buffer::WriteLine(const std::string &theString) {
-    WriteBytes((const uchar *)(theString + "\r\n").c_str(), static_cast<int>(theString.length()) + 2);
+    WriteBytes(reinterpret_cast<const uchar *>((theString + "\r\n").c_str()), static_cast<int>(theString.length()) + 2);
 }
 
 void Buffer::WriteBuffer(const ByteVector &theBuffer) {
@@ -407,7 +404,7 @@ std::wstring Buffer::ReadUTF8String() const {
     std::wstring aString;
     int aLen = ReadShort();
 
-    auto aData = (const char *)(&mData[mReadBitPos / 8]);
+    auto aData = reinterpret_cast<const char *>(&mData[mReadBitPos / 8]);
     int aDataSizeBytes = (mDataBitSize - mReadBitPos) / 8;
 
     int i;
@@ -452,7 +449,7 @@ void Buffer::ReadBuffer(ByteVector *theByteVector) const {
 }
 
 const uchar *Buffer::GetDataPtr() const {
-    if (mData.size() == 0) return NULL;
+    if (mData.size() == 0) return nullptr;
     return &mData[0];
 }
 
@@ -464,7 +461,7 @@ int Buffer::GetDataLenBits() const { return mDataBitSize; }
 
 ulong Buffer::GetCRC32(ulong theSeed) const {
     ulong aCRC = theSeed;
-    aCRC = UpdateCRC(aCRC, (const char *)&mData[0], static_cast<int>(mData.size()));
+    aCRC = UpdateCRC(aCRC, reinterpret_cast<const char *>(&mData[0]), static_cast<int>(mData.size()));
     return aCRC;
 }
 

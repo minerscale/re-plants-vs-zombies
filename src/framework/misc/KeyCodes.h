@@ -1,5 +1,6 @@
 #ifndef __KEYCODES_INCLUDED__
 #define __KEYCODES_INCLUDED__
+#include <string>
 
 namespace Sexy {
 // Don't need typedef
@@ -106,7 +107,7 @@ enum KeyCode : uint8_t {
 };
 
 KeyCode GetKeyCodeFromName(const std::string &theKeyName);
-const std::string GetKeyNameFromCode(const KeyCode &theKeyCode);
+std::string GetKeyNameFromCode(const KeyCode &theKeyCode);
 } // namespace Sexy
 
 #endif //__KEYCODES_INCLUDED__

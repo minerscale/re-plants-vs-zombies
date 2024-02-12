@@ -59,7 +59,7 @@ public:
     void PropogateColor(
         const Color &theColor, bool theEnableAdditiveColor, const Color &theAdditiveColor, bool theEnableOverlayColor,
         const Color &theOverlayColor
-    );
+    ) const;
 };
 
 AttachEffect *

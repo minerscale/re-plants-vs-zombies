@@ -58,7 +58,7 @@ public:
     Image &operator=(const Image &) = delete;
     virtual ~Image();
 
-    int GetWidth();
+    int GetWidth() const;
     int GetHeight();
     int GetCelWidth();           // returns the width of just 1 cel in a strip of images
     int GetCelHeight();          // like above but for vertical strips

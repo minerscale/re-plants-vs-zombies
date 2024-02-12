@@ -1,4 +1,4 @@
-#ifndef __AUTOCRIT_INCLUDED__
+#ifndef AUTOCRIT_INCLUDED_
 #define __AUTOCRIT_INCLUDED__
 
 #include "Common.h"

@@ -9,7 +9,7 @@ BassSoundInstance::BassSoundInstance(HSAMPLE theSourceSound) : mSample(theSource
 
 BassSoundInstance::~BassSoundInstance() { BASS_ChannelStop(mChannel); }
 
-void BassSoundInstance::RehupVolume() { BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_VOL, mVolume); }
+void BassSoundInstance::RehupVolume() const { BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_VOL, mVolume); }
 
 void BassSoundInstance::RehupPan() {
     BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_PAN, BassSoundManager::PanDBToNorm(mPan));

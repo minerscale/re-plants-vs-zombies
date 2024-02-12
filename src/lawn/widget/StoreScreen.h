@@ -52,8 +52,8 @@ public:
     ~StoreScreen() override;
 
     /*inline*/
-    StoreItem GetStoreItemType(int theSpotIndex);
-    bool IsFullVersionOnly(StoreItem theStoreItem);
+    StoreItem GetStoreItemType(int theSpotIndex) const;
+    bool IsFullVersionOnly(StoreItem theStoreItem) const;
     static /*inline*/ bool IsPottedPlant(StoreItem theStoreItem);
     bool IsComingSoon(StoreItem theStoreItem);
     bool IsItemSoldOut(StoreItem theStoreItem);

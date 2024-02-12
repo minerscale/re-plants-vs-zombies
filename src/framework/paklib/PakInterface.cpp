@@ -79,7 +79,7 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
     aPakRecord->mSize = aFileSize;
 
     PFILE *aFP = FOpen(theFileName.c_str(), "rb");
-    if (aFP == NULL) return false;
+    if (aFP == nullptr) return false;
 
     ulong aMagic = 0;
     FRead(&aMagic, sizeof(ulong), 1, aFP);
@@ -187,15 +187,15 @@ PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
             auto aPFP = new PFILE;
             aPFP->mRecord = &anItr->second;
             aPFP->mPos = 0;
-            aPFP->mFP = NULL;
+            aPFP->mFP = nullptr;
             return aPFP;
         }
     }
 
     FILE *aFP = fcaseopen(theFileName, anAccess);
-    if (aFP == NULL) return NULL;
+    if (aFP == nullptr) return nullptr;
     auto aPFP = new PFILE;
-    aPFP->mRecord = NULL;
+    aPFP->mRecord = nullptr;
     aPFP->mPos = 0;
     aPFP->mFP = aFP;
     return aPFP;
@@ -203,14 +203,14 @@ PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
 
 // 0x5D8780
 int PakInterface::FClose(PFILE *theFile) {
-    if (theFile->mRecord == NULL) fclose(theFile->mFP);
+    if (theFile->mRecord == nullptr) fclose(theFile->mFP);
     delete theFile;
     return 0;
 }
 
 // 0x5D87B0
 int PakInterface::FSeek(PFILE *theFile, long theOffset, int theOrigin) {
-    if (theFile->mRecord != NULL) {
+    if (theFile->mRecord != nullptr) {
         if (theOrigin == SEEK_SET) theFile->mPos = theOffset;
         else if (theOrigin == SEEK_END) theFile->mPos = theFile->mRecord->mSize - theOffset;
         else if (theOrigin == SEEK_CUR) theFile->mPos += theOffset;
@@ -223,13 +223,13 @@ int PakInterface::FSeek(PFILE *theFile, long theOffset, int theOrigin) {
 
 // 0x5D8830
 int PakInterface::FTell(PFILE *theFile) {
-    if (theFile->mRecord != NULL) return theFile->mPos;
+    if (theFile->mRecord != nullptr) return theFile->mPos;
     else return ftell(theFile->mFP);
 }
 
 // 0x5D8850
 size_t PakInterface::FRead(void *thePtr, int theElemSize, int theCount, PFILE *theFile) {
-    if (theFile->mRecord != NULL) {
+    if (theFile->mRecord != nullptr) {
         // 实际读取的字节数不能超过当前资源文件剩余可读取的字节数
         int aSizeBytes = std::min(theElemSize * theCount, theFile->mRecord->mSize - theFile->mPos);
 
@@ -247,7 +247,7 @@ size_t PakInterface::FRead(void *thePtr, int theElemSize, int theCount, PFILE *t
 }
 
 int PakInterface::FGetC(PFILE *theFile) {
-    if (theFile->mRecord != NULL) {
+    if (theFile->mRecord != nullptr) {
         for (;;) {
             if (theFile->mPos >= theFile->mRecord->mSize) return EOF;
             char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
@@ -261,7 +261,7 @@ int PakInterface::FGetC(PFILE *theFile) {
 }
 
 int PakInterface::UnGetC(int theChar, PFILE *theFile) {
-    if (theFile->mRecord != NULL) {
+    if (theFile->mRecord != nullptr) {
         // This won't work if we're not pushing the same chars back in the stream
         theFile->mPos = std::max(theFile->mPos - 1, 0);
         return theChar;
@@ -271,11 +271,11 @@ int PakInterface::UnGetC(int theChar, PFILE *theFile) {
 }
 
 char *PakInterface::FGetS(char *thePtr, int theSize, PFILE *theFile) {
-    if (theFile->mRecord != NULL) {
+    if (theFile->mRecord != nullptr) {
         int anIdx = 0;
         while (anIdx < theSize) {
             if (theFile->mPos >= theFile->mRecord->mSize) {
-                if (anIdx == 0) return NULL;
+                if (anIdx == 0) return nullptr;
                 break;
             }
             char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
@@ -292,7 +292,7 @@ char *PakInterface::FGetS(char *thePtr, int theSize, PFILE *theFile) {
 }
 
 int PakInterface::FEof(PFILE *theFile) {
-    if (theFile->mRecord != NULL) return theFile->mPos >= theFile->mRecord->mSize;
+    if (theFile->mRecord != nullptr) return theFile->mPos >= theFile->mRecord->mSize;
     else return feof(theFile->mFP);
 }
 

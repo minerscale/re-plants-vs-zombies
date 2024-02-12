@@ -22,14 +22,18 @@ set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
 # @Patoke todo: probably add MSVC counterparts?
 if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(universal_link_flags 
-            "/MT /LTCG"
-        )
+        if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set(universal_link_flags
+                "/MT /LTCG"
+            )
+        endif()
         set(universal_compiler_flags 
             "/Ob2" "/GL" "/Ox" "/arch:AVX2" "/flavor:INTEL64"
         )
     else()
-        set(universal_link_flags "/MTd")
+        if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set(universal_link_flags "/MTd")
+        endif()
         set(universal_compiler_flags "")
     endif()
 else()

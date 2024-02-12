@@ -154,7 +154,7 @@ void LawnMower::Update() {
         return;
     }
 
-    Rect aAttackRect = GetLawnMowerAttackRect();
+    const Rect aAttackRect = GetLawnMowerAttackRect();
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
         if (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) continue;
@@ -165,7 +165,7 @@ void LawnMower::Update() {
             aZombie->mZombiePhase != ZombiePhase::PHASE_ZOMBIE_MOWERED && !aZombie->IsTangleKelpTarget() &&
             aZombie->EffectedByDamage(127U)) {
             Rect aZombieRect = aZombie->GetZombieRect();
-            int aOverlap = GetRectOverlap(aAttackRect, aZombieRect);
+            const int aOverlap = GetRectOverlap(aAttackRect, aZombieRect);
             if (aOverlap > (aZombie->mZombieType == ZombieType::ZOMBIE_BALLOON ? 20 : 0)) {
                 // 蹦极僵尸或已死亡的僵尸不能主动触发小推车
                 if (mMowerState != LawnMowerState::MOWER_READY ||
@@ -212,14 +212,14 @@ void LawnMower::Update() {
 }
 
 // 0x458A80
-void LawnMower::Draw(Graphics *g) {
+void LawnMower::Draw(Graphics *g) const {
     if (!mVisible) return;
 
     if (mMowerHeight != MowerHeight::MOWER_HEIGHT_UP_TO_LAND &&
         mMowerHeight != MowerHeight::MOWER_HEIGHT_DOWN_TO_POOL && mMowerHeight != MowerHeight::MOWER_HEIGHT_IN_POOL &&
         mMowerState != LawnMowerState::MOWER_SQUISHED) {
         int aShadowType = 0;
-        float aScaleX = 1.0f;
+        const float aScaleX = 1.0f;
         float aScaleY = 1.0f;
         if (mBoard->StageIsNight()) {
             aShadowType = 1;

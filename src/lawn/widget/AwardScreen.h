@@ -41,7 +41,7 @@ public:
     ~AwardScreen() override;
 
     /*inline*/
-    bool IsPaperNote();
+    bool IsPaperNote() const;
 
     void Resize(int theX, int theY, int theWidth, int theHeight) override {
         Widget::Resize(theX, theY, theWidth, theHeight);
@@ -49,17 +49,17 @@ public:
 
     static void
     DrawBottom(Graphics *g, const SexyString &theTitle, const SexyString &theAward, const SexyString &theMessage);
-    void DrawAwardSeed(Graphics *g);
+    void DrawAwardSeed(Graphics *g) const;
     void Draw(Graphics *g) override;
     void Update() override;
     void AddedToManager(WidgetManager *theWidgetManager) override { Widget::AddedToManager(theWidgetManager); }
     void RemovedFromManager(WidgetManager *theWidgetManager) override { Widget::RemovedFromManager(theWidgetManager); }
     void KeyChar(char theChar) override;
-    void StartButtonPressed();
+    void StartButtonPressed() const;
     void MouseDown(int x, int y, int theClickCount) override;
     void MouseUp(int x, int y, int theClickCount) override;
     // @Patoke: implement functions
-    void DrawAchievements(Graphics *g);
+    void DrawAchievements(Graphics *g) const;
     void AchievementsContinuePressed();
 };
 

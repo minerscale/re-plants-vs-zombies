@@ -363,7 +363,7 @@ public:
     void UpdateSpawning();
     bool UpdateParticle(TodParticle *theParticle);
     TodParticle *SpawnParticle(int theIndex, int theSpawnCount);
-    bool CrossFadeParticle(TodParticle *theParticle, TodParticleEmitter *theToEmitter);
+    bool CrossFadeParticle(TodParticle *theParticle, TodParticleEmitter *theToEmitter) const;
     void CrossFadeEmitter(TodParticleEmitter *theToEmitter);
     bool CrossFadeParticleToName(TodParticle *theParticle, const char *theEmitterName);
     void DeleteAll();

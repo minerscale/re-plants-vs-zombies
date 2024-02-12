@@ -21,7 +21,7 @@ public:
     void Draw(Graphics *g) override;
     void EditWidgetText(int theId, const SexyString &theString) override;
     virtual bool AllowChar(int theId, SexyChar theChar);
-    bool ApplyCheat();
+    bool ApplyCheat() const;
 };
 
 #endif

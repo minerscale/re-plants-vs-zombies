@@ -306,10 +306,10 @@ GameSelector::~GameSelector() {
 
 // 0x449E60
 //  GOTY @Patoke: 0x44CDD0
-void GameSelector::SyncButtons() {
-    bool aAlmanacAvailable = mApp->CanShowAlmanac() || mUnlockSelectorCheat;
-    bool aStoreOpen = mApp->CanShowStore() || mUnlockSelectorCheat;
-    bool aZenGardenOpen = mApp->CanShowZenGarden() || mUnlockSelectorCheat;
+void GameSelector::SyncButtons() const {
+    const bool aAlmanacAvailable = mApp->CanShowAlmanac() || mUnlockSelectorCheat;
+    const bool aStoreOpen = mApp->CanShowStore() || mUnlockSelectorCheat;
+    const bool aZenGardenOpen = mApp->CanShowZenGarden() || mUnlockSelectorCheat;
 
     mAlmanacButton->mDisabled = !aAlmanacAvailable;
     mAlmanacButton->mVisible = aAlmanacAvailable;
@@ -393,7 +393,7 @@ void GameSelector::AddTrophySparkle() {
 
 // 0x44A320
 //  GOTY @Patoke: 0x44D270
-void GameSelector::SyncProfile(bool theShowLoading) {
+void GameSelector::SyncProfile(const bool theShowLoading) {
     if (theShowLoading) {
         mLoading = true;
 
@@ -460,11 +460,11 @@ void GameSelector::Draw(Graphics *g) {
     aSelectorReanim->DrawRenderGroup(g, RENDER_GROUP_NORMAL);
 
     if (mSelectorState == SelectorAnimState::SELECTOR_OPEN) {
-        int aBGIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
+        const int aBGIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
         ReanimatorTransform aTransform;
         aSelectorReanim->GetCurrentTransform(aBGIdx, &aTransform);
-        float aFractionalOffsetX = fmod(aTransform.mTransX, 1.0f);
-        float aFractionalOffsetY = fmod(aTransform.mTransY, 1.0f);
+        const float aFractionalOffsetX = fmod(aTransform.mTransX, 1.0f);
+        const float aFractionalOffsetY = fmod(aTransform.mTransY, 1.0f);
         g->DrawImageF(
             mOptionsButton->mButtonImage, mOptionsButton->mX + mOptionsButton->mButtonOffsetX + aFractionalOffsetX,
             mOptionsButton->mY + mOptionsButton->mButtonOffsetY + aFractionalOffsetY
@@ -481,12 +481,12 @@ void GameSelector::Draw(Graphics *g) {
 
     if (mApp->mPlayerInfo && mApp->mPlayerInfo->mName.size() && mSelectorState != SelectorAnimState::SELECTOR_OPEN &&
         mSelectorState != SelectorAnimState::SELECTOR_NEW_USER) {
-        SexyString aWelcomeStr = mApp->mPlayerInfo->mName + _S('!');
+        const SexyString aWelcomeStr = mApp->mPlayerInfo->mName + _S('!');
 
-        int aSignIdx = aSelectorReanim->FindTrackIndex("woodsign1");
+        const int aSignIdx = aSelectorReanim->FindTrackIndex("woodsign1");
         SexyTransform2D aOverlayMatrix;
         aSelectorReanim->GetAttachmentOverlayMatrix(aSignIdx, aOverlayMatrix);
-        float aStringWidth = Sexy::FONT_BRIANNETOD16->StringWidth(aWelcomeStr);
+        const float aStringWidth = Sexy::FONT_BRIANNETOD16->StringWidth(aWelcomeStr);
         SexyTransform2D aOffsetMatrix;
         // @Patoke: add position so it moves when sliding to position
         aOffsetMatrix.Translate(170.5f - static_cast<int>(aStringWidth * 0.5f) + mX, 102.5f + mY);
@@ -513,13 +513,13 @@ void GameSelector::DrawOverlay(Graphics *g) {
         }
 
         Reanimation *aSelectorReanim = mApp->ReanimationGet(mSelectorReanimID);
-        int aRightIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
+        const int aRightIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
         ReanimatorTransform aTransform;
         aSelectorReanim->GetCurrentTransform(aRightIdx, &aTransform);
         float aTransAreaX = aTransform.mTransX + aOffsetX;
         float aTransAreaY = aTransform.mTransY + aOffsetY;
         float aTransSubX = aTransAreaX;
-        float aTransSubY = aTransAreaY;
+        const float aTransSubY = aTransAreaY;
 
         int aStage = ClampInt((mLevel - 1) / 10 + 1, 1, 6); // 大关
         int aSub = mLevel - (aStage - 1) * 10;              // 小关
@@ -581,7 +581,7 @@ void GameSelector::DrawOverlay(Graphics *g) {
     // @Minerscale: Trophy needs to draw in the DrawOverlay
     Reanimation *aSelectorReanim = mApp->ReanimationGet(mSelectorReanimID);
 
-    int aLeftIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Left");
+    const int aLeftIdx = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Left");
     ReanimatorTransform aTransformLeft;
     aSelectorReanim->GetCurrentTransform(aLeftIdx, &aTransformLeft);
     if (mHasTrophy) {
@@ -604,12 +604,12 @@ void GameSelector::DrawOverlay(Graphics *g) {
 
 // 0x44B0D0
 //  GOTY @Patoke: 0x44DE6D
-void GameSelector::UpdateTooltip() {
+void GameSelector::UpdateTooltip() const {
     if (!mApp->HasFinishedAdventure() || mApp->GetDialog(Dialogs::DIALOG_MESSAGE)) return;
 
     if (mHasTrophy) {
-        int aMouseX = mApp->mWidgetManager->mLastMouseX;
-        int aMouseY = mApp->mWidgetManager->mLastMouseY;
+        const int aMouseX = mApp->mWidgetManager->mLastMouseX;
+        const int aMouseY = mApp->mWidgetManager->mLastMouseY;
         if (aMouseX >= 50 && aMouseX < 135 && aMouseY >= 325 && aMouseY <= 550) {
             if (mApp->EarnedGoldTrophy()) {
                 mToolTip->SetLabel(LawnApp::Pluralize(
@@ -643,8 +643,8 @@ void GameSelector::Update() {
 
     // @Patoke: implemented this
     if (mSlideCounter > 0) {
-        int aNewX = TodAnimateCurve(75, 0, mSlideCounter, mStartX, mDestX, TodCurves::CURVE_EASE_IN_OUT);
-        int aNewY = TodAnimateCurve(75, 0, mSlideCounter, mStartY, mDestY, TodCurves::CURVE_EASE_IN_OUT);
+        const int aNewX = TodAnimateCurve(75, 0, mSlideCounter, mStartX, mDestX, TodCurves::CURVE_EASE_IN_OUT);
+        const int aNewY = TodAnimateCurve(75, 0, mSlideCounter, mStartY, mDestY, TodCurves::CURVE_EASE_IN_OUT);
         Move(aNewX, aNewY);
 
         // @Patoke: not from the original binaries but fixes bugs
@@ -797,12 +797,12 @@ void GameSelector::Update() {
 
     Reanimation *aLeafReanim = mApp->ReanimationGet(mLeafReanimID);
     aLeafReanim->Update();
-    int aLeafTrackIndex = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
+    const int aLeafTrackIndex = aSelectorReanim->FindTrackIndex("SelectorScreen_BG_Right");
     ReanimatorTransform aLeafTransform;
     aSelectorReanim->GetCurrentTransform(aLeafTrackIndex, &aLeafTransform);
     aLeafReanim->SetPosition(aLeafTransform.mTransX - 71.0f, aLeafTransform.mTransY - 41.0f);
     if (--mLeafCounter == 0) {
-        float aRate = RandRangeFloat(3.0f, 12.0f);
+        const float aRate = RandRangeFloat(3.0f, 12.0f);
         aLeafReanim->PlayReanim("anim_grass", ReanimLoopType::REANIM_LOOP, 20, aRate);
         mLeafCounter = RandRangeInt(200, 400);
     }
@@ -842,9 +842,11 @@ void GameSelector::Update() {
 
 // 0x44BB20
 //  GOTY @Patoke: 0x44EA40
-void GameSelector::TrackButton(DialogButton *theButton, const char *theTrackName, float theOffsetX, float theOffsetY) {
+void GameSelector::TrackButton(
+    DialogButton *theButton, const char *theTrackName, const float theOffsetX, const float theOffsetY
+) {
     Reanimation *aSelectorReanim = mApp->ReanimationGet(mSelectorReanimID);
-    int aTrackIndex = aSelectorReanim->FindTrackIndex(theTrackName);
+    const int aTrackIndex = aSelectorReanim->FindTrackIndex(theTrackName);
     ReanimatorTransform aTransform;
     aSelectorReanim->GetCurrentTransform(aTrackIndex, &aTransform);
 
@@ -920,7 +922,7 @@ void GameSelector::OrderInManagerChanged() {
 
 // 0x44BE60
 //  GOTY @Patoke: 0x44EB11
-void GameSelector::KeyDown(KeyCode theKey) {
+void GameSelector::KeyDown(const KeyCode theKey) {
     if (mApp->mKonamiCheck->Check(theKey)) {
         mApp->PlayFoley(FoleyType::FOLEY_DROP);
         return;
@@ -980,7 +982,7 @@ void GameSelector::KeyDown(KeyCode theKey) {
 
 // 0x44C200
 //  GOTY @Patoke: 0x44EEE0
-void GameSelector::KeyChar(char theChar) {
+void GameSelector::KeyChar(const char theChar) {
     if (mStartingGame) return;
 
     if ((gIsPartnerBuild || mApp->mDebugKeysEnabled) && theChar == 'u' && mApp->mPlayerInfo) {
@@ -1017,7 +1019,7 @@ void GameSelector::KeyChar(char theChar) {
 
 // 0x44C360
 //  GOTY @Patoke: 0x44F040
-void GameSelector::MouseDown(int x, int y, int theClickCount) {
+void GameSelector::MouseDown(const int x, const int y, const int theClickCount) {
     (void)theClickCount;
     for (int i = 0; i < 3; i++) {
         Reanimation *aFlowerReanim = mApp->ReanimationGet(mFlowerReanimID[i]);
@@ -1032,7 +1034,7 @@ void GameSelector::MouseDown(int x, int y, int theClickCount) {
 
 // 0x44C4C0
 //  GOTY @Patoke: 0x44F1A0
-void GameSelector::ButtonMouseEnter(int theId) {
+void GameSelector::ButtonMouseEnter(const int theId) {
     if ((theId == GameSelector::GameSelector_Minigame && mMinigamesLocked) ||
         (theId == GameSelector::GameSelector_Puzzle && mPuzzleLocked) ||
         (theId == GameSelector::GameSelector_Survival && mSurvivalLocked))
@@ -1043,7 +1045,7 @@ void GameSelector::ButtonMouseEnter(int theId) {
 
 // 0x44C540
 //  GOTY @Patoke: 0x44F220
-void GameSelector::ButtonPress(int theId) {
+void GameSelector::ButtonPress(const int theId) {
     if (theId == GameSelector::GameSelector_Adventure || theId == GameSelector::GameSelector_Minigame ||
         theId == GameSelector::GameSelector_Puzzle || theId == GameSelector::GameSelector_Survival ||
         theId == GameSelector::GameSelector_Zombatar) // @Patoke: add case
@@ -1101,7 +1103,7 @@ bool GameSelector::ShouldDoZenTuturialBeforeAdventure() {
 
 // 0x44C8C0
 //  GOTY @Patoke: 0x44F5C0
-void GameSelector::ButtonDepress(int theId) {
+void GameSelector::ButtonDepress(const int theId) {
     if (theId == GameSelector::GameSelector_Minigame && mMinigamesLocked) {
         mApp->LawnMessageBox(
             Dialogs::DIALOG_MESSAGE, _S("[MODE_LOCKED]"), _S("[MINIGAME_LOCKED_MESSAGE]"), _S("[DIALOG_BUTTON_OK]"),
@@ -1183,9 +1185,7 @@ void GameSelector::ButtonDepress(int theId) {
 // 0x44CB00
 //  GOTY @Patoke: 0x44F880
 void GameSelector::AddPreviewProfiles() {
-    PlayerInfo *aProfile;
-
-    aProfile = mApp->mProfileMgr->AddProfile(_S("2 Night"));
+    PlayerInfo *aProfile = mApp->mProfileMgr->AddProfile(_S("2 Night"));
     if (aProfile) {
         aProfile->mLevel = 11;
         aProfile->SaveDetails();
@@ -1281,7 +1281,7 @@ void GameSelector::AddPreviewProfiles() {
 
 // @Patoke: implemented functions
 // GOTY @Patoke: 0x450140
-void GameSelector::SlideTo(int theX, int theY) {
+void GameSelector::SlideTo(const int theX, const int theY) {
     mSlideCounter = 75;
     mDestX = theX;
     mDestY = theY;

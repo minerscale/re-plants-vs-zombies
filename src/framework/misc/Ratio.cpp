@@ -7,11 +7,10 @@ Ratio::Ratio(int theNumerator, int theDenominator) { Set(theNumerator, theDenomi
 
 void Ratio::Set(int theNumerator, int theDenominator) {
     // find the greatest-common-denominator of theNumerator and theDenominator.
-    int t;
     int a = theNumerator;
     int b = theDenominator;
     while (b != 0) {
-        t = b;
+        int t = b;
         b = a % b;
         a = t;
     }

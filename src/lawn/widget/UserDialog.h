@@ -38,8 +38,8 @@ public:
     virtual bool AllowChar(int theId, SexyChar theChar);
     void Draw(Graphics *g) override;
     void FinishDeleteUser();
-    void FinishRenameUser(const SexyString &theNewName);
-    SexyString GetSelName();
+    void FinishRenameUser(const SexyString &theNewName) const;
+    SexyString GetSelName() const;
 };
 
 #endif

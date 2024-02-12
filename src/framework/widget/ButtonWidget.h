@@ -43,7 +43,7 @@ public:
     double mOverAlphaSpeed;
     double mOverAlphaFadeInSpeed;
 
-    bool HaveButtonImage(Image *theImage, const Rect &theRect);
+    bool HaveButtonImage(const Image *theImage, const Rect &theRect);
     virtual void DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, int x, int y);
 
 public:

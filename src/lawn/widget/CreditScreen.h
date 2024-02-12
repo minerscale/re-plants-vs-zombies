@@ -88,19 +88,19 @@ public:
 
     Reanimation *PlayReanim(int aIndex);
     void JumpToFrame(CreditsPhase thePhase, float theFrame);
-    void GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction);
+    void GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction) const;
     static Reanimation *FindSubReanim(Reanimation *theReanim, ReanimationType theReanimType);
-    void DrawFogEffect(Graphics *g, float theTime);
+    void DrawFogEffect(Graphics *g, float theTime) const;
     void UpdateBlink();
-    void TurnOffTongues(Reanimation *theReanim, int aParentTrack);
-    void DrawFinalCredits(Graphics *g);
+    static void TurnOffTongues(const Reanimation *theReanim, int aParentTrack);
+    static void DrawFinalCredits(Graphics *g);
     void DrawOverlay(Graphics *g) override;
     void UpdateMovie();
     void PauseCredits();
     void PreLoadCredits();
 };
 
-void DrawDisco(Graphics *g, float aCenterX, float aCenterY, float theTime);
+void DrawDisco(const Graphics *g, float aCenterX, float aCenterY, float theTime);
 void DrawReanimToPreload(Graphics *g, ReanimationType theReanimType);
 
 class CreditsOverlay : public Widget {

@@ -7,12 +7,12 @@
 using namespace Sexy;
 
 TextWidget::TextWidget() {
-    mFont = NULL;
+    mFont = nullptr;
     mPosition = 0;
     mPageSize = 0;
     mStickToBottom = true;
     mMaxLines = 2048;
-    mScrollbar = NULL;
+    mScrollbar = nullptr;
 }
 
 SexyStringVector TextWidget::GetLines() { return mLogicalLines; }

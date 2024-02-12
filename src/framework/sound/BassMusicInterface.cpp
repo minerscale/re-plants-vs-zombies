@@ -20,7 +20,7 @@ bool BassMusicInterface::gBassLoaded = false;
 
 void BassMusicInterface::InitBass(HWND theHWnd) {
     if (!gBassLoaded) {
-        BASS_Init(1, 44100, 0, (HWND)theHWnd, NULL);
+        BASS_Init(1, 44100, 0, (HWND)theHWnd, nullptr);
         BASS_SetConfig(BASS_CONFIG_BUFFER, 2000);
 
         BASS_Start();
@@ -54,7 +54,7 @@ bool BassMusicInterface::LoadMusic(int theSongId, const std::string &theFileName
         aStream = BASS_StreamCreateFile(FALSE, (void *)theFileName.c_str(), 0, 0, 0);
     else {
         PFILE *aFP = p_fopen(theFileName.c_str(), "rb");
-        if (aFP == NULL) return false;
+        if (aFP == nullptr) return false;
 
         p_fseek(aFP, 0, SEEK_END);
         int aSize = p_ftell(aFP);

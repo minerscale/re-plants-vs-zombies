@@ -730,7 +730,7 @@ void TodParticleSystem::Update() {
 }
 
 // 0x5173E0
-bool TodParticleEmitter::CrossFadeParticle(TodParticle *theParticle, TodParticleEmitter *theToEmitter) {
+bool TodParticleEmitter::CrossFadeParticle(TodParticle *theParticle, TodParticleEmitter *theToEmitter) const {
     if (theParticle->mCrossFadeDuration > 0) // 粒子已处于交叉混合的过程中
     {
         TodTrace("We don't support cross fading more than one at a time\n");

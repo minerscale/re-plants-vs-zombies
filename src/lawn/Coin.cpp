@@ -45,8 +45,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
     mPottedPlantSpec.InitializePottedPlant(SeedType::SEED_NONE);
 
     if (IsSun()) {
-        float aPosX = mWidth * 0.5f;
-        float aPosY = mHeight * 0.5f;
+        const float aPosX = mWidth * 0.5f;
+        const float aPosY = mHeight * 0.5f;
         Reanimation *aSunReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_SUN);
         aSunReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aSunReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -56,8 +56,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 10.0f;
         mPosY -= 8.0f;
 
-        float aPosX = 9.0f;
-        float aPosY = 9.0f;
+        const float aPosX = 9.0f;
+        const float aPosY = 9.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_SILVER);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -68,8 +68,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 10.0f;
         mPosY -= 8.0f;
 
-        float aPosX = 9.0f;
-        float aPosY = 9.0f;
+        const float aPosX = 9.0f;
+        const float aPosY = 9.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_GOLD);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -80,8 +80,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 15.0f;
         mPosY -= 15.0f;
 
-        float aPosX = -3.0f;
-        float aPosY = 4.0f;
+        const float aPosX = -3.0f;
+        const float aPosY = 4.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_DIAMOND);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -145,46 +145,50 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mHeight = IMAGE_PRESENT->GetCelHeight();
         if (mApp->IsSurvivalEndless(mApp->mGameMode) || mApp->IsEndlessIZombie(mApp->mGameMode) ||
             mApp->IsEndlessScaryPotter(mApp->mGameMode)) {
-            SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
+            const SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_1_DAY) {
-            SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER, SeedType::SEED_CHERRYBOMB,
-                                    SeedType::SEED_WALLNUT,    SeedType::SEED_REPEATER,  SeedType::SEED_POTATOMINE,
-                                    SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
+            const SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER,
+                                          SeedType::SEED_CHERRYBOMB, SeedType::SEED_WALLNUT,
+                                          SeedType::SEED_REPEATER,   SeedType::SEED_POTATOMINE,
+                                          SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
 
-            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
+            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
-            SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
-                                    SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
-                                    SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
-                                    SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
+            const SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
+                                          SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
+                                          SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
+                                          SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
 
-            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
+            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL) {
-            SeedType aSeedList[] = {SeedType::SEED_LILYPAD,    SeedType::SEED_SQUASH,   SeedType::SEED_THREEPEATER,
-                                    SeedType::SEED_TANGLEKELP, SeedType::SEED_JALAPENO, SeedType::SEED_SPIKEWEED,
-                                    SeedType::SEED_TORCHWOOD,  SeedType::SEED_TALLNUT};
+            const SeedType aSeedList[] = {SeedType::SEED_LILYPAD,     SeedType::SEED_SQUASH,
+                                          SeedType::SEED_THREEPEATER, SeedType::SEED_TANGLEKELP,
+                                          SeedType::SEED_JALAPENO,    SeedType::SEED_SPIKEWEED,
+                                          SeedType::SEED_TORCHWOOD,   SeedType::SEED_TALLNUT};
 
-            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
+            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
-            SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,    SeedType::SEED_CACTUS,
-                                    SeedType::SEED_BLOVER,       SeedType::SEED_SPLITPEA,    SeedType::SEED_STARFRUIT,
-                                    SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
+            const SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,
+                                          SeedType::SEED_CACTUS,       SeedType::SEED_BLOVER,
+                                          SeedType::SEED_SPLITPEA,     SeedType::SEED_STARFRUIT,
+                                          SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
 
-            SeedType aSeedType = TodPickFromArray(aSeedList, LENGTH(aSeedList));
+            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF) {
-            SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
-                                    SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
-                                    SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
+            const SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
+                                          SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
+                                          SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
 
-            auto aSeedType = static_cast<SeedType>(TodPickFromArray((intptr_t *)aSeedList, LENGTH(aSeedList)));
+            const auto aSeedType =
+                static_cast<SeedType>(TodPickFromArray((intptr_t *)(aSeedList), std::size(aSeedList)));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else {
-            SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
+            const SeedType aSeedType = ZenGarden::PickRandomSeedType();
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         }
     } else if (mType == CoinType::COIN_AWARD_MONEY_BAG || mType == CoinType::COIN_AWARD_BAG_DIAMOND) {
@@ -291,12 +295,12 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 }
 
 bool Coin::IsMoney(CoinType theType) {
-    // Õâ¸öº¯ÊýÔ­±¾ÊÇÍêÈ«Ã»ÓÐµÄ£¬µ«ÊÇÓÉÓÚÔÚ Board ÖÐÉæ¼°µ½£¬²¢ÇÒ¸Ð¾õÄÜÔÚÐèÒªÌí¼ÓÐÂÇ®±ÒÖÖÀàµÄÊ±ºòÌá¹©·½±ã£¬ËùÒÔ¾ÍÁôÏÂÀ´ÁË
+    // è¿™ä¸ªå‡½æ•°åŽŸæœ¬æ˜¯å®Œå…¨æ²¡æœ‰çš„ï¼Œä½†æ˜¯ç”±äºŽåœ¨ Board ä¸­æ¶‰åŠåˆ°ï¼Œå¹¶ä¸”æ„Ÿè§‰èƒ½åœ¨éœ€è¦æ·»åŠ æ–°é’±å¸ç§ç±»çš„æ—¶å€™æä¾›æ–¹ä¾¿ï¼Œæ‰€ä»¥å°±ç•™ä¸‹æ¥äº†
     return theType == CoinType::COIN_SILVER || theType == CoinType::COIN_GOLD || theType == CoinType::COIN_DIAMOND;
 }
 
 // 0x430970
-bool Coin::IsMoney() { return IsMoney(mType); }
+bool Coin::IsMoney() const { return IsMoney(mType); }
 
 // 0x430990
 bool Coin::IsSun() {
@@ -315,10 +319,10 @@ void Coin::ScoreCoin() {
     Die();
 
     if (IsSun()) {
-        int aSunValue = GetSunValue();
+        const int aSunValue = GetSunValue();
         mBoard->AddSunMoney(aSunValue);
     } else if (IsMoney()) {
-        int aCoinValue = Coin::GetCoinValue(mType);
+        const int aCoinValue = Coin::GetCoinValue(mType);
         mApp->mPlayerInfo->AddCoins(aCoinValue);
         if (mBoard) {
             mBoard->mBoardData.mCoinsCollected += aCoinValue;
@@ -429,7 +433,7 @@ void Coin::UpdateFall() {
     }
 
     if (mCoinMotion == CoinMotion::COIN_MOTION_FROM_PLANT) {
-        float aFinalScale = GetSunScale();
+        const float aFinalScale = GetSunScale();
         if (mScale < aFinalScale) {
             mScale += 0.02f;
         } else {
@@ -484,8 +488,8 @@ void Coin::UpdateCollected() {
         return;
     }
 
-    float aDeltaX = abs(mPosX - aDestX);
-    float aDeltaY = abs(mPosY - aDestY);
+    const float aDeltaX = abs(mPosX - aDestX);
+    const float aDeltaY = abs(mPosY - aDestY);
     if (mPosX > aDestX) {
         mPosX -= aDeltaX / 21.0f;
     } else if (mPosX < aDestX) {
@@ -503,7 +507,7 @@ void Coin::UpdateCollected() {
         if (mCollectionDistance < 15.0f) {
             if (!mBoard->mBoardData.mHelpDisplayed[static_cast<int>(AdviceType::ADVICE_UNLOCKED_MODE)]) {
                 if (mType == CoinType::COIN_PRESENT_MINIGAMES) {
-                    // ×¢£º´Ë´¦µÄ theMessageStyle ²ÎÊý£¬Ô­°æÖÐÎª MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE£¬ÄÚ²â°æÖÐÎª
+                    // æ³¨ï¼šæ­¤å¤„çš„ theMessageStyle å‚æ•°ï¼ŒåŽŸç‰ˆä¸­ä¸º MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGEï¼Œå†…æµ‹ç‰ˆä¸­ä¸º
                     // MESSAGE_STYLE_HINT_TALL_8SECONDS
                     mBoard->DisplayAdvice(
                         _S("[UNLOCKED_MINIGAMES]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_UNLOCKMESSAGE,
@@ -570,7 +574,7 @@ void Coin::Update() {
 
         if ((!mHitGround || mIsBeingCollected) && (mType == CoinType::COIN_SILVER || mType == CoinType::COIN_GOLD)) {
             AttachmentOverrideColor(mAttachmentID, Color(0, 0, 0, 0));
-            // ÔË¶¯ÖÐµÄ½ð±ÒºÍÒø±ÒÊ¹ÓÃÌùÍ¼£¬¹ÊÒÔ´Ë·¨Òþ²Ø¸½¼þµÄ¶¯»­
+            // è¿åŠ¨ä¸­çš„é‡‘å¸å’Œé“¶å¸ä½¿ç”¨è´´å›¾ï¼Œæ•…ä»¥æ­¤æ³•éšè—é™„ä»¶çš„åŠ¨ç”»
         }
     }
 }
@@ -578,12 +582,12 @@ void Coin::Update() {
 // 0x4316F0
 Color Coin::GetColor() {
     if ((IsSun() || IsMoney()) && mIsBeingCollected) {
-        float aAlpha = ClampFloat(mCollectionDistance * 0.035f, 0.35f, 1.0f) * 255.0f;
+        const float aAlpha = ClampFloat(mCollectionDistance * 0.035f, 0.35f, 1.0f) * 255.0f;
         return Color(255, 255, 255, aAlpha);
     }
 
     if (mFadeCount > 0) {
-        int aAlpha = TodAnimateCurve(15, 0, mFadeCount, 255, 0, TodCurves::CURVE_LINEAR);
+        const int aAlpha = TodAnimateCurve(15, 0, mFadeCount, 255, 0, TodCurves::CURVE_LINEAR);
         return Color(255, 255, 255, aAlpha);
     }
 
@@ -638,7 +642,7 @@ void Coin::Draw(Graphics *g) {
     }
 
     if (IsLevelAward() && !mIsBeingCollected) {
-        Color aFlashingColor = GetFlashingColor(mCoinAge, 75);
+        const Color aFlashingColor = GetFlashingColor(mCoinAge, 75);
         g->SetColor(aFlashingColor);
     }
 
@@ -664,7 +668,7 @@ void Coin::Draw(Graphics *g) {
     } else if (IsSun()) {
         return;
     } else if (mType == CoinType::COIN_FINAL_SEED_PACKET) {
-        SeedType aSeedType = GetFinalSeedPacketType();
+        const SeedType aSeedType = GetFinalSeedPacketType();
         g->SetScale(mScale, mScale, 0.0f, 0.0f);
         DrawSeedPacket(
             g, 0.5f * (mWidth - mScale * mWidth) + mPosX, 0.5f * (mHeight - mScale * mHeight) + mPosY, aSeedType,
@@ -733,7 +737,7 @@ void Coin::Draw(Graphics *g) {
         if (mIsBeingCollected) {
             aGrayness = 128;
         } else {
-            int aDisappearTime = GetDisappearTime();
+            const int aDisappearTime = GetDisappearTime();
             if (mDisappearCounter > aDisappearTime - 300 && mDisappearCounter % 60 < 30) {
                 aGrayness = 192;
             }
@@ -761,9 +765,9 @@ void Coin::FanOutCoins(CoinType theCoinType, int theNumCoins) {
     TOD_ASSERT(mBoard);
 
     for (int i = 0; i < theNumCoins; i++) {
-        float aAngle = PI / 2 + PI * (i + 1) / (theNumCoins + 1);
-        float aPosX = mPosX + 20.0f;
-        float aPosY = mPosY;
+        const float aAngle = PI / 2 + PI * (i + 1) / (theNumCoins + 1);
+        const float aPosX = mPosX + 20.0f;
+        const float aPosY = mPosY;
         Coin *aCoin = mBoard->AddCoin(
             static_cast<int>(aPosX), static_cast<int>(aPosY), theCoinType, CoinMotion::COIN_MOTION_FROM_PRESENT
         );
@@ -953,8 +957,8 @@ void Coin::Collect() {
             );
             StartFade();
         } else if (!aIsEndlessAward) {
-            float aParticleOffsetX = mWidth / 2.0;
-            float aParticleOffsetY = mHeight / 2.0;
+            const float aParticleOffsetX = mWidth / 2.0;
+            const float aParticleOffsetY = mHeight / 2.0;
             TodParticleSystem *aParticle = mApp->AddTodParticle(
                 mPosX + aParticleOffsetX, mPosY + aParticleOffsetY, mRenderOrder - 1, PARTICLE_SEED_PACKET_PICKUP
             );
@@ -986,8 +990,8 @@ void Coin::Collect() {
     if (IsSun() && mBoard && !mBoard->HasConveyorBeltSeedBank()) {
         for (int i = 0; i < mBoard->mSeedBank->mNumPackets; i++) {
             SeedPacket *aSeedPacket = &mBoard->mSeedBank->mSeedPackets[i];
-            int aCost = mBoard->GetCurrentPlantCost(aSeedPacket->mPacketType, aSeedPacket->mImitaterType);
-            int aSunProfit = mBoard->mBoardData.mSunMoney + mBoard->CountSunBeingCollected() - aCost;
+            const int aCost = mBoard->GetCurrentPlantCost(aSeedPacket->mPacketType, aSeedPacket->mImitaterType);
+            const int aSunProfit = mBoard->mBoardData.mSunMoney + mBoard->CountSunBeingCollected() - aCost;
             if (aSunProfit >= 0 && aSunProfit < GetSunValue()) {
                 aSeedPacket->FlashIfReady();
             }

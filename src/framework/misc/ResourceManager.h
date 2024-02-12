@@ -144,7 +144,7 @@ public:
     bool ReparseResourcesFile(const std::string &theFilename);
 
     std::string GetErrorText();
-    bool HadError();
+    bool HadError() const;
     bool IsGroupLoaded(const std::string &theGroup);
 
     int GetNumImages(const std::string &theGroup);
@@ -199,4 +199,4 @@ struct ResourceManagerException : public std::exception {
 };
 } // namespace Sexy
 
-#endif //__PROPERTIESPARSER_H__
+#endif //__SEXY_RESOURCEMANAGER_H__

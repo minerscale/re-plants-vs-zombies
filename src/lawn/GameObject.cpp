@@ -13,7 +13,7 @@ GameObject::GameObject() {
     mRenderOrder = RenderLayer::RENDER_LAYER_TOP;
 }
 
-bool GameObject::BeginDraw(Graphics *g) {
+bool GameObject::BeginDraw(Graphics *g) const {
     if (!mVisible) return false;
 
     g->Translate(mX, mY);

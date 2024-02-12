@@ -564,7 +564,7 @@ public:
     virtual bool UpdateApp();
     //	int						InitDDInterface();
     //	void					ClearUpdateBacklog(bool relaxForASecond = false);
-    bool IsScreenSaver();
+    bool IsScreenSaver() const;
     virtual bool AppCanRestore();
     //	static LRESULT CALLBACK	WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

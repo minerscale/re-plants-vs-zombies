@@ -22,7 +22,7 @@ else()
     set(GLSLC_FLAGS -O)
 endif()
 
-make_directory(${SHADER_OUTPUT_DIR})
+file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
 foreach(SHADER ${SHADERS})
     get_filename_component(FILENAME ${SHADER} NAME)
     add_custom_command(

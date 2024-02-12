@@ -63,8 +63,8 @@ bool sSortByNonIncreasingHeight(const ReanimAtlasImage &image1, const ReanimAtla
     //	return (unsigned int)image1 > (unsigned int)image2;
 
     if (image1.mHeight != image2.mHeight) return image1.mHeight > image2.mHeight;
-    else if (image1.mWidth != image2.mWidth) return image1.mWidth > image2.mWidth;
-    else return reinterpret_cast<uintptr_t>(&image1) > reinterpret_cast<uintptr_t>(&image2);
+    if (image1.mWidth != image2.mWidth) return image1.mWidth > image2.mWidth;
+    return reinterpret_cast<uintptr_t>(&image1) > reinterpret_cast<uintptr_t>(&image2);
 }
 
 static int GetClosestPowerOf2Above(int theNum) {
@@ -108,7 +108,7 @@ bool ReanimAtlas::ImageFits(int theImageCount, const Rect &rectTest, int theMaxW
 // 0x4704C0
 bool ReanimAtlas::ImageFindPlaceOnSide(
     ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight
-) {
+) const {
     Rect rectTest;
     rectTest.mWidth = theAtlasImageToPlace->mWidth + 2;
     rectTest.mHeight = theAtlasImageToPlace->mHeight + 2;

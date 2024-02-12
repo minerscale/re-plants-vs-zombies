@@ -213,7 +213,8 @@ public:
     void Draw(Graphics *g);
     void DrawRenderGroup(Graphics *g, int theRenderGroup);
     bool DrawTrack(Graphics *g, int theTrackIndex, int theRenderGroup, TodTriangleGroup *theTriangleGroup);
-    bool GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn = false);
+    bool
+    GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn = false) const;
     bool GetTransformAtTime(
         int theTrackIndex, ReanimatorTransform *theTransform, const ReanimatorFrameTime theFrameTime,
         const bool theEarlyReturn = false

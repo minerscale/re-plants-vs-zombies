@@ -64,7 +64,7 @@ using SexyString = std::string;
 #define LONG_LITTLEE_TO_NATIVE(l) (l)
 #define WORD_LITTLEE_TO_NATIVE(w) (w)
 
-#define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
+// #define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
 
 using uchar = uint8_t;
 using ushort = uint16_t;

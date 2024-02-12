@@ -920,7 +920,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             if (aStringChars[anIdx] != ']') {
                 anIdx++; // space (' ')
                 // <curve>
-                for (size_t i = 0; i < sizeof(gDefTrackEaseSymbols) / sizeof(gDefTrackEaseSymbols[0]); ++i) {
+                for (size_t i = 0; i < std::size(gDefTrackEaseSymbols); ++i) {
                     const size_t aStrLen = strlen(gDefTrackEaseSymbols[i].mSymbolName);
                     if (strncmp(gDefTrackEaseSymbols[i].mSymbolName, aStringChars + anIdx, aStrLen) == 0)
                     // could be the distribution?
@@ -972,7 +972,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             if (aStringChars[anIdx] == '\0') goto _m_break; // Done!
             anIdx++;
             // <curve>
-            for (size_t i = 0; i < sizeof(gDefTrackEaseSymbols) / sizeof(gDefTrackEaseSymbols[0]); ++i) {
+            for (size_t i = 0; i < std::size(gDefTrackEaseSymbols); ++i) {
                 const size_t aStrLen = strlen(gDefTrackEaseSymbols[i].mSymbolName);
                 if (strncmp(gDefTrackEaseSymbols[i].mSymbolName, aStringChars + anIdx, aStrLen) == 0) // mCurveType
                 {

@@ -53,7 +53,7 @@ void TileImageVertically(Graphics *g, Image *theImage, int theX, int theY, int t
 // ====================================================================================================
 Checkbox *MakeNewCheckbox(int theId, CheckboxListener *theListener, bool theDefault);
 LawnEditWidget *CreateEditWidget(int theId, EditListener *theListener, Dialog *theDialog);
-void DrawEditBox(Graphics *g, EditWidget *theWidget);
+void DrawEditBox(Graphics *g, const EditWidget *theWidget);
 
 // ====================================================================================================
 // ★ 其他

@@ -10,7 +10,7 @@ Image::Image() {
     mNumRows = 1;
     mNumCols = 1;
 
-    mAnimInfo = NULL;
+    mAnimInfo = nullptr;
     mDrawn = false;
 }
 
@@ -30,7 +30,7 @@ Image::Image(const Image& theImage) :
 
 Image::~Image() { delete mAnimInfo; }
 
-int Image::GetWidth() { return mWidth; }
+int Image::GetWidth() const { return mWidth; }
 
 int Image::GetHeight() { return mHeight; }
 
@@ -131,7 +131,7 @@ int AnimInfo::GetCel(int theTime) {
 }
 
 int Image::GetAnimCel(int theTime) {
-    if (mAnimInfo == NULL) return 0;
+    if (mAnimInfo == nullptr) return 0;
     else return mAnimInfo->GetCel(theTime);
 }
 
@@ -148,8 +148,8 @@ void Image::CopyAttributes(Image *from) {
     mNumCols = from->mNumCols;
     mNumRows = from->mNumRows;
     delete mAnimInfo;
-    mAnimInfo = NULL;
-    if (from->mAnimInfo != NULL) mAnimInfo = new AnimInfo(*from->mAnimInfo);
+    mAnimInfo = nullptr;
+    if (from->mAnimInfo != nullptr) mAnimInfo = new AnimInfo(*from->mAnimInfo);
 }
 
 Graphics *Image::GetGraphics() {

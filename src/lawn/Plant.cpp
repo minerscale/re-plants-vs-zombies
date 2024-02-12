@@ -190,7 +190,7 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
 
     Reanimation *aBodyReanim = nullptr;
     if (aPlantDef.mReanimationType != ReanimationType::REANIM_NONE) {
-        float aOffsetY = PlantDrawHeightOffset(mBoard, this, mSeedType, mPlantCol, mRow);
+        const float aOffsetY = PlantDrawHeightOffset(mBoard, this, mSeedType, mPlantCol, mRow);
         aBodyReanim = mApp->AddReanimation(0.0f, aOffsetY, mRenderOrder + 1, aPlantDef.mReanimationType);
         aBodyReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
         aBodyReanim->mAnimRate = RandRangeFloat(10.0f, 15.0f);
@@ -474,13 +474,13 @@ void Plant::PlantInitialize(int theGridX, int theGridY, SeedType theSeedType, Se
 
     if (mSeedType != SeedType::SEED_FLOWERPOT && IsOnBoard()) {
         TOD_ASSERT(mBoard);
-        Plant *aFlowerPot = mBoard->GetFlowerPotAt(mPlantCol, mRow);
+        const Plant *aFlowerPot = mBoard->GetFlowerPotAt(mPlantCol, mRow);
         if (aFlowerPot) mApp->ReanimationGet(aFlowerPot->mBodyReanimID)->mAnimRate = 0.0f;
     }
 }
 
 // 0x45E7C0
-int Plant::CalcRenderOrder() {
+int Plant::CalcRenderOrder() const {
     PLANT_ORDER anOrder = PLANT_ORDER::PLANT_ORDER_NORMAL;
     RenderLayer aLayer = RenderLayer::RENDER_LAYER_PLANT;
 
@@ -530,7 +530,7 @@ void Plant::SetSleeping(bool theIsAsleep) {
         if (!IsInPlay() && mSeedType == SeedType::SEED_SUNSHROOM) {
             aBodyReanim->SetFramesForLayer("anim_bigsleep");
         } else if (aBodyReanim->TrackExists("anim_sleep")) {
-            float aAnimTime = aBodyReanim->mAnimTime;
+            const float aAnimTime = aBodyReanim->mAnimTime;
             aBodyReanim->StartBlend(20);
             aBodyReanim->SetFramesForLayer("anim_sleep");
             aBodyReanim->mAnimTime = aAnimTime;
@@ -543,7 +543,7 @@ void Plant::SetSleeping(bool theIsAsleep) {
         if (!IsInPlay() && mSeedType == SeedType::SEED_SUNSHROOM) {
             aBodyReanim->SetFramesForLayer("anim_bigidle");
         } else if (aBodyReanim->TrackExists("anim_idle")) {
-            float aAnimTime = aBodyReanim->mAnimTime;
+            const float aAnimTime = aBodyReanim->mAnimTime;
             aBodyReanim->StartBlend(20);
             aBodyReanim->SetFramesForLayer("anim_idle");
             aBodyReanim->mAnimTime = aAnimTime;
@@ -607,12 +607,12 @@ bool Plant::IsSpiky() { return mSeedType == SeedType::SEED_SPIKEWEED || mSeedTyp
 
 // 0x45ED00
 void Plant::DoRowAreaDamage(int theDamage, unsigned int theDamageFlags) {
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
-    Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
-        int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
+        const int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
         if (mSeedType == SeedType::SEED_GLOOMSHROOM) {
             if (aDiffY < -1 || aDiffY > 1) continue;
         } else if (aDiffY) continue;
@@ -723,8 +723,8 @@ bool Plant::FindTargetAndFire(int theRow, PlantWeapon thePlantWeapon) {
 
 // 0x45F2A0
 void Plant::LaunchThreepeater() {
-    int rowAbove = mRow - 1;
-    int rowBelow = mRow + 1;
+    const int rowAbove = mRow - 1;
+    const int rowBelow = mRow + 1;
 
     if ((FindTargetZombie(mRow, PlantWeapon::WEAPON_PRIMARY)) ||
         (mBoard->RowCanHaveZombies(rowAbove) && FindTargetZombie(rowAbove, PlantWeapon::WEAPON_PRIMARY)) ||
@@ -760,9 +760,9 @@ void Plant::LaunchThreepeater() {
 bool Plant::FindStarFruitTarget() {
     if (mRecentlyEatenCountdown > 0) return true;
 
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
-    int aCenterStarX = mX + 40;
-    int aCenterStarY = mY + 40;
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const int aCenterStarX = mX + 40;
+    const int aCenterStarY = mY + 40;
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
@@ -775,17 +775,17 @@ bool Plant::FindStarFruitTarget() {
             } else {
                 if (aZombie->mZombieType == ZombieType::ZOMBIE_DIGGER) aZombieRect.mX += 10;
 
-                float aProjectileTime = Distance2D(
-                                            aCenterStarX, aCenterStarY, aZombieRect.mX + aZombieRect.mWidth / 2,
-                                            aZombieRect.mY + aZombieRect.mHeight / 2
-                                        ) /
-                                        3.33f;
-                int aZombieHitX = aZombie->ZombieTargetLeadX(aProjectileTime) - aZombieRect.mWidth / 2;
+                const float aProjectileTime = Distance2D(
+                                                  aCenterStarX, aCenterStarY, aZombieRect.mX + aZombieRect.mWidth / 2,
+                                                  aZombieRect.mY + aZombieRect.mHeight / 2
+                                              ) /
+                                              3.33f;
+                const int aZombieHitX = aZombie->ZombieTargetLeadX(aProjectileTime) - aZombieRect.mWidth / 2;
                 if ((aZombieHitX + aZombieRect.mWidth > aCenterStarX) && (aZombieHitX < aCenterStarX)) return true;
 
-                int aCenterZombieX = aZombieHitX + aZombieRect.mWidth / 2;
-                int aCenterZombieY = aZombieRect.mY + aZombieRect.mHeight / 2;
-                float angle = RAD_TO_DEG(atan2(aCenterZombieY - aCenterStarY, aCenterZombieX - aCenterStarX));
+                const int aCenterZombieX = aZombieHitX + aZombieRect.mWidth / 2;
+                const int aCenterZombieY = aZombieRect.mY + aZombieRect.mHeight / 2;
+                const float angle = RAD_TO_DEG(atan2(aCenterZombieY - aCenterStarY, aCenterZombieX - aCenterStarX));
                 if (abs(aZombie->mRow - mRow) < 2) {
                     if ((angle > 20.0f && angle < 40.0f) || (angle < -25.0f && angle > -45.0f)) return true;
                 } else {
@@ -810,8 +810,8 @@ void Plant::LaunchStarFruit() {
 void Plant::StarFruitFire() {
     mApp->PlayFoley(FoleyType::FOLEY_THROW);
 
-    float aShootAngleX = cos(DEG_TO_RAD(30.0f)) * 3.33f;
-    float aShootAngleY = sin(DEG_TO_RAD(30.0f)) * 3.33f;
+    const float aShootAngleX = cos(DEG_TO_RAD(30.0f)) * 3.33f;
+    const float aShootAngleY = sin(DEG_TO_RAD(30.0f)) * 3.33f;
     for (int i = 0; i < 5; i++) {
         Projectile *aProjectile =
             mBoard->AddProjectile(mX + 25, mY + 25, mRenderOrder - 1, mRow, ProjectileType::PROJECTILE_STAR);
@@ -907,7 +907,7 @@ void Plant::UpdateProductionPlant() {
 
     mLaunchCounter--;
     if (mLaunchCounter <= 100) {
-        int aFlashCountdown = TodAnimateCurve(100, 0, mLaunchCounter, 0, 100, TodCurves::CURVE_LINEAR);
+        const int aFlashCountdown = TodAnimateCurve(100, 0, mLaunchCounter, 0, 100, TodCurves::CURVE_LINEAR);
         mEatenFlashCountdown = std::max(mEatenFlashCountdown, aFlashCountdown);
     }
     if (mLaunchCounter <= 0) {
@@ -944,7 +944,7 @@ void Plant::UpdateProductionPlant() {
 
 // 0x45FB70
 void Plant::UpdateSunShroom() {
-    Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+    const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (mState == PlantState::STATE_SUNSHROOM_SMALL) {
         if (mStateCountdown == 0) {
             PlayBodyReanim("anim_grow", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, 12.0f);
@@ -1013,7 +1013,7 @@ void Plant::UpdatePotato() {
         }
     } else if (mState == PlantState::STATE_POTATO_RISING) {
         if (aBodyReanim->mLoopCount > 0) {
-            float aRate = RandRangeFloat(12.0f, 15.0f);
+            const float aRate = RandRangeFloat(12.0f, 15.0f);
             PlayBodyReanim("anim_armed", ReanimLoopType::REANIM_LOOP, 0, aRate);
 
             Reanimation *aLightReanim =
@@ -1083,7 +1083,7 @@ void Plant::UpdateTanglekelp() {
         }
 
         if (mStateCountdown == 20) {
-            int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
+            const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
             Reanimation *aSplashReanim =
                 mApp->AddReanimation(mX - 23, mY + 7, aRenderPosition, ReanimationType::REANIM_SPLASH);
             aSplashReanim->OverrideScale(1.3f, 1.3f);
@@ -1118,7 +1118,7 @@ void Plant::SpikeweedAttack() {
 
 // 0x460370
 void Plant::UpdateSpikeweed() {
-    Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+    const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (mState == PlantState::STATE_SPIKEWEED_ATTACKING) {
         if (mStateCountdown == 0) {
             mState = PlantState::STATE_NOTREADY;
@@ -1147,7 +1147,7 @@ void Plant::UpdateScaredyShroom() {
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
         Rect aZombieRect = aZombie->GetZombieRect();
-        int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
+        const int aDiffY = (aZombie->mZombieType == ZombieType::ZOMBIE_BOSS) ? 0 : (aZombie->mRow - mRow);
         if (!aZombie->mMindControlled && !aZombie->IsDeadOrDying() && aDiffY <= 1 && aDiffY >= -1 &&
             GetCircleRectOverlap(mX, mY + 20.0f, 120, aZombieRect)) {
             aHasZombieNearby = true;
@@ -1155,7 +1155,7 @@ void Plant::UpdateScaredyShroom() {
         }
     }
 
-    Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+    const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (mState == PlantState::STATE_READY) {
         if (aHasZombieNearby) {
             mState = PlantState::STATE_SCAREDYSHROOM_LOWERING;
@@ -1170,14 +1170,14 @@ void Plant::UpdateScaredyShroom() {
         if (!aHasZombieNearby) {
             mState = PlantState::STATE_SCAREDYSHROOM_RAISING;
 
-            float aAnimRate = RandRangeFloat(7.0f, 12.0f);
+            const float aAnimRate = RandRangeFloat(7.0f, 12.0f);
             PlayBodyReanim("anim_grow", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 10, aAnimRate);
         }
     } else if (mState == PlantState::STATE_SCAREDYSHROOM_RAISING) {
         if (aBodyReanim->mLoopCount > 0) {
             mState = PlantState::STATE_READY;
 
-            float aAnimRate = RandRangeFloat(10.0f, 15.0f);
+            const float aAnimRate = RandRangeFloat(10.0f, 15.0f);
             PlayIdleAnim(aAnimRate);
         }
     }
@@ -1189,7 +1189,7 @@ void Plant::UpdateScaredyShroom() {
 
 // 0x460610
 void Plant::UpdateTorchwood() {
-    Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
+    const Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
     Projectile *aProjectile = nullptr;
     while (mBoard->IterateProjectiles(aProjectile)) {
@@ -1209,8 +1209,8 @@ void Plant::UpdateTorchwood() {
 
 // 0x4606F0
 void Plant::DoSquashDamage() {
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
-    Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
@@ -1227,8 +1227,8 @@ void Plant::DoSquashDamage() {
 
 // 0x4607E0
 Zombie *Plant::FindSquashTarget() {
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
-    Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
 
     int aClosestRange = 0;
     Zombie *aClosestZombie = nullptr;
@@ -1246,7 +1246,7 @@ Zombie *Plant::FindSquashTarget() {
                  aZombie->mZombiePhase != ZombiePhase::PHASE_DOLPHIN_INTO_POOL &&
                  aZombie->mZombiePhase != ZombiePhase::PHASE_DOLPHIN_RIDING &&
                  aZombie->mZombiePhase != ZombiePhase::PHASE_DOLPHIN_IN_JUMP && !aZombie->IsBobsledTeamWithSled())) {
-                int aRange = -GetRectOverlap(aAttackRect, aZombieRect);
+                const int aRange = -GetRectOverlap(aAttackRect, aZombieRect);
                 if (aRange <= (aZombie->mIsEating ? 110 : 70)) {
                     int aPlantX = aAttackRect.mX;
                     if (aZombie->mZombiePhase == ZombiePhase::PHASE_POLEVAULTER_POST_VAULT ||
@@ -1310,8 +1310,8 @@ void Plant::UpdateSquash() {
             mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
         }
     } else {
-        int aTargetCol = mBoard->PixelToGridXKeepOnBoard(mTargetX, mY);
-        int aDestY = mBoard->GridToPixelY(aTargetCol, mRow) + 8;
+        const int aTargetCol = mBoard->PixelToGridXKeepOnBoard(mTargetX, mY);
+        const int aDestY = mBoard->GridToPixelY(aTargetCol, mRow) + 8;
 
         if (mState == PlantState::STATE_SQUASH_RISING) {
             mX = TodAnimateCurve(
@@ -1348,7 +1348,7 @@ void Plant::UpdateSquash() {
 
                     mBoard->ShakeBoard(1, 4);
                     mApp->PlayFoley(FoleyType::FOLEY_THUMP);
-                    float aOffsetY = mBoard->StageHasRoof() ? 69.0f : 80.0f;
+                    const float aOffsetY = mBoard->StageHasRoof() ? 69.0f : 80.0f;
                     mApp->AddTodParticle(
                         mX + 40, mY + aOffsetY, mRenderOrder + 4, ParticleEffect::PARTICLE_DUST_SQUASH
                     );
@@ -1412,7 +1412,7 @@ void Plant::UpdateLilypad() {
 // 0x460F60
 void Plant::UpdateCoffeeBean() {
     if (mState == PlantState::STATE_DOINGSPECIAL) {
-        Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+        const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
         if (aBodyReanim->mLoopCount > 0) {
             Die();
         }
@@ -1427,7 +1427,7 @@ void Plant::UpdateUmbrella() {
             mState = PlantState::STATE_UMBRELLA_REFLECTING;
         }
     } else if (mState == PlantState::STATE_UMBRELLA_REFLECTING) {
-        Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+        const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
         if (aBodyReanim->mLoopCount > 0) {
             PlayIdleAnim(0.0f);
             mState = PlantState::STATE_NOTREADY;
@@ -1588,7 +1588,7 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
 
     MagnetItem *aMagnetItem = GetFreeMagnetItem();
     if (theZombie->mHelmType == HelmType::HELMTYPE_PAIL) {
-        int aDamageIndex = theZombie->GetHelmDamageIndex();
+        const int aDamageIndex = theZombie->GetHelmDamageIndex();
 
         theZombie->mHelmHealth = 0;
         theZombie->mHelmType = HelmType::HELMTYPE_NONE;
@@ -1600,9 +1600,10 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_BUCKET1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 25.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
-        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_PAIL_1 + aDamageIndex);
+        aMagnetItem->mItemType =
+            static_cast<MagnetItemType>(static_cast<int>(MagnetItemType::MAGNET_ITEM_PAIL_1) + aDamageIndex);
     } else if (theZombie->mHelmType == HelmType::HELMTYPE_FOOTBALL) {
-        int aDamageIndex = theZombie->GetHelmDamageIndex();
+        const int aDamageIndex = theZombie->GetHelmDamageIndex();
 
         theZombie->mHelmHealth = 0;
         theZombie->mHelmType = HelmType::HELMTYPE_NONE;
@@ -1615,9 +1616,9 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f) + 20.0f;
         aMagnetItem->mItemType =
-            static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_FOOTBALL_HELMET_1 + aDamageIndex);
+            static_cast<MagnetItemType>(static_cast<int>(MagnetItemType::MAGNET_ITEM_FOOTBALL_HELMET_1) + aDamageIndex);
     } else if (theZombie->mShieldType == ShieldType::SHIELDTYPE_DOOR) {
-        int aDamageIndex = theZombie->GetShieldDamageIndex();
+        const int aDamageIndex = theZombie->GetShieldDamageIndex();
 
         theZombie->DetachShield();
         theZombie->mZombiePhase = ZombiePhase::PHASE_ZOMBIE_NORMAL;
@@ -1631,9 +1632,10 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_SCREENDOOR1->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
-        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_DOOR_1 + aDamageIndex);
+        aMagnetItem->mItemType =
+            static_cast<MagnetItemType>(static_cast<int>(MagnetItemType::MAGNET_ITEM_DOOR_1) + aDamageIndex);
     } else if (theZombie->mShieldType == ShieldType::SHIELDTYPE_LADDER) {
-        int aDamageIndex = theZombie->GetShieldDamageIndex();
+        const int aDamageIndex = theZombie->GetShieldDamageIndex();
 
         theZombie->DetachShield();
 
@@ -1643,7 +1645,8 @@ void Plant::MagnetShroomAttactItem(Zombie *theZombie) {
         aMagnetItem->mPosY -= IMAGE_REANIM_ZOMBIE_LADDER_5->GetHeight() / 2.0;
         aMagnetItem->mDestOffsetX = RandRangeFloat(-10.0f, 10.0f) + 30.0f;
         aMagnetItem->mDestOffsetY = RandRangeFloat(-10.0f, 10.0f);
-        aMagnetItem->mItemType = static_cast<MagnetItemType>((int)MagnetItemType::MAGNET_ITEM_LADDER_1 + aDamageIndex);
+        aMagnetItem->mItemType =
+            static_cast<MagnetItemType>(static_cast<int>(MagnetItemType::MAGNET_ITEM_LADDER_1) + aDamageIndex);
     } else if (theZombie->mZombieType == ZombieType::ZOMBIE_POGO) {
         theZombie->PogoBreak(16U);
         // ZombieDrawPosition aDrawPos;
@@ -1696,7 +1699,7 @@ bool Plant::DrawMagnetItemsOnTop() {
 
     if (mSeedType == SeedType::SEED_MAGNETSHROOM) {
         for (int i = 0; i < MAX_MAGNET_ITEMS; i++) {
-            MagnetItem *aMagnetItem = &mMagnetItems[i];
+            const MagnetItem *aMagnetItem = &mMagnetItems[i];
             if (aMagnetItem->mItemType != MagnetItemType::MAGNET_ITEM_NONE) {
                 SexyVector2 aVectorToPlant(
                     mX + aMagnetItem->mDestOffsetX - aMagnetItem->mPosX,
@@ -1733,7 +1736,7 @@ void Plant::UpdateMagnetShroom() {
         if (mStateCountdown == 0) {
             mState = PlantState::STATE_READY;
 
-            float aAnimRate = RandRangeFloat(10.0f, 15.0f);
+            const float aAnimRate = RandRangeFloat(10.0f, 15.0f);
             PlayBodyReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 30, aAnimRate);
             if (mApp->IsIZombieLevel()) {
                 Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
@@ -1759,7 +1762,7 @@ void Plant::UpdateMagnetShroom() {
 
         Zombie *aZombie = nullptr;
         while (mBoard->IterateZombies(aZombie)) {
-            int aDiffY = aZombie->mRow - mRow;
+            const int aDiffY = aZombie->mRow - mRow;
             Rect aZombieRect = aZombie->GetZombieRect();
 
             if (aZombie->mMindControlled) continue;
@@ -1786,7 +1789,7 @@ void Plant::UpdateMagnetShroom() {
                          aZombie->mZombiePhase == ZombiePhase::PHASE_JACK_IN_THE_BOX_RUNNING))
                 continue;
 
-            int aRadius = aZombie->mIsEating ? 320 : 270;
+            const int aRadius = aZombie->mIsEating ? 320 : 270;
             if (GetCircleRectOverlap(mX, mY + 20, aRadius, aZombieRect)) {
                 float aDistance = Distance2D(mX, mY, aZombieRect.mX, aZombieRect.mY);
                 aDistance += abs(aDiffY) * 80.0f;
@@ -1813,9 +1816,9 @@ void Plant::UpdateMagnetShroom() {
             if (aGridItem->mGridItemType == GridItemType::GRIDITEM_LADDER) {
                 int aDiffX = abs(aGridItem->mGridX - mPlantCol);
                 int aDiffY = abs(aGridItem->mGridY - mRow);
-                int aSquareDistance = std::max(aDiffX, aDiffY);
+                const int aSquareDistance = std::max(aDiffX, aDiffY);
                 if (aSquareDistance <= 2) {
-                    float aDistance = aSquareDistance + aDiffY * 0.05f;
+                    const float aDistance = aSquareDistance + aDiffY * 0.05f;
                     if (aClosestLadder == nullptr || aDistance < aClosestLadderDist) {
                         aClosestLadder = aGridItem;
                         aClosestLadderDist = aDistance;
@@ -1851,7 +1854,7 @@ Coin *Plant::FindGoldMagnetTarget() {
     while (mBoard->IterateCoins(aCoin)) {
         if (aCoin->IsMoney() && aCoin->mCoinMotion != CoinMotion::COIN_MOTION_FROM_PRESENT &&
             !aCoin->mIsBeingCollected && aCoin->mCoinAge >= 50) {
-            float aDistance = Distance2D(
+            const float aDistance = Distance2D(
                 mX + mWidth / 2.0, mY + mHeight / 2.0, aCoin->mPosX + aCoin->mWidth / 2.0,
                 aCoin->mPosY + aCoin->mHeight / 2.0
             );
@@ -1901,7 +1904,7 @@ bool Plant::IsAGoldMagnetAboutToSuck() {
     while (mBoard->IteratePlants(aPlant)) {
         if (!aPlant->NotOnGround() && aPlant->mSeedType == SeedType::SEED_GOLD_MAGNET &&
             aPlant->mState == PlantState::STATE_MAGNETSHROOM_SUCKING) {
-            Reanimation *aBodyReanim = mApp->ReanimationGet(aPlant->mBodyReanimID);
+            const Reanimation *aBodyReanim = mApp->ReanimationGet(aPlant->mBodyReanimID);
             if (aBodyReanim->mAnimTime < 0.5f) {
                 return true;
             }
@@ -1922,7 +1925,7 @@ void Plant::UpdateGoldMagnetShroom() {
             SexyVector2 aVectorToPlant(
                 mX + aMagnetItem->mDestOffsetX - aMagnetItem->mPosX, mY + aMagnetItem->mDestOffsetY - aMagnetItem->mPosY
             );
-            float aDistance = aVectorToPlant.Magnitude();
+            const float aDistance = aVectorToPlant.Magnitude();
             if (aDistance < 20.0f) {
                 CoinType aCoinType;
                 switch (aMagnetItem->mItemType) {
@@ -1932,14 +1935,15 @@ void Plant::UpdateGoldMagnetShroom() {
                 default:                                      TOD_ASSERT(); return;
                 }
 
-                int aValue = Coin::GetCoinValue(aCoinType);
+                const int aValue = Coin::GetCoinValue(aCoinType);
                 mApp->mPlayerInfo->AddCoins(aValue);
                 mBoard->mBoardData.mCoinsCollected += aValue;
                 mApp->PlayFoley(FoleyType::FOLEY_COIN);
 
                 aMagnetItem->mItemType = MagnetItemType::MAGNET_ITEM_NONE;
             } else {
-                float aSpeed = TodAnimateCurveFloatTime(30.0f, 0.0f, aDistance, 0.02f, 0.05f, TodCurves::CURVE_LINEAR);
+                const float aSpeed =
+                    TodAnimateCurveFloatTime(30.0f, 0.0f, aDistance, 0.02f, 0.05f, TodCurves::CURVE_LINEAR);
                 aMagnetItem->mPosX += aVectorToPlant.x * aSpeed;
                 aMagnetItem->mPosY += aVectorToPlant.y * aSpeed;
 
@@ -2034,7 +2038,7 @@ void Plant::UpdateBowling() {
     } else if (mState == PlantState::STATE_BOWLING_DOWN) {
         mY += 2;
     }
-    int aDistToGrid = mBoard->GridToPixelY(0, mRow) - mY;
+    const int aDistToGrid = mBoard->GridToPixelY(0, mRow) - mY;
     if (aDistToGrid < -2 || aDistToGrid > 2) return;
 
     PlantState aNewState = mState;
@@ -2046,14 +2050,14 @@ void Plant::UpdateBowling() {
 
     Zombie *aZombie = FindTargetZombie(mRow, PlantWeapon::WEAPON_PRIMARY);
     if (aZombie) {
-        int aPosX = mX + mWidth / 2;
-        int aPosY = mY + mHeight / 2;
+        const int aPosX = mX + mWidth / 2;
+        const int aPosY = mY + mHeight / 2;
 
         if (mSeedType == SeedType::SEED_EXPLODE_O_NUT) {
             mApp->PlayFoley(FoleyType::FOLEY_CHERRYBOMB);
             mApp->PlaySample(SOUND_BOWLINGIMPACT2);
 
-            int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY) | 32U;
+            const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY) | 32U;
             mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, 90, 1, true, aDamageRangeFlags);
             mApp->AddTodParticle(aPosX, aPosY, (int)RenderLayer::RENDER_LAYER_TOP, ParticleEffect::PARTICLE_POWIE);
             mBoard->ShakeBoard(3, -4);
@@ -2228,7 +2232,7 @@ bool Plant::IsUpgradableTo(SeedType theUpgradedType) {
         return true;
     }
     if (theUpgradedType == SeedType::SEED_CATTAIL && mSeedType == SeedType::SEED_LILYPAD) {
-        Plant *aPlant = mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
+        const Plant *aPlant = mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
         return aPlant == nullptr || aPlant->mSeedType != SeedType::SEED_CATTAIL;
     }
     return false;
@@ -2242,12 +2246,12 @@ void Plant::UpdateReanimColor() {
     Reanimation *aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
     if (aBodyReanim == nullptr) return;
 
-    SeedType aSeedType = mBoard->GetSeedTypeInCursor();
+    const SeedType aSeedType = mBoard->GetSeedTypeInCursor();
     Color aColorOverride;
 
     bool isOnGlove = false;
     if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE) {
-        Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mBoard->mCursorObject->mGlovePlantID);
+        const Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mBoard->mCursorObject->mGlovePlantID);
         if (aPlant && aPlant->mPlantCol == mPlantCol && aPlant->mRow == mRow) {
             isOnGlove = true;
         }
@@ -2274,11 +2278,12 @@ void Plant::UpdateReanimColor() {
             aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, 92);
         }
     } else if (mBeghouledFlashCountdown > 0) {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraAdditiveDraw = true;
     } else if (mEatenFlashCountdown > 0) {
-        int aGrayness = ClampInt(mEatenFlashCountdown * 3, 0, mImitaterType == SeedType::SEED_IMITATER ? 128 : 255);
+        const int aGrayness =
+            ClampInt(mEatenFlashCountdown * 3, 0, mImitaterType == SeedType::SEED_IMITATER ? 128 : 255);
         aBodyReanim->mExtraAdditiveColor = Color(aGrayness, aGrayness, aGrayness);
         aBodyReanim->mEnableExtraAdditiveDraw = true;
     } else {
@@ -2286,7 +2291,7 @@ void Plant::UpdateReanimColor() {
     }
 
     if (mBeghouledFlashCountdown > 0) {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraOverlayColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraOverlayDraw = true;
     } else {
@@ -2350,7 +2355,8 @@ void Plant::UpdateReanim() {
         aOffsetY += TodAnimateCurveFloat(400, 0, mStateCountdown, 0.0f, 30.0f, TodCurves::CURVE_LINEAR);
     }
     if (mWakeUpCounter > 0) {
-        float aScaleFactor = TodAnimateCurveFloat(70, 0, mWakeUpCounter, 1.0f, 0.8f, TodCurves::CURVE_EASE_SIN_WAVE);
+        const float aScaleFactor =
+            TodAnimateCurveFloat(70, 0, mWakeUpCounter, 1.0f, 0.8f, TodCurves::CURVE_EASE_SIN_WAVE);
         aScaleY *= aScaleFactor;
         aOffsetY += 80.0f - 80.0f * aScaleFactor;
     }
@@ -2396,11 +2402,11 @@ void Plant::UpdateReanim() {
             aScaleEnd = 1.0f;
         }
 
-        float aAnimatedOffsetX =
+        const float aAnimatedOffsetX =
             TodAnimateCurveFloat(100, 0, mStateCountdown, aOffsetXStart, aOffsetXEnd, TodCurves::CURVE_LINEAR);
-        float aAnimatedOffsetY =
+        const float aAnimatedOffsetY =
             TodAnimateCurveFloat(100, 0, mStateCountdown, aOffsetYStart, aOffsetYEnd, TodCurves::CURVE_LINEAR);
-        float aAnimatedScale =
+        const float aAnimatedScale =
             TodAnimateCurveFloat(100, 0, mStateCountdown, aScaleStart, aScaleEnd, TodCurves::CURVE_LINEAR);
 
         aOffsetX += aAnimatedOffsetX * aScaleX;
@@ -2448,35 +2454,35 @@ bool Plant::NotOnGround() {
 // 0x463F30
 Reanimation *Plant::AttachBlinkAnim(Reanimation *theReanimBody) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(mSeedType);
-    auto aApp = static_cast<LawnApp *>(gSexyAppBase);
+    const auto aApp = static_cast<LawnApp *>(gSexyAppBase);
     Reanimation *aAnimToAttach = theReanimBody;
     auto aTrackToPlay = "anim_blink";
     const char *aTrackToAttach = nullptr;
 
     if (mSeedType == SeedType::SEED_WALLNUT || mSeedType == SeedType::SEED_TALLNUT ||
         mSeedType == SeedType::SEED_EXPLODE_O_NUT || mSeedType == SeedType::SEED_GIANT_WALLNUT) {
-        int aHit = Rand(10);
+        const int aHit = Rand(10);
         if (aHit < 1 && theReanimBody->TrackExists("anim_blink_twitch")) {
             aTrackToPlay = "anim_blink_twitch";
         } else {
             aTrackToPlay = aHit < 7 ? "anim_blink_twice" : "anim_blink_thrice";
         }
     } else if (mSeedType == SeedType::SEED_THREEPEATER) {
-        int aHit = Rand(3);
+        const int aHit = Rand(3);
         if (aHit == 0) {
             aTrackToPlay = "anim_blink1";
             aTrackToAttach = "anim_face1";
-            ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head1");
+            const ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head1");
             aAnimToAttach = FindReanimAttachment(aTrackInstance->mAttachmentID);
         } else if (aHit == 1) {
             aTrackToPlay = "anim_blink2";
             aTrackToAttach = "anim_face2";
-            ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head2");
+            const ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head2");
             aAnimToAttach = FindReanimAttachment(aTrackInstance->mAttachmentID);
         } else {
             aTrackToPlay = "anim_blink3";
             aTrackToAttach = "anim_face3";
-            ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head3");
+            const ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_head3");
             aAnimToAttach = FindReanimAttachment(aTrackInstance->mAttachmentID);
         }
     } else if (mSeedType == SeedType::SEED_SPLITPEA) {
@@ -2499,10 +2505,10 @@ Reanimation *Plant::AttachBlinkAnim(Reanimation *theReanimBody) {
         }
     } else if (mSeedType == SeedType::SEED_PEASHOOTER || mSeedType == SeedType::SEED_SNOWPEA || mSeedType == SeedType::SEED_REPEATER || mSeedType == SeedType::SEED_LEFTPEATER || mSeedType == SeedType::SEED_GATLINGPEA) {
         if (theReanimBody->TrackExists("anim_stem")) {
-            ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_stem");
+            const ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_stem");
             aAnimToAttach = FindReanimAttachment(aTrackInstance->mAttachmentID);
         } else if (theReanimBody->TrackExists("anim_idle")) {
-            ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_idle");
+            const ReanimatorTrackInstance *aTrackInstance = theReanimBody->GetTrackInstanceByName("anim_idle");
             aAnimToAttach = FindReanimAttachment(aTrackInstance->mAttachmentID);
         }
     }
@@ -2585,7 +2591,7 @@ void Plant::EndBlink() {
 // 0x464410
 void Plant::UpdateBlink() {
     if (mBlinkReanimID != ReanimationID::REANIMATIONID_NULL) {
-        Reanimation *aBlinkReanim = mApp->ReanimationTryToGet(mBlinkReanimID);
+        const Reanimation *aBlinkReanim = mApp->ReanimationTryToGet(mBlinkReanimID);
         if (aBlinkReanim == nullptr || aBlinkReanim->mLoopCount > 0) {
             EndBlink();
         }
@@ -2619,13 +2625,13 @@ void Plant::AnimateNuts() {
         aTrackToOverride = "anim_idle";
     } else return;
 
-    int aPosX = mX + 40;
+    const int aPosX = mX + 40;
     int aPosY = mY + 10;
     if (mSeedType == SeedType::SEED_TALLNUT) {
         aPosY -= 32;
     }
 
-    Image *aImageOverride = aBodyReanim->GetImageOverride(aTrackToOverride);
+    const Image *aImageOverride = aBodyReanim->GetImageOverride(aTrackToOverride);
     if (mPlantHealth < mPlantMaxHealth / 3) {
         if (aImageOverride != aCracked2) {
             aBodyReanim->SetImageOverride(aTrackToOverride, aCracked2);
@@ -2655,7 +2661,7 @@ void Plant::AnimateNuts() {
 // 0x464680
 void Plant::AnimateGarlic() {
     Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
-    Image *aImageOverride = aBodyReanim->GetImageOverride("anim_face");
+    const Image *aImageOverride = aBodyReanim->GetImageOverride("anim_face");
 
     if (mPlantHealth < mPlantMaxHealth / 3) {
         if (aImageOverride != IMAGE_REANIM_GARLIC_BODY3) {
@@ -2674,7 +2680,7 @@ void Plant::AnimateGarlic() {
 // 0x464760
 void Plant::AnimatePumpkin() {
     Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
-    Image *aImageOverride = aBodyReanim->GetImageOverride("Pumpkin_front");
+    const Image *aImageOverride = aBodyReanim->GetImageOverride("Pumpkin_front");
 
     if (mPlantHealth < mPlantMaxHealth / 3) {
         if (aImageOverride != IMAGE_REANIM_PUMPKIN_DAMAGE3)
@@ -2694,13 +2700,13 @@ void Plant::UpdateShooting() {
     mShootingCounter--;
 
     if (mSeedType == SeedType::SEED_FUMESHROOM && mShootingCounter == 15) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
         AddAttachedParticle(mX + 85, mY + 31, aRenderPosition, ParticleEffect::PARTICLE_FUMECLOUD);
     }
 
     if (mSeedType == SeedType::SEED_GLOOMSHROOM) {
         if (mShootingCounter == 136 || mShootingCounter == 108 || mShootingCounter == 80 || mShootingCounter == 52) {
-            int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
+            const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
             AddAttachedParticle(mX + 40, mY + 40, aRenderPosition, ParticleEffect::PARTICLE_GLOOMCLOUD);
         }
         if (mShootingCounter == 126 || mShootingCounter == 98 || mShootingCounter == 70 || mShootingCounter == 42) {
@@ -2719,11 +2725,11 @@ void Plant::UpdateShooting() {
         }
     } else if (mShootingCounter == 1) {
         if (mSeedType == SeedType::SEED_THREEPEATER) {
-            int rowAbove = mRow - 1;
-            int rowBelow = mRow + 1;
-            Reanimation *aHeadReanim2 = mApp->ReanimationGet(mHeadReanimID2);
-            Reanimation *aHeadReanim3 = mApp->ReanimationGet(mHeadReanimID3);
-            Reanimation *aHeadReanim1 = mApp->ReanimationGet(mHeadReanimID);
+            const int rowAbove = mRow - 1;
+            const int rowBelow = mRow + 1;
+            const Reanimation *aHeadReanim2 = mApp->ReanimationGet(mHeadReanimID2);
+            const Reanimation *aHeadReanim3 = mApp->ReanimationGet(mHeadReanimID3);
+            const Reanimation *aHeadReanim1 = mApp->ReanimationGet(mHeadReanimID);
 
             if (aHeadReanim1->mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD) {
                 Fire(nullptr, rowBelow, PlantWeapon::WEAPON_PRIMARY);
@@ -2735,8 +2741,8 @@ void Plant::UpdateShooting() {
                 Fire(nullptr, rowAbove, PlantWeapon::WEAPON_PRIMARY);
             }
         } else if (mSeedType == SeedType::SEED_SPLITPEA) {
-            Reanimation *aHeadBackReanim = mApp->ReanimationTryToGet(mHeadReanimID2);
-            Reanimation *aHeadFrontReanim = mApp->ReanimationTryToGet(mHeadReanimID);
+            const Reanimation *aHeadBackReanim = mApp->ReanimationTryToGet(mHeadReanimID2);
+            const Reanimation *aHeadFrontReanim = mApp->ReanimationTryToGet(mHeadReanimID);
             if (aHeadFrontReanim->mLoopType == ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD) {
                 Fire(nullptr, mRow, PlantWeapon::WEAPON_PRIMARY);
             }
@@ -2941,7 +2947,7 @@ float PlantFlowerPotHeightOffset(SeedType theSeedType, float theFlowerPotScale) 
 
 // 0x465040
 //  GOTY @Patoke: 0x468A90
-float PlantDrawHeightOffset(Board *theBoard, Plant *thePlant, SeedType theSeedType, int theCol, int theRow) {
+float PlantDrawHeightOffset(Board *theBoard, const Plant *thePlant, SeedType theSeedType, int theCol, int theRow) {
     float aHeightOffset = 0.0f;
 
     bool doFloating = false;
@@ -2963,14 +2969,14 @@ float PlantDrawHeightOffset(Board *theBoard, Plant *thePlant, SeedType theSeedTy
             aCounter = gLawnApp->mAppCounter;
         }
 
-        float aPos = theRow * PI + theCol * 0.25f * PI;
-        float aTime = aCounter * 2.0f * PI / 200.0f;
-        float aFloatingHeight = sin(aPos + aTime) * 2.0f;
+        const float aPos = theRow * PI + theCol * 0.25f * PI;
+        const float aTime = aCounter * 2.0f * PI / 200.0f;
+        const float aFloatingHeight = sin(aPos + aTime) * 2.0f;
         aHeightOffset += aFloatingHeight;
     }
 
     if (theBoard && (thePlant == nullptr || !thePlant->mSquished)) {
-        Plant *aPot = theBoard->GetFlowerPotAt(theCol, theRow);
+        const Plant *aPot = theBoard->GetFlowerPotAt(theCol, theRow);
         if (aPot && !aPot->mSquished && theSeedType != SeedType::SEED_FLOWERPOT) {
             aHeightOffset += PlantFlowerPotHeightOffset(theSeedType, 1.0f);
         }
@@ -3052,11 +3058,11 @@ void Plant::GetPeaHeadOffset(int &theOffsetX, int &theOffsetY) {
 // 0x465460
 //  GOTY @Patoke: 0x468EB0
 void Plant::DrawMagnetItems(Graphics *g) {
-    float aOffsetX = 0.0f;
-    float aOffsetY = PlantDrawHeightOffset(mBoard, this, mSeedType, mPlantCol, mRow);
+    const float aOffsetX = 0.0f;
+    const float aOffsetY = PlantDrawHeightOffset(mBoard, this, mSeedType, mPlantCol, mRow);
 
     for (int i = 0; i < MAX_MAGNET_ITEMS; i++) {
-        MagnetItem *aMagnetItem = &mMagnetItems[i];
+        const MagnetItem *aMagnetItem = &mMagnetItems[i];
         if (aMagnetItem->mItemType != MagnetItemType::MAGNET_ITEM_NONE) {
             int aCelRow = 0, aCelCol = 0;
             Image *aImage = nullptr;
@@ -3162,7 +3168,7 @@ void Plant::DrawShadow(Sexy::Graphics *g, float theOffsetX, float theOffsetY) {
         if (mState == PlantState::STATE_SUNSHROOM_SMALL) {
             aScale = 0.5f;
         } else if (mState == PlantState::STATE_SUNSHROOM_GROWING) {
-            Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+            const Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
             aScale = 0.5f + 0.5f * aBodyReanim->mAnimTime;
         }
     } else if (mSeedType == SeedType::SEED_UMBRELLA) {
@@ -3232,7 +3238,7 @@ void Plant::Draw(Graphics *g) {
         aOffsetY += 30.0f;
     }
 
-    int aImageIndex = mFrame;
+    const int aImageIndex = mFrame;
     Image *aPlantImage = Plant::GetImage(mSeedType);
 
     if (mSquished) {
@@ -3248,12 +3254,12 @@ void Plant::Draw(Graphics *g) {
         g->SetScale(1.0f, 1.0f, 0.0f, 0.0f);
     } else {
         bool aDrawPumpkinBack = false;
-        Plant *aPumpkin = nullptr;
+        const Plant *aPumpkin = nullptr;
 
         if (IsOnBoard()) {
             aPumpkin = mBoard->GetPumpkinAt(mPlantCol, mRow);
             if (aPumpkin) {
-                Plant *aPlantInPumpkin =
+                const Plant *aPlantInPumpkin =
                     mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
                 if (aPlantInPumpkin) {
                     if (aPlantInPumpkin->mRenderOrder > aPumpkin->mRenderOrder ||
@@ -3287,8 +3293,8 @@ void Plant::Draw(Graphics *g) {
                 aCounter = mApp->mAppCounter;
             }
 
-            float aTime = (mRow * 97 + mPlantCol * 61 + aCounter) * 0.03f;
-            float aWave = sin(aTime) * 2.0f;
+            const float aTime = (mRow * 97 + mPlantCol * 61 + aCounter) * 0.03f;
+            const float aWave = sin(aTime) * 2.0f;
             aOffsetY += aWave;
         }
 
@@ -3366,7 +3372,7 @@ void Plant::Draw(Graphics *g) {
 // 0x4660B0
 //  GOTY @Patoke: 0x469AF0
 void Plant::DrawSeedType(
-    Graphics *g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX,
+    const Graphics *g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation, float thePosX,
     float thePosY
 ) {
     Graphics aSeedG(*g);
@@ -3402,7 +3408,7 @@ void Plant::DrawSeedType(
     }
 
     if (Challenge::IsZombieSeedType(aSeedType)) {
-        ZombieType aZombieType = Challenge::IZombieSeedTypeToZombieType(aSeedType);
+        const ZombieType aZombieType = Challenge::IZombieSeedTypeToZombieType(aSeedType);
         gLawnApp->mReanimatorCache->DrawCachedZombie(&aSeedG, thePosX + aOffsetX, thePosY + aOffsetY, aZombieType);
     } else {
         const PlantDefinition &aPlantDef = GetPlantDefinition(aSeedType);
@@ -3475,7 +3481,7 @@ void Plant::IceZombies() {
 
 // 0x4664B0
 void Plant::BurnRow(int theRow) {
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {
@@ -3533,7 +3539,7 @@ void Plant::KillAllPlantsNearDoom() {
 void Plant::DoSpecial() {
     int aPosX = mX + mWidth / 2;
     int aPosY = mY + mHeight / 2;
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
 
     switch (mSeedType) {
     case SeedType::SEED_BLOVER: {
@@ -3608,7 +3614,7 @@ void Plant::DoSpecial() {
         if (mBoard->KillAllZombiesInRadius(mRow, aPosX, aPosY, 60, 0, false, aDamageRangeFlags) >= 1)
             ReportAchievement::GiveAchievement(mApp, Spudow, true); // @Patoke: add achievement
 
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_PARTICLE, mRow, 0);
         mApp->AddTodParticle(aPosX + 20.0f, aPosY, aRenderPosition, ParticleEffect::PARTICLE_POTATO_MINE);
         mBoard->ShakeBoard(3, -4);
 
@@ -3634,7 +3640,7 @@ void Plant::DoSpecial() {
 // 0x466B80
 void Plant::ImitaterMorph() {
     Die();
-    Plant *aPlant = mBoard->AddPlant(mPlantCol, mRow, mImitaterType, SeedType::SEED_IMITATER);
+    const Plant *aPlant = mBoard->AddPlant(mPlantCol, mRow, mImitaterType, SeedType::SEED_IMITATER);
 
     FilterEffect aFilter = FilterEffect::FILTER_EFFECT_WASHED_OUT;
     if (mImitaterType == SeedType::SEED_HYPNOSHROOM || mImitaterType == SeedType::SEED_SQUASH ||
@@ -3817,13 +3823,13 @@ void Plant::Fire(Zombie *theTargetZombie, int theRow, PlantWeapon thePlantWeapon
     }
 
     if (mSeedType == SeedType::SEED_SNOWPEA) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
         mApp->AddTodParticle(aOriginX + 8, aOriginY + 13, aRenderPosition, ParticleEffect::PARTICLE_SNOWPEA_PUFF);
     } else if (mSeedType == SeedType::SEED_PUFFSHROOM) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
         mApp->AddTodParticle(aOriginX + 18, aOriginY + 13, aRenderPosition, ParticleEffect::PARTICLE_PUFFSHROOM_MUZZLE);
     } else if (mSeedType == SeedType::SEED_SCAREDYSHROOM) {
-        int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
+        const int aRenderPosition = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, mRow, 1);
         mApp->AddTodParticle(aOriginX + 27, aOriginY + 13, aRenderPosition, ParticleEffect::PARTICLE_PUFFSHROOM_MUZZLE);
     }
 
@@ -3834,7 +3840,7 @@ void Plant::Fire(Zombie *theTargetZombie, int theRow, PlantWeapon thePlantWeapon
         mSeedType == SeedType::SEED_MELONPULT || mSeedType == SeedType::SEED_WINTERMELON) {
         float aRangeX, aRangeY;
         if (theTargetZombie) {
-            Rect aZombieRect = theTargetZombie->GetZombieRect();
+            const Rect aZombieRect = theTargetZombie->GetZombieRect();
             aRangeX = theTargetZombie->ZombieTargetLeadX(50.0f) - aOriginX - 30.0f;
             aRangeY = aZombieRect.mY - aOriginY;
 
@@ -3897,7 +3903,7 @@ void Plant::Fire(Zombie *theTargetZombie, int theRow, PlantWeapon thePlantWeapon
 
 // 0x4675C0
 Zombie *Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon) {
-    int aDamageRangeFlags = GetDamageRangeFlags(thePlantWeapon);
+    const int aDamageRangeFlags = GetDamageRangeFlags(thePlantWeapon);
     Rect aAttackRect = GetPlantAttackRect(thePlantWeapon);
     int aHighestWeight = 0;
     Zombie *aBestZombie = nullptr;
@@ -4014,8 +4020,8 @@ Zombie *Plant::FindTargetZombie(int theRow, PlantWeapon thePlantWeapon) {
 
 // 0x4678B0
 int Plant::DistanceToClosestZombie() {
-    int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
-    Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
+    const int aDamageRangeFlags = GetDamageRangeFlags(PlantWeapon::WEAPON_PRIMARY);
+    const Rect aAttackRect = GetPlantAttackRect(PlantWeapon::WEAPON_PRIMARY);
     int aClosestDistance = 1000;
 
     Zombie *aZombie = nullptr;
@@ -4052,8 +4058,8 @@ void Plant::Die() {
     }
 
     if (IsOnBoard()) {
-        Plant *aTopPlant = mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_BUNGEE_ORDER);
-        Plant *aFlowerPot = mBoard->GetFlowerPotAt(mPlantCol, mRow);
+        const Plant *aTopPlant = mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_BUNGEE_ORDER);
+        const Plant *aFlowerPot = mBoard->GetFlowerPotAt(mPlantCol, mRow);
         if (aFlowerPot && aTopPlant == aFlowerPot) {
             Reanimation *aPotReanim = mApp->ReanimationGet(aFlowerPot->mBodyReanimID);
             aPotReanim->mAnimRate = RandRangeFloat(10.0f, 15.0f);
@@ -4072,16 +4078,13 @@ PlantDefinition &GetPlantDefinition(SeedType theSeedType) {
 int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType) {
     if (gLawnApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED ||
         gLawnApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST) {
-        if (theSeedType == SeedType::SEED_REPEATER) {
-            return 1000;
-        } else if (theSeedType == SeedType::SEED_FUMESHROOM) {
-            return 500;
-        } else if (theSeedType == SeedType::SEED_TALLNUT) {
-            return 250;
-        } else if (theSeedType == SeedType::SEED_BEGHOULED_BUTTON_SHUFFLE) {
-            return 100;
-        } else if (theSeedType == SeedType::SEED_BEGHOULED_BUTTON_CRATER) {
-            return 200;
+        switch (theSeedType) {
+        case SeedType::SEED_REPEATER:                 return 1000;
+        case SeedType::SEED_FUMESHROOM:               return 500;
+        case SeedType::SEED_TALLNUT:                  return 250;
+        case SeedType::SEED_BEGHOULED_BUTTON_SHUFFLE: return 100;
+        case SeedType::SEED_BEGHOULED_BUTTON_CRATER:  return 200;
+        default:                                      unreachable();
         }
     }
 
@@ -4121,13 +4124,13 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType) {
 //  GOTY @Patoke: 0x46B6C0
 SexyString Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
-    SexyString aName = StrFormat(_S("[%s]"), aPlantDef.mPlantName);
+    const SexyString aName = StrFormat(_S("[%s]"), aPlantDef.mPlantName);
     SexyString aTranslatedName = TodStringTranslate(StringToSexyStringFast(aName));
 
     if (theSeedType == SeedType::SEED_IMITATER && theImitaterType != SeedType::SEED_NONE) {
         const PlantDefinition &aImitaterDef = GetPlantDefinition(theImitaterType);
-        std::string aImitaterName = StrFormat(_S("[%s]"), aImitaterDef.mPlantName);
-        std::string aTranslatedImitaterName = TodStringTranslate(StringToSexyStringFast(aImitaterName));
+        const std::string aImitaterName = StrFormat(_S("[%s]"), aImitaterDef.mPlantName);
+        const std::string aTranslatedImitaterName = TodStringTranslate(StringToSexyStringFast(aImitaterName));
         return StrFormat(_S("%s %s"), aTranslatedName.c_str(), aTranslatedImitaterName.c_str());
     }
 
@@ -4137,7 +4140,7 @@ SexyString Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType) 
 // 0x467DB0
 SexyString Plant::GetToolTip(SeedType theSeedType) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
-    SexyString aToolTip = StrFormat(_S("[%s_TOOLTIP]"), aPlantDef.mPlantName);
+    const SexyString aToolTip = StrFormat(_S("[%s_TOOLTIP]"), aPlantDef.mPlantName);
     return TodStringTranslate(aToolTip);
 }
 

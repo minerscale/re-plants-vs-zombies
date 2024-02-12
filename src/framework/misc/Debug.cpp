@@ -11,7 +11,7 @@ bool gInAssert = false;
 // Seemingly unused
 // extern bool gSexyDumpLeakedMem = false;
 
-static FILE *gTraceFile = NULL;
+static FILE *gTraceFile = nullptr;
 static int gTraceFileLen = 0;
 static int gTraceFileNum = 1;
 
@@ -44,12 +44,12 @@ static SexyAllocMap gSexyAllocMap;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 void SexyTrace(const char *theStr) {
-    if (gTraceFile == NULL) {
+    if (gTraceFile == nullptr) {
         gTraceFileNum = (gTraceFileNum + 1) % 2;
         char aBuf[50];
         sprintf(aBuf, "trace%d.txt", gTraceFileNum + 1);
         gTraceFile = fopen(aBuf, "w");
-        if (gTraceFile == NULL) return;
+        if (gTraceFile == nullptr) return;
     }
 
     fprintf(gTraceFile, "%s\n", theStr);
@@ -58,7 +58,7 @@ void SexyTrace(const char *theStr) {
     gTraceFileLen += strlen(theStr);
     if (gTraceFileLen > 100000) {
         fclose(gTraceFile);
-        gTraceFile = NULL;
+        gTraceFile = nullptr;
         gTraceFileLen = 0;
     }
 }
@@ -73,12 +73,12 @@ void SexyTraceFmt(const SexyChar *fmt...) {
     std::string result = SexyStringToStringFast(vformat(fmt, argList));
     va_end(argList);
 
-    if (gTraceFile == NULL) {
+    if (gTraceFile == nullptr) {
         gTraceFileNum = (gTraceFileNum + 1) % 2;
         char aBuf[50];
         sprintf(aBuf, "trace%d.txt", gTraceFileNum + 1);
         gTraceFile = fopen(aBuf, "w");
-        if (gTraceFile == NULL) return;
+        if (gTraceFile == nullptr) return;
     }
 
     fprintf(gTraceFile, "%s", result.c_str());
@@ -87,7 +87,7 @@ void SexyTraceFmt(const SexyChar *fmt...) {
     gTraceFileLen += result.length();
     if (gTraceFileLen > 100000) {
         fclose(gTraceFile);
-        gTraceFile = NULL;
+        gTraceFile = nullptr;
         gTraceFileLen = 0;
     }
 }
@@ -122,7 +122,6 @@ void SexyDumpUnfreed() {
     if (!gSexyAllocMapValid) return;
 
     // AutoCrit aCrit(gSexyAllocMap.mCrit);
-    SexyAllocMap::iterator i;
     int totalSize = 0;
     char buf[8192];
 
@@ -136,12 +135,12 @@ void SexyDumpUnfreed() {
     FILE *f = fopen("mem_leaks.txt", "wt");
     if (!f) return;
 
-    time_t aTime = time(NULL);
+    time_t aTime = time(nullptr);
     sprintf(buf, "Memory Leak Report for %s\n", asctime(localtime(&aTime)));
     fprintf(f, "%s", buf);
     printf("\n");
     printf("%s", buf);
-    for (i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); i++) {
+    for (auto i = gSexyAllocMap.begin(); i != gSexyAllocMap.end(); ++i) {
         sprintf(
             buf, "%s(%d) : Leak %d byte%s\n", i->second.file, i->second.line, i->second.size,
             i->second.size > 1 ? "s" : ""

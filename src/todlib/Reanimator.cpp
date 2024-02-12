@@ -498,9 +498,8 @@ void BlendTransform(
 
 // 0x471F90
 //  GOTY @Patoke: 0x476580
-bool Reanimation::GetCurrentTransform(
-    int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn
-) {
+bool Reanimation::GetCurrentTransform(int theTrackIndex, ReanimatorTransform *theTransformCurrent, bool theEarlyReturn)
+    const {
     const ReanimatorFrameTime aFrameTime = GetFrameTime();
 
     // 结合两帧之间的自然补间取得基础变换

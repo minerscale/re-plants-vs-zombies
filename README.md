@@ -82,7 +82,7 @@ Whenever you need to leave a comment for other developers to find you should do 
   * `@Contributor todo: Thing went wrong!`
 * If a new function has been reversed and you have found the address in the latest version of the game (or have reversed a certain class member offset) please note it as follows:
   * `@Contributor GOTY: 0xADDRESS`
-</br>
+<br/>
 </details>
 
 

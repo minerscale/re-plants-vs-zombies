@@ -59,7 +59,7 @@ public:
     void UpdateCollected();
     Color GetColor();
     /*inline*/
-    bool IsMoney();
+    bool IsMoney() const;
     /*inline*/
     bool IsSun();
     float GetSunScale();

@@ -57,7 +57,7 @@ void GridItem::GridItemDie() {
 }
 
 // 0x44D070
-void GridItem::DrawGridItemOverlay(Graphics *g) {
+void GridItem::DrawGridItemOverlay(Graphics *g) const {
     if (mGridItemType == GridItemType::GRIDITEM_STINKY) {
         if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_CHOCOLATE &&
             !mApp->mZenGarden->IsStinkyHighOnChocolate()) {
@@ -104,7 +104,7 @@ void GridItem::DrawIZombieBrain(Graphics *g) {
     }
 
     if (mBoard->mAdvice->mDuration > 0 && mBoard->mBoardData.mHelpIndex == AdviceType::ADVICE_I_ZOMBIE_EAT_ALL_BRAINS) {
-        Color aFlashingColor = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75);
+        const Color aFlashingColor = GetFlashingColor(mBoard->mBoardData.mMainCounter, 75);
         g->SetColorizeImages(true);
         g->SetColor(aFlashingColor);
     }
@@ -127,13 +127,13 @@ void GridItem::DrawIZombieBrain(Graphics *g) {
 void GridItem::DrawGraveStone(Graphics *g) {
     if (mGridItemCounter <= 0) return;
 
-    int aHeightPosition = TodAnimateCurve(0, 100, mGridItemCounter, 1000, 0, TodCurves::CURVE_EASE_IN_OUT);
-    int aGridCelLook = mBoard->mBoardData.mGridCelLook[mGridX][mGridY];
-    int aGridCelOffsetX = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
-    int aGridCelOffsetY = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
-    int aCelWidth = IMAGE_TOMBSTONES->GetCelWidth();
-    int aCelHeight = IMAGE_TOMBSTONES->GetCelHeight();
-    int aGraveCol = aGridCelLook % 5;
+    const int aHeightPosition = TodAnimateCurve(0, 100, mGridItemCounter, 1000, 0, TodCurves::CURVE_EASE_IN_OUT);
+    const int aGridCelLook = mBoard->mBoardData.mGridCelLook[mGridX][mGridY];
+    const int aGridCelOffsetX = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
+    const int aGridCelOffsetY = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
+    const int aCelWidth = IMAGE_TOMBSTONES->GetCelWidth();
+    const int aCelHeight = IMAGE_TOMBSTONES->GetCelHeight();
+    const int aGraveCol = aGridCelLook % 5;
     int aGraveRow;
     if (mGridY == 0) {
         aGraveRow = 1;
@@ -143,22 +143,23 @@ void GridItem::DrawGraveStone(Graphics *g) {
         aGraveRow = 2 + aGridCelLook % 2;
     }
 
-    int aVisibleHeight = TodAnimateCurve(0, 1000, aHeightPosition, aCelHeight, 0, TodCurves::CURVE_EASE_IN_OUT);
-    int aExtraBottomClip = TodAnimateCurve(0, 50, aHeightPosition, 0, 14, TodCurves::CURVE_EASE_IN_OUT);
-    int aVisibleHeightDirt = TodAnimateCurve(500, 1000, aHeightPosition, aCelHeight, 0, TodCurves::CURVE_EASE_IN_OUT);
+    const int aVisibleHeight = TodAnimateCurve(0, 1000, aHeightPosition, aCelHeight, 0, TodCurves::CURVE_EASE_IN_OUT);
+    const int aExtraBottomClip = TodAnimateCurve(0, 50, aHeightPosition, 0, 14, TodCurves::CURVE_EASE_IN_OUT);
+    const int aVisibleHeightDirt =
+        TodAnimateCurve(500, 1000, aHeightPosition, aCelHeight, 0, TodCurves::CURVE_EASE_IN_OUT);
     int aExtraTopClip = 0;
-    Plant *aPlant = mBoard->GetTopPlantAt(mGridX, mGridY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
+    const Plant *aPlant = mBoard->GetTopPlantAt(mGridX, mGridY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
     if (aPlant && aPlant->mState == PlantState::STATE_GRAVEBUSTER_EATING) {
         aExtraTopClip = TodAnimateCurveFloat(400, 0, aPlant->mStateCountdown, 10.0f, 40.0f, TodCurves::CURVE_LINEAR);
     }
 
-    Rect aSrcRect(
+    const Rect aSrcRect(
         aCelWidth * aGraveCol, aCelHeight * aGraveRow + aExtraTopClip, aCelWidth,
         aVisibleHeight - aExtraBottomClip - aExtraTopClip
     );
-    Rect aSrcRectDirt(aCelWidth * aGraveCol, aCelHeight * aGraveRow, aCelWidth, aVisibleHeightDirt);
-    int x = mBoard->GridToPixelX(mGridX, mGridY) + aGridCelOffsetX - 4;
-    int y = mBoard->GridToPixelY(mGridX, mGridY) + aCelHeight + aGridCelOffsetY - 9;
+    const Rect aSrcRectDirt(aCelWidth * aGraveCol, aCelHeight * aGraveRow, aCelWidth, aVisibleHeightDirt);
+    const int x = mBoard->GridToPixelX(mGridX, mGridY) + aGridCelOffsetX - 4;
+    const int y = mBoard->GridToPixelY(mGridX, mGridY) + aCelHeight + aGridCelOffsetY - 9;
     g->DrawImage(IMAGE_TOMBSTONES, x, y - aVisibleHeight + aExtraTopClip, aSrcRect);
     g->DrawImage(IMAGE_TOMBSTONE_MOUNDS, x, y - aVisibleHeightDirt, aSrcRectDirt);
 }
@@ -166,16 +167,16 @@ void GridItem::DrawGraveStone(Graphics *g) {
 // 0x44D690
 void GridItem::DrawStinky(Graphics *g) {
     Reanimation *aStinkyReanim = mApp->ReanimationGet(mGridItemReanimID);
-    float aOriginalTime = aStinkyReanim->mAnimTime;
+    const float aOriginalTime = aStinkyReanim->mAnimTime;
 
     TOD_ASSERT(mMotionTrailCount <= NUM_MOTION_TRAIL_FRAMES);
     for (int i = mMotionTrailCount - 1; i >= 0; i--) {
         if (i % 2) {
-            MotionTrailFrame &aFrame = mMotionTrailFrames[i];
-            float aDiffX = aFrame.mPosX - mPosX;
-            float aDiffY = aFrame.mPosY - mPosY;
+            const MotionTrailFrame &aFrame = mMotionTrailFrames[i];
+            const float aDiffX = aFrame.mPosX - mPosX;
+            const float aDiffY = aFrame.mPosY - mPosY;
 
-            int anAlpha = TodAnimateCurve(0, 11, i, 64, 16, TodCurves::CURVE_LINEAR);
+            const int anAlpha = TodAnimateCurve(0, 11, i, 64, 16, TodCurves::CURVE_LINEAR);
             g->SetColor(Color(255, 255, 255, anAlpha));
             g->SetColorizeImages(true);
             aStinkyReanim->mAnimTime = aFrame.mAnimTime;
@@ -205,12 +206,12 @@ void GridItem::DrawCrater(Graphics *g) {
     float aXPos = mBoard->GridToPixelX(mGridX, mGridY) - 8.0f;
     float aYPos = mBoard->GridToPixelY(mGridX, mGridY) + 40.0f;
     if (mGridItemCounter < 25) {
-        int anAlpha = TodAnimateCurve(25, 0, mGridItemCounter, 255, 0, TodCurves::CURVE_LINEAR);
+        const int anAlpha = TodAnimateCurve(25, 0, mGridItemCounter, 255, 0, TodCurves::CURVE_LINEAR);
         g->SetColor(Color(255, 255, 255, anAlpha));
         g->SetColorizeImages(true);
     }
 
-    bool fading = mGridItemCounter < 9000;
+    const bool fading = mGridItemCounter < 9000;
     Image *aImage = IMAGE_CRATER;
     int aCelCol = 0;
 
@@ -225,8 +226,8 @@ void GridItem::DrawCrater(Graphics *g) {
             aCelCol = 1;
         }
 
-        float aPos = mGridY * PI + mGridX * PI * 0.25f;
-        float aTime = mBoard->mBoardData.mMainCounter * PI * 2.0f / 200.0f;
+        const float aPos = mGridY * PI + mGridX * PI * 0.25f;
+        const float aTime = mBoard->mBoardData.mMainCounter * PI * 2.0f / 200.0f;
         aYPos += sin(aPos + aTime) * 2.0f;
     } else if (mBoard->StageHasRoof()) {
         if (mGridX < 5) {
@@ -348,8 +349,8 @@ void GridItem::DrawScaryPot(Graphics *g) {
 
 // 0x44DFD0
 void GridItem::DrawLadder(Graphics *g) {
-    int aXPos = mBoard->GridToPixelX(mGridX, mGridY);
-    int aYPos = mBoard->GridToPixelY(mGridX, mGridY);
+    const int aXPos = mBoard->GridToPixelX(mGridX, mGridY);
+    const int aYPos = mBoard->GridToPixelY(mGridX, mGridY);
     TodDrawImageScaledF(g, IMAGE_REANIM_ZOMBIE_LADDER_5, aXPos + 25.0f, aYPos - 4.0f, 0.8f, 0.8f);
 }
 
@@ -386,10 +387,10 @@ void GridItem::DrawSquirrel(Graphics* g)
 
 // 0x44E090
 void GridItem::AddGraveStoneParticles() {
-    int aXOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
-    int aYOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
-    int aXPos = mBoard->GridToPixelX(mGridX, mGridY) + 14 + aXOffset;
-    int aYPos = mBoard->GridToPixelY(mGridX, mGridY) + 78 + aYOffset;
+    const int aXOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][0];
+    const int aYOffset = mBoard->mBoardData.mGridCelOffset[mGridX][mGridY][1];
+    const int aXPos = mBoard->GridToPixelX(mGridX, mGridY) + 14 + aXOffset;
+    const int aYPos = mBoard->GridToPixelY(mGridX, mGridY) + 78 + aYOffset;
     mApp->AddTodParticle(aXPos, aYPos, mRenderOrder + 1, ParticleEffect::PARTICLE_GRAVE_STONE_RISE);
     mApp->PlayFoley(FoleyType::FOLEY_DIRT_RISE);
 }
@@ -539,7 +540,7 @@ void GridItem::Update() {
 
 // 0x44E6A0
 Zombie *GridItem::RakeFindZombie() {
-    Rect aRakeRect(mPosX, mPosY, 63, 80);
+    const Rect aRakeRect(mPosX, mPosY, 63, 80);
 
     Zombie *aZombie = nullptr;
     while (mBoard->IterateZombies(aZombie)) {

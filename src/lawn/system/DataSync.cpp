@@ -109,7 +109,7 @@ double DataReader::ReadDouble() {
 }
 
 void DataReader::ReadString(SexyString &theStr) {
-    unsigned int aStrLen = ReadShort();
+    const unsigned int aStrLen = ReadShort();
     theStr.resize(aStrLen);
     ReadBytes((void *)theStr.c_str(), aStrLen);
 }
@@ -147,7 +147,7 @@ void DataSync::Reset() {
     ResetPointerTable();
 }
 
-void DataSync::SyncBytes(void *theData, uint32_t theDataLen) {
+void DataSync::SyncBytes(void *theData, uint32_t theDataLen) const {
     if (mReader) {
         mReader->ReadBytes(theData, theDataLen);
     } else {
@@ -374,7 +374,7 @@ void DataWriter::EnsureCapacity(uint32_t theNumBytes) {
         } while (mCapacity < theNumBytes);
 
         // 申请新内存
-        auto aData = new char[mCapacity];
+        const auto aData = new char[mCapacity];
         // 将原数据迁移至新内存区域中
         memcpy(aData, mData, mDataLen);
         // 释放旧有内存区域
@@ -389,7 +389,7 @@ void DataWriter::OpenMemory(uint32_t theReserveAmount) {
         mFile = nullptr;
     }
     delete[] mData;
-    mData = 0;
+    mData = nullptr;
     mDataLen = 0;
     mCapacity = 0;
 
@@ -448,7 +448,7 @@ void DataWriter::WriteDouble(double theDouble) { WriteBytes(&theDouble, sizeof(d
 
 // 0x443810
 void DataWriter::WriteString(const SexyString &theStr) {
-    unsigned short aStrLen = static_cast<unsigned short>(theStr.length());
+    const unsigned short aStrLen = static_cast<unsigned short>(theStr.length());
     WriteShort(aStrLen);
     WriteBytes(theStr.c_str(), (uint32_t)aStrLen);
 }

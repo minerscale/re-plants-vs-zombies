@@ -30,21 +30,21 @@ ContinueDialog::ContinueDialog(LawnApp *theApp)
     CalcSize(10, 60);
 }
 
-// 0x4333D0¡¢0x4333F0
+// 0x4333D0ã€0x4333F0
 ContinueDialog::~ContinueDialog() {
     delete mContinueButton;
     delete mNewGameButton;
 }
 
 // 0x433470
-int ContinueDialog::GetPreferredHeight(int theWidth) { return LawnDialog::GetPreferredHeight(theWidth) + 40; }
+int ContinueDialog::GetPreferredHeight(const int theWidth) { return LawnDialog::GetPreferredHeight(theWidth) + 40; }
 
 // 0x433480
-void ContinueDialog::Resize(int theX, int theY, int theWidth, int theHeight) {
+void ContinueDialog::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     LawnDialog::Resize(theX, theY, theWidth, theHeight);
 
-    int aBtnWidth = IMAGE_BUTTON_LEFT->mWidth + IMAGE_BUTTON_MIDDLE->mWidth * 3 + IMAGE_BUTTON_RIGHT->mWidth;
-    int aBtnHeight = mLawnYesButton->mHeight;
+    const int aBtnWidth = IMAGE_BUTTON_LEFT->mWidth + IMAGE_BUTTON_MIDDLE->mWidth * 3 + IMAGE_BUTTON_RIGHT->mWidth;
+    const int aBtnHeight = mLawnYesButton->mHeight;
 
     /*
     int aContinueX = mLawnYesButton->mX - 20;
@@ -81,7 +81,7 @@ void ContinueDialog::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x4335D0
-void ContinueDialog::RestartLoopingSounds() {
+void ContinueDialog::RestartLoopingSounds() const {
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_RAINING_SEEDS || mApp->IsStormyNightLevel()) {
         mApp->PlayFoley(FoleyType::FOLEY_RAIN);
     }
@@ -95,10 +95,10 @@ void ContinueDialog::RestartLoopingSounds() {
 }
 
 // 0x4336C0
-void ContinueDialog::ButtonDepress(int theId) {
+void ContinueDialog::ButtonDepress(const int theId) {
     if (theId == ContinueDialog::ContinueDialog_Continue) {
         if (mApp->mBoard->mBoardData.mNextSurvivalStageCounter != 1) {
-            std::string aFileName = GetSavedGameName(mApp->mGameMode, mApp->mPlayerInfo->mId);
+            const std::string aFileName = GetSavedGameName(mApp->mGameMode, mApp->mPlayerInfo->mId);
             mApp->EraseFile(aFileName);
         }
 
@@ -106,14 +106,14 @@ void ContinueDialog::ButtonDepress(int theId) {
         mApp->KillDialog(mId);
     } else if (theId == ContinueDialog::ContinueDialog_NewGame) {
         if (mApp->IsAdventureMode()) {
-            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
+            const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_RESTARTCONFIRM, true, _S("[RESTART_LEVEL_HEADER]"), _S("[RESTART_LEVEL]"), _S(""),
                 Dialog::BUTTONS_OK_CANCEL
             ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[RESTART_BUTTON]"));
             // aDialog->CalcSize(0, 0);
         } else {
-            auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
+            const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                 Dialogs::DIALOG_RESTARTCONFIRM, true, _S("[NEW_GAME_HEADER]"), _S("[NEW_GAME]"), _S(""),
                 Dialog::BUTTONS_OK_CANCEL
             ));

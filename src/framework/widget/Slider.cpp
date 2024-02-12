@@ -25,7 +25,7 @@ void Slider::SetValue(double theValue) {
 bool Slider::HasTransparencies() { return true; }
 
 void Slider::Draw(Graphics *g) {
-    if (mTrackImage != NULL) {
+    if (mTrackImage != nullptr) {
         int cw = mHorizontal ? mTrackImage->GetWidth() / 3 : mTrackImage->GetWidth();
         int ch = mHorizontal ? mTrackImage->GetHeight() : mTrackImage->GetHeight() / 3;
 
@@ -51,12 +51,12 @@ void Slider::Draw(Graphics *g) {
         }
     }
 
-    if (mHorizontal && (mThumbImage != NULL))
+    if (mHorizontal && (mThumbImage != nullptr))
         g->DrawImage(
             mThumbImage, static_cast<int>(mVal * (mWidth - mThumbImage->GetWidth())),
             (mHeight - mThumbImage->GetHeight()) / 2
         );
-    else if (!mHorizontal && (mThumbImage != NULL))
+    else if (!mHorizontal && (mThumbImage != nullptr))
         g->DrawImage(
             mThumbImage, (mWidth - mThumbImage->GetWidth()) / 2,
             static_cast<int>(mVal * (mHeight - mThumbImage->GetHeight()))

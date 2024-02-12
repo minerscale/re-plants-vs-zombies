@@ -119,7 +119,7 @@ ChallengeDefinition gChallengeDefs[NUM_CHALLENGE_MODES] = {
 
 // 0x42DAE0
 //  GOTY @Patoke: 0x430810
-ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
+ChallengeScreen::ChallengeScreen(LawnApp *theApp, const ChallengePage thePage) {
     mLockShakeX = 0;
     mLockShakeY = 0;
     mPageIndex = thePage;
@@ -142,7 +142,7 @@ ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
     mBackButton->Resize(18, 568, 111, 26);
 
     for (int aPageIdx = CHALLENGE_PAGE_SURVIVAL; aPageIdx < MAX_CHALLANGE_PAGES; aPageIdx++) {
-        auto aPageButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Page + aPageIdx, this);
+        const auto aPageButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Page + aPageIdx, this);
         aPageButton->mDoFinger = true;
         mPageButton[aPageIdx] = aPageButton;
         if (aPageIdx == CHALLENGE_PAGE_LIMBO) aPageButton->mLabel = TodStringTranslate(_S("Limbo Page"));
@@ -159,8 +159,8 @@ ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
     }
 
     for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++) {
-        ChallengeDefinition &aChlDef = GetChallengeDefinition(aChallengeMode);
-        auto aChallengeButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Mode + aChallengeMode, this);
+        const ChallengeDefinition &aChlDef = GetChallengeDefinition(aChallengeMode);
+        const auto aChallengeButton = new ButtonWidget(ChallengeScreen::ChallengeScreen_Mode + aChallengeMode, this);
         mChallengeButtons[aChallengeMode] = aChallengeButton;
         aChallengeButton->mDoFinger = true;
         aChallengeButton->mFrameNoDraw = true;
@@ -203,38 +203,38 @@ ChallengeScreen::ChallengeScreen(LawnApp *theApp, ChallengePage thePage) {
 // 0x42E280 & 0x42E2A0
 ChallengeScreen::~ChallengeScreen() {
     delete mBackButton;
-    for (ButtonWidget *aPageButton : mPageButton)
+    for (const ButtonWidget *aPageButton : mPageButton)
         delete aPageButton;
-    for (ButtonWidget *aChallengeButton : mChallengeButtons)
+    for (const ButtonWidget *aChallengeButton : mChallengeButtons)
         delete aChallengeButton;
     delete mToolTip;
 }
 
-ChallengeDefinition &GetChallengeDefinition(int theChallengeMode) {
+ChallengeDefinition &GetChallengeDefinition(const int theChallengeMode) {
     TOD_ASSERT(theChallengeMode >= 0 && theChallengeMode < NUM_CHALLENGE_MODES);
 
-    ChallengeDefinition &aDef = gChallengeDefs[theChallengeMode];
+    const ChallengeDefinition &aDef = gChallengeDefs[theChallengeMode];
     (void)aDef; // Unused in Release mode
     TOD_ASSERT(aDef.mChallengeMode == theChallengeMode + GAMEMODE_SURVIVAL_NORMAL_STAGE_1);
 
     return gChallengeDefs[theChallengeMode];
 }
 
-bool ChallengeScreen::IsScaryPotterLevel(GameMode theGameMode) {
+bool ChallengeScreen::IsScaryPotterLevel(const GameMode theGameMode) {
     return theGameMode >= GAMEMODE_SCARY_POTTER_1 && theGameMode <= GAMEMODE_SCARY_POTTER_ENDLESS;
 }
 
-bool ChallengeScreen::IsIZombieLevel(GameMode theGameMode) {
+bool ChallengeScreen::IsIZombieLevel(const GameMode theGameMode) {
     return theGameMode >= GAMEMODE_PUZZLE_I_ZOMBIE_1 && theGameMode <= GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
 }
 
 // 0x42E3C0
-void ChallengeScreen::SetUnlockChallengeIndex(ChallengePage thePage, bool theIsIZombie) {
+void ChallengeScreen::SetUnlockChallengeIndex(const ChallengePage thePage, const bool theIsIZombie) {
     mUnlockState = UNLOCK_SHAKING;
     mUnlockStateCounter = 100;
     mUnlockChallengeIndex = 0;
     for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++) {
-        ChallengeDefinition &aDef = GetChallengeDefinition(aChallengeMode);
+        const ChallengeDefinition &aDef = GetChallengeDefinition(aChallengeMode);
         if (aDef.mPage == thePage) {
             if (thePage != CHALLENGE_PAGE_PUZZLE || (!theIsIZombie && IsScaryPotterLevel(aDef.mChallengeMode)) ||
                 (theIsIZombie && IsIZombieLevel(aDef.mChallengeMode))) {
@@ -247,8 +247,8 @@ void ChallengeScreen::SetUnlockChallengeIndex(ChallengePage thePage, bool theIsI
 }
 
 // 0x42E440
-int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
-    ChallengeDefinition &aDef = GetChallengeDefinition(theChallengeIndex);
+int ChallengeScreen::MoreTrophiesNeeded(const int theChallengeIndex) {
+    const ChallengeDefinition &aDef = GetChallengeDefinition(theChallengeIndex);
     if (mApp->mGameMode == GAMEMODE_UPSELL && mApp->mGameScene == SCENE_LEVEL_INTRO) {
         return aDef.mChallengeMode == GAMEMODE_CHALLENGE_FINAL_BOSS ? 1 : 0;
     }
@@ -266,7 +266,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
     if (aDef.mPage == CHALLENGE_PAGE_PUZZLE) {
         if (IsScaryPotterLevel(aDef.mChallengeMode)) {
             int aLevelsCompleted = 0;
-            for (ChallengeDefinition &aSPDef : gChallengeDefs) {
+            for (const ChallengeDefinition &aSPDef : gChallengeDefs) {
                 if (IsScaryPotterLevel(aSPDef.mChallengeMode) && mApp->HasBeatenChallenge(aSPDef.mChallengeMode)) {
                     aLevelsCompleted++;
                 }
@@ -279,7 +279,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
             }
         } else if (IsIZombieLevel(aDef.mChallengeMode)) {
             int aLevelsCompleted = 0;
-            for (ChallengeDefinition &aIZDef : gChallengeDefs) {
+            for (const ChallengeDefinition &aIZDef : gChallengeDefs) {
                 if (IsIZombieLevel(aIZDef.mChallengeMode) && mApp->HasBeatenChallenge(aIZDef.mChallengeMode)) {
                     aLevelsCompleted++;
                 }
@@ -293,7 +293,7 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
             }
         }
     } else {
-        int aIdxInPage = aDef.mRow * 5 + aDef.mCol;
+        const int aIdxInPage = aDef.mRow * 5 + aDef.mCol;
         if ((aDef.mPage == CHALLENGE_PAGE_CHALLENGE || aDef.mPage == CHALLENGE_PAGE_SURVIVAL) &&
             !mApp->HasFinishedAdventure()) {
             return aIdxInPage < 3 ? 0 : aIdxInPage == 3 ? 1 : 2;
@@ -319,12 +319,12 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex) {
 }
 
 // 0x42E6E0
-bool ChallengeScreen::ShowPageButtons() {
+bool ChallengeScreen::ShowPageButtons() const {
     return mApp->mTodCheatKeys && mPageIndex != CHALLENGE_PAGE_SURVIVAL && mPageIndex != CHALLENGE_PAGE_PUZZLE;
 }
 
 // 0x42E710
-void ChallengeScreen::UpdateButtons() {
+void ChallengeScreen::UpdateButtons() const {
     for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++)
         mChallengeButtons[aChallengeMode]->mVisible = GetChallengeDefinition(aChallengeMode).mPage == mPageIndex;
     for (int aPage = 0; aPage < MAX_CHALLANGE_PAGES; aPage++) {
@@ -340,9 +340,9 @@ void ChallengeScreen::UpdateButtons() {
 }
 
 // 0x42E8A0
-int ChallengeScreen::AccomplishmentsNeeded(int theChallengeIndex) {
+int ChallengeScreen::AccomplishmentsNeeded(const int theChallengeIndex) {
     int aTrophiesNeeded = MoreTrophiesNeeded(theChallengeIndex);
-    GameMode aGameMode = GetChallengeDefinition(theChallengeIndex).mChallengeMode;
+    const GameMode aGameMode = GetChallengeDefinition(theChallengeIndex).mChallengeMode;
     if (mApp->IsSurvivalEndless(aGameMode) && aTrophiesNeeded <= 3 &&
         mApp->GetNumTrophies(CHALLENGE_PAGE_SURVIVAL) < 10 && mApp->HasFinishedAdventure() &&
         !mApp->IsTrialStageLocked())
@@ -351,10 +351,10 @@ int ChallengeScreen::AccomplishmentsNeeded(int theChallengeIndex) {
 }
 
 // 0x42E920
-void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
-    ButtonWidget *aChallengeButton = mChallengeButtons[theChallengeIndex];
+void ChallengeScreen::DrawButton(Graphics *g, const int theChallengeIndex) {
+    const ButtonWidget *aChallengeButton = mChallengeButtons[theChallengeIndex];
     if (aChallengeButton->mVisible) {
-        ChallengeDefinition &aDef = GetChallengeDefinition(theChallengeIndex);
+        const ChallengeDefinition &aDef = GetChallengeDefinition(theChallengeIndex);
         int aPosX = aChallengeButton->mX;
         int aPosY = aChallengeButton->mY;
         if (aChallengeButton->mIsDown) {
@@ -374,7 +374,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
                 if (mUnlockState == UNLOCK_SHAKING) {
                     g->SetColor(Color(92, 92, 92));
                 } else if (mUnlockState == UNLOCK_FADING) {
-                    int aColor = TodAnimateCurve(50, 25, mUnlockStateCounter, 92, 255, CURVE_LINEAR);
+                    const int aColor = TodAnimateCurve(50, 25, mUnlockStateCounter, 92, 255, CURVE_LINEAR);
                     g->SetColor(Color(aColor, aColor, aColor));
                 }
                 g->SetColorizeImages(true);
@@ -389,7 +389,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             // ============================================================================================
             // ▲ 绘制小游戏按钮边框
             // ============================================================================================
-            bool aHighLight = aChallengeButton->mIsOver && theChallengeIndex != mUnlockChallengeIndex;
+            const bool aHighLight = aChallengeButton->mIsOver && theChallengeIndex != mUnlockChallengeIndex;
             g->SetColorizeImages(false);
             g->DrawImage(
                 aHighLight ? Sexy::IMAGE_CHALLENGE_WINDOW : Sexy::IMAGE_CHALLENGE_WINDOW_HIGHLIGHT, aPosX - 6, aPosY - 2
@@ -398,19 +398,19 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             // ============================================================================================
             // ▲ 绘制小游戏的名称
             // ============================================================================================
-            Color aTextColor = aHighLight ? Color(250, 40, 40) : Color(42, 42, 90);
+            const Color aTextColor = aHighLight ? Color(250, 40, 40) : Color(42, 42, 90);
             SexyString aName = TodStringTranslate(aDef.mChallengeName);
             if (aChallengeButton->mDisabled ||
                 (theChallengeIndex == mUnlockChallengeIndex && mUnlockState == UNLOCK_SHAKING)) {
                 aName = _S("?");
             }
 
-            int aNameLen = aName.size();
+            const int aNameLen = aName.size();
             if (aNameLen < 13) {
                 TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
             } else {
                 // 先尝试在名称字符串的后半段取空格以将字符串分隔为两行，若后半段中无空格则在整个字符串中寻找空格
-                int aHalfPos =
+                const int aHalfPos =
                     (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
                 const SexyChar *aSpacedChar = sexystrchr(aName.c_str() + aHalfPos, _S(' '));
                 if (aSpacedChar == nullptr) {
@@ -441,7 +441,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
             // ============================================================================================
             // ▲ 绘制关卡锁定或关卡完成的贴图以及关卡最高记录的文本等
             // ============================================================================================
-            int aRecord = mApp->mPlayerInfo->mChallengeRecords[theChallengeIndex];
+            const int aRecord = mApp->mPlayerInfo->mChallengeRecords[theChallengeIndex];
             if (theChallengeIndex == mUnlockChallengeIndex) {
                 Image *aLockImage = Sexy::IMAGE_LOCK;
                 if (mUnlockState == UNLOCK_FADING) {
@@ -456,7 +456,7 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
                 if (mApp->HasBeatenChallenge(aDef.mChallengeMode)) {
                     g->DrawImage(Sexy::IMAGE_MINIGAME_TROPHY, aPosX - 6, aPosY - 2);
                 } else if (mApp->IsEndlessScaryPotter(aDef.mChallengeMode) || mApp->IsEndlessIZombie(aDef.mChallengeMode)) {
-                    SexyString aAchievement = mApp->Pluralize(aRecord, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
+                    const SexyString aAchievement = mApp->Pluralize(aRecord, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
                     TodDrawString(
                         g, aAchievement, aPosX + 48, aPosY + 48, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White,
                         DS_ALIGN_CENTER
@@ -466,8 +466,9 @@ void ChallengeScreen::DrawButton(Graphics *g, int theChallengeIndex) {
                         DS_ALIGN_CENTER
                     );
                 } else if (mApp->IsSurvivalEndless(aDef.mChallengeMode)) {
-                    SexyString aAchievement = TodReplaceNumberString(_S("[LONGEST_STREAK]"), _S("{STREAK}"), aRecord);
-                    Rect aRect(aPosX, aPosY + 15, 96, 200);
+                    const SexyString aAchievement =
+                        TodReplaceNumberString(_S("[LONGEST_STREAK]"), _S("{STREAK}"), aRecord);
+                    const Rect aRect(aPosX, aPosY + 15, 96, 200);
                     TodDrawStringWrapped(
                         g, aAchievement, aRect, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White, DS_ALIGN_CENTER
                     );
@@ -489,18 +490,18 @@ void ChallengeScreen::Draw(Graphics *g) {
     g->SetLinearBlend(true);
     g->DrawImage(Sexy::IMAGE_CHALLENGE_BACKGROUND, 0, 0);
 
-    SexyString aTitleString = mPageIndex == CHALLENGE_PAGE_SURVIVAL ? _S("[PICK_AREA]")
-                              : mPageIndex == CHALLENGE_PAGE_PUZZLE ? _S("[SCARY_POTTER]")
-                                                                    : _S("[PICK_CHALLENGE]");
+    const SexyString aTitleString = mPageIndex == CHALLENGE_PAGE_SURVIVAL ? _S("[PICK_AREA]")
+                                    : mPageIndex == CHALLENGE_PAGE_PUZZLE ? _S("[SCARY_POTTER]")
+                                                                          : _S("[PICK_CHALLENGE]");
     TodDrawString(g, aTitleString, 400, 58, Sexy::FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER);
 
-    int aTrophiesGot = mApp->GetNumTrophies(mPageIndex);
-    int aTrophiesTotal = mPageIndex == CHALLENGE_PAGE_SURVIVAL    ? 10
-                         : mPageIndex == CHALLENGE_PAGE_CHALLENGE ? 20
-                         : mPageIndex == CHALLENGE_PAGE_PUZZLE    ? 18
-                                                                  : 0;
+    const int aTrophiesGot = mApp->GetNumTrophies(mPageIndex);
+    const int aTrophiesTotal = mPageIndex == CHALLENGE_PAGE_SURVIVAL    ? 10
+                               : mPageIndex == CHALLENGE_PAGE_CHALLENGE ? 20
+                               : mPageIndex == CHALLENGE_PAGE_PUZZLE    ? 18
+                                                                        : 0;
     if (aTrophiesTotal > 0) {
-        SexyString aTrophyString = StrFormat(_S("%d/%d"), aTrophiesGot, aTrophiesTotal);
+        const SexyString aTrophyString = StrFormat(_S("%d/%d"), aTrophiesGot, aTrophiesTotal);
         TodDrawString(g, aTrophyString, 739, 73, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 240, 0), DS_ALIGN_CENTER);
     }
     TodDrawImageScaledF(g, Sexy::IMAGE_TROPHY, 718, 26, 0.5f, 0.5f);
@@ -558,19 +559,19 @@ void ChallengeScreen::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x42F720
-void ChallengeScreen::ButtonPress(int theId) {
+void ChallengeScreen::ButtonPress(const int theId) {
     (void)theId;
     mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
 }
 
 // 0x42F740
-void ChallengeScreen::ButtonDepress(int theId) {
+void ChallengeScreen::ButtonDepress(const int theId) {
     if (theId == ChallengeScreen::ChallengeScreen_Back) {
         mApp->KillChallengeScreen();
         mApp->DoBackToMain();
     }
 
-    int aChallengeMode = theId - ChallengeScreen::ChallengeScreen_Mode;
+    const int aChallengeMode = theId - ChallengeScreen::ChallengeScreen_Mode;
     if (aChallengeMode >= 0 && aChallengeMode < NUM_CHALLENGE_MODES) {
         mApp->KillChallengeScreen();
         mApp->PreNewGame(static_cast<GameMode>(aChallengeMode + 1), true);
@@ -591,7 +592,7 @@ void ChallengeScreen::UpdateToolTip() {
     }
 
     for (int aChallengeMode = 0; aChallengeMode < NUM_CHALLENGE_MODES; aChallengeMode++) {
-        ChallengeDefinition &aDef = GetChallengeDefinition(aChallengeMode);
+        const ChallengeDefinition &aDef = GetChallengeDefinition(aChallengeMode);
         ButtonWidget *aChallengeButton = mChallengeButtons[aChallengeMode];
         if (aChallengeButton->mVisible && aChallengeButton->mDisabled &&
             aChallengeButton->Contains(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY) &&

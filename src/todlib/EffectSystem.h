@@ -66,7 +66,7 @@ public:
     void EffectSystemDispose();
     void EffectSystemFreeAll() const;
     void ProcessDeleteQueue() const;
-    void Update();
+    void Update() const;
 };
 
 extern EffectSystem *gEffectSystem; //[0x6A9EB8]

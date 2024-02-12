@@ -63,12 +63,12 @@ public:
     GameButton(int theId);
     ~GameButton();
 
-    static /*inline*/ bool HaveButtonImage(Image *theImage, Rect &theRect);
-    void DrawButtonImage(Graphics *g, Image *theImage, Rect &theRect, int theX, int theY);
+    static /*inline*/ bool HaveButtonImage(const Image *theImage, const Rect &theRect);
+    void DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, int theX, int theY) const;
     /*inline*/
     void SetFont(_Font *theFont);
     /*inline*/
-    bool IsButtonDown();
+    bool IsButtonDown() const;
     void Draw(Graphics *g);
     /*inline*/
     void SetDisabled(bool theDisabled);

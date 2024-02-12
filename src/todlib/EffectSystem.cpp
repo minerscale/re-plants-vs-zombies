@@ -96,7 +96,7 @@ void EffectSystem::ProcessDeleteQueue() const {
 }
 
 // 0x445890
-void EffectSystem::Update() {
+void EffectSystem::Update() const {
     TodParticleSystem *aParticle = nullptr;
     while (mParticleHolder->mParticleSystems.IterateNext(aParticle))
         if (!aParticle->mIsAttachment) aParticle->Update();

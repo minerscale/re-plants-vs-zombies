@@ -16,14 +16,14 @@
 void ReanimatorCache::UpdateReanimationForVariation(Reanimation *theReanim, DrawVariation theDrawVariation) {
     if (theDrawVariation >= DrawVariation::VARIATION_MARIGOLD_WHITE &&
         theDrawVariation <= DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN) {
-        size_t aVariationIndex =
+        const size_t aVariationIndex =
             static_cast<size_t>(theDrawVariation) - static_cast<size_t>(DrawVariation::VARIATION_MARIGOLD_WHITE);
-        Color MARIGOLD_VARIATIONS[] = {Color(255, 255, 255), Color(230, 30, 195),  Color(250, 125, 5),
-                                       Color(255, 145, 215), Color(160, 255, 245), Color(230, 30, 30),
-                                       Color(5, 130, 255),   Color(195, 55, 235),  Color(235, 210, 255),
-                                       Color(255, 245, 55),  Color(180, 255, 105)};
+        const Color MARIGOLD_VARIATIONS[] = {Color(255, 255, 255), Color(230, 30, 195),  Color(250, 125, 5),
+                                             Color(255, 145, 215), Color(160, 255, 245), Color(230, 30, 30),
+                                             Color(5, 130, 255),   Color(195, 55, 235),  Color(235, 210, 255),
+                                             Color(255, 245, 55),  Color(180, 255, 105)};
 
-        TOD_ASSERT(aVariationIndex >= 0 && aVariationIndex < LENGTH(MARIGOLD_VARIATIONS));
+        TOD_ASSERT(aVariationIndex >= 0 && aVariationIndex < std::size(MARIGOLD_VARIATIONS));
         theReanim->GetTrackInstanceByName("Marigold_petals")->mTrackColor = MARIGOLD_VARIATIONS[aVariationIndex];
     } else {
         switch (theDrawVariation) {
@@ -165,7 +165,7 @@ std::unique_ptr<Image> ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedTyp
     Graphics aGraphics(anImage.get());
     aGraphics.SetLinearBlend(true);
 
-    PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
+    const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
     // TOD_ASSERT(aPlantDef.mReanimationType != ReanimationType::REANIM_NONE);
 
     if (theSeedType == SeedType::SEED_POTATOMINE) {

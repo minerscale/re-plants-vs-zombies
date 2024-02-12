@@ -39,7 +39,7 @@ public:
     void LawnMowerInitialize(int theRow);
     void StartMower();
     void Update();
-    void Draw(Graphics *g);
+    void Draw(Graphics *g) const;
     void Die();
     Rect GetLawnMowerAttackRect();
     void UpdatePool();

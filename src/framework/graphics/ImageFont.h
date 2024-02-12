@@ -272,7 +272,7 @@ public:
     virtual std::string GetDefine(const std::string &theName);
 
     virtual void Prepare();
-    SexyChar GetMappedChar(SexyChar theChar);
+    SexyChar GetMappedChar(SexyChar theChar) const;
 };
 } // namespace Sexy
 

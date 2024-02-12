@@ -12,7 +12,8 @@ static Color gGameButtonColors[6] = {Color(0, 0, 0),       Color(0, 0, 0),      
 
 // 0x447B00
 void DrawStoneButton(
-    Graphics *g, int x, int y, int theWidth, int theHeight, bool isDown, bool isHighLighted, const SexyString &theLabel
+    Graphics *g, const int x, const int y, const int theWidth, const int theHeight, const bool isDown,
+    const bool isHighLighted, const SexyString &theLabel
 ) {
     Image *aLeftImage = Sexy::IMAGE_BUTTON_LEFT;
     Image *aMiddleImage = Sexy::IMAGE_BUTTON_MIDDLE;
@@ -74,17 +75,20 @@ GameButton::~GameButton() {
     if (mFont) delete mFont;
 }
 
-bool GameButton::HaveButtonImage(Image *theImage, Rect &theRect) { return theImage != nullptr || theRect.mWidth != 0; }
+bool GameButton::HaveButtonImage(const Image *theImage, const Rect &theRect) {
+    return theImage != nullptr || theRect.mWidth != 0;
+}
 
 // 0x447E60
-void GameButton::DrawButtonImage(Graphics *g, Image *theImage, Rect &theRect, int theX, int theY) {
-    int aPosX = theX + mButtonOffsetX;
-    int aPosY = theY + mButtonOffsetY;
+void GameButton::DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, const int theX, const int theY)
+    const {
+    const int aPosX = theX + mButtonOffsetX;
+    const int aPosY = theY + mButtonOffsetY;
     if (theRect.mWidth != 0) g->DrawImage(mButtonImage, aPosX, aPosY, theRect);
     else g->DrawImage(theImage, aPosX, aPosY);
 }
 
-void GameButton::SetDisabled(bool theDisabled) { mDisabled = theDisabled; }
+void GameButton::SetDisabled(const bool theDisabled) { mDisabled = theDisabled; }
 
 void GameButton::SetFont(_Font *theFont) {
     if (mFont) delete mFont;
@@ -92,15 +96,15 @@ void GameButton::SetFont(_Font *theFont) {
     mFont = theFont->Duplicate();
 }
 
-bool GameButton::IsButtonDown() { return mIsDown && mIsOver && !mDisabled && !mBtnNoDraw; }
+bool GameButton::IsButtonDown() const { return mIsDown && mIsOver && !mDisabled && !mBtnNoDraw; }
 
 // 0x447EC0
 //  GOTY @Patoke: 0x44AAC0
 void GameButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
-    bool isDown = IsButtonDown() ^ mInverted;
-    bool isHighLighted = IsMouseOver();
+    const bool isDown = IsButtonDown() ^ mInverted;
+    const bool isHighLighted = IsMouseOver();
     if (mDrawStoneButton) {
         DrawStoneButton(g, mX, mY, mWidth, mHeight, isDown, isHighLighted, mLabel);
         return;
@@ -164,7 +168,7 @@ void GameButton::Draw(Graphics *g) {
     g->Translate(-mX, -mY);
 }
 
-void GameButton::Resize(int theX, int theY, int theWidth, int theHeight) {
+void GameButton::Resize(const int theX, const int theY, const int theWidth, const int theHeight) {
     mX = theX;
     mY = theY;
     mWidth = theWidth;
@@ -177,10 +181,10 @@ bool GameButton::IsMouseOver() { return mIsOver && !mDisabled && !mBtnNoDraw; }
 // 0x448330
 //  GOTY @Patoke: 0x44AF50
 void GameButton::Update() {
-    WidgetManager *aManager = mApp->mWidgetManager;
+    const WidgetManager *aManager = mApp->mWidgetManager;
     int aMouseX = aManager->mLastMouseX, aMouseY = aManager->mLastMouseY;
     if (mParentWidget) {
-        Point anAbsPos = mParentWidget->GetAbsPos();
+        const Point anAbsPos = mParentWidget->GetAbsPos();
         aMouseX -= anAbsPos.mX;
         aMouseY -= anAbsPos.mY;
     }
@@ -221,13 +225,13 @@ void LawnStoneButton::SetLabel(const SexyString &theLabel) { mLabel = TodStringT
 void LawnStoneButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
-    bool isDown = (mIsDown && mIsOver && !mDisabled) ^ mInverted;
+    const bool isDown = (mIsDown && mIsOver && !mDisabled) ^ mInverted;
     DrawStoneButton(g, 0, 0, mWidth, mHeight, isDown, mIsOver, mLabel);
 }
 
 // 0x448620
-LawnStoneButton *MakeButton(int theId, ButtonListener *theListener, const SexyString &theText) {
-    auto aButton = new LawnStoneButton(nullptr, theId, theListener);
+LawnStoneButton *MakeButton(const int theId, ButtonListener *theListener, const SexyString &theText) {
+    const auto aButton = new LawnStoneButton(nullptr, theId, theListener);
     aButton->SetLabel(theText);
 
     aButton->mTranslateX = 1;
@@ -240,7 +244,7 @@ LawnStoneButton *MakeButton(int theId, ButtonListener *theListener, const SexySt
 
 // 0x4486C0
 //  GOTY @Patoke: 0x44B2B0
-NewLawnButton::NewLawnButton(Image *theComponentImage, int theId, ButtonListener *theListener)
+NewLawnButton::NewLawnButton(Image *theComponentImage, const int theId, ButtonListener *theListener)
     : DialogButton(theComponentImage, theId, theListener) {
     mHiliteFont = nullptr;
     mTextDownOffsetX = 0;
@@ -248,7 +252,7 @@ NewLawnButton::NewLawnButton(Image *theComponentImage, int theId, ButtonListener
     mButtonOffsetX = 0;
     mButtonOffsetY = 0;
     mUsePolygonShape = false;
-    SetColor(ButtonWidget::COLOR_BKG, Color::White);
+    Widget::SetColor(ButtonWidget::COLOR_BKG, Color::White);
 }
 
 NewLawnButton::~NewLawnButton() {
@@ -261,7 +265,7 @@ NewLawnButton::~NewLawnButton() {
 void NewLawnButton::Draw(Graphics *g) {
     if (mBtnNoDraw) return;
 
-    bool isDown = (mIsDown && mIsOver && !mDisabled) ^ mInverted;
+    const bool isDown = (mIsDown && mIsOver && !mDisabled) ^ mInverted;
     int aFontX = mTextOffsetX + mTranslateX;
     int aFontY = mTextOffsetY + mTranslateY;
     if (mFont) {
@@ -313,7 +317,7 @@ void NewLawnButton::Draw(Graphics *g) {
 
 // 0x448B70
 //  GOTY @Patoke: 0x44B7C0
-bool NewLawnButton::IsPointVisible(int x, int y) {
+bool NewLawnButton::IsPointVisible(const int x, const int y) {
     if (!mUsePolygonShape) return DialogButton::IsPointVisible(x, y);
 
     return TodIsPointInPolygon(mPolygonShape, 4, SexyVector2(x, y));
@@ -322,10 +326,10 @@ bool NewLawnButton::IsPointVisible(int x, int y) {
 // 0x448BC0
 //  GOTY @Patoke: 0x44B810
 NewLawnButton *MakeNewButton(
-    int theId, ButtonListener *theListener, const SexyString &theText, _Font *theFont, Image *theImageNormal,
+    const int theId, ButtonListener *theListener, const SexyString &theText, _Font *theFont, Image *theImageNormal,
     Image *theImageOver, Image *theImageDown
 ) {
-    auto aButton = new NewLawnButton(nullptr, theId, theListener);
+    const auto aButton = new NewLawnButton(nullptr, theId, theListener);
     aButton->SetFont(theFont == nullptr ? Sexy::FONT_BRIANNETOD12 : theFont);
     aButton->SetLabel(theText);
 
@@ -342,7 +346,7 @@ NewLawnButton *MakeNewButton(
     return aButton;
 }
 
-void NewLawnButton::SetOffset(int theX, int theY) {
+void NewLawnButton::SetOffset(const int theX, const int theY) {
     this->mButtonOffsetX = theX;
     this->mButtonOffsetY = theY;
 }

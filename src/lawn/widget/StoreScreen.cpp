@@ -62,7 +62,7 @@ StoreScreen::StoreScreen(LawnApp *theApp)
     mWaitForDialog = false;
     mCoins.DataArrayInitialize(1024U, "coins");
     TodLoadResources("DelayLoad_Store");
-    Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+    Dialog::Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
     mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
     mPottedPlantSpecs.mDrawVariation =
         static_cast<DrawVariation>(RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN));
@@ -130,7 +130,7 @@ StoreScreen::~StoreScreen() {
 }
 
 // 0x48A760
-StoreItem StoreScreen::GetStoreItemType(int theSpotIndex) {
+StoreItem StoreScreen::GetStoreItemType(const int theSpotIndex) const {
     // 这个函数原版是穷举判断的，这里优化一下……
 
     if (mPage < NUM_STORE_PAGES && theSpotIndex < MAX_PAGE_SPOTS) {
@@ -145,7 +145,7 @@ StoreItem StoreScreen::GetStoreItemType(int theSpotIndex) {
 }
 
 // 0x48A8D0
-bool StoreScreen::IsFullVersionOnly(StoreItem theStoreItem) {
+bool StoreScreen::IsFullVersionOnly(const StoreItem theStoreItem) const {
     if (!mApp->IsTrialStageLocked()) return false;
 
     if (theStoreItem == STORE_ITEM_PACKET_UPGRADE && mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] >= 2)
@@ -154,44 +154,48 @@ bool StoreScreen::IsFullVersionOnly(StoreItem theStoreItem) {
     return theStoreItem == STORE_ITEM_PLANT_TWINSUNFLOWER;
 }
 
-bool StoreScreen::IsPottedPlant(StoreItem theStoreItem) {
+bool StoreScreen::IsPottedPlant(const StoreItem theStoreItem) {
     return theStoreItem == STORE_ITEM_POTTED_MARIGOLD_1 || theStoreItem == STORE_ITEM_POTTED_MARIGOLD_2 ||
            theStoreItem == STORE_ITEM_POTTED_MARIGOLD_3;
 }
 
 // 0x48A940
-bool StoreScreen::IsComingSoon(StoreItem theStoreItem) {
+bool StoreScreen::IsComingSoon(const StoreItem theStoreItem) {
     if (IsFullVersionOnly(theStoreItem)) return true;
-    else if (theStoreItem == STORE_ITEM_WHEEL_BARROW)
+    if (theStoreItem == STORE_ITEM_WHEEL_BARROW)
         return !mApp->mPlayerInfo->mPurchases[STORE_ITEM_MUSHROOM_GARDEN] &&
                !mApp->mPlayerInfo->mPurchases[STORE_ITEM_AQUARIUM_GARDEN];
-    else if (IsPottedPlant(theStoreItem)) return !mApp->HasFinishedAdventure();
-    else if (theStoreItem == STORE_ITEM_TREE_FOOD)
+    if (IsPottedPlant(theStoreItem)) return !mApp->HasFinishedAdventure();
+    if (theStoreItem == STORE_ITEM_TREE_FOOD)
         return !mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_OF_WISDOM] ||
                mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET;
     return false;
 }
 
 // 0x48A9D0
-bool StoreScreen::IsItemSoldOut(StoreItem theStoreItem) {
-    PlayerInfo *aPlayer = mApp->mPlayerInfo;
-    if (theStoreItem == STORE_ITEM_INVALID) return false;
-    else if (theStoreItem == STORE_ITEM_PACKET_UPGRADE) return aPlayer->mPurchases[STORE_ITEM_PACKET_UPGRADE] >= 4;
-    else if (theStoreItem == STORE_ITEM_FERTILIZER || theStoreItem == STORE_ITEM_BUG_SPRAY)
-        return aPlayer->mPurchases[theStoreItem] - PURCHASE_COUNT_OFFSET > 15;
-    else if (theStoreItem == STORE_ITEM_TREE_FOOD)
-        return aPlayer->mPurchases[STORE_ITEM_TREE_FOOD] - PURCHASE_COUNT_OFFSET > 10;
-    else if (theStoreItem == STORE_ITEM_BONUS_LAWN_MOWER) return aPlayer->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] >= 2;
-    else if (IsPottedPlant(theStoreItem))
-        return mApp->mZenGarden->IsZenGardenFull(true) ||
-               aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000();
-    else return aPlayer->mPurchases[theStoreItem];
+bool StoreScreen::IsItemSoldOut(const StoreItem theStoreItem) {
+    const PlayerInfo *aPlayer = mApp->mPlayerInfo;
+
+    switch (theStoreItem) {
+    case STORE_ITEM_INVALID:          return false;
+    case STORE_ITEM_PACKET_UPGRADE:   return aPlayer->mPurchases[STORE_ITEM_PACKET_UPGRADE] >= 4;
+    case STORE_ITEM_FERTILIZER:
+    case STORE_ITEM_BUG_SPRAY:        return aPlayer->mPurchases[theStoreItem] - PURCHASE_COUNT_OFFSET > 15;
+    case STORE_ITEM_TREE_FOOD:        return aPlayer->mPurchases[STORE_ITEM_TREE_FOOD] - PURCHASE_COUNT_OFFSET > 10;
+    case STORE_ITEM_BONUS_LAWN_MOWER: return aPlayer->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] >= 2;
+    default:                          {
+        if (IsPottedPlant(theStoreItem))
+            return mApp->mZenGarden->IsZenGardenFull(true) ||
+                   aPlayer->mPurchases[theStoreItem] == GetCurrentDaysSince2000();
+        return aPlayer->mPurchases[theStoreItem];
+    }
+    }
 
     unreachable();
 }
 
 // 0x48AAD0
-bool StoreScreen::IsItemUnavailable(StoreItem theStoreItem) {
+bool StoreScreen::IsItemUnavailable(const StoreItem theStoreItem) {
     if (mEasyBuyingCheat) return false;
 
     /*
@@ -242,7 +246,7 @@ bool StoreScreen::IsItemUnavailable(StoreItem theStoreItem) {
     return false;
 }
 
-void StoreScreen::GetStorePosition(int theSpotIndex, int &thePosX, int &thePosY) {
+void StoreScreen::GetStorePosition(const int theSpotIndex, int &thePosX, int &thePosY) {
     if (theSpotIndex <= 3) {
         thePosX = STORESCREEN_ITEMOFFSET_1_X + STORESCREEN_ITEMSIZE * theSpotIndex;
         thePosY = STORESCREEN_ITEMOFFSET_1_Y;
@@ -253,7 +257,9 @@ void StoreScreen::GetStorePosition(int theSpotIndex, int &thePosX, int &thePosY)
 }
 
 // 0x48AC50
-void StoreScreen::DrawItemIcon(Graphics *g, int theItemPosition, StoreItem theItemType, bool theIsForHighlight) {
+void StoreScreen::DrawItemIcon(
+    Graphics *g, const int theItemPosition, const StoreItem theItemType, const bool theIsForHighlight
+) {
     if (theIsForHighlight) {
         g->SetDrawMode(Graphics::DRAWMODE_ADDITIVE);
         g->SetColor(Color(255, 255, 255, 96));
@@ -270,10 +276,10 @@ void StoreScreen::DrawItemIcon(Graphics *g, int theItemPosition, StoreItem theIt
             g->SetColorizeImages(false);
         }
 
-        SexyString aSlotText = TodReplaceNumberString(
+        const SexyString aSlotText = TodReplaceNumberString(
             _S("[STORE_UPGRADE_SLOTS]"), _S("{SLOTS}"), mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] + 7
         );
-        Rect aRect(aPosX, aPosY + 6, 55, 70);
+        const Rect aRect(aPosX, aPosY + 6, 55, 70);
         TodDrawStringWrapped(
             g, aSlotText, aRect, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
@@ -324,7 +330,7 @@ void StoreScreen::DrawItemIcon(Graphics *g, int theItemPosition, StoreItem theIt
 }
 
 // 0x48B170
-void StoreScreen::DrawItem(Graphics *g, int theItemPosition, StoreItem theItemType) {
+void StoreScreen::DrawItem(Graphics *g, const int theItemPosition, const StoreItem theItemType) {
     if (IsItemUnavailable(theItemType)) return;
 
     DrawItemIcon(g, theItemPosition, theItemType, false);
@@ -333,7 +339,7 @@ void StoreScreen::DrawItem(Graphics *g, int theItemPosition, StoreItem theItemTy
     GetStorePosition(theItemPosition, aPosX, aPosY);
     if (theItemType != STORE_ITEM_PVZ) {
         g->DrawImage(Sexy::IMAGE_STORE_PRICETAG, aPosX - 3, aPosY + 70);
-        SexyString aCostString = LawnApp::GetMoneyString(GetItemCost(theItemType));
+        const SexyString aCostString = LawnApp::GetMoneyString(GetItemCost(theItemType));
         TodDrawString(g, aCostString, aPosX + 23, aPosY + 85, Sexy::FONT_BRIANNETOD12, Color::Black, DS_ALIGN_CENTER);
     }
     if (IsComingSoon(theItemType)) {
@@ -345,7 +351,7 @@ void StoreScreen::DrawItem(Graphics *g, int theItemPosition, StoreItem theItemTy
             g, _S("[COMING_SOON]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0), DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
     } else if (IsItemSoldOut(theItemType)) {
-        Rect aRect(aPosX, aPosY, 50, 70);
+        const Rect aRect(aPosX, aPosY, 50, 70);
         TodDrawStringWrapped(
             g, _S("[SOLD_OUT]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0), DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
@@ -363,7 +369,7 @@ void StoreScreen::Draw(Graphics *g) {
     g->SetLinearBlend(true);
     mDrawnOnce = true;
 
-    int aStoreSignPosY = TodAnimateCurve(50, 110, mStoreTime, -150, 0, CURVE_EASE_IN_OUT);
+    const int aStoreSignPosY = TodAnimateCurve(50, 110, mStoreTime, -150, 0, CURVE_EASE_IN_OUT);
     if (mApp->IsNight()) {
         g->DrawImage(Sexy::IMAGE_STORE_BACKGROUNDNIGHT, 0, 0);
     } else {
@@ -392,7 +398,7 @@ void StoreScreen::Draw(Graphics *g) {
 
     if (!mHatchTimer && mHatchOpen) {
         for (int i = 0; i < MAX_PAGE_SPOTS; i++) {
-            StoreItem aStoreItem = GetStoreItemType(i);
+            const StoreItem aStoreItem = GetStoreItemType(i);
             if (aStoreItem != STORE_ITEM_INVALID) {
                 DrawItem(g, i, aStoreItem);
             }
@@ -402,7 +408,7 @@ void StoreScreen::Draw(Graphics *g) {
     g->DrawImage(Sexy::IMAGE_COINBANK, STORESCREEN_COINBANK_X, STORESCREEN_COINBANK_Y);
     g->SetColor(Color(180, 255, 90));
     g->SetFont(Sexy::FONT_CONTINUUMBOLD14);
-    SexyString aCoinLabel = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
+    const SexyString aCoinLabel = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
     g->DrawString(
         aCoinLabel, STORESCREEN_COINBANK_X + 111 - Sexy::FONT_CONTINUUMBOLD14->StringWidth(aCoinLabel),
         STORESCREEN_COINBANK_Y + 24
@@ -417,7 +423,7 @@ void StoreScreen::Draw(Graphics *g) {
             }
         }
 
-        SexyString aPageString = TodReplaceNumberString(
+        const SexyString aPageString = TodReplaceNumberString(
             TodReplaceNumberString(_S("[STORE_PAGE]"), _S("{PAGE}"), mPage), _S("{NUM_PAGES}"), aNumPages
         );
         TodDrawString(
@@ -439,7 +445,7 @@ void StoreScreen::DrawOverlay(Graphics *g) {
 
 // 0x48BAA0
 //  GOTY @Patoke: 0x4578F0
-void StoreScreen::SetBubbleText(int theCrazyDaveMessage, int theTime, bool theClickToContinue) {
+void StoreScreen::SetBubbleText(const int theCrazyDaveMessage, const int theTime, const bool theClickToContinue) {
     mApp->CrazyDaveTalkIndex(theCrazyDaveMessage);
     mBubbleCountDown = theTime;
     mBubbleClickToContinue = theClickToContinue;
@@ -452,7 +458,7 @@ void StoreScreen::UpdateMouse() {
     int aMouseX = mApp->mWidgetManager->mLastMouseX - mX, aMouseY = mApp->mWidgetManager->mLastMouseY - mY;
     bool aShowFinger = false;
     for (int aItemPos = 0; aItemPos < MAX_PAGE_SPOTS; aItemPos++) {
-        StoreItem aItemType = GetStoreItemType(aItemPos);
+        const StoreItem aItemType = GetStoreItemType(aItemPos);
         if (aItemType != STORE_ITEM_INVALID && !IsItemUnavailable(aItemType)) {
             int aItemX, aItemY;
             GetStorePosition(aItemPos, aItemX, aItemY);
@@ -623,7 +629,7 @@ void StoreScreen::Update() {
                 if (mAmbientSpeechCountDown <= 0) {
                     TodWeightedArray<int> aPickArray[4];
                     for (int i = 0; i < 4; i++) {
-                        int aMessage = 2015 + i;
+                        const int aMessage = 2015 + i;
                         aPickArray[i].mItem = aMessage;
                         if (mPreviousAmbientSpeechIndex == aMessage) {
                             aPickArray[i].mWeight = 0;
@@ -634,7 +640,7 @@ void StoreScreen::Update() {
                         }
                     }
 
-                    int aDaveMessage = TodPickFromWeightedArray(aPickArray, 4);
+                    const int aDaveMessage = TodPickFromWeightedArray(aPickArray, 4);
                     mPreviousAmbientSpeechIndex = aDaveMessage;
                     SetBubbleText(aDaveMessage, 800, false);
                     mAmbientSpeechCountDown = RandRangeInt(500, 1000);
@@ -674,13 +680,13 @@ void StoreScreen::RemovedFromManager(WidgetManager *theWidgetManager) {
 }
 
 // 0x48C410
-void StoreScreen::ButtonPress(int theId) {
+void StoreScreen::ButtonPress(const int theId) {
     if (theId != StoreScreen::StoreScreen_Prev && theId != StoreScreen::StoreScreen_Next)
         mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);
 }
 
 // 0x48C440
-bool StoreScreen::IsPageShown(StorePages thePage) {
+bool StoreScreen::IsPageShown(const StorePages thePage) {
     // 试玩模式下，仅显示默认页
     if (mApp->IsTrialStageLocked()) return thePage == STORE_PAGE_SLOT_UPGRADES;
     // 一周目完成后，所有页全解锁
@@ -694,7 +700,7 @@ bool StoreScreen::IsPageShown(StorePages thePage) {
 }
 
 // 0x48C4D0
-void StoreScreen::ButtonDepress(int theId) {
+void StoreScreen::ButtonDepress(const int theId) {
     if (theId == StoreScreen::StoreScreen_Back) mResult = 1000;
     else if (theId == StoreScreen::StoreScreen_Prev || theId == StoreScreen::StoreScreen_Next) {
         mHatchTimer = 50;
@@ -719,12 +725,12 @@ void StoreScreen::ButtonDepress(int theId) {
 }
 
 // 0x48C5F0
-void StoreScreen::KeyChar(char theChar) {
+void StoreScreen::KeyChar(const char theChar) {
     if (mBubbleClickToContinue && (theChar == ' ' || theChar == '\r')) AdvanceCrazyDaveDialog();
 }
 
 // 0x48C620
-int StoreScreen::GetItemCost(StoreItem theStoreItem) {
+int StoreScreen::GetItemCost(const StoreItem theStoreItem) {
     if (theStoreItem == STORE_ITEM_BONUS_LAWN_MOWER)
         return gLawnApp->mPlayerInfo->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] ? 500 : 200;
     switch (theStoreItem) {
@@ -749,7 +755,7 @@ int StoreScreen::GetItemCost(StoreItem theStoreItem) {
     case STORE_ITEM_WHEEL_BARROW:        return 20;
     case STORE_ITEM_STINKY_THE_SNAIL:    return 300;
     case STORE_ITEM_PACKET_UPGRADE:      {
-        int aPurchase = gLawnApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE];
+        const int aPurchase = gLawnApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE];
         return aPurchase == 0 ? 75 : aPurchase == 1 ? 500 : aPurchase == 2 ? 2000 : 8000;
     }
     case STORE_ITEM_POOL_CLEANER:    return 100;
@@ -763,13 +769,13 @@ int StoreScreen::GetItemCost(StoreItem theStoreItem) {
     }
 }
 
-bool StoreScreen::CanAffordItem(StoreItem theStoreItem) {
+bool StoreScreen::CanAffordItem(const StoreItem theStoreItem) {
     return mApp->mPlayerInfo->mCoins >= GetItemCost(theStoreItem);
 }
 
 // 0x48C740
 //  GOTY @Patoke: 0x497340
-void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
+void StoreScreen::PurchaseItem(const StoreItem theStoreItem) {
     mApp->SetCursor(CURSOR_POINTER);
     mBubbleCountDown = 0;
     mApp->CrazyDaveStopTalking();
@@ -784,7 +790,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
         aDialog->WaitForResult(true);
         mWaitForDialog = false;
     } else {
-        auto aComfirmDialog = static_cast<LawnDialog *>(mApp->DoDialog(
+        const auto aComfirmDialog = static_cast<LawnDialog *>(mApp->DoDialog(
             DIALOG_STORE_PURCHASE, true, _S("Buy this item?"), _S("Are you sure you want to buy this item?"), _S(""),
             BUTTONS_YES_NO
         ));
@@ -792,14 +798,14 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
         aComfirmDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
 
         mWaitForDialog = true;
-        int aComfirmResult = aComfirmDialog->WaitForResult(true);
+        const int aComfirmResult = aComfirmDialog->WaitForResult(true);
         mWaitForDialog = false;
 
         if (aComfirmResult == ID_OK) {
             mApp->mPlayerInfo->AddCoins(-GetItemCost(theStoreItem));
             if (theStoreItem == STORE_ITEM_PACKET_UPGRADE) {
                 ++mApp->mPlayerInfo->mPurchases[theStoreItem];
-                SexyString aDialogLines = StrFormat(
+                const SexyString aDialogLines = StrFormat(
                     _S("Now you can choose to take %d seeds with you per level!"),
                     6 + mApp->mPlayerInfo->mPurchases[theStoreItem]
                 );
@@ -837,7 +843,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 1;
                 mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM] = 1;
 
-                auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
+                const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
                     DIALOG_STORE_PURCHASE, true, _S("[VISIT_TREE_HEADER]"), _S("[VISIT_TREE_BODY]"), _S(""),
                     BUTTONS_YES_NO
                 ));
@@ -845,7 +851,7 @@ void StoreScreen::PurchaseItem(StoreItem theStoreItem) {
                 aDialog->mLawnNoButton->SetLabel(_S("[DIALOG_BUTTON_NO]"));
 
                 mWaitForDialog = true;
-                int aResult = aDialog->WaitForResult(true);
+                const int aResult = aDialog->WaitForResult(true);
                 mWaitForDialog = false;
 
                 if (aResult == ID_OK) {
@@ -913,7 +919,7 @@ void StoreScreen::AdvanceCrazyDaveDialog() {
         SetBubbleText(mApp->mCrazyDaveMessageIndex, 0, true);
     }
 
-    int aMessage = mApp->mCrazyDaveMessageIndex;
+    const int aMessage = mApp->mCrazyDaveMessageIndex;
     if (aMessage == 303 || aMessage == 606 || aMessage == 2601) {
         mHatchTimer = 150;
         mHatchOpen = true;
@@ -932,7 +938,7 @@ void StoreScreen::AdvanceCrazyDaveDialog() {
 }
 
 // 0x48D130
-void StoreScreen::MouseDown(int x, int y, int theClickCount) {
+void StoreScreen::MouseDown(const int x, const int y, const int theClickCount) {
     (void)theClickCount;
     if (mBubbleClickToContinue) {
         AdvanceCrazyDaveDialog();
@@ -940,7 +946,7 @@ void StoreScreen::MouseDown(int x, int y, int theClickCount) {
     }
     if (!CanInteractWithButtons()) return;
     for (int aItemPos = 0; aItemPos < MAX_PAGE_SPOTS; aItemPos++) {
-        StoreItem aItemType = GetStoreItemType(aItemPos);
+        const StoreItem aItemType = GetStoreItemType(aItemPos);
         if (aItemType == STORE_ITEM_INVALID) continue;
         int aItemX, aItemY;
         GetStorePosition(aItemPos, aItemX, aItemY);
@@ -972,7 +978,7 @@ void StoreScreen::MouseDown(int x, int y, int theClickCount) {
 }
 
 // 0x48D2E0
-void StoreScreen::EnableButtons(bool theEnable) {
+void StoreScreen::EnableButtons(const bool theEnable) {
     if (mEasyBuyingCheat || IsPageShown(STORE_PAGE_PLANT_UPGRADES) || !theEnable) {
         mNextButton->mMouseVisible = theEnable;
         mNextButton->SetDisabled(!theEnable);
@@ -985,7 +991,7 @@ void StoreScreen::EnableButtons(bool theEnable) {
 
 // 0x48D3A0
 //  GOTY @Patoke: 0x498110
-void StoreScreen::SetupForIntro(int theDialogIndex) {
+void StoreScreen::SetupForIntro(const int theDialogIndex) {
     mStartDialog = theDialogIndex;
     mHatchOpen = false;
     mBackButton->mLabel = TodStringTranslate(_S("[STORE_NEXT_LEVEL_BUTTON]"));

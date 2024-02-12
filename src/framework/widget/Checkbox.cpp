@@ -27,13 +27,13 @@ void Checkbox::Draw(Graphics *g) {
     else
         g->DrawImage(mApp->mImages[IMAGE_CHECKBOX], 0, 0, Rect(31, 0, 31, 32));*/
 
-    if ((mCheckedRect.mWidth == 0) && (mCheckedImage != NULL) && (mUncheckedImage != NULL)) {
+    if ((mCheckedRect.mWidth == 0) && (mCheckedImage != nullptr) && (mUncheckedImage != nullptr)) {
         if (mChecked) g->DrawImage(mCheckedImage, 0, 0);
         else g->DrawImage(mUncheckedImage, 0, 0);
-    } else if ((mCheckedRect.mWidth != 0) && (mUncheckedImage != NULL)) {
+    } else if ((mCheckedRect.mWidth != 0) && (mUncheckedImage != nullptr)) {
         if (mChecked) g->DrawImage(mUncheckedImage, 0, 0, mCheckedRect);
         else g->DrawImage(mUncheckedImage, 0, 0, mUncheckedRect);
-    } else if ((mUncheckedImage == NULL) && (mCheckedImage == NULL)) {
+    } else if ((mUncheckedImage == nullptr) && (mCheckedImage == nullptr)) {
         // No image, default draw method
         g->SetColor(mOutlineColor);
         g->FillRect(0, 0, mWidth, mHeight);

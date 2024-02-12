@@ -39,7 +39,7 @@ public:
     // HANDLE					mMappingHandle;
     void *mDataPtr; //+0x8：资源包中的所有数据
 
-    PakCollection(size_t size) { mDataPtr = malloc(size); }
+    explicit PakCollection(size_t size) { mDataPtr = malloc(size); }
 
     ~PakCollection() { free(mDataPtr); }
 };
@@ -129,7 +129,7 @@ extern PakInterface *gPakInterface;
 }
 
 [[maybe_unused]] static size_t p_fwrite(const void *thePtr, int theSize, int theCount, PFILE *theFile) {
-    if (theFile->mFP == NULL) return 0;
+    if (theFile->mFP == nullptr) return 0;
     return fwrite(thePtr, theSize, theCount, theFile->mFP);
 }
 

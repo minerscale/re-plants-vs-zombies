@@ -18,7 +18,7 @@
 
 // 0x405780
 //  GOTY @Patoke: 0x4063E0
-AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowingAchievements) {
+AwardScreen::AwardScreen(LawnApp *theApp, const AwardType theAwardType, const bool theShowingAchievements) {
     mApp = theApp;
     mClip = false;
     mFadeInCounter = 180;
@@ -50,8 +50,8 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowin
             // int aDestY = 284 - ((76 * mAchievementItems.size()) >> 1);
             int aDestY = 284 - ((76 * mAchievementItems.size()) / 2);
 
-            for (size_t j = 0; j < mAchievementItems.size(); j++) {
-                mAchievementItems[j].mDestY = aDestY;
+            for (auto &mAchievementItem : mAchievementItems) {
+                mAchievementItem.mDestY = aDestY;
                 aDestY += 76;
             }
         }
@@ -59,7 +59,7 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowin
         mApp->WriteCurrentUserConfig();
     }
 
-    int aLevel = mApp->mPlayerInfo->GetLevel();
+    const int aLevel = mApp->mPlayerInfo->GetLevel();
     if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
         TodLoadResources("DelayLoad_Background6");
         TodLoadResources("DelayLoad_ZombieNote");
@@ -201,15 +201,15 @@ AwardScreen::AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowin
 
 // 0x406420 & 0x406440
 AwardScreen::~AwardScreen() {
-    if (mStartButton) delete mStartButton;
-    if (mContinueButton) delete mContinueButton; // @Patoke: add new button
-    if (mMenuButton) delete mMenuButton;
+    delete mStartButton;
+    delete mContinueButton; // @Patoke: add new button
+    delete mMenuButton;
 }
 
-bool AwardScreen::IsPaperNote() {
+bool AwardScreen::IsPaperNote() const {
     if (mAwardType == AWARD_CREDITS_ZOMBIENOTE || mAwardType == AWARD_HELP_ZOMBIENOTE) return true;
 
-    int aLevel = mApp->mPlayerInfo->GetLevel();
+    const int aLevel = mApp->mPlayerInfo->GetLevel();
     return mApp->IsAdventureMode() && (aLevel == 10 || aLevel == 20 || aLevel == 30 || aLevel == 40 || aLevel == 50);
 }
 
@@ -227,9 +227,9 @@ void AwardScreen::DrawBottom(
 }
 
 // 0x4066A0
-void AwardScreen::DrawAwardSeed(Graphics *g) {
-    SeedType aSeedType = mApp->GetAwardSeedForLevel(mApp->mPlayerInfo->GetLevel() - 1);
-    SexyString aAward = Plant::GetNameString(aSeedType, SEED_NONE);
+void AwardScreen::DrawAwardSeed(Graphics *g) const {
+    const SeedType aSeedType = LawnApp::GetAwardSeedForLevel(mApp->mPlayerInfo->GetLevel() - 1);
+    const SexyString aAward = Plant::GetNameString(aSeedType, SEED_NONE);
     SexyString aMessage;
     if (mApp->IsTrialStageLocked() && aSeedType >= SEED_SQUASH && aSeedType != SEED_TANGLEKELP)
         aMessage = _S("[AVAILABLE_IN_FULL_VERSION]");
@@ -246,7 +246,7 @@ void AwardScreen::DrawAwardSeed(Graphics *g) {
 void AwardScreen::Draw(Graphics *g) {
     g->SetLinearBlend(true);
 
-    int aLevel = mApp->mPlayerInfo->GetLevel();
+    const int aLevel = mApp->mPlayerInfo->GetLevel();
     if (mShowingAchievements) // @Patoke: add call
         DrawAchievements(g);
     else if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
@@ -271,7 +271,7 @@ void AwardScreen::Draw(Graphics *g) {
             } else {
                 const char *aMsgChar;
                 if (mApp->IsSurvivalMode()) {
-                    int aNumTrophies = mApp->GetNumTrophies(CHALLENGE_PAGE_SURVIVAL);
+                    const int aNumTrophies = mApp->GetNumTrophies(CHALLENGE_PAGE_SURVIVAL);
                     aMsgChar = aNumTrophies <= 7    ? _S("[YOU_UNLOCKED_A_SURVIVAL]")
                                : aNumTrophies == 10 ? _S("[YOU_UNLOCKED_ENDLESS_SURVIVAL]")
                                                     : _S("[EARN_MORE_TROPHIES_FOR_ENDLESS_SURVIVAL]");
@@ -353,7 +353,7 @@ void AwardScreen::Draw(Graphics *g) {
     mMenuButton->Draw(g);
     mContinueButton->Draw(g); // @Patoke: add call
 
-    int aFadeInAlpha = TodAnimateCurve(180, 0, mFadeInCounter, 255, 0, CURVE_LINEAR);
+    const int aFadeInAlpha = TodAnimateCurve(180, 0, mFadeInCounter, 255, 0, CURVE_LINEAR);
     g->SetColor(IsPaperNote() ? Color(0, 0, 0, aFadeInAlpha) : Color(255, 255, 255, aFadeInAlpha));
     g->FillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 }
@@ -366,11 +366,11 @@ void AwardScreen::Update() {
     if (mShowingAchievements) {
         mAchievementAnimTime++;
 
-        for (size_t i = 0; i < mAchievementItems.size(); i++) {
-            if (mAchievementAnimTime >= mAchievementItems[i].mStartAnimTime) {
-                mAchievementItems[i].mY = TodAnimateCurve(
-                    mAchievementItems[i].mStartAnimTime, mAchievementItems[i].mEndAnimTime, mAchievementAnimTime,
-                    mAchievementItems[i].mStartY, mAchievementItems[i].mDestY, CURVE_EASE_IN_OUT
+        for (auto &mAchievementItem : mAchievementItems) {
+            if (mAchievementAnimTime >= mAchievementItem.mStartAnimTime) {
+                mAchievementItem.mY = TodAnimateCurve(
+                    mAchievementItem.mStartAnimTime, mAchievementItem.mEndAnimTime, mAchievementAnimTime,
+                    mAchievementItem.mStartY, mAchievementItem.mDestY, CURVE_EASE_IN_OUT
                 );
             }
 
@@ -392,13 +392,13 @@ void AwardScreen::Update() {
 }
 
 // 0x407760
-void AwardScreen::KeyChar(char theChar) {
+void AwardScreen::KeyChar(const char theChar) {
     if (theChar == ' ' || theChar == '\r' || theChar == '\u001B') StartButtonPressed();
 }
 
 // 0x407780
 //  GOTY @Patoke: 0x409530
-void AwardScreen::StartButtonPressed() {
+void AwardScreen::StartButtonPressed() const {
     if (mApp->GetDialog(DIALOG_STORE)) return;
 
     if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
@@ -417,7 +417,7 @@ void AwardScreen::StartButtonPressed() {
         mApp->KillAwardScreen();
         mApp->ShowChallengeScreen(CHALLENGE_PAGE_CHALLENGE);
     } else {
-        int aLevel = mApp->mPlayerInfo->GetLevel();
+        const int aLevel = mApp->mPlayerInfo->GetLevel();
         if (aLevel == 1) {
             mApp->KillAwardScreen();
             if (mApp->HasFinishedAdventure()) {
@@ -470,7 +470,7 @@ void AwardScreen::StartButtonPressed() {
 
 // 0x4079F0
 //  GOTY @Patoke: 0x4097A0
-void AwardScreen::MouseDown(int x, int y, int theClickCount) {
+void AwardScreen::MouseDown(const int x, const int y, const int theClickCount) {
     (void)x;
     (void)y;
     if (theClickCount == 1) {
@@ -483,7 +483,7 @@ void AwardScreen::MouseDown(int x, int y, int theClickCount) {
 
 // 0x407A70
 //  GOTY @Patoke: 0x409840
-void AwardScreen::MouseUp(int x, int y, int theClickCount) {
+void AwardScreen::MouseUp(const int x, const int y, const int theClickCount) {
     (void)x;
     (void)y;
     if (theClickCount == 1) {
@@ -499,7 +499,7 @@ void AwardScreen::MouseUp(int x, int y, int theClickCount) {
 
 // @Patoke: implement functions
 // GOTY @Patoke: 0x407C20
-void AwardScreen::DrawAchievements(Graphics *g) {
+void AwardScreen::DrawAchievements(Graphics *g) const {
     g->SetColorizeImages(true);
     // Rect aTextWrap = Rect(0, 0, 0, 77); // unused
     g->SetColor(Color(255, 255, 255));
@@ -512,20 +512,20 @@ void AwardScreen::DrawAchievements(Graphics *g) {
         g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER
     );
 
-    for (size_t i = 0; i < mAchievementItems.size(); i++) {
-        std::string aAchievementName = gAchievementList[mAchievementItems[i].mId].name;
-        std::string aAchievementDesc = gAchievementList[mAchievementItems[i].mId].description;
+    for (auto &mAchievementItem : mAchievementItems) {
+        std::string aAchievementName = gAchievementList[mAchievementItem.mId].name;
+        std::string aAchievementDesc = gAchievementList[mAchievementItem.mId].description;
         aAchievementName.append(" Earned!");
 
-        auto aSrcRect = Rect(70 * (mAchievementItems[i].mId % 7), 70 * (mAchievementItems[i].mId / 7), 70, 70);
+        auto aSrcRect = Rect(70 * (mAchievementItem.mId % 7), 70 * (mAchievementItem.mId / 7), 70, 70);
         auto aDestRect = Rect(70, 70, 70, 70);
-        auto aTextRect = Rect(300, mAchievementItems[i].mY + 20, 300, 60);
+        auto aTextRect = Rect(300, mAchievementItem.mY + 20, 300, 60);
 
         g->DrawImage(IMAGE_ACHEESEMENTS_ICONS, aDestRect, aSrcRect);
 
         TodDrawString(
-            g, aAchievementName, BOARD_WIDTH / 2, mAchievementItems[i].mY + 25, FONT_DWARVENTODCRAFT15,
-            Color(224, 187, 98), DS_ALIGN_CENTER
+            g, aAchievementName, BOARD_WIDTH / 2, mAchievementItem.mY + 25, FONT_DWARVENTODCRAFT15, Color(224, 187, 98),
+            DS_ALIGN_CENTER
         );
         TodDrawStringWrapped(
             g, aAchievementName, aTextRect, FONT_DWARVENTODCRAFT12, Color(255, 255, 255),
@@ -548,7 +548,7 @@ void AwardScreen::AchievementsContinuePressed() {
         mContinueButton->mDisabled = true;
         mContinueButton->mBtnNoDraw = true;
         mShowingAchievements = false;
-        int level = mApp->mPlayerInfo->GetLevel();
+        const int level = mApp->mPlayerInfo->GetLevel();
         if (level == 1 && mApp->HasFinishedAdventure()) {
             mApp->KillAwardScreen();
             mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);

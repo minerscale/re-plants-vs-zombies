@@ -268,7 +268,7 @@ public:
     bool CanTargetPlant(Plant *thePlant, ZombieAttackType theAttackType);
     void UpdateZombieCatapult();
     Plant *FindCatapultTarget();
-    void ZombieCatapultFire(Plant *thePlant);
+    void ZombieCatapultFire(const Plant *thePlant);
     void UpdateClimbingLadder();
     void UpdateZombieGargantuar();
     int GetBodyDamageIndex();
@@ -304,7 +304,7 @@ public:
     bool CanBeFrozen();
     bool CanBeChilled();
     void UpdateZombieSnorkel();
-    void ReanimIgnoreClipRect(const char *theTrackName, bool theIgnoreClipRect);
+    void ReanimIgnoreClipRect(const char *theTrackName, bool theIgnoreClipRect) const;
     void SetAnimRate(float theAnimRate);
     void ApplyAnimRate(float theAnimRate);
     /*inline*/
@@ -392,7 +392,7 @@ public:
     void BurnRow(int theRow);
     void SetupReanimForLostHead();
     void SetupReanimForLostArm(unsigned int theDamageFlags);
-    bool IsSquashTarget(Plant *theExcept);
+    bool IsSquashTarget(const Plant *theExcept);
     static /*inline*/ bool IsZombotany(ZombieType theZombieType);
 };
 

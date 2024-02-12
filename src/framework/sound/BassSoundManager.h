@@ -49,8 +49,9 @@ private:
 
     bool LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename);
     bool LoadAUSound(unsigned int theSfxID, const std::string &theFilename);
-    inline bool Exists(unsigned int theSfxID);
-    void SetBaseVolumeAndPan(HSAMPLE theSample, std::optional<double> theBaseVolume, std::optional<int> theBasePan);
+    inline bool Exists(unsigned int theSfxID) const;
+    static void
+    SetBaseVolumeAndPan(HSAMPLE theSample, std::optional<double> theBaseVolume, std::optional<int> theBasePan);
     int FindFreeChannel();
     void ReleaseFreeChannels();
 };

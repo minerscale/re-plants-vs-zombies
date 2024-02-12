@@ -44,8 +44,9 @@ public:
     /*inline*/
     int FindImage(const Image *theImage);
     bool ImageFits(int theImageCount, const Rect &rectTest, int theMaxWidth) const;
-    bool
-    ImageFindPlaceOnSide(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight);
+    bool ImageFindPlaceOnSide(
+        ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight
+    ) const;
     /*inline*/
     bool ImageFindPlace(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
     /*inline*/

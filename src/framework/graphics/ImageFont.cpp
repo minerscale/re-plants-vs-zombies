@@ -128,7 +128,7 @@ FontLayer::FontLayer(const FontLayer &theFontLayer)
 FontData::FontData() {
     mInitialized = false;
 
-    mApp = NULL;
+    mApp = nullptr;
     mRefCount = 0;
     mDefaultPointSize = 0;
 
@@ -156,7 +156,7 @@ void FontData::DeRef() {
 }
 
 bool FontData::Error(const std::string &theError) {
-    if (mApp != NULL) {
+    if (mApp != nullptr) {
         std::string anErrorString = mFontErrorHeader + theError;
 
         if (mCurrentLine.length() > 0) {
@@ -170,7 +170,7 @@ bool FontData::Error(const std::string &theError) {
 }
 
 bool FontData::DataToLayer(DataElement *theSource, FontLayer **theFontLayer) {
-    *theFontLayer = NULL;
+    *theFontLayer = nullptr;
 
     if (theSource->mIsList) return false;
 
@@ -203,7 +203,7 @@ bool FontData::GetColorFromDataElement(DataElement *theElement, Color &theColor)
     int aColor = 0;
     if (!StringToInt(static_cast<SingleDataElement *>(theElement)->mString, &aColor)) return false;
 
-    theColor = aColor;
+    theColor = Color(aColor);
     return true;
 }
 
@@ -428,7 +428,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
 
                 Image *anImage = mApp->GetSharedImage(aFileName);
 
-                if ((Image *)anImage != NULL) {
+                if ((Image *)anImage != nullptr) {
                     aLayer->mImage = anImage;
                 } else {
                     Error("Failed to Load Image");
@@ -546,7 +546,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToList(theParams.mElementVector[3], &aRectList))) {
                 if (aCharsVector.size() == aRectList.mElementVector.size()) {
-                    if ((Image *)aLayer->mImage != NULL) {
+                    if ((Image *)aLayer->mImage != nullptr) {
                         int anImageWidth = aLayer->mImage->GetWidth();
                         int anImageHeight = aLayer->mImage->GetHeight();
 
@@ -797,7 +797,7 @@ bool FontData::LoadLegacy(Image * /*theFontImage*/, const std::string & /*theFon
 ////
 
 ActiveFontLayer::ActiveFontLayer() {
-    mScaledImage = NULL;
+    mScaledImage = nullptr;
     mOwnsImage = false;
 }
 
@@ -831,7 +831,7 @@ ImageFont::ImageFont(SexyAppBase *theSexyApp, const std::string &theFontDescFile
     mFontData->Ref();
     mFontData->Load(theSexyApp, theFontDescFileName);
     mPointSize = mFontData->mDefaultPointSize;
-    GenerateActiveFontLayers();
+    ImageFont::GenerateActiveFontLayers();
     mActiveListValid = true;
     mForceScaledImagesWhite = false;
 }
@@ -874,7 +874,7 @@ ImageFont::ImageFont(Image *theFontImage, const std::string &theFontDescFileName
     mFontData->Ref();
     mFontData->LoadLegacy(theFontImage, theFontDescFileName);
     mPointSize = mFontData->mDefaultPointSize;
-    GenerateActiveFontLayers();
+    ImageFont::GenerateActiveFontLayers();
     mActiveListValid = true;
 }
 
@@ -916,13 +916,11 @@ void ImageFont::GenerateActiveFontLayers() {
 
             // Make sure all required tags are included
             for (i = 0; i < aFontLayer->mRequiredTags.size(); i++)
-                if (std::find(mTagVector.begin(), mTagVector.end(), aFontLayer->mRequiredTags[i]) == mTagVector.end())
-                    active = false;
+                if (std::ranges::find(mTagVector, aFontLayer->mRequiredTags[i]) == mTagVector.end()) active = false;
 
             // Make sure no excluded tags are included
             for (i = 0; i < mTagVector.size(); i++)
-                if (std::find(aFontLayer->mExcludedTags.begin(), aFontLayer->mExcludedTags.end(), mTagVector[i]) !=
-                    aFontLayer->mExcludedTags.end())
+                if (std::ranges::find(aFontLayer->mExcludedTags, mTagVector[i]) != aFontLayer->mExcludedTags.end())
                     active = false;
 
             if (active) {
@@ -1127,10 +1125,10 @@ void ImageFont::DrawStringEx(
 ) {
     // std::multimap<int, RenderCommand>aRenderCommandPool;
     static std::array<std::vector<RenderCommand>, 256> aRenderCommandPool{};
-    if (theDrawnAreas != NULL) theDrawnAreas->clear();
+    if (theDrawnAreas != nullptr) theDrawnAreas->clear();
 
     if (!mFontData->mInitialized) {
-        if (theWidth != NULL) *theWidth = 0;
+        if (theWidth != nullptr) *theWidth = 0;
         return;
     }
 
@@ -1213,7 +1211,7 @@ void ImageFont::DrawStringEx(
             aRenderCommandPool[anOrderIdx].push_back(aRenderCommand);
             // aRenderCommandPool.insert(std::pair<int, RenderCommand>(anOrderIdx, aRenderCommand));
 
-            if (theDrawnAreas != NULL) {
+            if (theDrawnAreas != nullptr) {
                 Rect aDestRect(
                     anImageX, anImageY, fontLayer.mScaledCharImageRects[aChar].mWidth,
                     fontLayer.mScaledCharImageRects[aChar].mHeight
@@ -1232,7 +1230,7 @@ void ImageFont::DrawStringEx(
         aCurXPos = aMaxXPos;
     }
 
-    if (theWidth != NULL) *theWidth = aCurXPos - theX;
+    if (theWidth != nullptr) *theWidth = aCurXPos - theX;
 
     Color anOrigColor = g->GetColor();
 
@@ -1256,7 +1254,7 @@ void ImageFont::DrawString(
     Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, const Rect &theClipRect
 ) {
     (void)theClipRect;
-    DrawStringEx(g, theX, theY, theString, theColor, NULL, NULL);
+    DrawStringEx(g, theX, theY, theString, theColor, nullptr, nullptr);
 }
 
 _Font *ImageFont::Duplicate() { return new ImageFont(*this); }
@@ -1287,7 +1285,7 @@ bool ImageFont::AddTag(const std::string &theTagName) {
 bool ImageFont::RemoveTag(const std::string &theTagName) {
     std::string aTagName = StringToUpper(theTagName);
 
-    auto anItr = std::find(mTagVector.begin(), mTagVector.end(), aTagName);
+    auto anItr = std::ranges::find(mTagVector, aTagName);
     if (anItr == mTagVector.end()) return false;
 
     mTagVector.erase(anItr);
@@ -1296,14 +1294,14 @@ bool ImageFont::RemoveTag(const std::string &theTagName) {
 }
 
 bool ImageFont::HasTag(const std::string &theTagName) {
-    auto anItr = std::find(mTagVector.begin(), mTagVector.end(), theTagName);
+    auto anItr = std::ranges::find(mTagVector, theTagName);
     return anItr != mTagVector.end();
 }
 
 std::string ImageFont::GetDefine(const std::string &theName) {
     DataElement *aDataElement = mFontData->Dereference(theName);
 
-    if (aDataElement == NULL) return "";
+    if (aDataElement == nullptr) return "";
 
     return mFontData->DataElementToString(aDataElement);
 }
@@ -1324,7 +1322,7 @@ inline void FontData::SetMappedChar(SexyChar fromChar, SexyChar toChar) {
     }
 }
 
-SexyChar ImageFont::GetMappedChar(SexyChar theChar) {
+SexyChar ImageFont::GetMappedChar(SexyChar theChar) const {
     if (theChar >= 0 && static_cast<uint32_t>(theChar) < mFontData->mCharTable.size()) {
         auto aChar = mFontData->mCharTable[theChar];
         if (aChar.has_value()) return aChar.value();

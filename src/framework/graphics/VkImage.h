@@ -94,7 +94,7 @@ private:
         const Color &theColor, int theDrawMode, bool blend
     );
     void BeginDraw(Image *theImage, int theDrawMode);
-    void SetViewportAndScissor(const glm::vec4 &theClipRect);
+    void SetViewportAndScissor(const glm::vec4 &theClipRect) const;
 };
 } // namespace Vk
 

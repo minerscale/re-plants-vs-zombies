@@ -11,8 +11,8 @@ ToolTipWidget::ToolTipWidget() {
     mY = 0;
     mWidth = 0;
     mHeight = 0;
-    mVisible = 1;
-    mCenter = 0;
+    mVisible = true;
+    mCenter = false;
     mMinLeft = 0;
     mMaxBottom = BOARD_HEIGHT;
     mGetsLinesWidth = 0;
@@ -20,7 +20,7 @@ ToolTipWidget::ToolTipWidget() {
 }
 
 // 0x51A530
-void ToolTipWidget::GetLines(std::vector<SexyString> &theLines) {
+void ToolTipWidget::GetLines(std::vector<SexyString> &theLines) const {
     int aLineWidth = 0;
     unsigned int aIndexStart = 0;
     unsigned int aIndexInLine = 0;
@@ -55,8 +55,8 @@ void ToolTipWidget::GetLines(std::vector<SexyString> &theLines) {
 void ToolTipWidget::CalculateSize() {
     std::vector<SexyString> aLines;
 
-    int aTitleWidth = FONT_TINYBOLD->StringWidth(mTitle);
-    int aWarningWidth = FONT_PICO129->StringWidth(mWarningText);
+    const int aTitleWidth = FONT_TINYBOLD->StringWidth(mTitle);
+    const int aWarningWidth = FONT_PICO129->StringWidth(mWarningText);
     int aMaxWidth = std::max(aTitleWidth, aWarningWidth);
 
     mGetsLinesWidth = std::max(aMaxWidth - 30, 100);
@@ -137,8 +137,8 @@ void ToolTipWidget::Draw(Graphics *g) {
 
     if (!mWarningText.empty()) {
         g->SetFont(FONT_PICO129);
-        int x = aPosX + (mWidth - FONT_PICO129->StringWidth(mWarningText)) / 2;
-        int y = aPosY + FONT_PICO129->GetAscent();
+        const int x = aPosX + (mWidth - FONT_PICO129->StringWidth(mWarningText)) / 2;
+        const int y = aPosY + FONT_PICO129->GetAscent();
 
         Color aWarningColor(255, 0, 0);
         if (mWarningFlashCounter > 0 && mWarningFlashCounter % 20 < 10) {

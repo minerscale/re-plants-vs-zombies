@@ -67,8 +67,8 @@ public:
     Zombie *FindCollisionTarget();
     void UpdateLobMotion();
     void CheckForHighGround();
-    bool CantHitHighGround();
-    void DoSplashDamage(Zombie *theZombie);
+    bool CantHitHighGround() const;
+    void DoSplashDamage(const Zombie *theZombie);
     ProjectileDefinition &GetProjectileDef();
     unsigned int GetDamageFlags(Zombie *theZombie /* = nullptr*/);
     Rect GetProjectileRect();

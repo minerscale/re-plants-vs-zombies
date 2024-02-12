@@ -286,7 +286,7 @@ static CreditsTiming gCreditsTiming[] = {
     {1029.0f, CreditWordType::WORD_AA,  0,   CreditBrainType::BRAIN_OFF      },
     {1033.0f, CreditWordType::WORD_OFF, 0,   CreditBrainType::BRAIN_OFF      }
 };
-static int gCreditsTimingCount = LENGTH(gCreditsTiming); // 0x6A2B98
+static int gCreditsTimingCount = std::size(gCreditsTiming); // 0x6A2B98
 
 CreditsOverlay::CreditsOverlay(CreditScreen *theCreditScreen) {
     mParent = theCreditScreen;
@@ -450,9 +450,10 @@ void CreditScreen::PreLoadCredits() {
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_SUNSHROOM, true);
     ReanimationPreload(ReanimationType::REANIM_SUNSHROOM);
 
-    ReanimatorDefinition *aMain2Def = &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN2)];
+    const ReanimatorDefinition *aMain2Def =
+        &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN2)];
     for (int aTrackIndex = 0; aTrackIndex < aMain2Def->mTracks.count; aTrackIndex++) {
-        ReanimatorTrack *aTrack = &aMain2Def->mTracks.tracks[aTrackIndex];
+        const ReanimatorTrack *aTrack = &aMain2Def->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
             ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTransIndex < 124 && (strcmp(aTrack->mName, "Words") == 0 || strcmp(aTrack->mName, "Words2") == 0)) {
@@ -460,9 +461,10 @@ void CreditScreen::PreLoadCredits() {
             }
         }
     }
-    ReanimatorDefinition *aMain3Def = &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN3)];
+    const ReanimatorDefinition *aMain3Def =
+        &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_MAIN3)];
     for (int aTrackIndex = 0; aTrackIndex < aMain3Def->mTracks.count; aTrackIndex++) {
-        ReanimatorTrack *aTrack = &aMain3Def->mTracks.tracks[aTrackIndex];
+        const ReanimatorTrack *aTrack = &aMain3Def->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
             ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTransIndex < 124 && (strcmp(aTrack->mName, "Words") == 0 || strcmp(aTrack->mName, "Words2") == 0)) {
@@ -470,10 +472,10 @@ void CreditScreen::PreLoadCredits() {
             }
         }
     }
-    ReanimatorDefinition *aUndeadDef =
+    const ReanimatorDefinition *aUndeadDef =
         &gReanimatorDefArray[static_cast<int>(ReanimationType::REANIM_CREDITS_WEARETHEUNDEAD)];
     for (int aTrackIndex = 0; aTrackIndex < aUndeadDef->mTracks.count; aTrackIndex++) {
-        ReanimatorTrack *aTrack = &aUndeadDef->mTracks.tracks[aTrackIndex];
+        const ReanimatorTrack *aTrack = &aUndeadDef->mTracks.tracks[aTrackIndex];
         for (int aTransIndex = 0; aTransIndex < aTrack->mCount; aTransIndex++) {
             ReanimatorTransform &aTrans = aTrack->mTransforms[aTransIndex];
             if (aTrans.mFont) {
@@ -484,8 +486,9 @@ void CreditScreen::PreLoadCredits() {
 }
 
 // 0x434C70
-void CreditScreen::GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction) {
-    Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
+void CreditScreen::GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **theAfterTiming, float *theFraction)
+    const {
+    const Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
     float aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime - 1.0f;
     if (mCreditsPhase == CreditsPhase::CREDITS_MAIN1) {
         aFrameCount += 2.0f;
@@ -525,7 +528,7 @@ void CreditScreen::GetTiming(CreditsTiming **theBeforeTiming, CreditsTiming **th
 }
 
 // 0x434D60
-Reanimation *CreditScreen::PlayReanim(int aIndex) {
+Reanimation *CreditScreen::PlayReanim(const int aIndex) {
     Reanimation *aCreditsReanim = mApp->ReanimationTryToGet(mCreditsReanimID);
     if (aCreditsReanim) {
         aCreditsReanim->ReanimationDie();
@@ -565,23 +568,23 @@ Reanimation *CreditScreen::PlayReanim(int aIndex) {
 }
 
 // 0x434F20
-void DrawDisco(Graphics *g, float aCenterX, float aCenterY, float theTime) {
+void DrawDisco(const Graphics *g, const float aCenterX, const float aCenterY, const float theTime) {
     /*
     if (!gSexyAppBase->Is3DAccelerated())
         return;*/
 
-    float x1 = cos(theTime) * 600.0f;
-    float y1 = sin(theTime) * 200.0f;
-    float x2 = cos(theTime + PI / 2) * 600.0f;
-    float y2 = sin(theTime + PI / 2) * 200.0f;
-    float x3 = cos(theTime + PI) * 600.0f;
-    float y3 = sin(theTime + PI) * 200.0f;
-    float x4 = cos(theTime + PI + PI / 2) * 600.0f;
-    float y4 = sin(theTime + PI + PI / 2) * 200.0f;
+    const float x1 = cos(theTime) * 600.0f;
+    const float y1 = sin(theTime) * 200.0f;
+    const float x2 = cos(theTime + PI / 2) * 600.0f;
+    const float y2 = sin(theTime + PI / 2) * 200.0f;
+    const float x3 = cos(theTime + PI) * 600.0f;
+    const float y3 = sin(theTime + PI) * 200.0f;
+    const float x4 = cos(theTime + PI + PI / 2) * 600.0f;
+    const float y4 = sin(theTime + PI + PI / 2) * 200.0f;
 
     // TriVertex aVerts[2][3];
     std::array<std::array<TriVertex, 3>, 2> aVerts;
-    int aColor = Color(255, 255, 255, 128).ToInt();
+    const int aColor = Color(255, 255, 255, 128).ToInt();
     aVerts[0][0].x = x1 + aCenterX;
     aVerts[0][0].y = y1 + aCenterY;
     aVerts[0][0].u = 0.0;
@@ -620,32 +623,32 @@ void DrawDisco(Graphics *g, float aCenterX, float aCenterY, float theTime) {
 }
 
 // 0x4351E0
-void CreditScreen::DrawFogEffect(Graphics *g, float theTime) {
-    Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
+void CreditScreen::DrawFogEffect(Graphics *g, const float theTime) const {
+    const Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
     Image *aFogImage = /*mApp->Is3DAccelerated() ?*/ IMAGE_FOG; /*: IMAGE_FOG_SOFTWARE;*/
-    int aFadeAmount = theTime * 255.0f;
+    const int aFadeAmount = theTime * 255.0f;
 
     for (int x = 0; x < 14; x++) {
         for (int y = 0; y < 7; y++) {
             // 取得格子内的雾的形状
-            int aCelLook = x + (x + 17) * y;
-            int aCelCol = aCelLook % 8;
+            const int aCelLook = x + (x + 17) * y;
+            const int aCelCol = aCelLook % 8;
             // 本格浓雾横坐标 = 列 * 80 + 浓雾偏移 - 15
-            float aPosX = x * 80 - 15.0f;
+            const float aPosX = x * 80 - 15.0f;
             // 本格浓雾纵坐标 = 行 * 85 + 200
-            float aPosY = y * 85 + 200.0f;
+            const float aPosY = y * 85 + 200.0f;
             // 开始计算周期变化的颜色，aAnimTime 为 MV 动画播放至当前时刻需要的时间（秒数）
-            float aAnimTime = aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime /
-                              (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
-            float aTime = aAnimTime * PI * 2;
+            const float aAnimTime = aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime /
+                                    (aCreditsReanim->mAnimRate * SECONDS_PER_UPDATE);
+            const float aTime = aAnimTime * PI * 2;
             // 与行、列有关的初始相位
-            float aPhaseX = 6 * PI * x / 14;
-            float aPhaseY = 6 * PI * y / 7;
+            const float aPhaseX = 6 * PI * x / 14;
+            const float aPhaseY = 6 * PI * y / 7;
             // 根据初相和时间计算当前相位
-            float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
+            const float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
 
-            int aColorVariant = 255 - (aCelLook % 20) * 1.5f - aMotion * 1.5f;
-            int aLightnessVariant = 255 - (aCelLook % 20) - aMotion;
+            const int aColorVariant = 255 - (aCelLook % 20) * 1.5f - aMotion * 1.5f;
+            const int aLightnessVariant = 255 - (aCelLook % 20) - aMotion;
             /*
             if (!mApp->Is3DAccelerated())
             {
@@ -667,7 +670,7 @@ void CreditScreen::DrawFogEffect(Graphics *g, float theTime) {
 // 0x4354E0
 void CreditScreen::DrawOverlay(Graphics *g) {
     if (mCreditsPhase == CreditsPhase::CREDITS_END) {
-        int aFadeAlpha = TodAnimateCurve(50, 100, mCreditsPhaseCounter, 255, 0, TodCurves::CURVE_LINEAR);
+        const int aFadeAlpha = TodAnimateCurve(50, 100, mCreditsPhaseCounter, 255, 0, TodCurves::CURVE_LINEAR);
         if (aFadeAlpha > 0) {
             g->SetColor(Color(0, 0, 0, aFadeAlpha));
             g->FillRect(0, 0, mWidth, mHeight);
@@ -682,22 +685,22 @@ void CreditScreen::DrawFinalCredits(Graphics *g) {
         DrawStringJustification::DS_ALIGN_CENTER
     );
 
-    Rect aRectNames1(405, 90, 200, 200);
+    const Rect aRectNames1(405, 90, 200, 200);
     TodDrawStringWrapped(
         g, _S("[CREDITS_NAMES1]"), aRectNames1, FONT_HOUSEOFTERROR16, Color::White,
         DrawStringJustification::DS_ALIGN_LEFT
     );
-    Rect aRectRoles1(190, 90, 200, 200);
+    const Rect aRectRoles1(190, 90, 200, 200);
     TodDrawStringWrapped(
         g, _S("[CREDITS_ROLES1]"), aRectRoles1, FONT_HOUSEOFTERROR16, Color::White,
         DrawStringJustification::DS_ALIGN_RIGHT
     );
-    Rect aRectNames2(340, 280, 450, 250);
+    const Rect aRectNames2(340, 280, 450, 250);
     TodDrawStringWrapped(
         g, _S("[CREDITS_NAMES2]"), aRectNames2, FONT_HOUSEOFTERROR16, Color::White,
         DrawStringJustification::DS_ALIGN_LEFT
     );
-    Rect aRectRoles2(30, 280, 300, 250);
+    const Rect aRectRoles2(30, 280, 300, 250);
     TodDrawStringWrapped(
         g, _S("[CREDITS_ROLES2]"), aRectRoles2, FONT_HOUSEOFTERROR16, Color::White,
         DrawStringJustification::DS_ALIGN_RIGHT
@@ -710,7 +713,7 @@ void CreditScreen::DrawFinalCredits(Graphics *g) {
 }
 
 // 0x435A90
-void DrawReanimToPreload(Graphics *g, ReanimationType theReanimType) {
+void DrawReanimToPreload(Graphics *g, const ReanimationType theReanimType) {
     Reanimation aReanim;
     aReanim.mAnimRate = 0.3f;
     aReanim.ReanimationInitializeType(0.0f, 0.0f, theReanimType);
@@ -960,7 +963,7 @@ void CreditScreen::Draw(Graphics *g) {
     }
 }
 
-Reanimation *CreditScreen::FindSubReanim(Reanimation *theReanim, ReanimationType theReanimType) {
+Reanimation *CreditScreen::FindSubReanim(Reanimation *theReanim, const ReanimationType theReanimType) {
     if (theReanim->mReanimationType == theReanimType) return theReanim;
 
     for (int i = 0; i < theReanim->mDefinition->mTracks.count; i++) {
@@ -988,8 +991,8 @@ void CreditScreen::UpdateBlink() {
     Reanimation *aSunFlowerReanim = FindSubReanim(aCreditsReanim, ReanimationType::REANIM_SUNFLOWER);
     if (aSunFlowerReanim) {
         if (mCreditsPhase == CreditsPhase::CREDITS_MAIN3) {
-            int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1;
-            float aFrameFactor = 1.0f / aFrameCount;
+            const int aFrameCount = aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1;
+            const float aFrameFactor = 1.0f / aFrameCount;
             if (aCreditsReanim->mAnimTime > aFrameFactor * 200.0f) {
                 return;
             }
@@ -1023,11 +1026,11 @@ void CreditScreen::Update() {
     } else if (mDontSync || mCreditsPhase == CreditsPhase::CREDITS_END) {
         UpdateMovie();
     } else if (mUpdateCount > 1) {
-        Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-        int aDurationSinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                      std::chrono::high_resolution_clock::now() - mTimerSinceStart
+        const Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
+        const int aDurationSinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                            std::chrono::high_resolution_clock::now() - mTimerSinceStart
         )
-                                      .count();
+                                            .count();
         int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mCount * aCreditsReanim->mAnimTime /
                                     aCreditsReanim->mAnimRate) *
                                    1000.0f;
@@ -1037,7 +1040,7 @@ void CreditScreen::Update() {
             aDurationReanimation += 112000;
         }
 
-        int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
+        const int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
         int aUnsyncedFrames = (aUnsyncedDuration - 5) / 10;
         if (aUnsyncedFrames < 0) {
             TodTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
@@ -1046,7 +1049,7 @@ void CreditScreen::Update() {
         }
 
         if (aUnsyncedDuration > 10000) {
-            JumpToFrame(static_cast<CreditsPhase>((int)mCreditsPhase + 1), 0.0f);
+            JumpToFrame(static_cast<CreditsPhase>(static_cast<int>(mCreditsPhase) + 1), 0.0f);
             aUnsyncedFrames = 0;
         }
         while (aUnsyncedFrames > 0) {
@@ -1064,7 +1067,7 @@ void CreditScreen::UpdateMovie() {
     UpdateBlink();
 
     Reanimation *aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-    float aFrameFactor = 1.0f / (aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1);
+    const float aFrameFactor = 1.0f / (aCreditsReanim->mDefinition->mTracks.tracks->mCount - 1);
 
     aCreditsReanim->Update();
     mApp->mEffectSystem->Update();
@@ -1211,11 +1214,11 @@ void CreditScreen::UpdateMovie() {
             );
         }
 
-        int aBackground2Index = aCreditsReanim->FindTrackIndex("Background2");
+        const int aBackground2Index = aCreditsReanim->FindTrackIndex("Background2");
         ReanimatorTransform aTransformBackground2;
         aCreditsReanim->GetCurrentTransform(aBackground2Index, &aTransformBackground2);
 
-        float aFogPosX = aTransformBackground2.mTransX + 856.0f;
+        const float aFogPosX = aTransformBackground2.mTransX + 856.0f;
         if (aCreditsReanim->ShouldTriggerTimedEvent(aFrameFactor * 188.0f)) {
             TodParticleSystem *aFogParticle = mApp->AddTodParticle(
                 aFogPosX, 230.0f, (int)RenderLayer::RENDER_LAYER_TOP, ParticleEffect::PARTICLE_CREDITS_FOG
@@ -1305,8 +1308,8 @@ void CreditScreen::UpdateMovie() {
             mDrawBrain = true;
         }
 
-        float aFramesForWord = aAfterTiming->mFrame - aBeforeTiming->mFrame;
-        float aFramesTillEnd = (1.0f - aFraction) * aFramesForWord;
+        const float aFramesForWord = aAfterTiming->mFrame - aBeforeTiming->mFrame;
+        const float aFramesTillEnd = (1.0f - aFraction) * aFramesForWord;
         if (aBeforeTiming->mWordType != CreditWordType::WORD_OFF && aFramesForWord * aFraction < 0.2f) {
             aSunflowerFrame = 1;
         } else if (aBeforeTiming->mWordType != CreditWordType::WORD_OFF && aFramesTillEnd < 0.4f) {
@@ -1344,7 +1347,7 @@ void CreditScreen::UpdateMovie() {
 }
 
 // 0x437F20
-void CreditScreen::TurnOffTongues(Reanimation *theReanim, int aParentTrack) {
+void CreditScreen::TurnOffTongues(const Reanimation *theReanim, const int aParentTrack) {
     for (int aTrackIndex = 0; aTrackIndex < theReanim->mDefinition->mTracks.count; aTrackIndex++) {
         ReanimatorTrackInstance *aTrackInstance = &theReanim->mTrackInstances[aTrackIndex];
         if (theReanim->mReanimationType == ReanimationType::REANIM_ZOMBIE_CREDITS_DANCE && aParentTrack % 4 != 1 &&
@@ -1370,7 +1373,7 @@ void TodsHackyUnprotectedPerfTimer::SetStartTime(int theTimeMillisecondsAgo)
 }*/
 
 // 0x438010
-void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame) {
+void CreditScreen::JumpToFrame(const CreditsPhase thePhase, const float theFrame) {
     mMainMenuButton->SetVisible(false);
     mReplayButton->SetVisible(false);
     mCreditsPhaseCounter = 0;
@@ -1383,7 +1386,7 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame) {
         aReanim = PlayReanim(static_cast<int>(thePhase) + 1);
     }
 
-    float aFrameFactor = 1.0f / (aReanim->mDefinition->mTracks.tracks->mCount - 1);
+    const float aFrameFactor = 1.0f / (aReanim->mDefinition->mTracks.tracks->mCount - 1);
     int aMusicOffset = theFrame * 12142.0f;
     int aJumpMilliseconds = theFrame * 1000.0f / 7.0f;
     (void)aJumpMilliseconds; // unused, because of stub
@@ -1450,7 +1453,7 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame) {
     ((TodsHackyUnprotectedPerfTimer*)&mTimerSinceStart)->SetStartTime(aJumpMilliseconds);*/
 }
 
-void CreditScreen::KeyChar(SexyChar theChar) {
+void CreditScreen::KeyChar(const SexyChar theChar) {
     if (mCreditsPaused || !mApp->mDebugKeysEnabled) return;
 
     if (theChar == _S('1')) {
@@ -1515,7 +1518,7 @@ void CreditScreen::PauseCredits() {
 }
 
 // 0x438530
-void CreditScreen::KeyDown(KeyCode theKey) {
+void CreditScreen::KeyDown(const KeyCode theKey) {
     if (mCreditsPaused) return;
 
     if (theKey == KeyCode::KEYCODE_SPACE || theKey == KeyCode::KEYCODE_RETURN || theKey == KeyCode::KEYCODE_ESCAPE) {
@@ -1524,7 +1527,7 @@ void CreditScreen::KeyDown(KeyCode theKey) {
 }
 
 // 0x438560
-void CreditScreen::ButtonPress(int theId) {
+void CreditScreen::ButtonPress(const int theId) {
     if (theId == CreditScreen::Credits_Button_MainMenu) {
         mApp->PlaySample(SOUND_GRAVEBUTTON);
     } else if (theId == CreditScreen::Credits_Button_Replay) {
@@ -1533,7 +1536,7 @@ void CreditScreen::ButtonPress(int theId) {
 }
 
 // 0x4385A0
-void CreditScreen::ButtonDepress(int theId) {
+void CreditScreen::ButtonDepress(const int theId) {
     if (theId == CreditScreen::Credits_Button_MainMenu) {
         mApp->KillCreditScreen();
         mApp->DoBackToMain();

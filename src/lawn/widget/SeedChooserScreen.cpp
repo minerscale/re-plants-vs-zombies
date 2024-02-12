@@ -176,14 +176,14 @@ SeedChooserScreen::SeedChooserScreen() {
 
 template <typename T>
 T SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(
-    TodWeightedArray<T> theArray[], int theCount, MTRand &theLevelRNG
+    TodWeightedArray<T> theArray[], const int theCount, MTRand &theLevelRNG
 ) {
     int aTotalWeight = 0;
     for (int i = 0; i < theCount; i++)
         aTotalWeight += theArray[i].mWeight;
     DBG_ASSERT(aTotalWeight > 0);
 
-    int aRndResult = theLevelRNG.Next(static_cast<unsigned long>(aTotalWeight));
+    const int aRndResult = theLevelRNG.Next(static_cast<unsigned long>(aTotalWeight));
     int aWeight = 0;
     for (int j = 0; j < theCount; j++) {
         aWeight += theArray[j].mWeight;
@@ -221,11 +221,12 @@ void SeedChooserScreen::CrazyDavePickSeeds() {
 
     auto aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
     for (int i = 0; i < 3; i++) {
-        SeedType aPickedSeed = PickFromWeightedArrayUsingSpecialRandSeed(aSeedArray, NUM_SEEDS_IN_CHOOSER, aLevelRNG);
+        const SeedType aPickedSeed =
+            PickFromWeightedArrayUsingSpecialRandSeed(aSeedArray, NUM_SEEDS_IN_CHOOSER, aLevelRNG);
         aSeedArray[aPickedSeed].mWeight = 0;
         ChosenSeed &aChosenSeed = mChosenSeeds[aPickedSeed];
 
-        int aPosX = mBoard->GetSeedPacketPositionX(i);
+        const int aPosX = mBoard->GetSeedPacketPositionX(i);
         aChosenSeed.mX = aPosX;
         aChosenSeed.mY = 8;
         aChosenSeed.mStartX = aPosX;
@@ -240,7 +241,7 @@ void SeedChooserScreen::CrazyDavePickSeeds() {
 }
 
 // 0x484220
-bool SeedChooserScreen::Has7Rows() {
+bool SeedChooserScreen::Has7Rows() const {
     // PlayerInfo* aPlayer = mApp->mPlayerInfo; // unused
     if (mApp->HasFinishedAdventure() || mApp->mPlayerInfo->mPurchases[STORE_ITEM_PLANT_GATLINGPEA]) return true;
     for (SeedType aSeedType = SEED_TWINSUNFLOWER; aSeedType < SEED_COBCANNON;
@@ -250,13 +251,13 @@ bool SeedChooserScreen::Has7Rows() {
 }
 
 // 0x484400
-void SeedChooserScreen::GetSeedPositionInChooser(int theIndex, int &x, int &y) {
+void SeedChooserScreen::GetSeedPositionInChooser(const int theIndex, int &x, int &y) const {
     if (theIndex == SEED_IMITATER) {
         x = mImitaterButton->mX;
         y = mImitaterButton->mY;
     } else {
-        int aRow = theIndex / 8;
-        int aCol = theIndex % 8;
+        const int aRow = theIndex / 8;
+        const int aCol = theIndex % 8;
 
         x = aCol * 53 + 22;
         if (Has7Rows()) {
@@ -268,7 +269,7 @@ void SeedChooserScreen::GetSeedPositionInChooser(int theIndex, int &x, int &y) {
 }
 
 // 0x484480
-void SeedChooserScreen::GetSeedPositionInBank(int theIndex, int &x, int &y) {
+void SeedChooserScreen::GetSeedPositionInBank(const int theIndex, int &x, int &y) {
     x = mBoard->mSeedBank->mX - mX + mBoard->GetSeedPacketPositionX(theIndex);
     y = mBoard->mSeedBank->mY - mY + 8;
 }
@@ -286,7 +287,7 @@ SeedChooserScreen::~SeedChooserScreen() {
 }
 
 // 0x4845E0
-unsigned int SeedChooserScreen::SeedNotRecommendedToPick(SeedType theSeedType) {
+unsigned int SeedChooserScreen::SeedNotRecommendedToPick(const SeedType theSeedType) {
     uint aRecFlags = mBoard->SeedNotRecommendedForLevel(theSeedType);
     if (TestBit(aRecFlags, NOT_RECOMMENDED_NOCTURNAL) && PickedPlantType(SEED_INSTANT_COFFEE))
         SetBit(aRecFlags, NOT_RECOMMENDED_NOCTURNAL, false);
@@ -294,14 +295,14 @@ unsigned int SeedChooserScreen::SeedNotRecommendedToPick(SeedType theSeedType) {
 }
 
 // 0x484620
-bool SeedChooserScreen::SeedNotAllowedToPick(SeedType theSeedType) {
+bool SeedChooserScreen::SeedNotAllowedToPick(const SeedType theSeedType) {
     return mApp->mGameMode == GAMEMODE_CHALLENGE_LAST_STAND &&
            (theSeedType == SEED_SUNFLOWER || theSeedType == SEED_SUNSHROOM || theSeedType == SEED_TWINSUNFLOWER ||
             theSeedType == SEED_SEASHROOM || theSeedType == SEED_PUFFSHROOM);
 }
 
 // 0x484640
-bool SeedChooserScreen::SeedNotAllowedDuringTrial(SeedType theSeedType) {
+bool SeedChooserScreen::SeedNotAllowedDuringTrial(const SeedType theSeedType) {
     return mApp->IsTrialStageLocked() && (theSeedType == SEED_SQUASH || theSeedType == SEED_THREEPEATER);
 }
 
@@ -321,7 +322,7 @@ void SeedChooserScreen::Draw(Graphics *g) {
         g, _S("[CHOOSE_YOUR_PLANTS]"), 229, 110, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER
     );
 
-    int aNumSeeds = Has7Rows() ? 48 : 40;
+    const int aNumSeeds = Has7Rows() ? 48 : 40;
     for (SeedType aSeedShadow = SEED_PEASHOOTER; aSeedShadow < aNumSeeds;
          aSeedShadow = static_cast<SeedType>(aSeedShadow + 1)) {
         int x, y;
@@ -331,7 +332,7 @@ void SeedChooserScreen::Draw(Graphics *g) {
         }
 
         if (mApp->SeedTypeAvailable(aSeedShadow)) {
-            ChosenSeed &aChosenSeed = mChosenSeeds[aSeedShadow];
+            const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedShadow];
             if (aChosenSeed.mSeedState != SEED_IN_CHOOSER) {
                 DrawSeedPacket(g, x, y, aSeedShadow, SEED_NONE, 0, 55, true, false);
             }
@@ -340,7 +341,7 @@ void SeedChooserScreen::Draw(Graphics *g) {
         }
     }
 
-    int aNumSeedsInBank = mBoard->mSeedBank->mNumPackets;
+    const int aNumSeedsInBank = mBoard->mSeedBank->mNumPackets;
     for (int anIndex = 0; anIndex < aNumSeedsInBank; anIndex++) {
         if (FindSeedInBank(anIndex) == SEED_NONE) {
             int x, y;
@@ -351,8 +352,8 @@ void SeedChooserScreen::Draw(Graphics *g) {
 
     for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
          aSeedType = static_cast<SeedType>(aSeedType + 1)) {
-        ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
-        ChosenSeedState aSeedState = aChosenSeed.mSeedState;
+        const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+        const ChosenSeedState aSeedState = aChosenSeed.mSeedState;
         if (mApp->SeedTypeAvailable(aSeedType) && aSeedState != SEED_FLYING_TO_BANK &&
             aSeedState != SEED_FLYING_TO_CHOOSER && aSeedState != SEED_PACKET_HIDDEN &&
             (aSeedState == SEED_IN_CHOOSER || mBoard->mCutScene->mSeedChoosing)) {
@@ -377,8 +378,8 @@ void SeedChooserScreen::Draw(Graphics *g) {
     mImitaterButton->Draw(g);
     for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
          aSeedType = static_cast<SeedType>(aSeedType + 1)) {
-        ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
-        ChosenSeedState aSeedState = aChosenSeed.mSeedState;
+        const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+        const ChosenSeedState aSeedState = aChosenSeed.mSeedState;
         if (mApp->SeedTypeAvailable(aSeedType) &&
             (aSeedState == SEED_FLYING_TO_BANK || aSeedState == SEED_FLYING_TO_CHOOSER)) {
             DrawSeedPacket(
@@ -407,8 +408,8 @@ void SeedChooserScreen::UpdateViewLawn() {
         mBoard->DisplayAdviceAgain("[CLICK_TO_CONTINUE]", MESSAGE_STYLE_HINT_STAY, ADVICE_CLICK_TO_CONTINUE);
     else if (mViewLawnTime == 251) mViewLawnTime = 250;
 
-    int aBoardX = BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth;
-    int aSeedChooserY = SEED_CHOOSER_OFFSET_Y - Sexy::IMAGE_SEEDCHOOSER_BACKGROUND->mHeight;
+    const int aBoardX = BOARD_IMAGE_WIDTH_OFFSET - mApp->mWidth;
+    const int aSeedChooserY = SEED_CHOOSER_OFFSET_Y - Sexy::IMAGE_SEEDCHOOSER_BACKGROUND->mHeight;
     if (mViewLawnTime <= 100) {
         mBoard->Move(-TodAnimateCurve(0, 100, mViewLawnTime, aBoardX, 0, CURVE_EASE_IN_OUT), 0);
         Move(0, TodAnimateCurve(0, 40, mViewLawnTime, aSeedChooserY, SEED_CHOOSER_OFFSET_Y, CURVE_EASE_IN_OUT));
@@ -455,7 +456,7 @@ void SeedChooserScreen::UpdateCursor() {
     if (mApp->GetDialogCount() || mBoard->mCutScene->IsInShovelTutorial() || mApp->mGameMode == GAMEMODE_UPSELL) return;
     SeedType aMouseSeedType = SeedHitTest(mLastMouseX, mLastMouseY);
     if (aMouseSeedType != SEED_NONE) {
-        ChosenSeed &aMouseChosenSeed = mChosenSeeds[aMouseSeedType];
+        const ChosenSeed &aMouseChosenSeed = mChosenSeeds[aMouseSeedType];
         if (aMouseChosenSeed.mSeedState == SEED_IN_BANK && aMouseChosenSeed.mCrazyDavePicked)
             aMouseSeedType = SEED_NONE;
     }
@@ -483,8 +484,8 @@ void SeedChooserScreen::Update() {
         if (mApp->SeedTypeAvailable(aSeedType)) {
             ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
             if (aChosenSeed.mSeedState == SEED_FLYING_TO_BANK || aChosenSeed.mSeedState == SEED_FLYING_TO_CHOOSER) {
-                int aTimeStart = aChosenSeed.mTimeStartMotion;
-                int aTimeEnd = aChosenSeed.mTimeEndMotion;
+                const int aTimeStart = aChosenSeed.mTimeStartMotion;
+                const int aTimeEnd = aChosenSeed.mTimeEndMotion;
                 aChosenSeed.mX = TodAnimateCurve(
                     aTimeStart, aTimeEnd, mSeedChooserAge, aChosenSeed.mStartX, aChosenSeed.mEndX, CURVE_EASE_IN_OUT
                 );
@@ -523,7 +524,7 @@ bool SeedChooserScreen::DisplayRepickWarningDialog(const SexyChar *theMessage) {
 bool SeedChooserScreen::FlyersAreComming() {
     for (int aWave = 0; aWave < mBoard->mBoardData.mNumWaves; aWave++) {
         for (int anIndex = 0; anIndex < MAX_ZOMBIES_IN_WAVE; anIndex++) {
-            ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][anIndex];
+            const ZombieType aZombieType = mBoard->mBoardData.mZombiesInWave[aWave][anIndex];
             if (aZombieType == ZOMBIE_INVALID) break;
 
             if (aZombieType == ZOMBIE_BALLOON) return true;
@@ -544,7 +545,7 @@ bool SeedChooserScreen::FlyProtectionCurrentlyPlanted() {
 }
 
 // 0x485420
-bool SeedChooserScreen::CheckSeedUpgrade(SeedType theSeedTypeTo, SeedType theSeedTypeFrom) {
+bool SeedChooserScreen::CheckSeedUpgrade(const SeedType theSeedTypeTo, const SeedType theSeedTypeFrom) {
     if (mApp->IsSurvivalMode() || !PickedPlantType(theSeedTypeTo) || PickedPlantType(theSeedTypeFrom)) return true;
 
     SexyString aWarning = TodStringTranslate(_S("[SEED_CHOOSER_UPGRADE_WARNING]"));
@@ -645,7 +646,7 @@ void SeedChooserScreen::PickRandomSeeds() {
 }
 
 // 0x485BB0
-void SeedChooserScreen::ButtonDepress(int theId) {
+void SeedChooserScreen::ButtonDepress(const int theId) {
     if (mSeedsInFlight > 0 || mChooseState == CHOOSE_VIEW_LAWN || !mMouseVisible) return;
 
     if (theId == SeedChooserScreen::SeedChooserScreen_ViewLawn) {
@@ -675,11 +676,11 @@ void SeedChooserScreen::ButtonDepress(int theId) {
 }
 
 // 0x485D80
-SeedType SeedChooserScreen::SeedHitTest(int x, int y) {
+SeedType SeedChooserScreen::SeedHitTest(const int x, const int y) {
     if (mMouseVisible) {
         for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
              aSeedType = static_cast<SeedType>(aSeedType + 1)) {
-            ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+            const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
             if (!mApp->SeedTypeAvailable(aSeedType) || aChosenSeed.mSeedState == SEED_PACKET_HIDDEN) continue;
             if (Rect(aChosenSeed.mX, aChosenSeed.mY, SEED_PACKET_WIDTH, SEED_PACKET_HEIGHT).Contains(x, y))
                 return aSeedType;
@@ -689,11 +690,11 @@ SeedType SeedChooserScreen::SeedHitTest(int x, int y) {
 }
 
 // 0x485E20
-SeedType SeedChooserScreen::FindSeedInBank(int theIndexInBank) {
+SeedType SeedChooserScreen::FindSeedInBank(const int theIndexInBank) {
     for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
          aSeedType = static_cast<SeedType>(aSeedType + 1)) {
         if (mApp->SeedTypeAvailable(aSeedType)) {
-            ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+            const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
             if (aChosenSeed.mSeedState == SEED_IN_BANK && aChosenSeed.mSeedIndexInBank == theIndexInBank)
                 return aSeedType;
         }
@@ -701,7 +702,7 @@ SeedType SeedChooserScreen::FindSeedInBank(int theIndexInBank) {
     return SEED_NONE;
 }
 
-void SeedChooserScreen::EnableStartButton(bool theEnabled) {
+void SeedChooserScreen::EnableStartButton(const bool theEnabled) {
     mStartButton->SetDisabled(!theEnabled);
     if (theEnabled) mStartButton->mColors[GameButton::COLOR_LABEL] = Color::White;
     else mStartButton->mColors[GameButton::COLOR_LABEL] = Color(64, 64, 64);
@@ -710,7 +711,7 @@ void SeedChooserScreen::EnableStartButton(bool theEnabled) {
 // 0x485E90
 void SeedChooserScreen::ClickedSeedInBank(ChosenSeed &theChosenSeed) {
     for (int anIndex = theChosenSeed.mSeedIndexInBank + 1; anIndex < mBoard->mSeedBank->mNumPackets; anIndex++) {
-        SeedType aSeedType = FindSeedInBank(anIndex);
+        const SeedType aSeedType = FindSeedInBank(anIndex);
         if (aSeedType != SEED_NONE) {
             ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
             aChosenSeed.mTimeStartMotion = mSeedChooserAge;
@@ -770,13 +771,13 @@ void SeedChooserScreen::ShowToolTip() {
             mToolTip->mY = mImitaterButton->mY - mToolTip->mHeight;
             mToolTip->mVisible = true;
         } else {
-            SeedType aSeedType = SeedHitTest(mLastMouseX, mLastMouseY);
+            const SeedType aSeedType = SeedHitTest(mLastMouseX, mLastMouseY);
             if (aSeedType == SEED_NONE) {
                 RemoveToolTip();
             } else if (aSeedType != mToolTipSeed) {
                 RemoveToolTip();
-                ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
-                uint aRecFlags = SeedNotRecommendedToPick(aSeedType);
+                const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+                const uint aRecFlags = SeedNotRecommendedToPick(aSeedType);
                 if (SeedNotAllowedToPick(aSeedType)) {
                     mToolTip->SetWarningText(_S("[NOT_ALLOWED_ON_THIS_LEVEL]"));
                 } else if (SeedNotAllowedDuringTrial(aSeedType)) {
@@ -830,7 +831,7 @@ void SeedChooserScreen::CancelLawnView() {
 }
 
 // 0x486630
-void SeedChooserScreen::MouseUp(int x, int y, int theClickCount) {
+void SeedChooserScreen::MouseUp(const int x, const int y, const int theClickCount) {
     (void)x;
     (void)y;
     if (theClickCount == 1) {
@@ -853,7 +854,7 @@ void SeedChooserScreen::UpdateImitaterButton() {
 }
 
 // 0x486770
-void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
+void SeedChooserScreen::MouseDown(const int x, const int y, const int theClickCount) {
     Widget::MouseDown(x, y, theClickCount);
 
     if (mSeedsInFlight > 0) {
@@ -877,7 +878,7 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
     } else if (mImitaterButton->IsMouseOver()) {
         if (mSeedsInBank != mBoard->mSeedBank->mNumPackets) {
             mApp->PlaySample(Sexy::SOUND_TAP);
-            auto aDialog = new ImitaterDialog();
+            const auto aDialog = new ImitaterDialog();
             mApp->AddDialog(aDialog->mId, aDialog);
             aDialog->Resize(
                 (mWidth - aDialog->mWidth) / 2, (mHeight - aDialog->mHeight) / 2, aDialog->mWidth, aDialog->mHeight
@@ -887,7 +888,7 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
     } else {
         if (!mBoard->mSeedBank->ContainsPoint(x, y) && !mAlmanacButton->IsMouseOver() && !mStoreButton->IsMouseOver() &&
             mApp->CanShowAlmanac()) {
-            Zombie *aZombie = mBoard->ZombieHitTest(x - mBoard->mX, y - mBoard->mY);
+            const Zombie *aZombie = mBoard->ZombieHitTest(x - mBoard->mX, y - mBoard->mY);
             if (aZombie && aZombie->mFromWave == Zombie::ZOMBIE_WAVE_CUTSCENE &&
                 aZombie->mZombieType != ZOMBIE_REDEYE_GARGANTUAR) {
                 mApp->DoAlmanacDialog(SEED_NONE, aZombie->mZombieType)->WaitForResult(true);
@@ -896,7 +897,7 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
             }
         }
 
-        SeedType aSeedType = SeedHitTest(x, y);
+        const SeedType aSeedType = SeedHitTest(x, y);
         if (aSeedType != SEED_NONE && !SeedNotAllowedToPick(aSeedType)) {
             if (SeedNotAllowedDuringTrial(aSeedType)) {
                 mApp->PlaySample(Sexy::SOUND_TAP);
@@ -925,10 +926,10 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount) {
 }
 
 // 0x486CE0
-bool SeedChooserScreen::PickedPlantType(SeedType theSeedType) {
+bool SeedChooserScreen::PickedPlantType(const SeedType theSeedType) {
     for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER;
          aSeedType = static_cast<SeedType>(aSeedType + 1)) {
-        ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+        const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
         if (aChosenSeed.mSeedState == SEED_IN_BANK) {
             if (aChosenSeed.mSeedType == theSeedType ||
                 (aChosenSeed.mSeedType == SEED_IMITATER && aChosenSeed.mImitaterType == theSeedType)) {
@@ -943,8 +944,8 @@ bool SeedChooserScreen::PickedPlantType(SeedType theSeedType) {
 void SeedChooserScreen::CloseSeedChooser() {
     DBG_ASSERT(mBoard->mSeedBank->mNumPackets == mBoard->GetNumSeedsInBank());
     for (int anIndex = 0; anIndex < mBoard->mSeedBank->mNumPackets; anIndex++) {
-        SeedType aSeedType = FindSeedInBank(anIndex);
-        ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
+        const SeedType aSeedType = FindSeedInBank(anIndex);
+        const ChosenSeed &aChosenSeed = mChosenSeeds[aSeedType];
         SeedPacket &aSeedPacket = mBoard->mSeedBank->mSeedPackets[anIndex];
         aSeedPacket.SetPacketType(aSeedType, aChosenSeed.mImitaterType);
         if (aChosenSeed.mRefreshing) {
@@ -958,10 +959,10 @@ void SeedChooserScreen::CloseSeedChooser() {
 }
 
 // 0x486E80
-void SeedChooserScreen::KeyDown(KeyCode theKey) { mBoard->DoTypingCheck(theKey); }
+void SeedChooserScreen::KeyDown(const KeyCode theKey) { mBoard->DoTypingCheck(theKey); }
 
 // 0x486EA0
-void SeedChooserScreen::KeyChar(SexyChar theChar) {
+void SeedChooserScreen::KeyChar(const SexyChar theChar) {
     if (mChooseState == CHOOSE_VIEW_LAWN && (theChar == ' ' || theChar == '\r' || theChar == '\u001B'))
         CancelLawnView();
     else if (mApp->mTodCheatKeys && theChar == '\u001B') PickRandomSeeds();

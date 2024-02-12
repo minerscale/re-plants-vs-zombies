@@ -78,7 +78,7 @@ public:
     void PushState();
     void PopState();
 
-    Graphics *Create();
+    Graphics *Create() const;
 
     void SetFont(_Font *theFont);
     _Font *GetFont();

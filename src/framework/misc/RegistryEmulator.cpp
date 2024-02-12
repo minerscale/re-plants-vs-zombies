@@ -4,10 +4,9 @@
 #include <filesystem>
 
 RegistryEmulator::RegistryEmulator(const std::string theFileName) : mREG_FILENAME{theFileName} {
-    FILE *aRegFile;
     if (!std::filesystem::exists(mREG_FILENAME)) return; // We're done here
 
-    aRegFile = fopen(mREG_FILENAME.c_str(), "rb");
+    FILE *aRegFile = fopen(mREG_FILENAME.c_str(), "rb");
     if (!aRegFile) throw std::runtime_error("Cannot open registry file!");
 
     fseek(aRegFile, 0, SEEK_END);
@@ -31,7 +30,7 @@ size_t RegistryEmulator::FindKey(const std::string &theValueName) {
     return aKeyIdx;
 }
 
-size_t RegistryEmulator::Flush() {
+size_t RegistryEmulator::Flush() const {
     FILE *aRegFile = fopen(mREG_FILENAME.c_str(), "wb");
     size_t ret = fwrite(mRegVec.data(), mRegVec.size(), 1, aRegFile);
     fclose(aRegFile);
@@ -139,7 +138,7 @@ void RegistryEmulatorTest() {
         printf("%d\n", aLength);
     }
 
-    auto test_string = (char *)"I HATE MINORITIES I HATE MINORITIES";
+    auto test_string = "TEST STRING"; // static_cast<char*>("I HATE MINORITIES I HATE MINORITIES");
     aRegHandle.Write("MY_NAME_JEFF", REG_SZ, (uint8_t *)test_string, strlen(test_string));
     aRegHandle.Write("PENGIS", REG_SZ, (uint8_t *)test_string, strlen(test_string));
     // aRegHandle.Write("PEEPEEPOOPOO", REG_SZ, (uint8_t *)test_string, strlen(test_string));
