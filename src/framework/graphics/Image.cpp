@@ -39,19 +39,19 @@ int Image::GetCelHeight() { return mHeight / mNumRows; }
 int Image::GetCelWidth() { return mWidth / mNumCols; }
 
 Rect Image::GetCelRect(int theCel) {
-    int h = GetCelHeight();
-    int w = GetCelWidth();
-    int x = (theCel % mNumCols) * w;
-    int y = (theCel / mNumCols) * h;
+    const int h = GetCelHeight();
+    const int w = GetCelWidth();
+    const int x = (theCel % mNumCols) * w;
+    const int y = (theCel / mNumCols) * h;
 
     return Rect(x, y, w, h);
 }
 
 Rect Image::GetCelRect(int theCol, int theRow) {
-    int h = GetCelHeight();
-    int w = GetCelWidth();
-    int x = theCol * w;
-    int y = theRow * h;
+    const int h = GetCelHeight();
+    const int w = GetCelWidth();
+    const int x = theCol * w;
+    const int y = theRow * h;
 
     return Rect(x, y, w, h);
 }
@@ -137,9 +137,9 @@ int Image::GetAnimCel(int theTime) {
 
 Rect Image::GetAnimCelRect(int theTime) {
     Rect aRect;
-    int aCel = GetAnimCel(theTime);
-    int aCelWidth = GetCelWidth();
-    int aCelHeight = GetCelHeight();
+    const int aCel = GetAnimCel(theTime);
+    const int aCelWidth = GetCelWidth();
+    const int aCelHeight = GetCelHeight();
     if (mNumCols > 1) return Rect(aCel * aCelWidth, 0, aCelWidth, mHeight);
     else return Rect(0, aCel * aCelHeight, mWidth, aCelHeight);
 }
@@ -153,7 +153,7 @@ void Image::CopyAttributes(Image *from) {
 }
 
 Graphics *Image::GetGraphics() {
-    auto g = new Graphics(this);
+    const auto g = new Graphics(this);
 
     return g;
 }
@@ -167,7 +167,7 @@ void Image::DrawRect(const Rect &theRect, const Color &theColor, int theDrawMode
 
 void Image::FillScanLines(Span *theSpans, int theSpanCount, const Color &theColor, int theDrawMode) {
     for (int i = 0; i < theSpanCount; i++) {
-        Span *aSpan = &theSpans[i];
+        const Span *aSpan = &theSpans[i];
         FillRect(Rect(aSpan->mX, aSpan->mY, aSpan->mWidth, 1), theColor, theDrawMode);
     }
 }

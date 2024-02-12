@@ -209,7 +209,7 @@ void Attachment::PropogateColor(
 }
 
 // 0x404A40
-void Attachment::OverrideScale(float theScale) {
+void Attachment::OverrideScale(float theScale) const {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
@@ -245,7 +245,7 @@ void Attachment::OverrideScale(float theScale) {
 }
 
 // 0x404B20
-void Attachment::CrossFade(const char *theCrossFadeName) {
+void Attachment::CrossFade(const char *theCrossFadeName) const {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
@@ -260,7 +260,7 @@ void Attachment::CrossFade(const char *theCrossFadeName) {
 }
 
 // 0x404B80
-void Attachment::SetMatrix(const SexyTransform2D &theMatrix) {
+void Attachment::SetMatrix(const SexyTransform2D &theMatrix) const {
     TOD_ASSERT(gEffectSystem);
 
     for (int i = 0; i < mNumEffects; i++) {
@@ -304,7 +304,7 @@ void Attachment::SetMatrix(const SexyTransform2D &theMatrix) {
 }
 
 // 0x404D10
-void Attachment::Draw(Graphics *g, bool theParentHidden) {
+void Attachment::Draw(Graphics *g, bool theParentHidden) const {
     TOD_ASSERT(gEffectSystem);
 
     DataArray<TodParticleSystem> &aParticleSystems = gEffectSystem->mParticleHolder->mParticleSystems;
@@ -563,7 +563,9 @@ void AttachmentDetachCrossFadeParticleType(
         return;
     }
 
-    TOD_ASSERT(theParticleEffect >= 0 && theParticleEffect < gParticleDefCount);
+    TOD_ASSERT(
+        theParticleEffect > ParticleEffect::PARTICLE_NONE && static_cast<int>(theParticleEffect) < gParticleDefCount
+    );
     const TodParticleDefinition *aDefinition = &gParticleDefArray[static_cast<int>(theParticleEffect)];
 
     for (int i = 0; i < aAttachment->mNumEffects; i++) {
@@ -591,9 +593,9 @@ void AttachmentPropogateColor(
     if (theAttachmentID == AttachmentID::ATTACHMENTID_NULL) return;
 
     TOD_ASSERT(gEffectSystem);
-    const Attachment *aAttachment =
-        gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID));
-    if (aAttachment) {
+    if (const Attachment *aAttachment =
+            gEffectSystem->mAttachmentHolder->mAttachments.DataArrayTryToGet(static_cast<unsigned int>(theAttachmentID)
+            )) {
         aAttachment->PropogateColor(
             theColor, theEnableAdditiveColor, theAdditiveColor, theEnableOverlayColor, theOverlayColor
         );

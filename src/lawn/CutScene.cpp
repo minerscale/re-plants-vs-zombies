@@ -26,50 +26,50 @@
 // #include "misc/PerfTimer.h"
 #include "widget/WidgetManager.h"
 
-static const int TimePanRightStart = 1500;
-static const int TimePanRightEnd = 3500;         //[0x6A4FFC]
-static const int TimeEarlyDaveEnterStart = 2000; //[0x6A5000]
-static const int TimeEarlyDaveEnterEnd = 2750;   //[0x6AA220]
+static constexpr int TimePanRightStart = 1500;
+static constexpr int TimePanRightEnd = 3500;         //[0x6A4FFC]
+static constexpr int TimeEarlyDaveEnterStart = 2000; //[0x6A5000]
+static constexpr int TimeEarlyDaveEnterEnd = 2750;   //[0x6AA220]
 // static const int	TimeEarlyDaveLeaveStart			= 3250;		//[0x6AA224]
-static const int TimeEarlyDaveLeaveEnd = 4000;       //[0x6AA228]
-static const int TimeSeedChoserSlideOnStart = 4000;  //[0x6AA22C]
-static const int TimeSeedChoserSlideOnEnd = 4250;    //[0x6AA230]
-static const int TimeSeedChoserSlideOffStart = 4500; //[0x6AA234]
-static const int TimeSeedChoserSlideOffEnd = 4750;   //[0x6AA238]
-static const int TimeSeedBankOnStart = 4000;         //[0x6AA23C]
-static const int TimeSeedBankOnEnd = 4250;           //[0x6AA240]
-static const int TimePanLeftStart = 4500;            //[0x6AA244]
-static const int TimePanLeftEnd = 6000;              //[0x6AA248]
-static const int TimeSeedBankRightStart = 4750;      //[0x6AA24C]
-static const int TimeSeedBankRightEnd = 6000;        //[0x6AA250]
-static const int TimeRollSodStart = 6000;            //[0x6AA254]
-static const int TimeRollSodEnd = 8000;              //[0x6AA258]
-static const int TimeGraveStoneStart = 6000;         //[0x6AA25C]
-static const int TimeGraveStoneEnd = 7000;           //[0x6AA260]
-static const int TimeReadySetPlantStart = 6000;      //[0x6AA264]
-static const int TimeReadySetPlantEnd = 7830;        //[0x6AA268]
-static const int TimeFogRollIn = 5950;               //[0x6AA26C]
+static constexpr int TimeEarlyDaveLeaveEnd = 4000;       //[0x6AA228]
+static constexpr int TimeSeedChoserSlideOnStart = 4000;  //[0x6AA22C]
+static constexpr int TimeSeedChoserSlideOnEnd = 4250;    //[0x6AA230]
+static constexpr int TimeSeedChoserSlideOffStart = 4500; //[0x6AA234]
+static constexpr int TimeSeedChoserSlideOffEnd = 4750;   //[0x6AA238]
+static constexpr int TimeSeedBankOnStart = 4000;         //[0x6AA23C]
+static constexpr int TimeSeedBankOnEnd = 4250;           //[0x6AA240]
+static constexpr int TimePanLeftStart = 4500;            //[0x6AA244]
+static constexpr int TimePanLeftEnd = 6000;              //[0x6AA248]
+static constexpr int TimeSeedBankRightStart = 4750;      //[0x6AA24C]
+static constexpr int TimeSeedBankRightEnd = 6000;        //[0x6AA250]
+static constexpr int TimeRollSodStart = 6000;            //[0x6AA254]
+static constexpr int TimeRollSodEnd = 8000;              //[0x6AA258]
+static constexpr int TimeGraveStoneStart = 6000;         //[0x6AA25C]
+static constexpr int TimeGraveStoneEnd = 7000;           //[0x6AA260]
+static constexpr int TimeReadySetPlantStart = 6000;      //[0x6AA264]
+static constexpr int TimeReadySetPlantEnd = 7830;        //[0x6AA268]
+static constexpr int TimeFogRollIn = 5950;               //[0x6AA26C]
 // static const int	TimeCrazyDaveEnterStart			= 6500;		//[0x6AA270]
 // static const int	TimeCrazyDaveEnterEnd			= 7250;		//[0x6AA274]
 // static const int	TimeCrazyDaveLeaveStart			= 7750;		//[0x6AA278]
 // static const int	TimeCrazyDaveLeaveEnd			= 8500;		//[0x6AA27C]
-static const int TimeIntroEnd = 6000; //[0x6AA280]
-static const int LostTimePanRightStart = 1500;
-static const int LostTimePanRightEnd = 3500;             //[0x6A5004]
-static const int LostTimeBrainGraphicStart = 6000;       //[0x6AA284]
-static const int LostTimeBrainGraphicShake = 7000;       //[0x6AA288]
-static const int LostTimeBrainGraphicCancelShake = 8000; //[0x6AA28C]
-static const int LostTimeBrainGraphicEnd = 11000;        //[0x6AA290]
-static const int LostTimeEnd = 11000;                    //[0x6AA294]
-static const int TimeIntro_PresentsFadeIn = 1000;
-static const int TimeIntro_LogoStart = 5500;     //[0x6A5008]
-static const int TimeIntro_LogoEnd = 5900;       //[0x6AA298]
-static const int TimeIntro_PanRightStart = 5890; //[0x6A500C]
-static const int TimeIntro_PanRightEnd = 11890;  //[0x6AA29C]
-static const int TimeIntro_FadeOut = 10890;      //[0x6AA2A0]
-static const int TimeIntro_FadeOutEnd = 11890;   //[0x6AA2A4]
-static const int TimeIntro_End = 13890;          //[0x6AA2A8]
-static const int TimeLawnMowerDuration = 250;
+static constexpr int TimeIntroEnd = 6000; //[0x6AA280]
+static constexpr int LostTimePanRightStart = 1500;
+static constexpr int LostTimePanRightEnd = 3500;             //[0x6A5004]
+static constexpr int LostTimeBrainGraphicStart = 6000;       //[0x6AA284]
+static constexpr int LostTimeBrainGraphicShake = 7000;       //[0x6AA288]
+static constexpr int LostTimeBrainGraphicCancelShake = 8000; //[0x6AA28C]
+static constexpr int LostTimeBrainGraphicEnd = 11000;        //[0x6AA290]
+static constexpr int LostTimeEnd = 11000;                    //[0x6AA294]
+static constexpr int TimeIntro_PresentsFadeIn = 1000;
+static constexpr int TimeIntro_LogoStart = 5500;     //[0x6A5008]
+static constexpr int TimeIntro_LogoEnd = 5900;       //[0x6AA298]
+static constexpr int TimeIntro_PanRightStart = 5890; //[0x6A500C]
+static constexpr int TimeIntro_PanRightEnd = 11890;  //[0x6AA29C]
+static constexpr int TimeIntro_FadeOut = 10890;      //[0x6AA2A0]
+static constexpr int TimeIntro_FadeOutEnd = 11890;   //[0x6AA2A4]
+static constexpr int TimeIntro_End = 13890;          //[0x6AA2A8]
+static constexpr int TimeLawnMowerDuration = 250;
 static const int TimeLawnMowerStart[6] = {6300, 6250, 6200, 6150, 6100, 6050}; //[0x6AA2AC]
 
 // 0x4390E0
@@ -872,7 +872,7 @@ void CutScene::AnimateBoard() {
             mApp->CrazyDaveEnter();
             if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL) {
                 Reanimation *aDaveReanim = mApp->ReanimationTryToGet(mApp->mCrazyDaveReanimID);
-                aDaveReanim->PlayReanim("anim_enterup", REANIM_PLAY_ONCE_AND_HOLD, 0, 12);
+                aDaveReanim->PlayReanim("anim_enterup", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12);
                 aDaveReanim->SetPosition(150, 70);
             }
         }
@@ -1464,7 +1464,7 @@ int CutScene::ParseDelayTimeFromMessage() {
     const size_t anIndex = aCrazyDaveText.find(_S("{DELAY_"));
     if (anIndex != SexyString::npos) {
         const SexyString aDelayTimeStr = aCrazyDaveText.substr(anIndex + 7, aCrazyDaveText.find(_S("}")) - anIndex - 7);
-        mCrazyDaveCountDown = sexyatoi(aDelayTimeStr.c_str());
+        mCrazyDaveCountDown = atoi(aDelayTimeStr.c_str());
         return mCrazyDaveCountDown;
     }
     return 100;
@@ -1476,7 +1476,7 @@ int CutScene::ParseTalkTimeFromMessage() {
     const int anIndex = aCrazyDaveText.find(_S("{TIME_"));
     if (anIndex != -1) {
         const SexyString aTalkTimeStr = aCrazyDaveText.substr(anIndex + 6, aCrazyDaveText.find(_S("}")) - anIndex - 6);
-        mCrazyDaveCountDown = sexyatoi(aTalkTimeStr.c_str());
+        mCrazyDaveCountDown = atoi(aTalkTimeStr.c_str());
         return mCrazyDaveCountDown;
     }
     return 100;
@@ -1992,7 +1992,7 @@ void CutScene::DrawIntro(Graphics *g) {
     }
 
     // 绘制“PopCap Games 出品”字样
-    const int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
+    constexpr int aTimePanRightStart = TimeIntro_PanRightStart - TimeIntro_PresentsFadeIn;
     if (mCutsceneTime > TimeIntro_PresentsFadeIn && mCutsceneTime <= aTimePanRightStart) {
         const int anAlpha =
             mCutsceneTime < aTimePanRightStart - 600

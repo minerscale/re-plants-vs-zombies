@@ -19,10 +19,10 @@ bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::str
     if (aFile == nullptr) return false;
 
     p_fseek(aFile, 0, SEEK_END);
-    size_t aLength = p_ftell(aFile);
+    const size_t aLength = p_ftell(aFile);
     p_fseek(aFile, 0, SEEK_SET);
 
-    auto aBuf = static_cast<char *>(malloc(aLength));
+    const auto aBuf = static_cast<char *>(malloc(aLength));
     p_fread(aBuf, aLength, 1, aFile);
     p_fclose(aFile);
 
@@ -35,22 +35,22 @@ bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::str
 struct WavHeader {
     // RIFF Header
     char riff_header[4]; // Contains "RIFF"
-    uint wav_size;       // Size of the wav portion of the file, which follows the first 8 bytes. File size - 8
+    uint32_t wav_size;   // Size of the wav portion of the file, which follows the first 8 bytes. File size - 8
     char wave_header[4]; // Contains "WAVE"
 
     // Format Header
-    char fmt_header[4];  // Contains "fmt " (includes trailing space)
-    uint fmt_chunk_size; // Should be 16 for PCM
-    short audio_format;  // Should be 1 for PCM. 3 for IEEE Float
+    char fmt_header[4];      // Contains "fmt " (includes trailing space)
+    uint32_t fmt_chunk_size; // Should be 16 for PCM
+    short audio_format;      // Should be 1 for PCM. 3 for IEEE Float
     short num_channels;
-    uint sample_rate;
-    uint byte_rate;         // Number of bytes per second. sample_rate * num_channels * Bytes Per Sample
+    uint32_t sample_rate;
+    uint32_t byte_rate;     // Number of bytes per second. sample_rate * num_channels * Bytes Per Sample
     short sample_alignment; // num_channels * Bytes Per Sample
     short bit_depth;        // Number of bits per sample
 
     // Data
     char data_header[4]; // Contains "data"
-    uint data_bytes;     // Number of bytes in data. Number of samples * num_channels * sample byte size
+    uint32_t data_bytes; // Number of bytes in data. Number of samples * num_channels * sample byte size
                          // uint8_t bytes[]; // Remainder of wave file is bytes
 };
 
@@ -137,13 +137,13 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
     default: return false;
     }
 
-    uint32_t aDestSize = aDataSize * (aBitCount / aSrcBitCount);
+    const uint32_t aDestSize = aDataSize * (aBitCount / aSrcBitCount);
 
-    auto aDestHeader = static_cast<WavHeader *>(calloc(1, sizeof(WavHeader) + aDestSize));
+    const auto aDestHeader = static_cast<WavHeader *>(calloc(1, sizeof(WavHeader) + aDestSize));
 
     *aDestHeader = WavHeader{
         {'R', 'I', 'F', 'F'},
-        static_cast<uint>(aDestSize + sizeof(WavHeader) - offsetof(WavHeader, wave_header)),
+        static_cast<uint32_t>(aDestSize + sizeof(WavHeader) - offsetof(WavHeader, wave_header)),
         {'W', 'A', 'V', 'E'},
         {'f', 'm', 't', ' '},
         offsetof(WavHeader, data_header) - offsetof(WavHeader, audio_format),
@@ -157,12 +157,12 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
         aDestSize,
     };
 
-    auto aDestBuffer = reinterpret_cast<short *>(reinterpret_cast<char *>(aDestHeader) + sizeof(WavHeader));
+    const auto aDestBuffer = reinterpret_cast<short *>(reinterpret_cast<char *>(aDestHeader) + sizeof(WavHeader));
 
     if (ulaw) {
-        auto aSrcBuffer = new uint8_t[aDataSize];
+        const auto aSrcBuffer = new uint8_t[aDataSize];
 
-        size_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
+        const size_t aReadSize = p_fread(aSrcBuffer, 1, aDataSize, fp);
         p_fclose(fp);
         if (aReadSize != aDataSize) return false;
 
@@ -172,7 +172,7 @@ bool BassSoundManager::LoadAUSound(unsigned int theSfxID, const std::string &the
 
         delete[] aSrcBuffer;
     } else {
-        size_t aReadSize = p_fread(aDestBuffer, 1, aDataSize, fp);
+        const size_t aReadSize = p_fread(aDestBuffer, 1, aDataSize, fp);
         p_fclose(fp);
         if (aReadSize != aDataSize) return false;
     }
@@ -192,7 +192,7 @@ bool BassSoundManager::LoadSound(unsigned int theSfxID, const std::string &theFi
 
     mSourceFileNames[theSfxID] = theFilename;
 
-    std::string aFilename = theFilename;
+    const std::string aFilename = theFilename;
     // std::string aCachedName;
 
     /* Disabling caching because caching is hard.
@@ -323,7 +323,7 @@ void BassSoundManager::ReleaseFreeChannels() {
 
 int BassSoundManager::FindFreeChannel() {
     static auto timer = std::chrono::high_resolution_clock::now();
-    auto now = std::chrono::high_resolution_clock::now();
+    const auto now = std::chrono::high_resolution_clock::now();
     if (now - timer > std::chrono::duration<double>(1)) {
         ReleaseFreeChannels();
         timer = now;
@@ -344,7 +344,7 @@ int BassSoundManager::FindFreeChannel() {
 SoundInstance *BassSoundManager::GetSoundInstance(unsigned int theSfxID) {
     if (!Exists(theSfxID)) return nullptr;
 
-    int aFreeChannel = FindFreeChannel();
+    const int aFreeChannel = FindFreeChannel();
     if (aFreeChannel < 0) return nullptr;
 
     mPlayingSounds[aFreeChannel] = std::make_unique<BassSoundInstance>(mSourceSounds[theSfxID].value());

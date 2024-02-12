@@ -42,17 +42,6 @@
 using SexyString = std::string;
 #define _S(x) x
 
-#define sexystrncmp strncmp
-#define sexystrcmp strcmp
-#define sexystricmp strcasecmp
-#define sexysscanf sscanf
-#define sexyatoi atoi
-#define sexystrcpy strcpy
-#define sexystrlen strlen
-#define sexyisdigit isdigit
-#define sexyisalnum isalnum
-#define sexystrchr strchr
-
 #define SexyStringToStringFast(x) (x)
 #define SexyStringToWStringFast(x) StringToWString(x)
 #define StringToSexyStringFast(x) (x)
@@ -64,11 +53,6 @@ using SexyString = std::string;
 #define LONG_LITTLEE_TO_NATIVE(l) (l)
 #define WORD_LITTLEE_TO_NATIVE(w) (w)
 
-// #define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
-
-using uchar = uint8_t;
-using ushort = uint16_t;
-using uint = uint32_t;
 using ulong = unsigned long;
 
 #ifndef _MSC_VER
@@ -80,12 +64,10 @@ typedef unsigned int UINT;
 #else
 #define NOMINMAX 1
 #include <intsafe.h>
-
 #if alloca == _alloca
 #undef alloca
 #define alloca _malloca
 #endif // alloca == _alloca
-
 #endif // _MSC_VER
 
 using DefinesMap = std::map<std::string, std::string>;
@@ -128,10 +110,10 @@ std::string Lower(const std::string &theData);
 std::wstring Lower(const std::wstring &theData);
 std::string Trim(const std::string &theString);
 std::wstring Trim(const std::wstring &theString);
-bool StringToInt(const std::string theString, int *theIntVal);
-bool StringToDouble(const std::string theString, double *theDoubleVal);
-bool StringToInt(const std::wstring theString, int *theIntVal);
-bool StringToDouble(const std::wstring theString, double *theDoubleVal);
+bool StringToInt(const std::string &theString, int *theIntVal);
+bool StringToDouble(const std::string &theString, double *theDoubleVal);
+bool StringToInt(const std::wstring &theString, int *theIntVal);
+bool StringToDouble(const std::wstring &theString, double *theDoubleVal);
 int StrFindNoCase(const char *theStr, const char *theFind);
 bool StrPrefixNoCase(const char *theStr, const char *thePrefix, int maxLength = 10000000);
 SexyString CommaSeperate(int theValue);
@@ -153,7 +135,7 @@ std::string GetCurDir();
 std::string GetFullPath(const std::string &theRelPath);
 std::string GetPathFrom(const std::string &theRelPath, const std::string &theDir);
 bool AllowAllAccess(const std::string &theFileName);
-std::wstring UTF8StringToWString(const std::string theString);
+std::wstring UTF8StringToWString(const std::string &theString);
 
 // Read memory and then move the pointer
 void SMemR(void *&_Src, void *_Dst, size_t _Size);

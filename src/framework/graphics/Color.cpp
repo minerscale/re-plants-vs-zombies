@@ -23,7 +23,7 @@ Color::Color(int theRed, int theGreen, int theBlue, int theAlpha)
 
 Color::Color(const SexyRGBA &theColor) : mRed(theColor.r), mGreen(theColor.g), mBlue(theColor.b), mAlpha(theColor.a) {}
 
-Color::Color(const uchar *theElements)
+Color::Color(const uint8_t *theElements)
     : mRed(theElements[0]), mGreen(theElements[1]), mBlue(theElements[2]), mAlpha(0xFF) {}
 
 Color::Color(const int *theElements)

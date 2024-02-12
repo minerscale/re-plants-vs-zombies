@@ -27,7 +27,7 @@ public:
     Color(int theRed, int theGreen, int theBlue);
     Color(int theRed, int theGreen, int theBlue, int theAlpha);
     explicit Color(const SexyRGBA &theColor);
-    explicit Color(const uchar *theElements);
+    explicit Color(const uint8_t *theElements);
     explicit Color(const int *theElements);
 
     int GetRed() const;

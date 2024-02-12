@@ -8,8 +8,9 @@ using namespace Sexy;
 SexyApp *Sexy::gSexyApp = nullptr;
 
 // Groups of 80-byte data
-const char DYNAMIC_DATA_BLOCK[400] = "DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
-                                     "00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
+constexpr char DYNAMIC_DATA_BLOCK[400] =
+    "DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
+    "00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
 
 const char *BUILD_INFO_MARKER = DYNAMIC_DATA_BLOCK + 80;
 const char *SIGNATURE_CODE_MARKER = DYNAMIC_DATA_BLOCK + 80 * 2;
@@ -122,7 +123,7 @@ void SexyApp::ReadFromRegistry() {
         FILE *fp = fopen("popcinfo.dat", "rb");
         if (fp != nullptr) {
             for (;;) {
-                ushort aLen;
+                uint16_t aLen;
                 if (fread(&aLen, 1, sizeof(short), fp) == 0) break;
 
                 if (aLen < 256) {
@@ -200,121 +201,121 @@ void SexyApp::ReadFromRegistry() {
 
 void SexyApp::WriteToRegistry() {
     unreachable(); // FIXME
-                   /*
-                   SexyAppBase::WriteToRegistry();
-               
-                   if (!mPlayingDemoBuffer)
-                   {
-                       char aFileName[256];
-                       GetWindowsDirectory(aFileName, 256);
-                       if (aFileName[strlen(aFileName)-1] != '\\')
-                           strcat(aFileName, "\\");
-                       strcat(aFileName, "popcinfo.dat");
-               
-                       FILE* fp = fopen(aFileName, "r+b");
-                       if (fp != NULL)
-                       {
-                           for (;;)
-                           {
-                               ushort aLen;
-                               if (fread(&aLen, 1, sizeof(short), fp) == 0)
-                                   break;
-               
-                               if (aLen < 256)
-                               {
-                                   char aProdName[256];
-                                   aProdName[aLen] = '\0';
-                                   fread(aProdName, aLen, sizeof(char), fp);
-               
-                                   if (strcmp(aProdName, mProdName.c_str()) == 0)
-                                   {
-                                       fseek(fp, -(2 + aLen), SEEK_CUR);
-                                       break;
-                                   }
-                               }
-               
-                               fseek(fp, sizeof(int), SEEK_CUR);
-                           }
-                       }
-                       else
-                           fp = fopen(aFileName, "wb");
-               
-                       if (fp != NULL)
-                       {
-                           ushort aLen = mProdName.length();
-                           fwrite(&aLen, 1, sizeof(short), fp);
-                           fwrite(mProdName.c_str(), aLen, sizeof(char), fp);
-               
-                           short aShort = mTimesPlayed;
-                           fwrite(&aShort, 1, sizeof(short), fp);
-               
-                           aShort = mTimesExecuted;
-                           fwrite(&aShort, 1, sizeof(short), fp);
-               
-                           fclose(fp);
-                       }
-                   }
-               
-                   RegistryWriteInteger("LastVerCheckQueryTime", mLastVerCheckQueryTime);
-                   RegistryWriteInteger("TimesPlayed", mTimesPlayed);
-                   RegistryWriteInteger("TimesExecuted", mTimesExecuted);
-               
-                   // This is for "compatibility"
-                   if ((mRegUserName.length() == 0) &&
-                       (mUserName.length() > 0) &&
-                       (mRegCode.length() > 0))
-                       mRegUserName = mUserName;
-               
-                   if (mRegUserName.length() > 0)
-                       RegistryWriteString("RegName", mRegUserName);
-               
-                   if (mRegCode.length() > 0)
-                       RegistryWriteString("RegCode", mRegCode);
-                   */
+    /*
+    SexyAppBase::WriteToRegistry();
+
+    if (!mPlayingDemoBuffer)
+    {
+        char aFileName[256];
+        GetWindowsDirectory(aFileName, 256);
+        if (aFileName[strlen(aFileName)-1] != '\\')
+            strcat(aFileName, "\\");
+        strcat(aFileName, "popcinfo.dat");
+
+        FILE* fp = fopen(aFileName, "r+b");
+        if (fp != NULL)
+        {
+            for (;;)
+            {
+                uint16_t aLen;
+                if (fread(&aLen, 1, sizeof(short), fp) == 0)
+                    break;
+
+                if (aLen < 256)
+                {
+                    char aProdName[256];
+                    aProdName[aLen] = '\0';
+                    fread(aProdName, aLen, sizeof(char), fp);
+
+                    if (strcmp(aProdName, mProdName.c_str()) == 0)
+                    {
+                        fseek(fp, -(2 + aLen), SEEK_CUR);
+                        break;
+                    }
+                }
+
+                fseek(fp, sizeof(int), SEEK_CUR);
+            }
+        }
+        else
+            fp = fopen(aFileName, "wb");
+
+        if (fp != NULL)
+        {
+            uint16_t aLen = mProdName.length();
+            fwrite(&aLen, 1, sizeof(short), fp);
+            fwrite(mProdName.c_str(), aLen, sizeof(char), fp);
+
+            short aShort = mTimesPlayed;
+            fwrite(&aShort, 1, sizeof(short), fp);
+
+            aShort = mTimesExecuted;
+            fwrite(&aShort, 1, sizeof(short), fp);
+
+            fclose(fp);
+        }
+    }
+
+    RegistryWriteInteger("LastVerCheckQueryTime", mLastVerCheckQueryTime);
+    RegistryWriteInteger("TimesPlayed", mTimesPlayed);
+    RegistryWriteInteger("TimesExecuted", mTimesExecuted);
+
+    // This is for "compatibility"
+    if ((mRegUserName.length() == 0) &&
+        (mUserName.length() > 0) &&
+        (mRegCode.length() > 0))
+        mRegUserName = mUserName;
+
+    if (mRegUserName.length() > 0)
+        RegistryWriteString("RegName", mRegUserName);
+
+    if (mRegCode.length() > 0)
+        RegistryWriteString("RegCode", mRegCode);
+    */
 }
 
 bool SexyApp::OpenHTMLTemplate(const std::string & /*theTemplateFile*/, const DefinesMap & /*theDefinesMap*/) {
     unreachable(); // FIXME
-                   /*
-                   std::fstream anInStream(theTemplateFile.c_str(), std::ios::in);
-               
-                   if (!anInStream.is_open())
-                       return false;
-               
-                   WIN32_FIND_DATA aFindData;
-                   HANDLE aHandle = FindFirstFile("temp\\tpl*.html", &aFindData);
-                   if (aHandle != NULL)
-                   {
-                       do
-                       {
-                           std::string aFilePath = std::string("temp\\") + aFindData.cFileName;
-                           DeleteFile(aFilePath.c_str());
-                       }
-                       while (FindNextFile(aHandle, &aFindData));
-               
-                       FindClose(aHandle);
-                   }
-               
-                   mkdir("temp");
-               
-                   std::string anOutFilename = StrFormat("temp\\tpl%04d.html", rand()%10000);
-               
-                   //TODO: A better failover case?
-                   std::fstream anOutStream(anOutFilename.c_str(), std::ios::out);
-                   if (!anOutStream.is_open())
-                       return false;
-               
-                   char aStr[4096];
-                   while (!anInStream.eof())
-                   {
-                       anInStream.getline(aStr, 4096);
-               
-                       std::string aNewString = Evaluate(aStr, theDefinesMap);
-               
-                       anOutStream << aNewString.c_str() << std::endl;
-                   }
-               
-                   return OpenURL(GetFullPath(anOutFilename));*/
+    /*
+    std::fstream anInStream(theTemplateFile.c_str(), std::ios::in);
+
+    if (!anInStream.is_open())
+        return false;
+
+    WIN32_FIND_DATA aFindData;
+    HANDLE aHandle = FindFirstFile("temp\\tpl*.html", &aFindData);
+    if (aHandle != NULL)
+    {
+        do
+        {
+            std::string aFilePath = std::string("temp\\") + aFindData.cFileName;
+            DeleteFile(aFilePath.c_str());
+        }
+        while (FindNextFile(aHandle, &aFindData));
+
+        FindClose(aHandle);
+    }
+
+    mkdir("temp");
+
+    std::string anOutFilename = StrFormat("temp\\tpl%04d.html", rand()%10000);
+
+    //TODO: A better failover case?
+    std::fstream anOutStream(anOutFilename.c_str(), std::ios::out);
+    if (!anOutStream.is_open())
+        return false;
+
+    char aStr[4096];
+    while (!anInStream.eof())
+    {
+        anInStream.getline(aStr, 4096);
+
+        std::string aNewString = Evaluate(aStr, theDefinesMap);
+
+        anOutStream << aNewString.c_str() << std::endl;
+    }
+
+    return OpenURL(GetFullPath(anOutFilename));*/
 }
 
 bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {

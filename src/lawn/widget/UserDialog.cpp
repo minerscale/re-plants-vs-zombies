@@ -39,7 +39,7 @@ UserDialog::UserDialog(LawnApp *theApp)
     }
 
     const ProfileMap &aMap = theApp->mProfileMgr->GetProfileMap();
-    for (auto anItr = aMap.begin(); anItr != aMap.end(); anItr++) {
+    for (auto anItr = aMap.begin(); anItr != aMap.end(); ++anItr) {
         if (theApp->mPlayerInfo && anItr->second.mName == theApp->mPlayerInfo->mName) {
             continue;
         }
@@ -170,5 +170,5 @@ void UserDialog::EditWidgetText(const int theId, const SexyString &theString) {
 // 0x51D080
 bool UserDialog::AllowChar(const int theId, const SexyChar theChar) {
     (void)theId;
-    return sexyisdigit(theChar);
+    return isdigit(theChar);
 }

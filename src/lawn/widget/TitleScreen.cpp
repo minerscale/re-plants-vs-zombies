@@ -370,7 +370,7 @@ void TitleScreen::Update() {
                 aReanimType = ReanimationType::REANIM_LOADBAR_ZOMBIEHEAD;
             }
             const float aPosX = aTriggerPoint[i] + 225.0f;
-            const float aPosY = 511.0f;
+            constexpr float aPosY = 511.0f;
             Reanimation *aSproutReanim = mApp->AddReanimation(aPosX, aPosY, 0, aReanimType);
             aSproutReanim->mAnimRate = 18.0f;
             aSproutReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;

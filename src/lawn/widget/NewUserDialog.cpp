@@ -61,7 +61,7 @@ void NewUserDialog::EditWidgetText(const int theId, const SexyString &theString)
 }
 
 // 0x45D9F0
-bool NewUserDialog::AllowChar(int, const SexyChar theChar) { return sexyisalnum(theChar) || theChar == _S(' '); }
+bool NewUserDialog::AllowChar(int, const SexyChar theChar) { return isalnum(theChar) || theChar == _S(' '); }
 
 // 0x45DA20
 SexyString NewUserDialog::GetName() const {

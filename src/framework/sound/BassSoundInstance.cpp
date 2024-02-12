@@ -11,7 +11,7 @@ BassSoundInstance::~BassSoundInstance() { BASS_ChannelStop(mChannel); }
 
 void BassSoundInstance::RehupVolume() const { BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_VOL, mVolume); }
 
-void BassSoundInstance::RehupPan() {
+void BassSoundInstance::RehupPan() const {
     BASS_ChannelSetAttribute(mChannel, BASS_ATTRIB_PAN, BassSoundManager::PanDBToNorm(mPan));
 }
 
@@ -53,8 +53,8 @@ void BassSoundInstance::Stop() {
 const double ONE_SEMITONE = pow(2.0, 1.0 / 12.0);
 
 void BassSoundInstance::AdjustPitch(double theNumSteps) {
-    double aFrequencyMult = pow(ONE_SEMITONE, theNumSteps);
-    double aNewFrequency = mDefaultFrequency * aFrequencyMult;
+    const double aFrequencyMult = pow(ONE_SEMITONE, theNumSteps);
+    const double aNewFrequency = mDefaultFrequency * aFrequencyMult;
 
     /*
     if (aNewFrequency < DSBFREQUENCY_MIN)

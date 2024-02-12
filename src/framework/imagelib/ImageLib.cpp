@@ -10,12 +10,12 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include <math.h>
+#include <cmath>
 
 using namespace ImageLib;
 
 std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
-    const std::string corrected_path = casepath(theFileName);
+    const std::string &corrected_path = casepath(theFileName);
     if (corrected_path.empty()) return nullptr;
 
     SDL_Surface *aSurface = IMG_Load(corrected_path.c_str());
@@ -39,7 +39,7 @@ std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
     return anImage;
 }
 
-bool ImageLib::WriteJPEGImage(const std::string &theFileName, Image *theImage) {
+bool ImageLib::WriteJPEGImage(const std::string &theFileName, const Image *theImage) {
     const auto aSurface = SDL_CreateRGBSurfaceFrom(
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
@@ -50,7 +50,7 @@ bool ImageLib::WriteJPEGImage(const std::string &theFileName, Image *theImage) {
     return true;
 }
 
-bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
+bool ImageLib::WritePNGImage(const std::string &theFileName, const Image *theImage) {
     const auto aSurface = SDL_CreateRGBSurfaceFrom(
         theImage->mBits.get(), theImage->mWidth, theImage->mHeight, 32, theImage->mWidth * 4, 0x00FF0000, 0x0000FF00,
         0x000000FF, 0xFF000000
@@ -61,7 +61,7 @@ bool ImageLib::WritePNGImage(const std::string &theFileName, Image *theImage) {
     return true;
 }
 
-bool ImageLib::WriteTGAImage(const std::string &theFileName, Image *theImage) {
+bool ImageLib::WriteTGAImage(const std::string &theFileName, const Image *theImage) {
     FILE *aTGAFile = fopen(theFileName.c_str(), "wb");
     if (aTGAFile == nullptr) return false;
 
@@ -142,7 +142,7 @@ using Compression = enum {
     BI_CMYKRLE4 = 0x000D
 };
 
-bool ImageLib::WriteBMPImage(const std::string &theFileName, Image *theImage) {
+bool ImageLib::WriteBMPImage(const std::string &theFileName, const Image *theImage) {
     FILE *aFile = fopen(theFileName.c_str(), "wb");
     if (aFile == nullptr) return false;
 
@@ -190,7 +190,7 @@ constexpr double sRGBToLinear(double thesRGBValue) {
 }
 
 template <typename T, size_t N> constexpr std::array<T, N> createLUT(auto fn) {
-    std::array<T, N> ret;
+    std::array<T, N> ret{};
 
     for (size_t i = 0; i < N; ++i) {
         // Subtracting one here ensures highest number is 1
@@ -223,7 +223,7 @@ std::unique_ptr<ImageLib::Image> GetAnImage(const std::string &theFilename) {
     const std::array<const std::string, 7> supportImageExtensions = {".bmp", ".tga", ".jpg", ".png",
                                                                      ".gif", ".j2k", ".jp2"};
 
-    if (anExt.length() == 0) {
+    if (anExt.empty()) {
         for (const auto &ext : supportImageExtensions) {
             anImage = GetImageWithSDL(aFilename + ext);
             if (anImage) break;

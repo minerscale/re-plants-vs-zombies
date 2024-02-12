@@ -1,6 +1,7 @@
 #pragma once
+#include <type_traits>
 
-enum AdviceType {
+enum class AdviceType {
     ADVICE_NONE = -1,
     ADVICE_CLICK_ON_SUN = 0,
     ADVICE_CLICKED_ON_SUN = 1,
@@ -71,9 +72,9 @@ enum AdviceType {
     NUM_ADVICE_TYPES
 };
 
-enum AlmanacPage { ALMANAC_PAGE_INDEX, ALMANAC_PAGE_PLANTS, ALMANAC_PAGE_ZOMBIES };
+enum class AlmanacPage { ALMANAC_PAGE_INDEX, ALMANAC_PAGE_PLANTS, ALMANAC_PAGE_ZOMBIES };
 
-enum AwardType {
+enum class AwardType {
     AWARD_FORLEVEL,
     AWARD_CREDITS_ZOMBIENOTE,
     AWARD_HELP_ZOMBIENOTE,
@@ -81,7 +82,7 @@ enum AwardType {
     AWARD_PRECREDITS_ZOMBIENOTE,
 };
 
-enum BackgroundType {
+enum class BackgroundType {
     BACKGROUND_1_DAY,
     BACKGROUND_2_NIGHT,
     BACKGROUND_3_POOL,
@@ -94,7 +95,7 @@ enum BackgroundType {
     BACKGROUND_TREEOFWISDOM
 };
 
-enum BoardResult {
+enum class BoardResult {
     BOARDRESULT_NONE = 0,
     BOARDRESULT_WON = 1,
     BOARDRESULT_LOST = 2,
@@ -104,7 +105,7 @@ enum BoardResult {
     BOARDRESULT_CHEAT = 6
 };
 
-enum BossPart {
+enum class BossPart {
     BOSS_PART_BACK_LEG = 0,
     BOSS_PART_FRONT_LEG = 1,
     BOSS_PART_MAIN = 2,
@@ -112,7 +113,7 @@ enum BossPart {
     BOSS_PART_FIREBALL = 4
 };
 
-enum ChallengePage {
+enum class ChallengePage {
     CHALLENGE_PAGE_SURVIVAL = 0,
     CHALLENGE_PAGE_CHALLENGE = 1,
     CHALLENGE_PAGE_LIMBO = 2,
@@ -120,7 +121,7 @@ enum ChallengePage {
     MAX_CHALLANGE_PAGES = 4
 };
 
-enum ChallengeState {
+enum class ChallengeState {
     STATECHALLENGE_NORMAL,
     STATECHALLENGE_BEGHOULED_MOVING,
     STATECHALLENGE_BEGHOULED_FALLING,
@@ -138,7 +139,7 @@ enum ChallengeState {
     STATECHALLENGE_TREE_BABBLING
 };
 
-enum ChosenSeedState {
+enum class ChosenSeedState {
     SEED_FLYING_TO_BANK = 0,
     SEED_IN_BANK = 1,
     SEED_FLYING_TO_CHOOSER = 2,
@@ -146,7 +147,7 @@ enum ChosenSeedState {
     SEED_PACKET_HIDDEN = 4
 };
 
-enum CoinMotion {
+enum class CoinMotion {
     COIN_MOTION_FROM_SKY = 0,
     COIN_MOTION_FROM_SKY_SLOW = 1,
     COIN_MOTION_FROM_PLANT = 2,
@@ -156,7 +157,7 @@ enum CoinMotion {
     COIN_MOTION_FROM_BOSS = 6
 };
 
-enum CoinType {
+enum class CoinType {
     COIN_NONE,
     COIN_SILVER,
     COIN_GOLD,
@@ -187,7 +188,7 @@ enum CoinType {
     COIN_PRESENT_SURVIVAL_MODE,
 };
 
-enum CrazyDaveState {
+enum class CrazyDaveState {
     CRAZY_DAVE_OFF = 0,
     CRAZY_DAVE_ENTERING = 1,
     CRAZY_DAVE_LEAVING = 2,
@@ -197,7 +198,7 @@ enum CrazyDaveState {
     CRAZY_DAVE_HANDING_IDLING = 6
 };
 
-enum CursorType {
+enum class CursorType {
     CURSOR_TYPE_NORMAL,
     CURSOR_TYPE_PLANT_FROM_BANK,
     CURSOR_TYPE_PLANT_FROM_USABLE_COIN,
@@ -218,7 +219,7 @@ enum CursorType {
     CURSOR_TYPE_TREE_FOOD
 };
 
-enum DamageFlags {
+enum class DamageFlags {
     DAMAGE_BYPASSES_SHIELD = 0,
     DAMAGE_HITS_SHIELD_AND_BODY = 1,
     DAMAGE_FREEZE = 2,
@@ -227,7 +228,7 @@ enum DamageFlags {
     DAMAGE_SPIKE = 5
 };
 
-enum DamageRangeFlags {
+enum class DamageRangeFlags {
     DAMAGES_GROUND,
     DAMAGES_FLYING,
     DAMAGES_SUBMERGED,
@@ -344,7 +345,7 @@ enum Dialogs {
     NUM_DIALOGS
 };
 
-enum DebugTextMode {
+enum class DebugTextMode {
     DEBUG_TEXT_NONE = 0,
     DEBUG_TEXT_ZOMBIE_SPAWN = 1,
     DEBUG_TEXT_MUSIC = 2,
@@ -352,7 +353,7 @@ enum DebugTextMode {
     DEBUG_TEXT_COLLISION = 4
 };
 
-enum DrawStringJustification {
+enum class DrawStringJustification {
     DS_ALIGN_LEFT = 0,
     DS_ALIGN_RIGHT = 1,
     DS_ALIGN_CENTER = 2,
@@ -361,7 +362,7 @@ enum DrawStringJustification {
     DS_ALIGN_CENTER_VERTICAL_MIDDLE = 5
 };
 
-enum DrawVariation {
+enum class DrawVariation {
     VARIATION_NORMAL,
     VARIATION_IMITATER,
     VARIATION_MARIGOLD_WHITE,
@@ -382,9 +383,15 @@ enum DrawVariation {
     VARIATION_AQUARIUM
 };
 
-enum EffectType { EFFECT_PARTICLE = 0, EFFECT_TRAIL = 1, EFFECT_REANIM = 2, EFFECT_ATTACHMENT = 3, EFFECT_OTHER = 4 };
+enum class EffectType {
+    EFFECT_PARTICLE = 0,
+    EFFECT_TRAIL = 1,
+    EFFECT_REANIM = 2,
+    EFFECT_ATTACHMENT = 3,
+    EFFECT_OTHER = 4
+};
 
-enum EmitterType {
+enum class EmitterType {
     EMITTER_CIRCLE = 0,
     EMITTER_BOX = 1,
     EMITTER_BOX_PATH = 2,
@@ -494,7 +501,7 @@ enum GameObjectType {
     OBJECT_TYPE_TREE_OF_WISDOM
 };
 
-enum GameScenes {
+enum class GameScenes {
     SCENE_LOADING = 0,
     SCENE_MENU = 1,
     SCENE_LEVEL_INTRO = 2,
@@ -505,9 +512,9 @@ enum GameScenes {
     SCENE_CHALLENGE = 7
 };
 
-enum GardenType { GARDEN_MAIN = 0, GARDEN_MUSHROOM = 1, GARDEN_WHEELBARROW = 2, GARDEN_AQUARIUM = 3 };
+enum class GardenType { GARDEN_MAIN = 0, GARDEN_MUSHROOM = 1, GARDEN_WHEELBARROW = 2, GARDEN_AQUARIUM = 3 };
 
-enum GridItemType {
+enum class GridItemType {
     GRIDITEM_NONE = 0,
     GRIDITEM_GRAVESTONE = 1,
     GRIDITEM_CRATER = 2,
@@ -523,7 +530,7 @@ enum GridItemType {
     GRIDITEM_IZOMBIE_BRAIN = 12
 };
 
-enum GridItemState {
+enum class GridItemState {
     GRIDITEM_STATE_NORMAL = 0,
     GRIDITEM_STATE_GRAVESTONE_SPECIAL = 1,
     GRIDITEM_STATE_PORTAL_CLOSED = 2,
@@ -556,7 +563,7 @@ enum GridItemState {
     GRIDITEM_STATE_BRAIN_SQUISHED = 29
 };
 
-enum GridSquareType {
+enum class GridSquareType {
     GRIDSQUARE_NONE = 0,
     GRIDSQUARE_GRASS = 1,
     GRIDSQUARE_DIRT = 2,
@@ -564,7 +571,7 @@ enum GridSquareType {
     GRIDSQUARE_HIGH_GROUND = 4
 };
 
-enum HelmType {
+enum class HelmType {
     HELMTYPE_NONE = 0,
     HELMTYPE_TRAFFIC_CONE = 1,
     HELMTYPE_PAIL = 2,
@@ -604,7 +611,7 @@ enum MessageStyle {
     MESSAGE_STYLE_ACHIEVEMENT // @Patoke: implemented
 };
 
-enum MowerHeight {
+enum class MowerHeight {
     MOWER_HEIGHT_LAND = 0,
     MOWER_HEIGHT_DOWN_TO_POOL = 1,
     MOWER_HEIGHT_IN_POOL = 2,
@@ -733,7 +740,7 @@ enum ParticleEffect {
     NUM_PARTICLES
 };
 
-enum PlantPriority {
+enum class PlantPriority {
     TOPPLANT_EATING_ORDER,
     TOPPLANT_DIGGING_ORDER,
     TOPPLANT_BUNGEE_ORDER,
@@ -746,7 +753,7 @@ enum PlantPriority {
     TOPPLANT_ONLY_UNDER_PLANT
 };
 
-enum PlantingReason {
+enum class PlantingReason {
     PLANTING_OK,
     PLANTING_NOT_HERE,
     PLANTING_ONLY_ON_GRAVES,
@@ -763,11 +770,11 @@ enum PlantingReason {
     PLANTING_NEEDS_SLEEPING
 };
 
-enum PlantRowType { PLANTROW_DIRT = 0, PLANTROW_NORMAL = 1, PLANTROW_POOL = 2, PLANTROW_HIGH_GROUND = 3 };
+enum class PlantRowType { PLANTROW_DIRT = 0, PLANTROW_NORMAL = 1, PLANTROW_POOL = 2, PLANTROW_HIGH_GROUND = 3 };
 
-enum PottedPlantAge { PLANTAGE_SPROUT = 0, PLANTAGE_SMALL = 1, PLANTAGE_MEDIUM = 2, PLANTAGE_FULL = 3 };
+enum class PottedPlantAge { PLANTAGE_SPROUT = 0, PLANTAGE_SMALL = 1, PLANTAGE_MEDIUM = 2, PLANTAGE_FULL = 3 };
 
-enum PottedPlantNeed {
+enum class PottedPlantNeed {
     PLANTNEED_NONE = 0,
     PLANTNEED_WATER = 1,
     PLANTNEED_FERTILIZER = 2,
@@ -977,7 +984,7 @@ enum ReanimationType : int {
     NUM_REANIMS
 };
 
-enum ReanimLoopType {
+enum class ReanimLoopType {
     REANIM_LOOP = 0,
     REANIM_LOOP_FULL_LAST_FRAME = 1,
     REANIM_PLAY_ONCE = 2,
@@ -1006,7 +1013,7 @@ enum RenderLayer {
     RENDER_LAYER_SCREEN_FADE = 900000
 };
 
-enum RenderObjectType {
+enum class RenderObjectType {
     RENDER_ITEM_COIN,
     RENDER_ITEM_PROJECTILE,
     RENDER_ITEM_ZOMBIE,
@@ -1034,9 +1041,9 @@ enum RenderObjectType {
     RENDER_ITEM_GRID_ITEM_OVERLAY
 };
 
-enum ScaryPotType { SCARYPOT_NONE = 0, SCARYPOT_SEED = 1, SCARYPOT_ZOMBIE = 2, SCARYPOT_SUN = 3 };
+enum class ScaryPotType { SCARYPOT_NONE = 0, SCARYPOT_SEED = 1, SCARYPOT_ZOMBIE = 2, SCARYPOT_SUN = 3 };
 
-enum SeedChooserState { CHOOSE_NORMAL = 0, CHOOSE_VIEW_LAWN = 1 };
+enum class SeedChooserState { CHOOSE_NORMAL = 0, CHOOSE_VIEW_LAWN = 1 };
 
 enum SeedType {
     SEED_PEASHOOTER = 0,
@@ -1141,7 +1148,7 @@ enum SeedType {
     SEED_NONE = -1
 };
 
-enum ShieldType { SHIELDTYPE_NONE, SHIELDTYPE_DOOR, SHIELDTYPE_NEWSPAPER, SHIELDTYPE_LADDER };
+enum class ShieldType { SHIELDTYPE_NONE, SHIELDTYPE_DOOR, SHIELDTYPE_NEWSPAPER, SHIELDTYPE_LADDER };
 
 enum StoreItem {
     STORE_ITEM_PLANT_GATLINGPEA,
@@ -1178,7 +1185,7 @@ enum StoreItem {
     STORE_ITEM_INVALID = -1
 };
 
-enum StorePages {
+enum class StorePages : int {
     STORE_PAGE_SLOT_UPGRADES = 0,
     STORE_PAGE_PLANT_UPGRADES = 1,
     STORE_PAGE_ZEN1 = 2,
@@ -1216,9 +1223,9 @@ enum TodCurves {
     CURVE_EASE_SIN_WAVE // 缓入缓出的正弦曲线
 };
 
-enum TrialType { TRIALTYPE_NONE, TRIALTYPE_STAGELOCKED };
+enum class TrialType { TRIALTYPE_NONE, TRIALTYPE_STAGELOCKED };
 
-enum TutorialState {
+enum class TutorialState {
     TUTORIAL_OFF = 0,
     TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER = 1,
     TUTORIAL_LEVEL_1_PLANT_PEASHOOTER = 2,
@@ -1252,9 +1259,9 @@ enum TutorialState {
     TUTORIAL_WHACK_A_ZOMBIE_COMPLETED = 30
 };
 
-enum UnlockingState { UNLOCK_OFF, UNLOCK_SHAKING, UNLOCK_FADING };
+enum class UnlockingState { UNLOCK_OFF, UNLOCK_SHAKING, UNLOCK_FADING };
 
-enum ZombieHeight {
+enum class ZombieHeight {
     HEIGHT_ZOMBIE_NORMAL = 0,
     HEIGHT_IN_TO_POOL = 1,
     HEIGHT_OUT_OF_POOL = 2,
@@ -1448,3 +1455,28 @@ enum PlantID : unsigned int { PLANTID_NULL };
 enum ReanimationID : unsigned int { REANIMATIONID_NULL };
 
 enum ZombieID : unsigned int { ZOMBIEID_NULL };
+
+// Modified from https://stackoverflow.com/a/31836401
+// Iterates over [beginVal, endVal) for any enum class
+template <typename C, C beginVal, C endVal> class EnumIterator {
+    typedef typename std::underlying_type<C>::type val_t;
+    int val;
+
+public:
+    EnumIterator(const C &f) : val(static_cast<val_t>(f)) {}
+    EnumIterator() : val(static_cast<val_t>(beginVal)) {}
+
+    EnumIterator operator++() {
+        ++val;
+        return *this;
+    }
+
+    C operator*() { return static_cast<C>(val); }
+    EnumIterator begin() { return *this; } // default ctor is good
+    EnumIterator end() {
+        static const EnumIterator endIter = EnumIterator(endVal); // cache it
+        return endIter;
+    }
+
+    bool operator!=(const EnumIterator &i) { return val != i.val; }
+};

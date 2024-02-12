@@ -623,7 +623,7 @@ void Plant::DoRowAreaDamage(int theDamage, unsigned int theDamageFlags) {
                 int aDamage = theDamage;
                 if ((aZombie->mZombieType == ZombieType::ZOMBIE_ZAMBONI ||
                      aZombie->mZombieType == ZombieType::ZOMBIE_CATAPULT) &&
-                    (TestBit(theDamageFlags, DamageFlags::DAMAGE_SPIKE))) {
+                    (TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_SPIKE)))) {
                     aDamage = 1800;
 
                     if (mSeedType == SeedType::SEED_SPIKEROCK) {
@@ -2259,9 +2259,9 @@ void Plant::UpdateReanimColor() {
 
     if (isOnGlove) {
         aColorOverride = Color(128, 128, 128);
-    } else if (IsPartOfUpgradableTo(aSeedType) && mBoard->CanPlantAt(mPlantCol, mRow, aSeedType) == PLANTING_OK) {
+    } else if (IsPartOfUpgradableTo(aSeedType) && mBoard->CanPlantAt(mPlantCol, mRow, aSeedType) == PlantingReason::PLANTING_OK) {
         aColorOverride = GetFlashingColor(mBoard->mBoardData.mMainCounter, 90);
-    } else if (aSeedType == SeedType::SEED_COBCANNON && mSeedType == SeedType::SEED_KERNELPULT && mBoard->CanPlantAt(mPlantCol - 1, mRow, aSeedType) == PLANTING_OK) {
+    } else if (aSeedType == SeedType::SEED_COBCANNON && mSeedType == SeedType::SEED_KERNELPULT && mBoard->CanPlantAt(mPlantCol - 1, mRow, aSeedType) == PlantingReason::PLANTING_OK) {
         aColorOverride = GetFlashingColor(mBoard->mBoardData.mMainCounter, 90);
     } else if (mSeedType == SeedType::SEED_EXPLODE_O_NUT) {
         aColorOverride = Color(255, 64, 64);
@@ -3058,7 +3058,7 @@ void Plant::GetPeaHeadOffset(int &theOffsetX, int &theOffsetY) {
 // 0x465460
 //  GOTY @Patoke: 0x468EB0
 void Plant::DrawMagnetItems(Graphics *g) {
-    const float aOffsetX = 0.0f;
+    constexpr float aOffsetX = 0.0f;
     const float aOffsetY = PlantDrawHeightOffset(mBoard, this, mSeedType, mPlantCol, mRow);
 
     for (int i = 0; i < MAX_MAGNET_ITEMS; i++) {
@@ -3213,8 +3213,8 @@ void Plant::DrawShadow(Sexy::Graphics *g, float theOffsetX, float theOffsetY) {
 
     if (Plant::IsFlying(mSeedType)) {
         aShadowOffsetY += 10.0f;
-        if (mBoard && (mBoard->GetTopPlantAt(mPlantCol, mRow, TOPPLANT_ONLY_NORMAL_POSITION) ||
-                       mBoard->GetTopPlantAt(mPlantCol, mRow, TOPPLANT_ONLY_PUMPKIN)))
+        if (mBoard && (mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION) ||
+                       mBoard->GetTopPlantAt(mPlantCol, mRow, PlantPriority::TOPPLANT_ONLY_PUMPKIN)))
             return;
     }
 

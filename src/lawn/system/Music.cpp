@@ -11,7 +11,7 @@ using namespace Sexy;
 
 // 0x45A260
 Music::Music() {
-    mApp = static_cast<LawnApp *>(gSexyAppBase);
+    mApp = dynamic_cast<LawnApp *>(gSexyAppBase);
     mMusicInterface = gSexyAppBase->mMusicInterface;
     mCurMusicTune = MusicTune::MUSIC_TUNE_NONE;
     mCurMusicFileMain = MusicFile::MUSIC_FILE_NONE;
@@ -46,7 +46,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
     if (aDot != std::string::npos)                           // 文件名中不含“.”（文件无扩展名）
         anExt = StringToLower(theFileName.substr(aDot + 1)); // 取得小写的文件扩展名
 
-    if (anExt.compare("wav") && anExt.compare("ogg") && anExt.compare("mp3")) // 如果不是这三种拓展名
+    if (anExt != "wav" && anExt != "ogg" && anExt != "mp3") // 如果不是这三种拓展名
     {
         PFILE *pFile = p_fopen(theFileName.c_str(), "rb");
         if (pFile == nullptr) return false;
@@ -89,7 +89,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName)
 }
 
 // 0x45A6C0
-void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune) {
+void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune) const {
     int aTrackCount = 0;
     int aTrackStart1 = -1, aTrackEnd1 = -1, aTrackStart2 = -1, aTrackEnd2 = -1;
 
@@ -271,8 +271,8 @@ void Music::StopAllMusic() {
 }
 
 // 0x45AC20
-HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
-    const auto aBass = static_cast<BassMusicInterface *>(mApp->mMusicInterface);
+HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) const {
+    const auto aBass = dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface);
     const auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
     return anItr->second.mHMusic;
@@ -280,7 +280,7 @@ HMUSIC Music::GetBassMusicHandle(MusicFile theMusicFile) {
 
 // 0x45AC70
 void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume) {
-    const auto aBass = static_cast<BassMusicInterface *>(mApp->mMusicInterface);
+    const auto aBass = dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface);
     const auto anItr = aBass->mMusicMap.find((int)theMusicFile);
     TOD_ASSERT(anItr != aBass->mMusicMap.end());
     BassMusicInfo *aMusicInfo = &anItr->second;
@@ -438,13 +438,13 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
     }
 }
 
-unsigned long Music::GetMusicOrder(MusicFile theMusicFile) {
+unsigned long Music::GetMusicOrder(MusicFile theMusicFile) const {
     TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-    return static_cast<BassMusicInterface *>(mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
+    return dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
 }
 
 // 0x45B1B0
-void Music::MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusicFileToSync) {
+void Music::MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusicFileToSync) const {
     const unsigned int aPosToMatch = GetMusicOrder(theMusicFileToMatch);
     const unsigned int aPosToSync = GetMusicOrder(theMusicFileToSync);
     const int aDiff = (aPosToSync >> 16) - (aPosToMatch >> 16); // 待同步的音乐与目标音乐的乐曲序号之差
@@ -462,7 +462,7 @@ void Music::MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusic
     }
 }
 
-void Music::MusicResync() {
+void Music::MusicResync() const {
     if (mCurMusicFileMain != MusicFile::MUSIC_FILE_NONE) {
         if (mCurMusicFileDrums != MusicFile::MUSIC_FILE_NONE) MusicResyncChannel(mCurMusicFileMain, mCurMusicFileDrums);
         if (mCurMusicFileHihats != MusicFile::MUSIC_FILE_NONE)

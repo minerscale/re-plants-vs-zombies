@@ -54,8 +54,8 @@ public:
     Insets mContentInsets;
     int mSpaceAfterHeader;
     bool mDragging;
-    int mDragMouseX;
-    int mDragMouseY;
+    int mDragMouseX{};
+    int mDragMouseY{};
     int mId;
     bool mIsModal;
     int mResult;
@@ -64,7 +64,7 @@ public:
     int mButtonSidePadding;
 
 public:
-    void EnsureFonts();
+    static void EnsureFonts();
 
 public:
     Dialog(

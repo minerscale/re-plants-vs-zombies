@@ -32,7 +32,7 @@ public:
 
 private:
     void RehupVolume() const;
-    void RehupPan();
+    void RehupPan() const;
 
     HSAMPLE mSample;
     HCHANNEL mChannel;

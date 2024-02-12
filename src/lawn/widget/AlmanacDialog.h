@@ -51,7 +51,7 @@ public:
     void Update() override;
     void DrawIndex(Graphics *g) const;
     void DrawPlants(Graphics *g) const;
-    void DrawZombies(Graphics *g);
+    void DrawZombies(Graphics *g) const;
     void Draw(Graphics *g) override;
     static void GetSeedPosition(SeedType theSeedType, int &x, int &y);
     SeedType SeedHitTest(int x, int y) const;

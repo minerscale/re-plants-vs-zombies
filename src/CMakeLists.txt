@@ -1,22 +1,22 @@
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    "$<$<CONFIG:Debug>:"
+        "$<$<CONFIG:Debug>:"
         "_DEBUG;"
-    ">"
-    "$<$<CONFIG:Release>:"
+        ">"
+        "$<$<CONFIG:Release>:"
         "NDEBUG;"
         "RELEASEFINAL;"
-    ">"
+        ">"
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    "${CMAKE_BINARY_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/src"
+        "${CMAKE_BINARY_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/src"
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
-    main.cpp
-    LawnApp.cpp
-    Resources.cpp
+        main.cpp
+        LawnApp.cpp
+        Resources.cpp
 )
 
 add_subdirectory(framework)

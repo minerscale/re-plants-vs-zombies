@@ -50,12 +50,12 @@ public:
     void Update();
     void SetPosition(const SexyVector2 &thePosition) const;
     void OverrideColor(const Color &theColor) const;
-    void SetMatrix(const SexyTransform2D &theMatrix);
-    void OverrideScale(float theScale);
-    void Draw(Graphics *g, bool theParentHidden);
+    void SetMatrix(const SexyTransform2D &theMatrix) const;
+    void OverrideScale(float theScale) const;
+    void Draw(Graphics *g, bool theParentHidden) const;
     void AttachmentDie();
     void Detach();
-    void CrossFade(const char *theCrossFadeName);
+    void CrossFade(const char *theCrossFadeName) const;
     void PropogateColor(
         const Color &theColor, bool theEnableAdditiveColor, const Color &theAdditiveColor, bool theEnableOverlayColor,
         const Color &theOverlayColor

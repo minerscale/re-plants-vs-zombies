@@ -12,20 +12,22 @@ bool (*gAppHasUsedCheatKeys)(); //[0x69E6A4]
 SexyString (*gGetCurrentLevelName)();
 
 // 0x44E8F0
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
     gGetCurrentLevelName = LawnGetCurrentLevelName;
     gAppCloseRequest = LawnGetCloseRequest;
     gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
     gLawnApp = new LawnApp();
-    gLawnApp->mChangeDirTo =
-        (!Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml")) ? ".." : ".";
+    const auto shouldChangeDir =
+        !Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml");
+    gLawnApp->mChangeDirTo = shouldChangeDir ? ".." : ".";
     gLawnApp->DoParseCmdLine(argc, argv);
     gLawnApp->Init();
     gLawnApp->Start();
     gLawnApp->Shutdown();
-    if (gLawnApp) delete gLawnApp;
+
+    delete gLawnApp;
 
     return 0;
 };

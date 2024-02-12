@@ -200,7 +200,7 @@ void Buffer::FromWebString(const std::string &theString) {
     int aCharIdx = 8;
     int aNumBitsLeft = aSizeBits;
     while (aNumBitsLeft > 0) {
-        uchar aChar = theString[aCharIdx++];
+        uint8_t aChar = theString[aCharIdx++];
         int aVal = gWebDecodeMap[aChar];
         int aNumBits = std::min(aNumBitsLeft, 6);
         WriteNumBits(aVal, aNumBits);
@@ -219,7 +219,7 @@ void Buffer::Clear() {
     mData.clear();
 }
 
-void Buffer::WriteByte(uchar theByte) {
+void Buffer::WriteByte(uint8_t theByte) {
     if (mWriteBitPos % 8 == 0) mData.push_back(static_cast<char>(theByte));
     else {
         int anOfs = mWriteBitPos % 8;
@@ -257,15 +257,15 @@ int Buffer::GetBitsRequired(int theNum, bool isSigned) {
 void Buffer::WriteBoolean(bool theBool) { WriteByte(theBool ? 1 : 0); }
 
 void Buffer::WriteShort(short theShort) {
-    WriteByte(static_cast<uchar>(theShort));
-    WriteByte(static_cast<uchar>(theShort >> 8));
+    WriteByte(static_cast<uint8_t>(theShort));
+    WriteByte(static_cast<uint8_t>(theShort >> 8));
 }
 
 void Buffer::WriteLong(int32_t theLong) {
-    WriteByte(static_cast<uchar>(theLong));
-    WriteByte(static_cast<uchar>(theLong >> 8));
-    WriteByte(static_cast<uchar>(theLong >> 16));
-    WriteByte(static_cast<uchar>(theLong >> 24));
+    WriteByte(static_cast<uint8_t>(theLong));
+    WriteByte(static_cast<uint8_t>(theLong >> 8));
+    WriteByte(static_cast<uint8_t>(theLong >> 16));
+    WriteByte(static_cast<uint8_t>(theLong >> 24));
 }
 
 void Buffer::WriteString(const std::string &theString) {
@@ -283,25 +283,27 @@ void Buffer::WriteUTF8String(const std::wstring &theString) {
         const unsigned int c = (unsigned int)theString[i];
         // just in case wchar_t is only 16 bits, and it generally is in visual studio
         if (c < 0x80) {
-            WriteByte(static_cast<uchar>(c));
+            WriteByte(static_cast<uint8_t>(c));
         } else if (c < 0x800) {
-            WriteByte(static_cast<uchar>(0xC0 | (c >> 6)));
-            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0xC0 | (c >> 6)));
+            WriteByte(static_cast<uint8_t>(0x80 | (c & 0x3F)));
         } else if (c < 0x10000) {
-            WriteByte(static_cast<uchar>(0xE0 | c >> 12));
-            WriteByte(static_cast<uchar>(0x80 | ((c >> 6) & 0x3F)));
-            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0xE0 | c >> 12));
+            WriteByte(static_cast<uint8_t>(0x80 | ((c >> 6) & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0x80 | (c & 0x3F)));
         } else if (c < 0x110000) {
-            WriteByte(static_cast<uchar>(0xF0 | (c >> 18)));
-            WriteByte(static_cast<uchar>(0x80 | ((c >> 12) & 0x3F)));
-            WriteByte(static_cast<uchar>(0x80 | ((c >> 6) & 0x3F)));
-            WriteByte(static_cast<uchar>(0x80 | (c & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0xF0 | (c >> 18)));
+            WriteByte(static_cast<uint8_t>(0x80 | ((c >> 12) & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0x80 | ((c >> 6) & 0x3F)));
+            WriteByte(static_cast<uint8_t>(0x80 | (c & 0x3F)));
         } // are the remaining ranges really necessary? add if so!
     }
 }
 
 void Buffer::WriteLine(const std::string &theString) {
-    WriteBytes(reinterpret_cast<const uchar *>((theString + "\r\n").c_str()), static_cast<int>(theString.length()) + 2);
+    WriteBytes(
+        reinterpret_cast<const uint8_t *>((theString + "\r\n").c_str()), static_cast<int>(theString.length()) + 2
+    );
 }
 
 void Buffer::WriteBuffer(const ByteVector &theBuffer) {
@@ -310,7 +312,7 @@ void Buffer::WriteBuffer(const ByteVector &theBuffer) {
         WriteByte(theBuffer[i]);
 }
 
-void Buffer::WriteBytes(const uchar *theByte, int theCount) {
+void Buffer::WriteBytes(const uint8_t *theByte, int theCount) {
     for (int i = 0; i < theCount; i++)
         WriteByte(theByte[i]);
 }
@@ -320,25 +322,25 @@ void Buffer::SetData(const ByteVector &theBuffer) {
     mDataBitSize = mData.size() * 8;
 }
 
-void Buffer::SetData(uchar *thePtr, int theCount) {
+void Buffer::SetData(uint8_t *thePtr, int theCount) {
     mData.clear();
     mData.insert(mData.begin(), thePtr, thePtr + theCount);
     mDataBitSize = mData.size() * 8;
 }
 
-uchar Buffer::ReadByte() const {
+uint8_t Buffer::ReadByte() const {
     if ((mReadBitPos + 7) / 8 >= static_cast<int>(mData.size())) {
         return 0; // Underflow
     }
 
     if (mReadBitPos % 8 == 0) {
-        uchar b = mData[mReadBitPos / 8];
+        uint8_t b = mData[mReadBitPos / 8];
         mReadBitPos += 8;
         return b;
     } else {
         int anOfs = mReadBitPos % 8;
 
-        uchar b = 0;
+        uint8_t b = 0;
 
         b = mData[mReadBitPos / 8] >> anOfs;
         b |= mData[(mReadBitPos / 8) + 1] << (8 - anOfs);
@@ -435,7 +437,7 @@ std::string Buffer::ReadLine() const {
     return aString;
 }
 
-void Buffer::ReadBytes(uchar *theData, int theLen) const {
+void Buffer::ReadBytes(uint8_t *theData, int theLen) const {
     for (int i = 0; i < theLen; i++)
         theData[i] = ReadByte();
 }
@@ -448,7 +450,7 @@ void Buffer::ReadBuffer(ByteVector *theByteVector) const {
     ReadBytes(&(*theByteVector)[0], aLength);
 }
 
-const uchar *Buffer::GetDataPtr() const {
+const uint8_t *Buffer::GetDataPtr() const {
     if (mData.size() == 0) return nullptr;
     return &mData[0];
 }

@@ -636,10 +636,13 @@ void Projectile::PlayImpactSound(Zombie *theZombie) {
     }
 
     if (aPlayHelmSound && theZombie) {
-        if (theZombie->mHelmType == HELMTYPE_PAIL) {
+        if (theZombie->mHelmType == HelmType::HELMTYPE_PAIL) {
             mApp->PlayFoley(FoleyType::FOLEY_SHIELD_HIT);
             aPlaySplatSound = false;
-        } else if (theZombie->mHelmType == HELMTYPE_TRAFFIC_CONE || theZombie->mHelmType == HELMTYPE_DIGGER || theZombie->mHelmType == HELMTYPE_FOOTBALL) {
+        }
+		else if (theZombie->mHelmType == HelmType::HELMTYPE_TRAFFIC_CONE || theZombie->mHelmType == HelmType::HELMTYPE_DIGGER || theZombie->
+			mHelmType == HelmType::HELMTYPE_FOOTBALL)
+		{
             mApp->PlayFoley(FoleyType::FOLEY_PLASTIC_HIT);
         }
     }
@@ -965,7 +968,7 @@ void Projectile::ConvertToFireball(int theGridX) {
     mApp->PlayFoley(FoleyType::FOLEY_FIREPEA);
 
     float aOffsetX = -25.0f;
-    const float aOffsetY = -25.0f;
+    constexpr float aOffsetY = -25.0f;
     Reanimation *aFirePeaReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_FIRE_PEA);
     if (mMotionType == ProjectileMotion::MOTION_BACKWARDS) {
         aFirePeaReanim->OverrideScale(-1.0f, 1.0f);

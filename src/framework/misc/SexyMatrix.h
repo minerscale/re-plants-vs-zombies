@@ -2,6 +2,8 @@
 #define __SEXYMATRIX_H__
 
 #include "SexyVector.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/mat3x3.hpp>
 
 namespace Sexy {
 ///////////////////////////////////////////////////////////////////////////////

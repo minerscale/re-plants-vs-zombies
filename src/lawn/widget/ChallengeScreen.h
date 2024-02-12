@@ -16,18 +16,18 @@ private:
     enum { ChallengeScreen_Back = 100, ChallengeScreen_Mode = 200, ChallengeScreen_Page = 300 };
 
 public:
-    NewLawnButton *mBackButton;                           //+0x8C
-    ButtonWidget *mPageButton[MAX_CHALLANGE_PAGES];       //+0x90
-    ButtonWidget *mChallengeButtons[NUM_CHALLENGE_MODES]; //+0xA0
-    LawnApp *mApp;                                        //+0x1C0
-    ToolTipWidget *mToolTip;                              //+0x1C4
-    ChallengePage mPageIndex;                             //+0x1C8
-    bool mCheatEnableChallenges;                          //+0x1CC
-    UnlockingState mUnlockState;                          //+0x1D0
-    int mUnlockStateCounter;                              //+0x1D4
-    int mUnlockChallengeIndex;                            //+0x1D8
-    float mLockShakeX;                                    //+0x1DC
-    float mLockShakeY;                                    //+0x1E0
+    NewLawnButton *mBackButton;                                                      //+0x8C
+    ButtonWidget *mPageButton[static_cast<int>(ChallengePage::MAX_CHALLANGE_PAGES)]; //+0x90
+    ButtonWidget *mChallengeButtons[NUM_CHALLENGE_MODES];                            //+0xA0
+    LawnApp *mApp;                                                                   //+0x1C0
+    ToolTipWidget *mToolTip;                                                         //+0x1C4
+    ChallengePage mPageIndex;                                                        //+0x1C8
+    bool mCheatEnableChallenges;                                                     //+0x1CC
+    UnlockingState mUnlockState;                                                     //+0x1D0
+    int mUnlockStateCounter;                                                         //+0x1D4
+    int mUnlockChallengeIndex;                                                       //+0x1D8
+    float mLockShakeX;                                                               //+0x1DC
+    float mLockShakeY;                                                               //+0x1E0
 
 public:
     ChallengeScreen(LawnApp *theApp, ChallengePage thePage);
@@ -60,7 +60,7 @@ public:
     /*inline*/
     static bool IsScaryPotterLevel(GameMode theGameMode);
     /*inline*/
-    bool IsIZombieLevel(GameMode theGameMode);
+    static bool IsIZombieLevel(GameMode theGameMode);
 };
 
 class ChallengeDefinition {

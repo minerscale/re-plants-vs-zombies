@@ -52,7 +52,7 @@ DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
 
 namespace Vk {
-const int MAX_FRAMES_IN_FLIGHT = 3;
+constexpr int MAX_FRAMES_IN_FLIGHT = 3;
 
 const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
@@ -61,7 +61,7 @@ const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_N
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
-const bool enableValidationLayers = true;
+constexpr bool enableValidationLayers = true;
 #endif
 
 struct QueueFamilyIndices {
@@ -360,7 +360,7 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = {swapChainExtent.width, swapChainExtent.height};
-    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    constexpr VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -450,7 +450,7 @@ void createDescriptorSetLayouts() {
          }}
     };
 
-    VkDescriptorSetLayoutCreateInfo layoutInfo{
+    const VkDescriptorSetLayoutCreateInfo layoutInfo{
         VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0, 2, samplerLayoutBindings.data()
     };
 
@@ -580,7 +580,7 @@ void createBuffer(
 
 void createDescriptorSets() {
     {
-        std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+        const std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = descriptorPool;
@@ -620,9 +620,11 @@ void createDescriptorPool() {
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
     poolSizes[1].descriptorCount = poolSizes[0].descriptorCount;
 
-    VkDescriptorPoolCreateInfo poolInfo{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,     nullptr,
-                                        VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, poolSizes[0].descriptorCount,
-                                        static_cast<uint32_t>(poolSizes.size()),           poolSizes.data()};
+    const VkDescriptorPoolCreateInfo poolInfo{
+        VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,     nullptr,
+        VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, poolSizes[0].descriptorCount,
+        static_cast<uint32_t>(poolSizes.size()),           poolSizes.data()
+    };
 
     if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
@@ -699,7 +701,7 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
 }
 
 void createCommandPool() {
-    QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+    const QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -808,9 +810,9 @@ VkShaderModule createShaderModule(const uint8_t *code, const size_t length) {
 }
 
 void createComputePipeline() {
-    VkShaderModule computeShaderModule = CREATE_SHADER_MODULE(_binary_effects_comp_spv);
+    const VkShaderModule computeShaderModule = CREATE_SHADER_MODULE(_binary_effects_comp_spv);
 
-    VkPipelineShaderStageCreateInfo computeShaderStageInfo{
+    const VkPipelineShaderStageCreateInfo computeShaderStageInfo{
         VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
         nullptr,
         0,
@@ -826,7 +828,7 @@ void createComputePipeline() {
     pushConstant.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
     std::array<VkDescriptorSetLayout, 2> sets = {descriptorSetLayout, descriptorSetLayout};
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+    const VkPipelineLayoutCreateInfo pipelineLayoutInfo{
         VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO, nullptr, 0, 2, sets.data(), 1, &pushConstant
     };
 
@@ -834,7 +836,7 @@ void createComputePipeline() {
         throw std::runtime_error("failed to create compute pipeline layout!");
     }
 
-    VkComputePipelineCreateInfo pipelineInfo{
+    const VkComputePipelineCreateInfo pipelineInfo{
         VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
         nullptr,
         0,
@@ -1001,7 +1003,7 @@ void createImageViews() {
 void createFramebuffers() {
     swapChainFramebuffers.resize(swapChainImageViews.size());
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-        VkImageView attachments[] = {swapChainImageViews[i]};
+        const VkImageView attachments[] = {swapChainImageViews[i]};
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -1083,11 +1085,11 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
 }
 
 void createSwapChain() {
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
+    const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+    const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    const VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+    const VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 
@@ -1106,8 +1108,10 @@ void createSwapChain() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices queueIndices = findQueueFamilies(physicalDevice);
-    uint32_t queueFamilyIndices[] = {queueIndices.graphicsAndComputeFamily.value(), queueIndices.presentFamily.value()};
+    const QueueFamilyIndices queueIndices = findQueueFamilies(physicalDevice);
+    const uint32_t queueFamilyIndices[] = {
+        queueIndices.graphicsAndComputeFamily.value(), queueIndices.presentFamily.value()
+    };
 
     if (queueIndices.graphicsAndComputeFamily != queueIndices.presentFamily) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -1150,12 +1154,14 @@ void cleanupSwapChain() {
 }
 
 void setWindowDimensions() {
-    glm::vec2 forceAspect = {4, 3};
-    double ratioW = swapChainExtent.width / forceAspect.x;
-    double ratioH = swapChainExtent.height / forceAspect.y;
-    bool pillarboxed = ratioW > ratioH;
-    double newWidth = pillarboxed ? swapChainExtent.height * forceAspect.x / forceAspect.y : swapChainExtent.width;
-    double newHeight = pillarboxed ? swapChainExtent.height : swapChainExtent.width * forceAspect.y / forceAspect.x;
+    constexpr glm::vec2 forceAspect = {4, 3};
+    const double ratioW = swapChainExtent.width / forceAspect.x;
+    const double ratioH = swapChainExtent.height / forceAspect.y;
+    const bool pillarboxed = ratioW > ratioH;
+    const double newWidth =
+        pillarboxed ? swapChainExtent.height * forceAspect.x / forceAspect.y : swapChainExtent.width;
+    const double newHeight =
+        pillarboxed ? swapChainExtent.height : swapChainExtent.width * forceAspect.y / forceAspect.x;
     windowImageClipRect.x = pillarboxed ? (swapChainExtent.width - newWidth) / 2.0 : 0;
     windowImageClipRect.y = pillarboxed ? 0 : (swapChainExtent.height - newHeight) / 2.0;
     windowImageClipRect.z = newWidth;
@@ -1256,7 +1262,7 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
 int rateDeviceSuitability(VkPhysicalDevice device) {
     {
-        QueueFamilyIndices queueIndices = findQueueFamilies(device);
+        const QueueFamilyIndices queueIndices = findQueueFamilies(device);
         if (!queueIndices.isComplete()) return 0;
     }
 
@@ -1268,7 +1274,7 @@ int rateDeviceSuitability(VkPhysicalDevice device) {
 
     if (!checkDeviceExtensionSupport(device)) return 0;
 
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+    const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
     if (swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty()) return 0;
 
     int score = 0;
@@ -1341,7 +1347,8 @@ VkResult CreateDebugUtilsMessengerEXT(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator,
     VkDebugUtilsMessengerEXT *pDebugMessenger
 ) {
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    const auto func =
+        (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
         return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
     } else {
@@ -1352,7 +1359,8 @@ VkResult CreateDebugUtilsMessengerEXT(
 void DestroyDebugUtilsMessengerEXT(
     VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator
 ) {
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    const auto func =
+        (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) {
         func(instance, debugMessenger, pAllocator);
     }
@@ -1418,7 +1426,7 @@ void createInstance() {
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    auto extensions = getRequiredExtensions();
+    const auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -1519,7 +1527,7 @@ void VkInterface::windowFocusCallback(bool focused) {
 }
 
 void VkInterface::RehupFocus() {
-    bool wantHasFocus = widgetManager->mApp->mActive && !widgetManager->mApp->mMinimized;
+    const bool wantHasFocus = widgetManager->mApp->mActive && !widgetManager->mApp->mMinimized;
 
     if (wantHasFocus != widgetManager->mApp->mHasFocus) {
         widgetManager->mApp->mHasFocus = wantHasFocus;
@@ -1552,7 +1560,7 @@ void VkInterface::EnforceCursor() {
 }
 
 void VkInterface::cursorEnterCallback(int entered) {
-    bool isMouseIn = entered;
+    const bool isMouseIn = entered;
     if (widgetManager->mApp->mMouseIn != isMouseIn) {
         if (!isMouseIn) {
             int x = cursorPos.x;
@@ -1782,8 +1790,8 @@ void VkInterface::Draw() {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    const VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
+    constexpr VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
@@ -1791,7 +1799,7 @@ void VkInterface::Draw() {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
 
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+    const VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -1805,7 +1813,7 @@ void VkInterface::Draw() {
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = signalSemaphores;
 
-    VkSwapchainKHR swapChains[] = {swapChain};
+    const VkSwapchainKHR swapChains[] = {swapChain};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;

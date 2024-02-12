@@ -143,11 +143,11 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
     ListDataElement *aValues;
 
     if (theSource->mIsList) {
-        if (!GetValues(static_cast<ListDataElement *>(theSource), &aStaticValues)) return false;
+        if (!GetValues(dynamic_cast<ListDataElement *>(theSource), &aStaticValues)) return false;
 
         aValues = &aStaticValues;
     } else {
-        std::string aDefName = static_cast<SingleDataElement *>(theSource)->mString;
+        std::string aDefName = dynamic_cast<SingleDataElement *>(theSource)->mString;
 
         DataElement *aDataElement = Dereference(aDefName);
 
@@ -158,16 +158,16 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
 
         if (!aDataElement->mIsList) return false;
 
-        aValues = static_cast<ListDataElement *>(aDataElement);
+        aValues = dynamic_cast<ListDataElement *>(aDataElement);
     }
 
-    for (ulong i = 0; i < aValues->mElementVector.size(); i++) {
-        if (aValues->mElementVector[i]->mIsList) {
+    for (auto &i : aValues->mElementVector) {
+        if (i->mIsList) {
             theStringVector->clear();
             return false;
         }
 
-        auto aSingleDataElement = static_cast<SingleDataElement *>(aValues->mElementVector[i]);
+        auto aSingleDataElement = dynamic_cast<SingleDataElement *>(i);
 
         theStringVector->push_back(aSingleDataElement->mString);
     }
@@ -177,14 +177,14 @@ bool DescParser::DataToStringVector(DataElement *theSource, StringVector *theStr
 
 bool DescParser::DataToList(DataElement *theSource, ListDataElement *theValues) {
     if (theSource->mIsList) {
-        return GetValues(static_cast<ListDataElement *>(theSource), theValues);
+        return GetValues(dynamic_cast<ListDataElement *>(theSource), theValues);
     }
 
-    DataElement *aDataElement = Dereference(static_cast<SingleDataElement *>(theSource)->mString);
+    DataElement *aDataElement = Dereference(dynamic_cast<SingleDataElement *>(theSource)->mString);
 
     if ((aDataElement == nullptr) || (!aDataElement->mIsList)) return false;
 
-    auto aListElement = static_cast<ListDataElement *>(aDataElement);
+    auto aListElement = dynamic_cast<ListDataElement *>(aDataElement);
 
     *theValues = *aListElement;
 
@@ -197,9 +197,9 @@ bool DescParser::DataToIntVector(DataElement *theSource, IntVector *theIntVector
     auto aStringVector = StringVector();
     if (!DataToStringVector(theSource, &aStringVector)) return false;
 
-    for (ulong i = 0; i < aStringVector.size(); i++) {
+    for (const auto &i : aStringVector) {
         int aIntVal;
-        if (!StringToInt(aStringVector[i], &aIntVal)) return false;
+        if (!StringToInt(i, &aIntVal)) return false;
 
         theIntVector->push_back(aIntVal);
     }
@@ -213,9 +213,9 @@ bool DescParser::DataToDoubleVector(DataElement *theSource, DoubleVector *theDou
     StringVector aStringVector;
     if (!DataToStringVector(theSource, &aStringVector)) return false;
 
-    for (ulong i = 0; i < aStringVector.size(); i++) {
+    for (const auto &i : aStringVector) {
         double aDoubleVal;
-        if (!StringToDouble(aStringVector[i], &aDoubleVal)) return false;
+        if (!StringToDouble(i, &aDoubleVal)) return false;
 
         theDoubleVector->push_back(aDoubleVal);
     }
@@ -360,7 +360,7 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
 
                 if ((!atLineStart) || ((aChar != ' ') && (aChar != '\t') && (aChar != '\n'))) {
                     if (atLineStart) {
-                        if ((mCmdSep & CMDSEP_NO_INDENT) && (!isIndented) && (mCurrentLine.size() > 0)) {
+                        if ((mCmdSep & CMDSEP_NO_INDENT) && (!isIndented) && (!mCurrentLine.empty())) {
                             // Start a new non-indented line
                             aBuffChar = aChar;
                             break;
@@ -404,7 +404,7 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
             }
         }
 
-        if (mCurrentLine.length() > 0) {
+        if (!mCurrentLine.empty()) {
             if (!ParseDescriptorLine(mCurrentLine)) {
                 hasErrors = true;
                 break;

@@ -86,8 +86,8 @@ public:
 
 private:
     void BltEx(
-        Image *theImage, const std::array<glm::vec4, 4> vertices, const glm::vec4 &theClipRect, const Color &theColor,
-        int theDrawMode, bool blend
+        Image *theImage, const std::array<glm::vec4, 4> &vertices, const glm::vec4 &theClipRect, const Color &theColor,
+        const int theDrawMode, bool blend
     );
     void BltMatrixHelper(
         Image *theImage, const glm::mat3 &theMatrix, const glm::vec4 &theSrcRect, const glm::vec4 &theClipRect,

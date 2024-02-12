@@ -308,7 +308,7 @@ void Reanimation::ReanimationDelete() {
 
 // 0x471A60
 void Reanimation::ReanimationInitializeType(float theX, float theY, ReanimationType theReanimType) {
-    TOD_ASSERT(theReanimType >= 0 && static_cast<uint>(theReanimType) < gReanimatorDefCount);
+    TOD_ASSERT(theReanimType >= 0 && static_cast<uint32_t>(theReanimType) < gReanimatorDefCount);
     ReanimatorEnsureDefinitionLoaded(theReanimType, false);
     mReanimationType = theReanimType;
     ReanimationInitialize(theX, theY, &gReanimatorDefArray[static_cast<int>(theReanimType)]);
@@ -339,7 +339,7 @@ void ReanimationCreateAtlas(ReanimatorDefinition *theDefinition, ReanimationType
 }
 
 void ReanimationPreload(ReanimationType theReanimationType) {
-    TOD_ASSERT(theReanimationType >= 0 && static_cast<uint>(theReanimationType) < gReanimatorDefCount);
+    TOD_ASSERT(theReanimationType >= 0 && static_cast<uint32_t>(theReanimationType) < gReanimatorDefCount);
 
     ReanimatorDefinition *aReanimDef = &gReanimatorDefArray[static_cast<int>(theReanimationType)];
     ReanimationCreateAtlas(aReanimDef, theReanimationType);

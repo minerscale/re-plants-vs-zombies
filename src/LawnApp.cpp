@@ -243,8 +243,9 @@ void LawnApp::Shutdown() {
     }
 
     if (!mShutdown) {
-        for (int i = 0; i < Dialogs::NUM_DIALOGS; i++) {
-            KillDialog(i);
+        using DialogIterator = EnumIterator<Dialogs, Dialogs::DIALOG_NEW_GAME, Dialogs::NUM_DIALOGS>;
+        for (auto i : DialogIterator()) {
+            KillDialog(static_cast<int>(i));
         }
 
         if (mBoard) {
@@ -481,9 +482,11 @@ void LawnApp::ShowAwardScreen(AwardType theAwardType, bool theShowAchievements) 
     {
         // @ minerscale fix achievements screen showing up despite nothing to show.
         if (ReportAchievement::mAchievementToShow && theShowAchievements) {
-            ReportAchievement::mAchievementToShow = false; // Shown achievement, don't show them again.
+            ReportAchievement::mAchievementToShow = false;
+            // Shown achievement, don't show them again.
         } else {
-            theShowAchievements = false; // Don't display achievements screen if there are no achievements to show
+            theShowAchievements = false;
+            // Don't display achievements screen if there are no achievements to show
         }
     }
     mGameScene = GameScenes::SCENE_AWARD;
@@ -613,8 +616,9 @@ void LawnApp::DoBackToMain() {
 void LawnApp::DoConfirmBackToMain() {
     auto aDialog = static_cast<LawnDialog *>(DoDialog(
         Dialogs::DIALOG_CONFIRM_BACK_TO_MAIN, true, _S("Leave Game?" /*"[LEAVE_GAME]"*/),
-        _S("Do you want to return\nto the main menu?\n\nYour game will be saved." /*"[LEAVE_GAME_HEADER]"*/), "",
-        Dialog::BUTTONS_YES_NO
+        _S("Do you want to return\nto the main menu?\n\nYour game will be saved."
+           /*"[LEAVE_GAME_HEADER]"*/),
+        "", Dialog::BUTTONS_YES_NO
     ));
 
     aDialog->mLawnYesButton->mLabel = TodStringTranslate("[LEAVE_BUTTON]");
@@ -1247,7 +1251,8 @@ bool LawnApp::UpdatePlayerProfileForFinishingLevel() {
             if (mPlayerInfo->mFinishedAdventure == 1) {
                 mPlayerInfo->mNeedsMessageOnGameSelector = 1;
             }
-            ReportAchievement::GiveAchievement(this, HomeSecurity, false); // @Patoke: add achievement
+            ReportAchievement::GiveAchievement(this, HomeSecurity, false);
+            // @Patoke: add achievement
         } else {
             mPlayerInfo->SetLevel(mBoard->mBoardData.mLevel + 1); // 存档进入下一关
         }
@@ -1506,7 +1511,8 @@ void LawnApp::LoadingThreadProc() {
         mNumLoadingThreadTasks += mResourceManager->GetNumResources(groups[i]) * group_ave_ms_to_load[i];
     }
     // mNumLoadingThreadTasks += 636;
-    mNumLoadingThreadTasks -= 744; // I have no idea why but the count is off by this much.
+    mNumLoadingThreadTasks -= 744;
+    // I have no idea why but the count is off by this much.
     mNumLoadingThreadTasks += GetNumPreloadingTasks();
     mNumLoadingThreadTasks += mMusic->GetNumLoadingTasks();
 
@@ -1651,8 +1657,8 @@ void LawnApp::ButtonMouseMove(int, int, int) {}
 // 0x4531E0
 //  GOTY @Patoke: 0x456690
 void LawnApp::ButtonDepress(int theId) {
-    if (theId % 10000 >= 2000 &&
-        theId % 10000 < 3000) // 按钮编号 theId ∈ [2000, 3000) 时，表示按下 theId - 2000 编号的对话中的“是”按钮
+    if (theId % 10000 >= 2000 && theId % 10000 < 3000)
+    // 按钮编号 theId ∈ [2000, 3000) 时，表示按下 theId - 2000 编号的对话中的“是”按钮
     {
         switch (theId - 2000) {
         case Dialogs::DIALOG_NEW_GAME:
@@ -1726,8 +1732,8 @@ void LawnApp::ButtonDepress(int theId) {
         }
     }
 
-    if (theId % 10000 >= 3000 &&
-        theId < 4000) // 按钮编号 theId ∈ [3000, 4000) 时，表示按下 theId - 3000 编号的对话中的“否”按钮
+    if (theId % 10000 >= 3000 && theId < 4000)
+    // 按钮编号 theId ∈ [3000, 4000) 时，表示按下 theId - 3000 编号的对话中的“否”按钮
     {
         switch (theId - 3000) {
         case Dialogs::DIALOG_PREGAME_NAG:
@@ -1992,7 +1998,8 @@ void LawnApp::CloseRequestAsync() {
 SeedType LawnApp::GetAwardSeedForLevel(int theLevel) {
     int aArea = (theLevel - 1) / LEVELS_PER_AREA + 1;
     int aSub = (theLevel - 1) % LEVELS_PER_AREA + 1;
-    int aSeedsHasGot = (aArea - 1) * 8 + aSub; // 一般来说，每大关可以获得 8 种植物，每小关可以获得 1 种植物
+    int aSeedsHasGot = (aArea - 1) * 8 + aSub;
+    // 一般来说，每大关可以获得 8 种植物，每小关可以获得 1 种植物
     if (aSub >= 10) {
         aSeedsHasGot -= 2; // 到达第 10 小关时，本大关中有 2 小关的奖励不是新植物
     } else if (aSub >= 5) {
@@ -2191,7 +2198,7 @@ bool LawnApp::IsFirstTimeAdventureMode() { return IsAdventureMode() && !HasFinis
 
 // 0x4541B0
 void LawnApp::CrazyDaveEnter() {
-    TOD_ASSERT(mCrazyDaveState == CRAZY_DAVE_OFF);
+    TOD_ASSERT(mCrazyDaveState == CrazyDaveState::CRAZY_DAVE_OFF);
     TOD_ASSERT(!ReanimationTryToGet(mCrazyDaveReanimID));
 
     Reanimation *aCrazyDaveReanim = AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_CRAZY_DAVE);
@@ -2738,8 +2745,9 @@ int LawnApp::GetNumTrophies(ChallengePage thePage) {
 
 // 0x455C20
 int LawnApp::TrophiesNeedForGoldSunflower() {
-    return 48 - GetNumTrophies(CHALLENGE_PAGE_SURVIVAL) - GetNumTrophies(CHALLENGE_PAGE_CHALLENGE) -
-           GetNumTrophies(CHALLENGE_PAGE_PUZZLE);
+    return 48 - GetNumTrophies(ChallengePage::CHALLENGE_PAGE_SURVIVAL) -
+           GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE) -
+           GetNumTrophies(ChallengePage::CHALLENGE_PAGE_PUZZLE);
 }
 
 // 0x455C50
@@ -2772,7 +2780,7 @@ void LawnApp::InitHook() {
 #else
     mDRM = new PopDRMComm();
     mDRM->DoIPC();
-    if (sexystricmp(GetString("MarketingMode", _S("")).c_str(), _S("StageLocked")) == 0)
+    if (strcasecmp(GetString("MarketingMode", _S("")).c_str(), _S("StageLocked")) == 0)
     {
         mTrialType = TrialType::TRIALTYPE_STAGELOCKED;
         mDRM->EnableLocking();

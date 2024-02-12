@@ -194,7 +194,12 @@ bool TodAppCloseRequest();
 
 //====================================================================================================//
 /*inline*/
-int RandRangeInt(int theMin, int theMax);
+// T should be some kind of integer type
+// !TODO ADD CONCEPTS
+template <typename T> T RandRangeInt(T theMin, T theMax) {
+    TOD_ASSERT(theMin <= theMax);
+    return static_cast<T>(Rand(static_cast<int>(theMax) - static_cast<int>(theMin) + 1) + static_cast<int>(theMin));
+}
 /*inline*/
 float RandRangeFloat(float theMin, float theMax);
 
@@ -232,11 +237,11 @@ int ColorComponentMultiply(int theColor1, int theColor2);
 Color ColorsMultiply(const Color &theColor1, const Color &theColor2);
 Color ColorAdd(const Color &theColor1, const Color &theColor2);
 
-inline void SetBit(uint &theNum, int theIdx, bool theValue = true) {
+inline void SetBit(uint32_t &theNum, int theIdx, bool theValue = true) {
     if (theValue) theNum |= 1 << theIdx;
     else theNum &= ~(1 << theIdx);
 }
 
-inline bool TestBit(uint theNum, int theIdx) { return theNum & (1 << theIdx); }
+inline bool TestBit(uint32_t theNum, int theIdx) { return theNum & (1 << theIdx); }
 // #define SetBit(num, idx, val) { if (val) (num) |= 1 << (idx); else (num) &= ~(1 << (idx)); }
 // #define TestBit(num, idx) ((num) & (1 - (idx)))

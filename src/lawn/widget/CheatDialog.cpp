@@ -65,14 +65,14 @@ void CheatDialog::EditWidgetText(const int theId, const SexyString &theString) {
 
 bool CheatDialog::AllowChar(const int theId, const SexyChar theChar) {
     (void)theId;
-    return sexyisdigit(theChar) || theChar == _S('-') || theChar == _S('c') || theChar == _S('C') ||
-           theChar == _S('f') || theChar == _S('F');
+    return isdigit(theChar) || theChar == _S('-') || theChar == _S('c') || theChar == _S('C') || theChar == _S('f') ||
+           theChar == _S('F');
 }
 
 bool CheatDialog::ApplyCheat() const {
     int aChallengeIndex;
-    if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
-        sexysscanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {
+    if (scanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
+        scanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {
         mApp->mGameMode = static_cast<GameMode>(ClampInt(aChallengeIndex, 0, NUM_CHALLENGE_MODES));
         return true;
     }
@@ -80,19 +80,16 @@ bool CheatDialog::ApplyCheat() const {
     int aLevel = -1;
     int aFinishedAdventure = 0;
     int aArea, aSubArea;
-    if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("f%d-%d"), &aArea, &aSubArea) == 2 ||
-        sexysscanf(mLevelEditWidget->mString.c_str(), _S("F%d-%d"), &aArea, &aSubArea) == 2) {
+    if (scanf(mLevelEditWidget->mString.c_str(), _S("f%d-%d"), &aArea, &aSubArea) == 2 ||
+        scanf(mLevelEditWidget->mString.c_str(), _S("F%d-%d"), &aArea, &aSubArea) == 2) {
         aLevel = (aArea - 1) * LEVELS_PER_AREA + aSubArea;
         aFinishedAdventure = 1;
-    }
-	else if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || sexysscanf(
-		mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1)
-	{
+    } else if (scanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || scanf(mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1) {
         aFinishedAdventure = 1;
-    } else if (sexysscanf(mLevelEditWidget->mString.c_str(), _S("%d-%d"), &aArea, &aSubArea) == 2) {
+    } else if (scanf(mLevelEditWidget->mString.c_str(), _S("%d-%d"), &aArea, &aSubArea) == 2) {
         aLevel = (aArea - 1) * LEVELS_PER_AREA + aSubArea;
     } else {
-        sexysscanf(mLevelEditWidget->mString.c_str(), _S("%d"), &aLevel);
+        scanf(mLevelEditWidget->mString.c_str(), _S("%d"), &aLevel);
     }
 
     if (aLevel <= 0) {

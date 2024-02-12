@@ -38,8 +38,8 @@ WidgetManager::WidgetManager(SexyAppBase *theApp) {
     mWidgetFlags =
         WIDGETFLAGS_UPDATE | WIDGETFLAGS_DRAW | WIDGETFLAGS_CLIP | WIDGETFLAGS_ALLOW_MOUSE | WIDGETFLAGS_ALLOW_FOCUS;
 
-    for (int i = 0; i < 0xFF; i++)
-        mKeyDown[i] = false;
+    for (bool &i : mKeyDown)
+        i = false;
 }
 
 WidgetManager::~WidgetManager() { FreeResources(); }
@@ -84,11 +84,11 @@ Widget *WidgetManager::GetWidgetAt(int x, int y, int *theWidgetX, int *theWidget
     return aWidget;
 }
 
-bool WidgetManager::IsLeftButtonDown() { return (mActualDownButtons & 1) ? true : false; }
+bool WidgetManager::IsLeftButtonDown() const { return (mActualDownButtons & 1) ? true : false; }
 
-bool WidgetManager::IsMiddleButtonDown() { return (mActualDownButtons & 4) ? true : false; }
+bool WidgetManager::IsMiddleButtonDown() const { return (mActualDownButtons & 4) ? true : false; }
 
-bool WidgetManager::IsRightButtonDown() { return (mActualDownButtons & 2) ? true : false; }
+bool WidgetManager::IsRightButtonDown() const { return (mActualDownButtons & 2) ? true : false; }
 
 void WidgetManager::DoMouseUps() {
     if (mLastDownWidget != nullptr && mDownButtons != 0) {
@@ -99,7 +99,7 @@ void WidgetManager::DoMouseUps() {
 }
 
 void WidgetManager::DeferOverlay(Widget *theWidget, int thePriority) {
-    mDeferredOverlayWidgets.push_back(std::pair<Widget *, int>(theWidget, thePriority));
+    mDeferredOverlayWidgets.emplace_back(theWidget, thePriority);
     if (thePriority < mMinDeferredOverlayPriority) mMinDeferredOverlayPriority = thePriority;
 }
 
@@ -107,10 +107,10 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
     for (;;) {
         int aNextMinPriority = 0x7FFFFFFF;
 
-        for (int i = 0; i < static_cast<int>(mDeferredOverlayWidgets.size()); i++) {
-            Widget *aWidget = mDeferredOverlayWidgets[i].first;
+        for (auto &mDeferredOverlayWidget : mDeferredOverlayWidgets) {
+            Widget *aWidget = mDeferredOverlayWidget.first;
             if (aWidget != nullptr) {
-                int aPriority = mDeferredOverlayWidgets[i].second;
+                int aPriority = mDeferredOverlayWidget.second;
 
                 if (aPriority == mMinDeferredOverlayPriority) {
                     // Overlays don't get clipped
@@ -121,7 +121,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
                     g.SetLinearBlend(true);
 
                     aWidget->DrawOverlay(&g, aPriority);
-                    mDeferredOverlayWidgets[i].first = nullptr;
+                    mDeferredOverlayWidget.first = nullptr;
                 } else {
                     if (aPriority < aNextMinPriority) aNextMinPriority = aPriority;
                 }
@@ -141,7 +141,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
     }
 }
 
-void WidgetManager::DoMouseUps(Widget *theWidget, ulong theDownCode) {
+void WidgetManager::DoMouseUps(Widget *theWidget, ulong theDownCode) const {
     int aClickCountTable[3] = {1, -1, 3};
     for (int i = 0; i < 3; i++) {
         if ((theDownCode & (1 << i)) != 0) {
@@ -151,7 +151,7 @@ void WidgetManager::DoMouseUps(Widget *theWidget, ulong theDownCode) {
     }
 }
 
-void WidgetManager::RemapMouse(int &theX, int &theY) {
+void WidgetManager::RemapMouse(int &theX, int &theY) const {
     theX = (theX - mMouseSourceRect.mX) * mMouseDestRect.mWidth / mMouseSourceRect.mWidth + mMouseDestRect.mX;
     theY = (theY - mMouseSourceRect.mY) * mMouseDestRect.mHeight / mMouseSourceRect.mHeight + mMouseDestRect.mY;
 }
@@ -212,11 +212,11 @@ void WidgetManager::AddBaseModal(Widget *theWidget, const FlagsMod &theBelowFlag
 void WidgetManager::AddBaseModal(Widget *theWidget) { AddBaseModal(theWidget, mDefaultBelowModalFlagsMod); }
 
 void WidgetManager::RemoveBaseModal(Widget *theWidget) {
-    DBG_ASSERT(mPreModalInfoList.size() > 0);
+    DBG_ASSERT(!mPreModalInfoList.empty());
 
     bool first = true;
 
-    while (mPreModalInfoList.size() > 0) {
+    while (!mPreModalInfoList.empty()) {
         PreModalInfo *aPreModalInfo = &mPreModalInfoList.back();
 
         if ((first) && (aPreModalInfo->mBaseModalWidget != theWidget)) {

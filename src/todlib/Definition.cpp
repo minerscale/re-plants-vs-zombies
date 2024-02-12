@@ -11,13 +11,11 @@
 #include "todlib/Reanimator.h"
 #include "zlib.h"
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include <cassert>
 #include <chrono>
+#include <cstddef>
 #include <cstring>
 #include <filesystem>
-#include <memory>
-#include <stddef.h>
-#include <stdexcept>
 
 DefSymbol gTrailFlagDefSymbols[] = {
   //  0x69E150
@@ -340,7 +338,7 @@ unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition) {
 // 0x443BE0
 bool DefinitionLoadImage(Image **theImage, const SexyString &theName) {
     // 当贴图文件路径不存在时，无须获取贴图
-    if (theName.size() == 0) {
+    if (theName.empty()) {
         *theImage = nullptr;
         return true;
     }
@@ -386,8 +384,9 @@ bool DefinitionLoadXML(const SexyString &theFileName, DefMap *theDefMap, void *t
 // 0x444020
 inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArray, DefMap *theDefMap) {
     int aDefSize;
-    SMemR(theReadPtr, &aDefSize, sizeof(int)); // 先读取一个整数表示 theDefMap 描述的定义结构类的大小
-    if (aDefSize != theDefMap->mDefSize)       // 比较其与当前给出的定义结构图声明的大小是否一致
+    SMemR(theReadPtr, &aDefSize, sizeof(int));
+    // 先读取一个整数表示 theDefMap 描述的定义结构类的大小
+    if (aDefSize != theDefMap->mDefSize) // 比较其与当前给出的定义结构图声明的大小是否一致
     {
         TodTrace("cache has old def: array size");
         return false;
@@ -395,7 +394,8 @@ inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArra
     if (theArray->mArrayCount == 0) // 如果类中没有实例，则无需读取
         return true;
 
-    theArray->mArrayData = calloc(theArray->mArrayCount, aDefSize); // 申请内存并初始化填充为 0
+    theArray->mArrayData = calloc(theArray->mArrayCount, aDefSize);
+    // 申请内存并初始化填充为 0
     SMemR(theReadPtr, theArray->mArrayData, aDefSize * theArray->mArrayCount);
     // 仍然是粗略读取全部数据，然后再根据 theDefMap 的结构字段数组修复指针
     for (int i = 0; i < theArray->mArrayCount; i++)
@@ -495,7 +495,7 @@ bool DefMapReadFromCache(void *&theReadPtr, const DefMap *theDefMap, void *theDe
 }
 
 // 0x444380
-uint DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap) {
+uint32_t DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap) {
     while (theSymbolMap->mSymbolName != nullptr) {
         aSchemaHash =
             SDL_crc32(aSchemaHash, (const void *)theSymbolMap->mSymbolName, strlen(theSymbolMap->mSymbolName));
@@ -506,7 +506,7 @@ uint DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap)
 }
 
 // 0x4443D0
-uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap *> &theProgressMaps) {
+uint32_t DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap *> &theProgressMaps) {
     for (const TodListNode<DefMap *> *aNode = theProgressMaps.mHead; aNode != nullptr; aNode = aNode->mNext)
         if (aNode->mValue == theDefMap) return aSchemaHash;
     theProgressMaps.AddTail(theDefMap);
@@ -531,10 +531,10 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap
 }
 
 // 0x444490
-uint DefinitionCalcHash(DefMap *theDefMap) {
+uint32_t DefinitionCalcHash(DefMap *theDefMap) {
     // Uninitialised!!
     auto aProgressMaps = TodList<DefMap *>();
-    const uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef *)nullptr, 0) + 1, theDefMap, aProgressMaps);
+    const uint32_t aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef *)nullptr, 0) + 1, theDefMap, aProgressMaps);
 
     // TodList destructor is called upon it going out of scope.
     return aResult;
@@ -561,12 +561,14 @@ void *DefinitionUncompressCompiledBuffer(
     const Bytef *aSrc = (Bytef *)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));
     // 实际解压数据从第 3 个四字节开始
     // BuGFIXX!!
-    ulong aUncompressedSizeResult = aHeader->mUncompressedSize; // 用作出参的未压缩数据实际长度
+    ulong aUncompressedSizeResult = aHeader->mUncompressedSize;
+    // 用作出参的未压缩数据实际长度
     const int aResult = uncompress(
         aUncompressedBuffer, &aUncompressedSizeResult, aSrc,
         theCompressedBufferSize - sizeof(CompressedDefinitionHeader)
     );
-    (void)aResult; // Compiler can't work out that this is used in the Debug build
+    (void)aResult;
+    // Compiler can't work out that this is used in the Debug build
     TOD_ASSERT(aResult == Z_OK);
     TOD_ASSERT(aUncompressedSizeResult == aHeader->mUncompressedSize);
     theUncompressedSize = aHeader->mUncompressedSize;
@@ -602,8 +604,9 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     free(aCompressedBuffer);
     if (!aUncompressedBuffer) return false;
 
-    const uint aDefHash = DefinitionCalcHash(theDefMap); // 计算 CRC 校验值，后将用于检测数据的完整性
-    if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
+    const uint32_t aDefHash = DefinitionCalcHash(theDefMap);
+    // 计算 CRC 校验值，后将用于检测数据的完整性
+    if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint32_t)) {
         TodTrace(_S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
         free(aUncompressedBuffer);
         return false;
@@ -611,8 +614,8 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
 
     // 复制一份解压数据的指针用于读取时移动，原指针后续要用于计算读取区域大小及 delete[] 操作
     void *aBufferPtr = aUncompressedBuffer;
-    uint aCashHash;
-    SMemR(aBufferPtr, &aCashHash, sizeof(uint)); // 读取记录的 CRC 校验值
+    uint32_t aCashHash;
+    SMemR(aBufferPtr, &aCashHash, sizeof(uint32_t)); // 读取记录的 CRC 校验值
     if (aCashHash != aDefHash) {
         TodTrace(_S("Compiled file schema wrong: %s\n"), theCompiledFilePath.c_str());
         free(aUncompressedBuffer);
@@ -644,8 +647,8 @@ SexyString DefinitionGetCompiledFilePathFromXMLFilePath(const SexyString &theXML
 
 bool IsFileInPakFile(const SexyString &theFilePath) {
     PFILE *pFile = p_fopen(theFilePath.c_str(), _S("rb"));
-    const bool aIsInPak =
-        pFile && !pFile->mFP; // 通过 mPakRecordMap.find 找到并打开的文件，其 mFP 为空指针（因为不是从实际文件中打开的）
+    const bool aIsInPak = pFile && !pFile->mFP;
+    // 通过 mPakRecordMap.find 找到并打开的文件，其 mFP 为空指针（因为不是从实际文件中打开的）
     if (pFile) {
         p_fclose(pFile);
     }
@@ -657,6 +660,7 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     if (IsFileInPakFile(aCompiledFilePath)) return true;
 
 #if !defined(_WIN32) // It should be abundantly clear that I didn't want to write this.
+
     auto src_correct_name = casepath(theXMLFilePath);
     auto compiled_correct_name = casepath(aCompiledFilePath);
     if (src_correct_name == "") {
@@ -728,7 +732,8 @@ bool DefinitionReadXMLString(XMLParser *theXmlParser, SexyString &theValue) {
     }
     if (aXMLElement.mType == XMLElement::TYPE_END) // 读取到结束标签则结束处理
         return true;
-    else if (aXMLElement.mType != XMLElement::TYPE_ELEMENT) // 除结束标签外，正常情况下，此处读取到的应是定义的正片内容
+    else if (aXMLElement.mType != XMLElement::TYPE_ELEMENT)
+    // 除结束标签外，正常情况下，此处读取到的应是定义的正片内容
     {
         DefinitionXmlError(theXmlParser, "unknown element type");
         return false;
@@ -764,7 +769,7 @@ bool DefinitionReadIntField(XMLParser *theXmlParser, int *theValue) {
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (sexysscanf(aStringValue.c_str(), _S("%d"), theValue) == 1) return true;
+    if (scanf(aStringValue.c_str(), _S("%d"), theValue) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
     return false;
@@ -774,7 +779,7 @@ bool DefinitionReadFloatField(XMLParser *theXmlParser, float *theValue) {
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (sexysscanf(aStringValue.c_str(), _S("%f"), theValue) == 1) return true;
+    if (scanf(aStringValue.c_str(), _S("%f"), theValue) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse float value '%s'", aStringValue.c_str());
     return false;
@@ -807,7 +812,7 @@ bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue) 
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (sexysscanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
+    if (scanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse vector2 value '%s'", aStringValue.c_str());
     return false;
@@ -904,7 +909,8 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
         if (anIdx >= aStringValue.length()) {
             return false;
         }
-        if (aStringChars[anIdx] == '\0') goto _m_break; // No empty strings allowed
+        if (aStringChars[anIdx] == '\0') goto _m_break;
+        // No empty strings allowed
 
         aTrackNode.mTime = -1;
         aTrackNode.mCurveType = TodCurves::CURVE_LINEAR;
@@ -913,24 +919,26 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
         if (aStringChars[anIdx] == '[') {
             // <range>
             anIdx++;
-            if (sexysscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLowValue
+            if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLowValue
             anIdx += aLen;
             aTrackNode.mLowValue = aValue;
             aTrackNode.mHighValue = aValue;
             if (aStringChars[anIdx] != ']') {
                 anIdx++; // space (' ')
                 // <curve>
-                for (size_t i = 0; i < std::size(gDefTrackEaseSymbols); ++i) {
-                    const size_t aStrLen = strlen(gDefTrackEaseSymbols[i].mSymbolName);
-                    if (strncmp(gDefTrackEaseSymbols[i].mSymbolName, aStringChars + anIdx, aStrLen) == 0)
+                for (auto &gDefTrackEaseSymbol : gDefTrackEaseSymbols) {
+                    const size_t aStrLen = strlen(gDefTrackEaseSymbol.mSymbolName);
+                    if (strncmp(gDefTrackEaseSymbol.mSymbolName, aStringChars + anIdx, aStrLen) == 0)
                     // could be the distribution?
                     {
-                        aTrackNode.mDistribution = static_cast<TodCurves>(gDefTrackEaseSymbols[i].mSymbolValue);
-                        anIdx += aStrLen + 1; // Accounts for space (' '), expressions never end with a curve
+                        aTrackNode.mDistribution = static_cast<TodCurves>(gDefTrackEaseSymbol.mSymbolValue);
+                        anIdx += aStrLen + 1;
+                        // Accounts for space (' '), expressions never end with a curve
                         break;
                     }
                 }
-                switch (sexysscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen)) // mHighValue
+                switch (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen))
+                // mHighValue
                 {
                 case 1: // Float read successfully
                     anIdx += aLen;
@@ -948,7 +956,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
 
             if (aStringChars[anIdx] == ',') {
                 anIdx++;
-                if (sexysscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
+                if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
                 anIdx += aLen;
                 aTrackNode.mTime = aValue * 0.01;
             }
@@ -956,7 +964,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             anIdx++;
         } else {
             // <norange>
-            if (sexysscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLow/HighValue
+            if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLow/HighValue
             anIdx += aLen;
             aTrackNode.mLowValue = aValue;
             aTrackNode.mHighValue = aValue;
@@ -965,18 +973,18 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
 
             if (aStringChars[anIdx] == ',') {
                 anIdx++;
-                if (sexysscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
+                if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
                 anIdx += aLen;
                 aTrackNode.mTime = aValue * 0.01;
             }
             if (aStringChars[anIdx] == '\0') goto _m_break; // Done!
             anIdx++;
             // <curve>
-            for (size_t i = 0; i < std::size(gDefTrackEaseSymbols); ++i) {
-                const size_t aStrLen = strlen(gDefTrackEaseSymbols[i].mSymbolName);
-                if (strncmp(gDefTrackEaseSymbols[i].mSymbolName, aStringChars + anIdx, aStrLen) == 0) // mCurveType
+            for (auto &gDefTrackEaseSymbol : gDefTrackEaseSymbols) {
+                const size_t aStrLen = strlen(gDefTrackEaseSymbol.mSymbolName);
+                if (strncmp(gDefTrackEaseSymbol.mSymbolName, aStringChars + anIdx, aStrLen) == 0) // mCurveType
                 {
-                    aTrackNode.mCurveType = static_cast<TodCurves>(gDefTrackEaseSymbols[i].mSymbolValue);
+                    aTrackNode.mCurveType = static_cast<TodCurves>(gDefTrackEaseSymbol.mSymbolValue);
                     anIdx += aStrLen;
                     if (aStringChars[anIdx] == '\0') goto _m_break; // Done!
                     anIdx++;
@@ -1040,7 +1048,7 @@ _m_break:
 }
 
 bool DefinitionReadFlagField(
-    XMLParser *theXmlParser, const SexyString &theElementName, uint *theResultValue, DefSymbol *theSymbolMap
+    XMLParser *theXmlParser, const SexyString &theElementName, uint32_t *theResultValue, DefSymbol *theSymbolMap
 ) {
     int aValue;
     if (!DefSymbolValueFromString(theSymbolMap, theElementName.c_str(), &aValue)) return false;
@@ -1050,7 +1058,7 @@ bool DefinitionReadFlagField(
 
     float aFlag;
     // This was obviously a bug, the casting is wrong, although amusingly it just woks since it's just a bit
-    if (sexysscanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
+    if (scanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
         DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
         return false;
     }
@@ -1108,8 +1116,8 @@ bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void 
         *theDone = true; // 没有下一个元素则表示读取完成
         return true;
     }
-    if (aXMLElement.mType !=
-        XMLElement::TYPE_START) // 正常情况下，此处读取到的应是开始标签，而其他内容在后续的相应函数中读取
+    if (aXMLElement.mType != XMLElement::TYPE_START)
+    // 正常情况下，此处读取到的应是开始标签，而其他内容在后续的相应函数中读取
     {
         DefinitionXmlError(theXmlParser, "Missing element start");
         return false;
@@ -1120,12 +1128,13 @@ bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void 
         // Missing pvar field for some reason!
         if (aField->mFieldType == DefFieldType::DT_FLAGS &&
             DefinitionReadFlagField(
-                theXmlParser, aXMLElement.mValue, static_cast<uint *>(pVar),
+                theXmlParser, aXMLElement.mValue, static_cast<uint32_t *>(pVar),
                 static_cast<DefSymbol *>(aField->mExtraData)
             ))
             return true;
 
-        if (strcasecmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0) // 判断 aXMLElement 定义的是否为该成员变量
+        if (strcasecmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0)
+        // 判断 aXMLElement 定义的是否为该成员变量
         {
             bool aSuccess;
             switch (aField->mFieldType) {
@@ -1174,7 +1183,8 @@ bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void 
 
 bool DefinitionLoadMap(XMLParser *theXmlParser, DefMap *theDefMap, void *theDefinition) {
     if (theDefMap->mConstructorFunc) theDefMap->mConstructorFunc(theDefinition); // 利用构造函数构造 theDefinition
-    else DefinitionFillWithDefaults(theDefMap, theDefinition);                   // 以默认值填充 theDefinition
+    else DefinitionFillWithDefaults(theDefMap, theDefinition);
+    // 以默认值填充 theDefinition
 
     bool aDone = false;
     while (!aDone)
@@ -1261,21 +1271,21 @@ bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *
     const unsigned int aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(unsigned int);
     void *aDefBasePtr = calloc(aDefSize, 1);
     void *aDef = aDefBasePtr;
-    const uint aDefHash = DefinitionCalcHash(theDefMap);
+    const uint32_t aDefHash = DefinitionCalcHash(theDefMap);
 
-    SMemW(aDef, &aDefHash, sizeof(uint));
+    SMemW(aDef, &aDefHash, sizeof(uint32_t));
     SMemW(aDef, theDefinition, theDefMap->mDefSize);
     DefMapWriteToCache(aDef, theDefMap, theDefinition);
     void *aCompressedDef = DefinitionCompressCompiledBuffer(aDefBasePtr, aDefSize, &aCompressedSize);
 
-    free(aDefBasePtr); // already compressed, no need to keep this instance alive
+    free(aDefBasePtr);
+    // already compressed, no need to keep this instance alive
 
     const std::string aFilePath = GetFileDir(theCompiledFilePath);
     MkDir(aFilePath);
 
     bool success = false;
-    const auto aFileStream = fopen(theCompiledFilePath.c_str(), "wb");
-    if (aFileStream) {
+    if (const auto aFileStream = fopen(theCompiledFilePath.c_str(), "wb")) {
         success = fwrite(aCompressedDef, 1u, aCompressedSize, aFileStream) == aCompressedSize;
         fclose(aFileStream);
     }
@@ -1285,7 +1295,7 @@ bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *
 }
 
 bool DefinitionCompileFile(
-    const SexyString theXMLFilePath, const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition
+    const SexyString &theXMLFilePath, const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition
 ) {
     auto aXMLParser = XMLParser();
     if (!aXMLParser.OpenFile(theXMLFilePath)) {
@@ -1362,7 +1372,8 @@ float FloatTrackEvaluate(const FloatParameterTrack &theTrack, float theTimeValue
 
 // 0x4449F0
 void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue) {
-    if (theTrack.mNodes == nullptr && theValue != 0.0f) // 确保该参数轨道无节点（未被赋值过）且给定的默认值不为 0
+    if (theTrack.mNodes == nullptr && theValue != 0.0f)
+    // 确保该参数轨道无节点（未被赋值过）且给定的默认值不为 0
     {
         theTrack.mCountNodes = 1; // 默认参数轨道有且仅有 1 个节点
         const auto aNode = static_cast<FloatParameterTrackNode *>(calloc(1, sizeof(FloatParameterTrackNode)));
@@ -1422,7 +1433,8 @@ void DefinitionFreeMap(const DefMap *theDefMap, void *theDefinition) {
             break;
         case DefFieldType::DT_TRACK_FLOAT:
             if (static_cast<FloatParameterTrack *>(aVar)->mCountNodes != 0)
-                free(static_cast<FloatParameterTrack *>(aVar)->mNodes); // 释放浮点参数轨道的节点
+                free(static_cast<FloatParameterTrack *>(aVar)->mNodes);
+            // 释放浮点参数轨道的节点
             static_cast<FloatParameterTrack *>(aVar)->mNodes = nullptr;
             break;
         default: break;

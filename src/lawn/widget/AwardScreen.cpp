@@ -60,11 +60,11 @@ AwardScreen::AwardScreen(LawnApp *theApp, const AwardType theAwardType, const bo
     }
 
     const int aLevel = mApp->mPlayerInfo->GetLevel();
-    if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
+    if (mAwardType == AwardType::AWARD_CREDITS_ZOMBIENOTE) {
         TodLoadResources("DelayLoad_Background6");
         TodLoadResources("DelayLoad_ZombieNote");
         TodLoadResources("DelayLoad_Credits");
-    } else if (mAwardType == AWARD_HELP_ZOMBIENOTE) {
+    } else if (mAwardType == AwardType::AWARD_HELP_ZOMBIENOTE) {
         TodLoadResources("DelayLoad_Background1");
         TodLoadResources("DelayLoad_ZombieNote");
         TodLoadResources("DelayLoad_ZombieNoteHelp");
@@ -136,7 +136,7 @@ AwardScreen::AwardScreen(LawnApp *theApp, const AwardType theAwardType, const bo
         mMenuButton->mDisabled = true;
     }
 
-    if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
+    if (mAwardType == AwardType::AWARD_CREDITS_ZOMBIENOTE) {
         mStartButton->SetLabel("[ROLL_CREDITS]");
         mStartButton->mButtonImage = Sexy::IMAGE_CREDITS_PLAYBUTTON;
         mStartButton->mOverImage = nullptr;
@@ -152,7 +152,7 @@ AwardScreen::AwardScreen(LawnApp *theApp, const AwardType theAwardType, const bo
         mStartButton->mButtonOffsetX = -2;
         mStartButton->mButtonOffsetY = 8;
         mStartButton->mParentWidget = this;
-    } else if (mAwardType == AWARD_HELP_ZOMBIENOTE) {
+    } else if (mAwardType == AwardType::AWARD_HELP_ZOMBIENOTE) {
         mStartButton->SetLabel("[MAIN_MENU_BUTTON]");
         mMenuButton->mBtnNoDraw = true;
         mMenuButton->mDisabled = true;
@@ -207,7 +207,8 @@ AwardScreen::~AwardScreen() {
 }
 
 bool AwardScreen::IsPaperNote() const {
-    if (mAwardType == AWARD_CREDITS_ZOMBIENOTE || mAwardType == AWARD_HELP_ZOMBIENOTE) return true;
+    if (mAwardType == AwardType::AWARD_CREDITS_ZOMBIENOTE || mAwardType == AwardType::AWARD_HELP_ZOMBIENOTE)
+        return true;
 
     const int aLevel = mApp->mPlayerInfo->GetLevel();
     return mApp->IsAdventureMode() && (aLevel == 10 || aLevel == 20 || aLevel == 30 || aLevel == 40 || aLevel == 50);
@@ -218,11 +219,17 @@ void AwardScreen::DrawBottom(
     Graphics *g, const SexyString &theTitle, const SexyString &theAward, const SexyString &theMessage
 ) {
     g->DrawImage(Sexy::IMAGE_AWARDSCREEN_BACK, 0, 0);
-    TodDrawString(g, theTitle, BOARD_WIDTH / 2, 58, Sexy::FONT_DWARVENTODCRAFT24, Color(213, 159, 43), DS_ALIGN_CENTER);
-    TodDrawString(g, theAward, BOARD_WIDTH / 2, 326, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DS_ALIGN_CENTER);
+    TodDrawString(
+        g, theTitle, BOARD_WIDTH / 2, 58, Sexy::FONT_DWARVENTODCRAFT24, Color(213, 159, 43),
+        DrawStringJustification::DS_ALIGN_CENTER
+    );
+    TodDrawString(
+        g, theAward, BOARD_WIDTH / 2, 326, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White,
+        DrawStringJustification::DS_ALIGN_CENTER
+    );
     TodDrawStringWrapped(
         g, theMessage, Rect(285, 360, 230, 90), Sexy::FONT_BRIANNETOD16, Color(40, 50, 90),
-        DS_ALIGN_CENTER_VERTICAL_MIDDLE
+        DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
     );
 }
 
@@ -249,7 +256,7 @@ void AwardScreen::Draw(Graphics *g) {
     const int aLevel = mApp->mPlayerInfo->GetLevel();
     if (mShowingAchievements) // @Patoke: add call
         DrawAchievements(g);
-    else if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
+    else if (mAwardType == AwardType::AWARD_CREDITS_ZOMBIENOTE) {
         g->SetColor(Color(125, 200, 255, 255));
         g->SetColorizeImages(true);
         g->DrawImage(Sexy::IMAGE_BACKGROUND6BOSS, -900, -400, 2800, 1200);
@@ -258,11 +265,11 @@ void AwardScreen::Draw(Graphics *g) {
         g->FillRect(0, 525, BOARD_WIDTH, BOARD_HEIGHT);
         g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE, 75, 60);
         g->DrawImage(Sexy::IMAGE_CREDITS_ZOMBIENOTE, 149, 103, 475, 325);
-    } else if (mAwardType == AWARD_HELP_ZOMBIENOTE) {
+    } else if (mAwardType == AwardType::AWARD_HELP_ZOMBIENOTE) {
         g->DrawImage(Sexy::IMAGE_BACKGROUND1, -700, -300, 2800, 1200);
         g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE, 80, 80);
         g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE_HELP, 131, 132);
-    } else if (mAwardType != AWARD_ACHIEVEMENTONLY) // @Patoke: add check
+    } else if (mAwardType != AwardType::AWARD_ACHIEVEMENTONLY) // @Patoke: add check
     {
         if (!mApp->IsAdventureMode()) {
             if (mApp->EarnedGoldTrophy()) {
@@ -271,15 +278,16 @@ void AwardScreen::Draw(Graphics *g) {
             } else {
                 const char *aMsgChar;
                 if (mApp->IsSurvivalMode()) {
-                    const int aNumTrophies = mApp->GetNumTrophies(CHALLENGE_PAGE_SURVIVAL);
+                    const int aNumTrophies = mApp->GetNumTrophies(ChallengePage::CHALLENGE_PAGE_SURVIVAL);
                     aMsgChar = aNumTrophies <= 7    ? _S("[YOU_UNLOCKED_A_SURVIVAL]")
                                : aNumTrophies == 10 ? _S("[YOU_UNLOCKED_ENDLESS_SURVIVAL]")
                                                     : _S("[EARN_MORE_TROPHIES_FOR_ENDLESS_SURVIVAL]");
                 } else if (mApp->IsScaryPotterLevel()) aMsgChar = _S("[UNLOCKED_VASEBREAKER_LEVEL]");
                 else if (mApp->IsPuzzleMode()) aMsgChar = _S("[UNLOCKED_I_ZOMBIE_LEVEL]");
                 else
-                    aMsgChar = mApp->GetNumTrophies(CHALLENGE_PAGE_CHALLENGE) <= 17 ? _S("[CHALLENGE_UNLOCKED]")
-                                                                                    : _S("[GET_MORE_TROPHIES]");
+                    aMsgChar = mApp->GetNumTrophies(ChallengePage::CHALLENGE_PAGE_CHALLENGE) <= 17
+                                   ? _S("[CHALLENGE_UNLOCKED]")
+                                   : _S("[GET_MORE_TROPHIES]");
 
                 DrawBottom(g, _S("[GOT_TROPHY]"), _S("[TROPHY]"), aMsgChar);
                 g->DrawImage(Sexy::IMAGE_TROPHY_HI_RES, BOARD_WIDTH / 2 - Sexy::IMAGE_TROPHY_HI_RES->mWidth / 2, 137);
@@ -293,7 +301,7 @@ void AwardScreen::Draw(Graphics *g) {
             g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE1, 131, 132);
             TodDrawString(
                 g, _S("[FOUND_NOTE]"), BOARD_WIDTH / 2, 70, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255),
-                DS_ALIGN_CENTER
+                DrawStringJustification::DS_ALIGN_CENTER
             );
         } else if (aLevel == 15) {
             DrawBottom(
@@ -306,7 +314,7 @@ void AwardScreen::Draw(Graphics *g) {
             g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE2, 133, 127);
             TodDrawString(
                 g, _S("[FOUND_NOTE]"), BOARD_WIDTH / 2, 70, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255),
-                DS_ALIGN_CENTER
+                DrawStringJustification::DS_ALIGN_CENTER
             );
         } else if (aLevel == 25) {
             DrawBottom(g, _S("[FOUND_KEYS]"), _S("[KEYS]"), _S("[KEYS_DESCRIPTION]"));
@@ -317,7 +325,7 @@ void AwardScreen::Draw(Graphics *g) {
             g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE3, 120, 117);
             TodDrawString(
                 g, _S("[FOUND_NOTE]"), BOARD_WIDTH / 2, 70, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255),
-                DS_ALIGN_CENTER
+                DrawStringJustification::DS_ALIGN_CENTER
             );
         } else if (aLevel == 35) {
             DrawBottom(g, _S("[FOUND_TACO]"), _S("[TACO]"), _S("[TACO_DESCRIPTION]"));
@@ -328,7 +336,7 @@ void AwardScreen::Draw(Graphics *g) {
             g->DrawImage(Sexy::IMAGE_ZOMBIE_NOTE4, 102, 117);
             TodDrawString(
                 g, _S("[FOUND_NOTE]"), BOARD_WIDTH / 2, 70, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255),
-                DS_ALIGN_CENTER
+                DrawStringJustification::DS_ALIGN_CENTER
             );
         } else if (aLevel == 45) {
             DrawBottom(g, _S("[FOUND_WATERING_CAN]"), _S("[WATERING_CAN]"), _S("[WATERING_CAN_DESCRIPTION]"));
@@ -339,7 +347,7 @@ void AwardScreen::Draw(Graphics *g) {
             g->DrawImage(Sexy::IMAGE_ZOMBIE_FINAL_NOTE, 114, 138);
             TodDrawString(
                 g, _S("[FOUND_NOTE]"), BOARD_WIDTH / 2, 70, Sexy::FONT_DWARVENTODCRAFT24, Color(255, 200, 0, 255),
-                DS_ALIGN_CENTER
+                DrawStringJustification::DS_ALIGN_CENTER
             );
         } else if (aLevel == 1 && mApp->HasFinishedAdventure()) {
             DrawBottom(g, _S("[WIN_MESSAGE1]"), _S("[SILVER_SUNFLOWER_TROPHY]"), _S("[WIN_MESSAGE2]"));
@@ -401,27 +409,27 @@ void AwardScreen::KeyChar(const char theChar) {
 void AwardScreen::StartButtonPressed() const {
     if (mApp->GetDialog(DIALOG_STORE)) return;
 
-    if (mAwardType == AWARD_CREDITS_ZOMBIENOTE) {
+    if (mAwardType == AwardType::AWARD_CREDITS_ZOMBIENOTE) {
         mApp->KillAwardScreen();
         mApp->ShowCreditScreen();
-    } else if (mAwardType == AWARD_HELP_ZOMBIENOTE) {
+    } else if (mAwardType == AwardType::AWARD_HELP_ZOMBIENOTE) {
         mApp->KillAwardScreen();
         mApp->ShowGameSelector();
     } else if (mApp->IsSurvivalMode()) {
         mApp->KillAwardScreen();
-        mApp->ShowChallengeScreen(CHALLENGE_PAGE_SURVIVAL);
+        mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_SURVIVAL);
     } else if (mApp->IsPuzzleMode()) {
         mApp->KillAwardScreen();
-        mApp->ShowChallengeScreen(CHALLENGE_PAGE_PUZZLE);
+        mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_PUZZLE);
     } else if (mApp->IsChallengeMode()) {
         mApp->KillAwardScreen();
-        mApp->ShowChallengeScreen(CHALLENGE_PAGE_CHALLENGE);
+        mApp->ShowChallengeScreen(ChallengePage::CHALLENGE_PAGE_CHALLENGE);
     } else {
         const int aLevel = mApp->mPlayerInfo->GetLevel();
         if (aLevel == 1) {
             mApp->KillAwardScreen();
             if (mApp->HasFinishedAdventure()) {
-                mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);
+                mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE, false);
             } else {
                 mApp->PreNewGame(GAMEMODE_ADVENTURE, false);
             }
@@ -509,7 +517,8 @@ void AwardScreen::DrawAchievements(Graphics *g) const {
     g->DrawImage(IMAGE_CHALLENGE_BACKGROUND, 0, 0);
 
     TodDrawString(
-        g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220), DS_ALIGN_CENTER
+        g, _S("ACHIEVEMENTS"), BOARD_WIDTH / 2, 58, FONT_HOUSEOFTERROR28, Color(220, 220, 220),
+        DrawStringJustification::DS_ALIGN_CENTER
     );
 
     for (auto &mAchievementItem : mAchievementItems) {
@@ -525,11 +534,11 @@ void AwardScreen::DrawAchievements(Graphics *g) const {
 
         TodDrawString(
             g, aAchievementName, BOARD_WIDTH / 2, mAchievementItem.mY + 25, FONT_DWARVENTODCRAFT15, Color(224, 187, 98),
-            DS_ALIGN_CENTER
+            DrawStringJustification::DS_ALIGN_CENTER
         );
         TodDrawStringWrapped(
             g, aAchievementName, aTextRect, FONT_DWARVENTODCRAFT12, Color(255, 255, 255),
-            DS_ALIGN_CENTER_VERTICAL_MIDDLE
+            DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
     }
 }
@@ -537,7 +546,7 @@ void AwardScreen::DrawAchievements(Graphics *g) const {
 // GOTY @Patoke: 0x409400
 void AwardScreen::AchievementsContinuePressed() {
     // @Patoke: implemented
-    if (mAwardType == AWARD_ACHIEVEMENTONLY) {
+    if (mAwardType == AwardType::AWARD_ACHIEVEMENTONLY) {
         mApp->KillAwardScreen();
         mApp->PreNewGame(GAMEMODE_ADVENTURE, false);
     } else {
@@ -551,7 +560,7 @@ void AwardScreen::AchievementsContinuePressed() {
         const int level = mApp->mPlayerInfo->GetLevel();
         if (level == 1 && mApp->HasFinishedAdventure()) {
             mApp->KillAwardScreen();
-            mApp->ShowAwardScreen(AWARD_CREDITS_ZOMBIENOTE, false);
+            mApp->ShowAwardScreen(AwardType::AWARD_CREDITS_ZOMBIENOTE, false);
         }
     }
 }

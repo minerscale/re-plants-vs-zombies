@@ -155,14 +155,14 @@ bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue);
 bool DefinitionReadArrayField(XMLParser *theXmlParser, DefinitionArrayDef *theArray, const DefField *theField);
 bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack *theTrack);
 bool DefinitionReadFlagField(
-    XMLParser *theXmlParser, const SexyString &theElementName, uint *theResultValue, DefSymbol *theSymbolMap
+    XMLParser *theXmlParser, const SexyString &theElementName, uint32_t *theResultValue, DefSymbol *theSymbolMap
 );
 bool DefinitionReadImageField(XMLParser *theXmlParser, Image **theImage);
 bool DefinitionReadFontField(XMLParser *theXmlParser, _Font **theFont);
 bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void *theDefinition, bool *theDone);
 bool DefinitionWriteCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition);
 bool DefinitionCompileFile(
-    const SexyString theXMLFilePath, const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition
+    const SexyString &theXMLFilePath, const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition
 );
 
 void DefMapWriteToCache(void *&theWritePtr, const DefMap *theDefMap, void *theDefinition);
@@ -194,9 +194,9 @@ void *DefinitionUncompressCompiledBuffer(
     void *theCompressedBuffer, size_t theCompressedBufferSize, size_t &theUncompressedSize,
     const SexyString &theCompiledFilePath
 );
-uint /*__cdecl*/ DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap);
-uint /*__cdecl*/ DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap *> &theProgressMaps);
-uint /*__cdecl*/ DefinitionCalcHash(DefMap *theDefMap);
+uint32_t DefinitionCalcHashSymbolMap(int aSchemaHash, const DefSymbol *theSymbolMap);
+uint32_t DefinitionCalcHashDefMap(int aSchemaHash, DefMap *theDefMap, TodList<DefMap *> &theProgressMaps);
+uint32_t DefinitionCalcHash(DefMap *theDefMap);
 inline bool DefReadFromCacheString(void *&theReadPtr, char **theString);
 inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArray, DefMap *theDefMap);
 inline bool DefReadFromCacheImage(void *&theReadPtr, Image **theImage);

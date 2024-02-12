@@ -15,7 +15,7 @@ static int gButtonWidgetColors[][3] = {
     {212, 212, 212}
 };
 
-ButtonWidget::ButtonWidget(int theId, ButtonListener *theButtonListener) {
+ButtonWidget::ButtonWidget(const int theId, ButtonListener *theButtonListener) {
     mId = theId;
     mFont = nullptr;
     mLabelJustify = BUTTON_LABEL_CENTER;

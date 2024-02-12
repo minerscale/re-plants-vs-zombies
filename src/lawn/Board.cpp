@@ -199,21 +199,17 @@ Board::~Board() {
     delete mCursorObject;
     delete mCursorPreview;
     delete mSeedBank;
-    if (mMenuButton) {
-        delete mMenuButton;
-    }
-    if (mStoreButton) {
-        delete mStoreButton;
-    }
+    delete mMenuButton;
+    delete mStoreButton;
+
     mZombies.DataArrayDispose();
     mPlants.DataArrayDispose();
     mProjectiles.DataArrayDispose();
     mCoins.DataArrayDispose();
     mLawnMowers.DataArrayDispose();
     mGridItems.DataArrayDispose();
-    if (mToolTip) {
-        delete mToolTip;
-    }
+
+    delete mToolTip;
     /*
     if (mDebugFont)
     {
@@ -307,7 +303,7 @@ void Board::TryToSaveGame() {
 }
 
 // 0x408DA0
-bool Board::NeedSaveGame() {
+bool Board::NeedSaveGame() const {
     return mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ICE && mApp->mGameMode != GameMode::GAMEMODE_UPSELL &&
            mApp->mGameMode != GameMode::GAMEMODE_INTRO && mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN &&
            mApp->mGameMode != GameMode::GAMEMODE_TREE_OF_WISDOM && mApp->mGameScene == GameScenes::SCENE_PLAYING;
@@ -475,7 +471,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand &theLevelRNG) {
 }
 
 // 0x409050
-int Board::GetNumWavesPerFlag() {
+int Board::GetNumWavesPerFlag() const {
     return (mApp->IsFirstTimeAdventureMode() && mBoardData.mNumWaves < 10) ? mBoardData.mNumWaves : 10;
 }
 
@@ -686,7 +682,7 @@ void Board::PickZombieWaves() {
 }
 
 // 0x40A110
-int Board::GetLevelRandSeed() {
+int Board::GetLevelRandSeed() const {
     int aRndSeed = mApp->mPlayerInfo->mId + mBoardData.mBoardRandSeed;
     if (mApp->IsAdventureMode()) {
         aRndSeed += mApp->mPlayerInfo->mFinishedAdventure * 101 + mBoardData.mLevel;
@@ -698,7 +694,7 @@ int Board::GetLevelRandSeed() {
 
 // 0x40A160
 //  GOTY @Patoke: 0x40C9F0
-void Board::LoadBackgroundImages() {
+void Board::LoadBackgroundImages() const {
     switch (mBoardData.mBackground) {
     case BackgroundType::BACKGROUND_1_DAY:
         TodLoadResources("DelayLoad_Background1");
@@ -975,7 +971,7 @@ void Board::InitZombieWavesForLevel(int theForLevel) {
     }
 }
 
-bool Board::IsZombieWaveDistributionOk() {
+bool Board::IsZombieWaveDistributionOk() const {
     if (!mApp->IsAdventureMode()) return true;
 
     int aZombieTypeCount[static_cast<int>(ZombieType::NUM_ZOMBIE_TYPES)] = {0};
@@ -1309,7 +1305,7 @@ void Board::InitLevel() {
     mChallenge->InitLevel();
 }
 
-Reanimation *Board::CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder) {
+Reanimation *Board::CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder) const {
     Reanimation *aReanim = mApp->AddReanimation(theRakeX + 20, theRakeY, theRenderOrder, REANIM_RAKE);
     aReanim->mAnimRate = 0;
     aReanim->mLoopType = ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD;
@@ -1648,9 +1644,9 @@ void Board::FadeOutLevel() {
 
 void Board::DisplayAdvice(const SexyString &theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex) {
     if (theHelpIndex != AdviceType::ADVICE_NONE) {
-        if (mBoardData.mHelpDisplayed[theHelpIndex]) return;
+        if (IsHelpDisplayed(theHelpIndex)) return;
 
-        mBoardData.mHelpDisplayed[theHelpIndex] = true;
+        IsHelpDisplayed(theHelpIndex) = true;
     }
 
     mAdvice->SetLabel(theAdvice, theMessageStyle);
@@ -1660,7 +1656,7 @@ void Board::DisplayAdvice(const SexyString &theAdvice, MessageStyle theMessageSt
 // 0x40CA10
 void Board::DisplayAdviceAgain(const SexyString &theAdvice, MessageStyle theMessageStyle, AdviceType theHelpIndex) {
     if (theHelpIndex != AdviceType::ADVICE_NONE) {
-        mBoardData.mHelpDisplayed[theHelpIndex] = false;
+        IsHelpDisplayed(theHelpIndex) = false;
     }
     DisplayAdvice(theAdvice, theMessageStyle, theHelpIndex);
 }
@@ -1693,7 +1689,7 @@ Coin *Board::AddCoin(int theX, int theY, CoinType theCoinType, CoinMotion theCoi
 }
 
 // 0x40CCE0
-bool Board::IsPlantInCursor() {
+bool Board::IsPlantInCursor() const {
     return mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_BANK ||
            mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_USABLE_COIN ||
            mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE ||
@@ -1729,7 +1725,7 @@ void Board::RefreshSeedPacketFromCursor() {
 }
 
 // 0x40CE00
-bool Board::IsPoolSquare(int theGridX, int theGridY) {
+bool Board::IsPoolSquare(int theGridX, int theGridY) const {
     if (theGridX >= 0 && theGridY >= 0) {
         TOD_ASSERT(theGridX < MAX_GRID_SIZE_X && theGridY < MAX_GRID_SIZE_Y);
         return mBoardData.mGridSquareType[theGridX][theGridY] == GridSquareType::GRIDSQUARE_POOL;
@@ -2018,7 +2014,7 @@ bool Board::CanZombieSpawnOnLevel(ZombieType theZombieType, int theLevel) {
 }
 
 // 0x40D6F0
-ZombieType Board::GetIntroducedZombieType() {
+ZombieType Board::GetIntroducedZombieType() const {
     if (!mApp->IsAdventureMode() || mBoardData.mLevel == 1) {
         return ZombieType::ZOMBIE_INVALID;
     }
@@ -2240,7 +2236,7 @@ int Board::PickRowForNewZombie(ZombieType theZombieType) {
 }
 
 // 0x40DD90
-bool Board::CanAddBobSled() {
+bool Board::CanAddBobSled() const {
     for (int aRow = 0; aRow < MAX_GRID_SIZE_Y; aRow++) {
         if (mBoardData.mIceTimer[aRow] > 0 && mBoardData.mIceMinX[aRow] < 700) {
             return true;
@@ -2338,7 +2334,7 @@ PlantingReason Board::CanPlantAt(int theGridX, int theGridY, SeedType theSeedTyp
             aPlantOnLawn.mNormalPlant) {
             return PlantingReason::PLANTING_NOT_HERE;
         }
-        if (mApp->mZenGarden->mGardenType == GARDEN_AQUARIUM && !Plant::IsAquatic(theSeedType)) {
+        if (mApp->mZenGarden->mGardenType == GardenType::GARDEN_AQUARIUM && !Plant::IsAquatic(theSeedType)) {
             return PlantingReason::PLANTING_NOT_ON_WATER;
         }
 
@@ -2515,7 +2511,7 @@ void Board::UpdateCursor() {
     const int aMouseX = mApp->mWidgetManager->mLastMouseX - mX;
     const int aMouseY = mApp->mWidgetManager->mLastMouseY - mY;
     bool aShowFinger = false;
-    const bool aShowDrag = false;
+    constexpr bool aShowDrag = false;
     bool aHideCursor = false;
 
     if (mApp->mSeedChooserScreen && mApp->mSeedChooserScreen->Contains(aMouseX + mX, aMouseY + mY)) return;
@@ -3812,7 +3808,7 @@ void Board::MouseDown(int x, int y, int theClickCount) {
 
     const CursorType aCursor = mCursorObject->mCursorType;
     if (aHitResult.mObjectType == GameObjectType::OBJECT_TYPE_NONE) {
-        if (aCursor == CURSOR_TYPE_COBCANNON_TARGET) {
+        if (aCursor == CursorType::CURSOR_TYPE_COBCANNON_TARGET) {
             MouseDownCobcannonFire(x, y, theClickCount);
             UpdateCursor();
             return;
@@ -5891,7 +5887,7 @@ void Board::DrawZenButtons(Graphics *g) {
                 SexyString aChargeString = StrFormat(_S("x%d"), aCharges);
                 TodDrawString(
                     g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16,
-                    Color::White, DS_ALIGN_RIGHT
+                    Color::White, DrawStringJustification::DS_ALIGN_RIGHT
                 );
             } else if (aTool == GameObjectType::OBJECT_TYPE_BUG_SPRAY) {
                 const int aCharges = mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_BUG_SPRAY)] -
@@ -5908,7 +5904,7 @@ void Board::DrawZenButtons(Graphics *g) {
                 SexyString aChargeString = StrFormat(_S("x%d"), aCharges);
                 TodDrawString(
                     g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16,
-                    Color::White, DS_ALIGN_RIGHT
+                    Color::White, DrawStringJustification::DS_ALIGN_RIGHT
                 );
             } else if (aTool == GameObjectType::OBJECT_TYPE_PHONOGRAPH) {
                 g->DrawImage(Sexy::IMAGE_PHONOGRAPH, aButtonRect.mX + 2, aButtonRect.mY + aOffsetY + 2);
@@ -5925,7 +5921,7 @@ void Board::DrawZenButtons(Graphics *g) {
                 SexyString aChargeString = StrFormat(_S("x%d"), aCharges);
                 TodDrawString(
                     g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16,
-                    Color::White, DS_ALIGN_RIGHT
+                    Color::White, DrawStringJustification::DS_ALIGN_RIGHT
                 );
             } else if (aTool == GameObjectType::OBJECT_TYPE_GLOVE) {
                 if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE &&
@@ -5954,7 +5950,7 @@ void Board::DrawZenButtons(Graphics *g) {
                 SexyString aChargeString = StrFormat(_S("x%d"), aCharges);
                 TodDrawString(
                     g, aChargeString, aButtonRect.mX + 64, aButtonRect.mY + aOffsetY + 65, Sexy::FONT_HOUSEOFTERROR16,
-                    Color::White, DS_ALIGN_RIGHT
+                    Color::White, DrawStringJustification::DS_ALIGN_RIGHT
                 );
             }
         }
@@ -6217,7 +6213,7 @@ void Board::DrawFadeOut(Graphics *g) {
 // 0x419F60
 void Board::DrawTopRightUI(Graphics *g) {
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN) {
-        if (mChallenge->mChallengeState == STATECHALLENGE_ZEN_FADING) {
+        if (mChallenge->mChallengeState == ChallengeState::STATECHALLENGE_ZEN_FADING) {
             mMenuButton->mY =
                 TodAnimateCurve(50, 0, mChallenge->mChallengeStateCounter, -10, -50, TodCurves::CURVE_EASE_IN_OUT);
             mStoreButton->mX =
@@ -7949,7 +7945,7 @@ void Board::DropLootPiece(int thePosX, int thePosY, int theDropFactor) {
     }
 
     if (mApp->IsWhackAZombieLevel()) {
-        const int aSunChanceMin = 2500;
+        constexpr int aSunChanceMin = 2500;
         const int aSunChanceMax = mBoardData.mSunMoney > 500   ? 2800
                                   : mBoardData.mSunMoney > 350 ? 3100
                                   : mBoardData.mSunMoney > 200 ? 3700
@@ -8321,4 +8317,9 @@ bool Board::IsZombieTypeSpawnedOnly(ZombieType theZombieType) {
         theZombieType == ZombieType::ZOMBIE_BACKUP_DANCER || theZombieType == ZombieType::ZOMBIE_BOBSLED ||
         theZombieType == ZombieType::ZOMBIE_IMP
     );
+}
+
+bool &Board::IsHelpDisplayed(AdviceType theHelpIndex) {
+    TOD_ASSERT(theHelpIndex > AdviceType::ADVICE_NONE && theHelpIndex < AdviceType::NUM_ADVICE_TYPES);
+    return mBoardData.mHelpDisplayed[static_cast<int>(theHelpIndex)];
 }

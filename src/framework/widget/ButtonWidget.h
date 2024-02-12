@@ -43,11 +43,11 @@ public:
     double mOverAlphaSpeed;
     double mOverAlphaFadeInSpeed;
 
-    bool HaveButtonImage(const Image *theImage, const Rect &theRect);
+    static bool HaveButtonImage(const Image *theImage, const Rect &theRect);
     virtual void DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, int x, int y);
 
 public:
-    ButtonWidget(int theId, ButtonListener *theButtonListener);
+    ButtonWidget(const int theId, ButtonListener *theButtonListener);
     ~ButtonWidget() override;
 
     virtual void SetFont(_Font *theFont);

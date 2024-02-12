@@ -938,7 +938,8 @@ void Zombie::PickBungeeZombieTarget(int theColumn) {
     int aPickCount = 0;
 
     for (int x = 0; x < MAX_GRID_SIZE_X; x++) {
-        if (theColumn == -1 || theColumn == x) // 限制仅能在 theColumn 列寻找目标，除非 theColumn 为 -1
+        if (theColumn == -1 || theColumn == x)
+        // 限制仅能在 theColumn 列寻找目标，除非 theColumn 为 -1
         {
             for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
                 int aWeight = 1;
@@ -1279,7 +1280,8 @@ void Zombie::UpdateZombiePogo() {
 
     if (mZombiePhase == ZombiePhase::PHASE_POGO_HIGH_BOUNCE_1) {
         mZombiePhase = ZombiePhase::PHASE_POGO_FORWARD_BOUNCE_2;
-        mVelX = (mX - aPlant->mX + 60) / static_cast<float>(POGO_BOUNCE_TIME); // 速度 = 跳跃距离 / 跳跃时间
+        mVelX = (mX - aPlant->mX + 60) / static_cast<float>(POGO_BOUNCE_TIME);
+        // 速度 = 跳跃距离 / 跳跃时间
         mPhaseCounter = POGO_BOUNCE_TIME;
     } else {
         mZombiePhase = ZombiePhase::PHASE_POGO_HIGH_BOUNCE_1;
@@ -2890,7 +2892,7 @@ void Zombie::DropHead(unsigned int theDamageFlags) {
 
     mHasHead = false;
     SetupReanimForLostHead();
-    if (TestBit(theDamageFlags, DamageFlags::DAMAGE_DOESNT_LEAVE_BODY)) {
+    if (TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_DOESNT_LEAVE_BODY))) {
         return;
     }
 
@@ -3148,7 +3150,7 @@ void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags) {
         }
     }
 
-    if (!mInPool && !TestBit(theDamageFlags, DamageFlags::DAMAGE_DOESNT_LEAVE_BODY)) {
+    if (!mInPool && !TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_DOESNT_LEAVE_BODY))) {
         ParticleEffect aEffect = ParticleEffect::PARTICLE_ZOMBIE_ARM;
         if (mZombiePhase == ZombiePhase::PHASE_ZOMBIE_MOWERED) {
             aEffect = ParticleEffect::PARTICLE_MOWERED_ZOMBIE_ARM;
@@ -4431,8 +4433,8 @@ void Zombie::DrawBobsledReanim(Graphics *g, const ZombieDrawPosition &theDrawPos
             aDrawBack = true;
         }
     } else if (mZombiePhase == ZombiePhase::PHASE_BOBSLED_SLIDING || mZombiePhase == ZombiePhase::PHASE_ZOMBIE_BURNED) {
-        if (aPosition == 2 &&
-            theBeforeZombie) // 推行雪橇时或雪橇化为灰烬后，在绘制第 2 只僵尸之前绘制雪橇背面和雪橇正面
+        if (aPosition == 2 && theBeforeZombie)
+        // 推行雪橇时或雪橇化为灰烬后，在绘制第 2 只僵尸之前绘制雪橇背面和雪橇正面
         {
             aDrawFront = true;
             aDrawBack = true;
@@ -4935,7 +4937,8 @@ void Zombie::GetDrawPos(ZombieDrawPosition &theDrawPos) {
                 theDrawPos.mClipHeight = -mAltitude - 10.0f;
             }
         } else if (mZombiePhase == ZombiePhase::PHASE_DOLPHIN_RIDING) {
-            theDrawPos.mImageOffsetX += 70.0f; // 额外 70 像素的横坐标偏移用于弥补跳上海豚后的 mPosX -= 70.0f
+            theDrawPos.mImageOffsetX += 70.0f;
+            // 额外 70 像素的横坐标偏移用于弥补跳上海豚后的 mPosX -= 70.0f
 
             if (mZombieHeight == ZombieHeight::HEIGHT_DRAGGED_UNDER) {
                 theDrawPos.mClipHeight = -mAltitude - 15.0f;
@@ -5190,7 +5193,8 @@ bool Zombie::CanTargetPlant(Plant *thePlant, ZombieAttackType theAttackType) {
     if (thePlant->IsSpiky()) {
         return mZombieType == ZombieType::ZOMBIE_GARGANTUAR || mZombieType == ZombieType::ZOMBIE_REDEYE_GARGANTUAR ||
                mZombieType == ZombieType::ZOMBIE_ZAMBONI || mBoard->IsPoolSquare(thePlant->mPlantCol, thePlant->mRow) ||
-               mBoard->GetFlowerPotAt(thePlant->mPlantCol, thePlant->mRow); // 扶梯僵尸给花盆上的地刺/地刺王搭梯的原理
+               mBoard->GetFlowerPotAt(thePlant->mPlantCol, thePlant->mRow);
+        // 扶梯僵尸给花盆上的地刺/地刺王搭梯的原理
     }
 
     if (theAttackType == ZombieAttackType::ATTACKTYPE_DRIVE_OVER) {
@@ -5301,7 +5305,7 @@ void Zombie::SquishAllInSquare(int theX, int theY, ZombieAttackType theAttackTyp
 
 // 0x52E9A0
 void Zombie::ZamboniDeath(unsigned int theDamageFlags) {
-    if (TestBit(theDamageFlags, DamageFlags::DAMAGE_SPIKE)) {
+    if (TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_SPIKE))) {
         mFlatTires = true;
         mApp->PlayFoley(FoleyType::FOLEY_TIRE_POP);
         mZombiePhase = ZombiePhase::PHASE_ZOMBIE_DYING;
@@ -5332,7 +5336,7 @@ void Zombie::ZamboniDeath(unsigned int theDamageFlags) {
 
 // 0x52EC00
 void Zombie::CatapultDeath(unsigned int theDamageFlags) {
-    if (TestBit(theDamageFlags, DamageFlags::DAMAGE_SPIKE)) {
+    if (TestBit(theDamageFlags, static_cast<int>(DamageFlags::DAMAGE_SPIKE))) {
         mApp->PlayFoley(FoleyType::FOLEY_TIRE_POP);
         mZombiePhase = ZombiePhase::PHASE_ZOMBIE_DYING;
         mApp->AddTodParticle(mPosX + 29.0f, mPosY + 114.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_ZAMBONI_TIRE);
@@ -5517,15 +5521,14 @@ void Zombie::StartWalkAnim(int theBlendTime) {
         PlayZombieReanim("anim_ladderwalk", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
     } else if (mZombiePhase == ZombiePhase::PHASE_NEWSPAPER_MAD) {
         PlayZombieReanim("anim_walk_nopaper", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
-    }
-	else if (mInPool && mZombieHeight != ZombieHeight::HEIGHT_IN_TO_POOL && mZombieHeight !=
-		ZombieHeight::HEIGHT_OUT_OF_POOL && aBodyReanim->TrackExists("anim_swim"))
-	{
+    } else if (mInPool && mZombieHeight != ZombieHeight::HEIGHT_IN_TO_POOL &&
+               mZombieHeight !=
+               ZombieHeight::HEIGHT_OUT_OF_POOL && aBodyReanim->
+               TrackExists("anim_swim")) {
         PlayZombieReanim("anim_swim", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
-    }
-	else if ((mZombieType == ZombieType::ZOMBIE_NORMAL || mZombieType == ZombieType::ZOMBIE_TRAFFIC_CONE || mZombieType
-		== ZombieType::ZOMBIE_PAIL) && mBoard->mBoardData.mDanceMode)
-	{
+    } else if ((mZombieType == ZombieType::ZOMBIE_NORMAL || mZombieType ==
+                ZombieType::ZOMBIE_TRAFFIC_CONE || mZombieType
+                == ZombieType::ZOMBIE_PAIL) && mBoard->mBoardData.mDanceMode) {
         PlayZombieReanim("anim_dance", ReanimLoopType::REANIM_LOOP, theBlendTime, 0.0f);
     } else {
         int aWalkAnimVariant = Rand(2);
@@ -6021,8 +6024,8 @@ void Zombie::BungeeDropPlant() {
 void Zombie::BungeeDie() {
     BungeeDropPlant();
 
-    if (mBoard) // 原版没有这个判断，因为 mBoard 为空时 DataArrayTryToGet() 不会实际用到
-                // mBoard，此处为了确保安全就加上了这个判断
+    if (mBoard)
+    // 原版没有这个判断，因为 mBoard 为空时 DataArrayTryToGet() 不会实际用到 mBoard，此处为了确保安全就加上了这个判断
     {
         Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
         if (aPlant) {
@@ -8327,7 +8330,8 @@ void Zombie::UpdateBoss() {
         } else if (mBossStompCounter == 0) {
             BossStompAttack();
         } else if (mBossBungeeCounter == 0) {
-            if (Rand(mApp->IsAdventureMode() ? 4 : 2) == 0) // 1/2 概率砸车（冒险模式为 1/4 概率），否则释放蹦极僵尸
+            if (Rand(mApp->IsAdventureMode() ? 4 : 2) == 0)
+            // 1/2 概率砸车（冒险模式为 1/4 概率），否则释放蹦极僵尸
             {
                 mBossBungeeCounter = RandRangeInt(4000, 5000);
                 BossRVAttack();

@@ -31,7 +31,7 @@ int _Font::GetLineSpacing() { return mHeight + mLineSpacingOffset; }
 int _Font::StringWidth(const SexyString &) { return 0; }
 
 int _Font::CharWidth(SexyChar theChar) {
-    SexyString aString(1, theChar);
+    const SexyString aString(1, theChar);
     return StringWidth(aString);
 }
 

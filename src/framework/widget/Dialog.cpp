@@ -142,12 +142,12 @@ int Dialog::GetPreferredHeight(int theWidth) {
     int aHeight = mContentInsets.mTop + mContentInsets.mBottom + mBackgroundInsets.mTop + mBackgroundInsets.mBottom;
 
     bool needSpace = false;
-    if (mDialogHeader.length() > 0) {
+    if (!mDialogHeader.empty()) {
         aHeight += mHeaderFont->GetHeight() - mHeaderFont->GetAscentPadding();
         needSpace = true;
     }
 
-    if (mDialogLines.length() > 0) {
+    if (!mDialogLines.empty()) {
         if (needSpace) aHeight += mSpaceAfterHeader;
         Graphics g;
         g.SetFont(mLinesFont);
@@ -160,7 +160,7 @@ int Dialog::GetPreferredHeight(int theWidth) {
         needSpace = true;
     }
 
-    if ((mDialogFooter.length() != 0) && (mButtonMode != BUTTONS_FOOTER)) {
+    if ((!mDialogFooter.empty()) && (mButtonMode != BUTTONS_FOOTER)) {
         if (needSpace) aHeight += 8;
         aHeight += mHeaderFont->GetLineSpacing();
         needSpace = true;
@@ -196,7 +196,7 @@ void Dialog::Draw(Graphics *g) {
 
     int aCurY = mContentInsets.mTop + mBackgroundInsets.mTop;
 
-    if (mDialogHeader.length() > 0) {
+    if (!mDialogHeader.empty()) {
         aCurY += mHeaderFont->GetAscent() - mHeaderFont->GetAscentPadding();
 
         g->SetFont(mHeaderFont);
@@ -225,7 +225,7 @@ void Dialog::Draw(Graphics *g) {
     );
     aCurY += WriteWordWrapped(g, aRect, mDialogLines, mLinesFont->GetLineSpacing() + mLineSpacingOffset, mTextAlign);
 
-    if ((mDialogFooter.length() != 0) && (mButtonMode != BUTTONS_FOOTER)) {
+    if ((!mDialogFooter.empty()) && (mButtonMode != BUTTONS_FOOTER)) {
         aCurY += 8;
         aCurY += mHeaderFont->GetLineSpacing();
 
@@ -334,8 +334,7 @@ bool Dialog::IsModal() { return mIsModal; }
 int Dialog::WaitForResult(bool autoKill) {
     // gSexyAppBase->DoMainLoop(mId);
 
-    while ((gSexyAppBase->UpdateAppStep(nullptr)) && (mWidgetManager != nullptr) && (mResult == 0x7FFFFFFF))
-        ;
+    while ((gSexyAppBase->UpdateAppStep(nullptr)) && (mWidgetManager != nullptr) && (mResult == 0x7FFFFFFF)) {}
 
     if (autoKill) gSexyAppBase->KillDialog(mId);
 

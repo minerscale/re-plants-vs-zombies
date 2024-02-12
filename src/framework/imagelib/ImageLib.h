@@ -1,7 +1,6 @@
 #ifndef __IMAGELIB_H__
 #define __IMAGELIB_H__
 
-#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -24,10 +23,10 @@ public:
         : mWidth(width), mHeight(height), mBits(std::move(bits)) {}
 };
 
-bool WriteJPEGImage(const std::string &theFileName, Image *theImage);
-bool WritePNGImage(const std::string &theFileName, Image *theImage);
-bool WriteTGAImage(const std::string &theFileName, Image *theImage);
-bool WriteBMPImage(const std::string &theFileName, Image *theImage);
+bool WriteJPEGImage(const std::string &theFileName, const Image *theImage);
+bool WritePNGImage(const std::string &theFileName, const Image *theImage);
+bool WriteTGAImage(const std::string &theFileName, const Image *theImage);
+bool WriteBMPImage(const std::string &theFileName, const Image *theImage);
 extern int gAlphaComposeColor;
 extern bool gAutoLoadAlpha;
 extern bool gIgnoreJPEG2000Alpha;

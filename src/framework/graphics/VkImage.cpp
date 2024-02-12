@@ -19,7 +19,6 @@
 
 #include <avir.h>
 #include <avir_float4_sse.h>
-#include <avir_float8_avx.h>
 #include <lancir.h>
 
 namespace Vk {
@@ -97,7 +96,7 @@ VkDescriptorSet createDescriptorSet(VkImageView theView, VkSampler sampler) {
          }}
     };
 
-    std::array<VkWriteDescriptorSet, 2> descriptorWrites{
+    const std::array<VkWriteDescriptorSet, 2> descriptorWrites{
         {{
              VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
              nullptr,
@@ -137,7 +136,7 @@ VkFramebuffer createFramebuffer(VkImageView theView, int theWidth, int theHeight
     return ret;
 }
 
-std::atomic<int> imageBufferIdx = 0;
+std::atomic imageBufferIdx = 0;
 std::array<std::vector<deleteInfo>, NUM_IMAGE_SWAPS> deleteList;
 
 void deferredDelete(size_t idx) {
@@ -198,8 +197,8 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 
     endRenderPass();
 
-    VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                              VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+    constexpr VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                        VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 
     image = createImage(mWidth, mHeight, flags);
     memory = createImageMemory(image);
@@ -207,7 +206,7 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     framebuffer = createFramebuffer(view, mWidth, mHeight);
     descriptor = createDescriptorSet(view, textureSampler);
 
-    VkDeviceSize imageSize = mWidth * mHeight * SCALE * SCALE * sizeof(uint32_t);
+    const VkDeviceSize imageSize = mWidth * mHeight * SCALE * SCALE * sizeof(uint32_t);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -263,8 +262,8 @@ VkImage::VkImage(int width, int height, bool initialise, bool textureRepeat) {
 
     endRenderPass();
 
-    VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                              VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+    constexpr VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                        VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 
     image = createImage(mWidth, mHeight, flags);
     memory = createImageMemory(image);
@@ -280,11 +279,11 @@ VkImage::VkImage(int width, int height, bool initialise, bool textureRepeat) {
     if (initialise) {
         TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-        VkClearColorValue color = {
+        constexpr VkClearColorValue color = {
             .uint32{0, 0, 0, 0}
         };
 
-        VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+        constexpr VkImageSubresourceRange range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
         vkCmdClearColorImage(imageCommandBuffers[imageBufferIdx], image, layout, &color, 1, &range);
     }
@@ -319,7 +318,9 @@ constexpr auto accessMaskMap =
          }
 }>();
 
-void transitionImageLayouts(VkCommandBuffer commandBuffer, std::vector<std::pair<VkImage *, VkImageLayout>> images) {
+void transitionImageLayouts(
+    VkCommandBuffer commandBuffer, const std::vector<std::pair<VkImage *, VkImageLayout>> &images
+) {
     std::vector<VkImageMemoryBarrier> barriers;
 
     VkPipelineStageFlags srcStageMask{};
@@ -402,13 +403,13 @@ void VkImage::applyEffects(VkImage *theSrcImage, VkImage *theDestImage, FilterEf
 
     vkCmdBindPipeline(imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
 
-    std::array<VkDescriptorSet, 2> descriptorSetsToBind = {theSrcImage->descriptor, theDestImage->descriptor};
+    const std::array<VkDescriptorSet, 2> descriptorSetsToBind = {theSrcImage->descriptor, theDestImage->descriptor};
     vkCmdBindDescriptorSets(
         imageCommandBuffers[imageBufferIdx], VK_PIPELINE_BIND_POINT_COMPUTE, computePipelineLayout, 0, 2,
         descriptorSetsToBind.data(), 0, nullptr
     );
 
-    ComputePushConstants constants = {theFilterEffect};
+    const ComputePushConstants constants = {theFilterEffect};
 
     vkCmdPushConstants(
         imageCommandBuffers[imageBufferIdx], computePipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0,
@@ -436,10 +437,11 @@ std::unique_ptr<VkImage> VkImage::applyEffectsToNewImage(FilterEffect theFilterE
 }
 
 void VkImage::SetViewportAndScissor(const glm::vec4 &theClipRect) const {
-    VkViewport viewport = {0, 0, static_cast<float>(mWidth * SCALE), static_cast<float>(mHeight * SCALE), 0.0, 1.0};
+    const VkViewport viewport = {0,   0,  static_cast<float>(mWidth * SCALE), static_cast<float>(mHeight * SCALE),
+                                 0.0, 1.0};
     vkCmdSetViewport(imageCommandBuffers[imageBufferIdx], 0, 1, &viewport);
 
-    VkRect2D scissor = {
+    const VkRect2D scissor = {
         {static_cast<int32_t>(theClipRect.x * SCALE),  static_cast<int32_t>(theClipRect.y * SCALE) },
         {static_cast<uint32_t>(theClipRect.z * SCALE), static_cast<uint32_t>(theClipRect.w * SCALE)}
     };
@@ -459,8 +461,8 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
     otherCachedImage = otherImage;
     // otherLayoutSuboptimal = (otherImage->layout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    bool thisCacheMiss = (this != thisCachedImage);
-    bool drawModeMiss = (theDrawMode != cachedDrawMode);
+    const bool thisCacheMiss = (this != thisCachedImage);
+    const bool drawModeMiss = (theDrawMode != cachedDrawMode);
     cachedDrawMode = theDrawMode;
     thisCachedImage = this;
 
@@ -492,8 +494,8 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
         // Memory barriers prevent out of order frames, we always need them.
         std::vector<std::pair<VkImage *, VkImageLayout>> transitions;
         transitions.reserve(2);
-        transitions.push_back({this, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
-        transitions.push_back({otherImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL});
+        transitions.emplace_back(this, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+        transitions.emplace_back(otherImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         transitionImageLayouts(imageCommandBuffers[imageBufferIdx], transitions);
 
@@ -517,13 +519,13 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
     }
 }
 
-inline glm::vec4 RectToVec4(Rect a) { return glm::vec4(a.mX, a.mY, a.mWidth, a.mHeight); }
+inline glm::vec4 RectToVec4(Rect a) { return {a.mX, a.mY, a.mWidth, a.mHeight}; }
 
 inline constexpr glm::vec4 calcUVs(const glm::vec4 &theSrcRect, const glm::vec2 &extent) {
-    return glm::vec4(
+    return {
         (theSrcRect.x) / extent.x, (theSrcRect.y) / extent.y, (theSrcRect.x + theSrcRect.z) / extent.x,
         (theSrcRect.y + theSrcRect.w) / extent.y
-    );
+    };
 }
 
 constexpr inline std::array<glm::vec4, 4> generateVertices(glm::vec4 dr, glm::vec4 uv, glm::vec2 ex) {
@@ -551,12 +553,12 @@ void VkImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMo
         blankImage = std::make_unique<VkImage>(inputImage);
     }
 
-    Rect theSrcRect = {0, 0, 1, 1};
+    const Rect theSrcRect = {0, 0, 1, 1};
     StretchBlt(blankImage.get(), theRect, theSrcRect, theRect, theColor, theDrawMode, false);
 }
 
 void VkImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode) {
-    Rect theClipRect = {theX, theY, theSrcRect.mWidth, theSrcRect.mHeight};
+    const Rect theClipRect = {theX, theY, theSrcRect.mWidth, theSrcRect.mHeight};
 
     BltF(theImage, theX, theY, theSrcRect, theClipRect, theColor, theDrawMode);
 }
@@ -618,8 +620,8 @@ void VkImage::BltMatrix(
 }
 
 void VkImage::BltEx(
-    Image *theImage, const std::array<glm::vec4, 4> theVertices, const glm::vec4 &theClipRect, const Color &theColor,
-    int theDrawMode, bool blend
+    Image *theImage, const std::array<glm::vec4, 4> &theVertices, const glm::vec4 &theClipRect, const Color &theColor,
+    const int theDrawMode, bool blend
 ) {
     if (theClipRect.z <= 0 || theClipRect.w <= 0) return; // Can't draw regions with negative size.
     renderMutex.lock();
@@ -628,8 +630,8 @@ void VkImage::BltEx(
 
     SetViewportAndScissor(theClipRect);
 
-    SexyRGBA color = theColor.ToRGBA();
-    ImagePushConstants constants = {
+    const SexyRGBA color = theColor.ToRGBA();
+    const ImagePushConstants constants = {
         {theVertices[0], theVertices[1], theVertices[2], theVertices[3]},
         {color,          color,          color,          color         },
         true, blend

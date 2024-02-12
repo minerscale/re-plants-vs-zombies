@@ -495,7 +495,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                             theElement->mType = XMLElement::TYPE_END;
                         } else if ((c == L'?') && (theElement->mType == XMLElement::TYPE_START) && (theElement->mValue == _S(""))) {
                             theElement->mType = XMLElement::TYPE_INSTRUCTION;
-                        } else if (::isspace(static_cast<uchar>(c))) {
+                        } else if (::isspace(static_cast<uint8_t>(c))) {
                             if (theElement->mValue != _S("")) hasSpace = true;
 
                             // It's a comment!

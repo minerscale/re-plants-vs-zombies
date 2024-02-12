@@ -102,7 +102,7 @@ void MessageWidget::LayoutReanimText() {
     float aMaxWidth = 0;
     int aCurLine = 0, aCurPos = 0;
     _Font *aFont = GetFont();
-    const int aLabelLen = sexystrlen(mLabel);
+    const int aLabelLen = strlen(mLabel);
     mSlideOffTime = aLabelLen + 100;
 
     float aLineWidth[MAX_REANIM_LINES];
@@ -159,7 +159,7 @@ void MessageWidget::Update() {
         }
     }
 
-    const int aLabelLen = sexystrlen(mLabel);
+    const int aLabelLen = strlen(mLabel);
     // 以下遍历每个文字的动画，设置其动画速率并更新其动画
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
         Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
@@ -192,7 +192,7 @@ void MessageWidget::Update() {
 
 // 0x459710
 void MessageWidget::DrawReanimatedText(Graphics *g, const _Font *theFont, const Color &theColor, float thePosY) const {
-    const int aLabelLen = sexystrlen(mLabel);
+    const int aLabelLen = strlen(mLabel);
     for (int aPos = 0; aPos < aLabelLen; aPos++) {
         const Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {

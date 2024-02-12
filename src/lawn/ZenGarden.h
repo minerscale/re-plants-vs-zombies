@@ -111,11 +111,11 @@ public:
     void LeaveGarden();
     bool CanDropChocolate();
     void FeedChocolateToPlant(Plant *thePlant);
-    bool PlantHighOnChocolate(const PottedPlant *thePottedPlant);
+    static bool PlantHighOnChocolate(const PottedPlant *thePottedPlant);
     bool PlantCanHaveChocolate(const Plant *thePlant);
     void SetPlantAnimSpeed(const Plant *thePlant);
     void UpdateStinkyMotionTrail(GridItem *theStinky, bool theStinkyHighOnChocolate);
-    void ResetPlantTimers(PottedPlant *thePottedPlant);
+    static void ResetPlantTimers(PottedPlant *thePottedPlant);
     void ResetStinkyTimers();
     void UpdatePlantNeeds();
     static void RefreshPlantNeeds(PottedPlant *thePottedPlant);

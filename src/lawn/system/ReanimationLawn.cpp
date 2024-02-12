@@ -294,7 +294,7 @@ void ReanimatorCache::DrawCachedPlant(
     if (theDrawVariation != DrawVariation::VARIATION_NORMAL) {
         anImage = mImageVariationMap
                       .insert(std::pair(
-                          (static_cast<uint64_t>(theSeedType) << 32) | theDrawVariation,
+                          (static_cast<uint64_t>(theSeedType) << 32) | static_cast<int>(theDrawVariation),
                           // Place the seed type and drawVariation into same key.
                           MakeCachedPlantFrame(theSeedType, theDrawVariation)
                       ))

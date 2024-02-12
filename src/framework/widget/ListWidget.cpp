@@ -134,7 +134,7 @@ int ListWidget::AddLine(const SexyString &theLine, bool alphabetical) {
 
     if (alphabetical) {
         for (int i = 0; i < static_cast<int>(mLines.size()); i++)
-            if (sexystrcmp(theLine.c_str(), mLines[i].c_str()) < 0) {
+            if (strcmp(theLine.c_str(), mLines[i].c_str()) < 0) {
                 anIdx = i;
 
                 auto aListWidget = this;
@@ -190,7 +190,7 @@ int ListWidget::GetLineCount() { return mLines.size(); }
 
 int ListWidget::GetLineIdx(const SexyString &theLine) {
     for (ulong i = 0; i < mLines.size(); i++)
-        if (sexystrcmp(mLines[i].c_str(), theLine.c_str()) == 0) return i;
+        if (strcmp(mLines[i].c_str(), theLine.c_str()) == 0) return i;
 
     return -1;
 }

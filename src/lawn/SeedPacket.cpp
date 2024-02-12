@@ -33,9 +33,9 @@ SeedPacket::SeedPacket() {
 void SeedPacket::PickNextSlotMachineSeed() {
     const int aPeasCount = mBoard->CountPlantByType(SeedType::SEED_PEASHOOTER);
 
-    const SeedType SLOT_SEED_TYPES[] = {SeedType::SEED_SUNFLOWER,        SeedType::SEED_PEASHOOTER,
-                                        SeedType::SEED_SNOWPEA,          SeedType::SEED_WALLNUT,
-                                        SeedType::SEED_SLOT_MACHINE_SUN, SeedType::SEED_SLOT_MACHINE_DIAMOND};
+    constexpr SeedType SLOT_SEED_TYPES[] = {SeedType::SEED_SUNFLOWER,        SeedType::SEED_PEASHOOTER,
+                                            SeedType::SEED_SNOWPEA,          SeedType::SEED_WALLNUT,
+                                            SeedType::SEED_SLOT_MACHINE_SUN, SeedType::SEED_SLOT_MACHINE_DIAMOND};
 
     int aSeedsCount = 0;
     TodWeightedArray<SeedType> aSeedWeightArray[SeedType::NUM_SEED_TYPES];
@@ -481,7 +481,10 @@ void DrawSeedPacket(
         int aTextOffsetX = 32 - aTextFont->StringWidth(aCostStr);
         int aTextOffsetY = aTextFont->GetAscent() + 54;
         if (g->mScaleX == 1.0f && g->mScaleY == 1.0f) {
-            TodDrawString(g, aCostStr, x + aTextOffsetX, y + aTextOffsetY, aTextFont, Color::Black, DS_ALIGN_LEFT);
+            TodDrawString(
+                g, aCostStr, x + aTextOffsetX, y + aTextOffsetY, aTextFont, Color::Black,
+                DrawStringJustification::DS_ALIGN_LEFT
+            );
         } else {
             SexyMatrix3 aMatrix;
             TodScaleTransformMatrix(

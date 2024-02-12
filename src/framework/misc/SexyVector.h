@@ -1,11 +1,8 @@
 #ifndef __SEXYVECTOR_H__
 #define __SEXYVECTOR_H__
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/gtx/norm.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/vec3.hpp>
 #include <math.h>
 
 namespace Sexy {
@@ -66,7 +63,7 @@ public:
         return aMag != 0 ? (*this) / aMag : *this;
     }
 
-    SexyVector2 Perp() const { return SexyVector2(-y, x); }
+    SexyVector2 Perp() const { return {-y, x}; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,14 +87,12 @@ public:
 
     float Dot(const SexyVector3 &v) const { return x * v.x + y * v.y + z * v.z; }
 
-    SexyVector3 Cross(const SexyVector3 &v) const {
-        return SexyVector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
-    }
+    SexyVector3 Cross(const SexyVector3 &v) const { return {y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x}; }
 
-    SexyVector3 operator+(const SexyVector3 &v) const { return SexyVector3(x + v.x, y + v.y, z + v.z); }
-    SexyVector3 operator-(const SexyVector3 &v) const { return SexyVector3(x - v.x, y - v.y, z - v.z); }
-    SexyVector3 operator*(float t) const { return SexyVector3(t * x, t * y, t * z); }
-    SexyVector3 operator/(float t) const { return SexyVector3(x / t, y / t, z / t); }
+    SexyVector3 operator+(const SexyVector3 &v) const { return {x + v.x, y + v.y, z + v.z}; }
+    SexyVector3 operator-(const SexyVector3 &v) const { return {x - v.x, y - v.y, z - v.z}; }
+    SexyVector3 operator*(float t) const { return {t * x, t * y, t * z}; }
+    SexyVector3 operator/(float t) const { return {x / t, y / t, z / t}; }
     float Magnitude() const { return sqrtf(x * x + y * y + z * z); }
 
     SexyVector3 Normalize() const {

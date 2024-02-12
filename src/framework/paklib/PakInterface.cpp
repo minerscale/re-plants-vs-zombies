@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
-using uchar = unsigned char;
-using ushort = unsigned short;
+using uint8_t = unsigned char;
+using uint16_t = unsigned short;
 using ulong = unsigned long;
 
 enum { FILEFLAGS_END = 0x80 };
@@ -98,11 +98,11 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
     int aPos = 0;
 
     for (;;) {
-        uchar aFlags = 0;
+        uint8_t aFlags = 0;
         int aCount = FRead(&aFlags, 1, 1, aFP);
         if ((aFlags & FILEFLAGS_END) || (aCount == 0)) break;
 
-        uchar aNameWidth = 0;
+        uint8_t aNameWidth = 0;
         char aName[256];
         FRead(&aNameWidth, 1, 1, aFP);
         FRead(aName, 1, aNameWidth, aFP);
@@ -169,7 +169,7 @@ static void FixFileName(const char *theFileName, char *theUpperName) {
             aSrc++;
             // 此处将形如“a\b\..\c”的路径简化为“a\c”
         } else {
-            *(aDest++) = toupper(static_cast<uchar>(c));
+            *(aDest++) = toupper(static_cast<uint8_t>(c));
             if (c == 0) break;
             lastSlash = false;
         }
@@ -234,9 +234,9 @@ size_t PakInterface::FRead(void *thePtr, int theElemSize, int theCount, PFILE *t
         int aSizeBytes = std::min(theElemSize * theCount, theFile->mRecord->mSize - theFile->mPos);
 
         // 取得在整个 pak 中开始读取的位置的指针
-        uchar *src =
-            static_cast<uchar *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos + theFile->mPos;
-        auto dest = static_cast<uchar *>(thePtr);
+        uint8_t *src = static_cast<uint8_t *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
+                       theFile->mPos;
+        auto dest = static_cast<uint8_t *>(thePtr);
         for (int i = 0; i < aSizeBytes; i++)
             *(dest++) = (*src++) ^ 0xF7; // 'Decrypt'
         theFile->mPos += aSizeBytes;     // 读取完成后，移动当前读取位置的指针
@@ -253,7 +253,7 @@ int PakInterface::FGetC(PFILE *theFile) {
             char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
                            theFile->mPos++) ^
                          0xF7;
-            if (aChar != '\r') return static_cast<uchar>(aChar);
+            if (aChar != '\r') return static_cast<uint8_t>(aChar);
         }
     }
 

@@ -200,10 +200,10 @@ bool ResourceManager::ParseSoundResource(XMLElement &theElement) {
     }
 
     XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("volume"));
-    if (anItr != theElement.mAttributes.end()) sexysscanf(anItr->second.c_str(), _S("%lf"), &aRes->mVolume);
+    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%lf"), &aRes->mVolume);
 
     anItr = theElement.mAttributes.find(_S("pan"));
-    if (anItr != theElement.mAttributes.end()) sexysscanf(anItr->second.c_str(), _S("%d"), &aRes->mPanning);
+    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%d"), &aRes->mPanning);
 
     return true;
 }
@@ -215,7 +215,7 @@ static void ReadIntVector(const SexyString &theVal, std::vector<int> &theVector)
 
     std::string::size_type aPos = 0;
     while (true) {
-        theVector.push_back(sexyatoi(theVal.c_str() + aPos));
+        theVector.push_back(atoi(theVal.c_str() + aPos));
         aPos = theVal.find_first_of(_S(','), aPos);
         if (aPos == std::string::npos) break;
 
@@ -256,7 +256,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
 
     aRes->mAlphaColor = 0xFFFFFF;
     anItr = theElement.mAttributes.find(_S("alphacolor"));
-    if (anItr != theElement.mAttributes.end()) sexysscanf(anItr->second.c_str(), _S("%x"), &aRes->mAlphaColor);
+    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%x"), &aRes->mAlphaColor);
 
     anItr = theElement.mAttributes.find(_S("variant"));
     if (anItr != theElement.mAttributes.end()) aRes->mVariant = SexyStringToStringFast(anItr->second);
@@ -266,11 +266,11 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
         aRes->mAlphaGridImage = mDefaultPath + SexyStringToStringFast(anItr->second);
 
     anItr = theElement.mAttributes.find(_S("rows"));
-    if (anItr != theElement.mAttributes.end()) aRes->mRows = sexyatoi(anItr->second.c_str());
+    if (anItr != theElement.mAttributes.end()) aRes->mRows = atoi(anItr->second.c_str());
     else aRes->mRows = 1;
 
     anItr = theElement.mAttributes.find(_S("cols"));
-    if (anItr != theElement.mAttributes.end()) aRes->mCols = sexyatoi(anItr->second.c_str());
+    if (anItr != theElement.mAttributes.end()) aRes->mCols = atoi(anItr->second.c_str());
     else aRes->mCols = 1;
 
     anItr = theElement.mAttributes.find(_S("anim"));
@@ -278,10 +278,10 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
     if (anItr != theElement.mAttributes.end()) {
         const SexyChar *aType = anItr->second.c_str();
 
-        if (sexystricmp(aType, _S("none")) == 0) anAnimType = AnimType_None;
-        else if (sexystricmp(aType, _S("once")) == 0) anAnimType = AnimType_Once;
-        else if (sexystricmp(aType, _S("loop")) == 0) anAnimType = AnimType_Loop;
-        else if (sexystricmp(aType, _S("pingpong")) == 0) anAnimType = AnimType_PingPong;
+        if (strcasecmp(aType, _S("none")) == 0) anAnimType = AnimType_None;
+        else if (strcasecmp(aType, _S("once")) == 0) anAnimType = AnimType_Once;
+        else if (strcasecmp(aType, _S("loop")) == 0) anAnimType = AnimType_Loop;
+        else if (strcasecmp(aType, _S("pingpong")) == 0) anAnimType = AnimType_PingPong;
         else {
             Fail("Invalid animation type.");
             return false;
@@ -293,13 +293,13 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
         int aBeginDelay = 0, anEndDelay = 0;
 
         anItr = theElement.mAttributes.find(_S("framedelay"));
-        if (anItr != theElement.mAttributes.end()) aRes->mAnimInfo.mFrameDelay = sexyatoi(anItr->second.c_str());
+        if (anItr != theElement.mAttributes.end()) aRes->mAnimInfo.mFrameDelay = atoi(anItr->second.c_str());
 
         anItr = theElement.mAttributes.find(_S("begindelay"));
-        if (anItr != theElement.mAttributes.end()) aBeginDelay = sexyatoi(anItr->second.c_str());
+        if (anItr != theElement.mAttributes.end()) aBeginDelay = atoi(anItr->second.c_str());
 
         anItr = theElement.mAttributes.find(_S("enddelay"));
-        if (anItr != theElement.mAttributes.end()) anEndDelay = sexyatoi(anItr->second.c_str());
+        if (anItr != theElement.mAttributes.end()) anEndDelay = atoi(anItr->second.c_str());
 
         anItr = theElement.mAttributes.find(_S("perframedelay"));
         if (anItr != theElement.mAttributes.end()) ReadIntVector(anItr->second, aRes->mAnimInfo.mPerFrameDelay);
@@ -348,7 +348,7 @@ bool ResourceManager::ParseFontResource(XMLElement &theElement) {
         anItr = theElement.mAttributes.find(_S("size"));
         if (anItr == theElement.mAttributes.end()) return Fail("SysFont needs point size");
 
-        aRes->mSize = sexyatoi(anItr->second.c_str());
+        aRes->mSize = atoi(anItr->second.c_str());
         if (aRes->mSize <= 0) return Fail("SysFont needs point size");
 
         aRes->mBold = theElement.mAttributes.contains(_S("bold"));

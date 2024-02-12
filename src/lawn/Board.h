@@ -99,54 +99,55 @@ struct BungeeDropGrid {
 };
 
 struct BoardData {
-    bool mPaused;                                                        //+0x164
-    GridSquareType mGridSquareType[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];    //+0x168
-    int mGridCelLook[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];                  //+0x240
-    int mGridCelOffset[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y][2];             //+0x318
-    int mGridCelFog[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y + 1];               //+0x4C8
-    bool mEnableGraveStones;                                             //+0x5C4
-    int mSpecialGraveStoneX;                                             //+0x5C8
-    int mSpecialGraveStoneY;                                             //+0x5CC
-    float mFogOffset;                                                    //+0x5D0
-    int mFogBlownCountDown;                                              //+0x5D4
-    PlantRowType mPlantRow[MAX_GRID_SIZE_Y];                             //+0x5D8
-    int mWaveRowGotLawnMowered[MAX_GRID_SIZE_Y];                         //+0x5F0
-    int mBonusLawnMowersRemaining;                                       //+0x608
-    int mIceMinX[MAX_GRID_SIZE_Y];                                       //+0x60C
-    int mIceTimer[MAX_GRID_SIZE_Y];                                      //+0x624
-    ParticleSystemID mIceParticleID[MAX_GRID_SIZE_Y];                    //+0x63C
-    TodSmoothArray mRowPickingArray[MAX_GRID_SIZE_Y];                    //+0x654
-    ZombieType mZombiesInWave[MAX_ZOMBIE_WAVES][MAX_ZOMBIES_IN_WAVE];    //+0x6B4
-    bool mZombieAllowed[100];                                            //+0x54D4
-    int mSunCountDown;                                                   //+0x5538
-    int mNumSunsFallen;                                                  //+0x553C
-    int mShakeCounter;                                                   //+0x5540
-    int mShakeAmountX;                                                   //+0x5544
-    int mShakeAmountY;                                                   //+0x5548
-    BackgroundType mBackground;                                          //+0x554C
-    int mLevel;                                                          //+0x5550
-    int mSodPosition;                                                    //+0x5554
-    int mPrevMouseX;                                                     //+0x5558
-    int mPrevMouseY;                                                     //+0x555C
-    int mSunMoney;                                                       //+0x5560
-    int mNumWaves;                                                       //+0x5564
-    int mMainCounter;                                                    //+0x5568
-    int mEffectCounter;                                                  //+0x556C
-    int mDrawCount;                                                      //+0x5570
-    int mRiseFromGraveCounter;                                           //+0x5574
-    int mOutOfMoneyCounter;                                              //+0x5578
-    int mCurrentWave;                                                    //+0x557C
-    int mTotalSpawnedWaves;                                              //+0x5580
-    TutorialState mTutorialState;                                        //+0x5584
-    ParticleSystemID mTutorialParticleID;                                //+0x5588
-    int mTutorialTimer;                                                  //+0x558C
-    int mLastBungeeWave;                                                 //+0x5590
-    int mZombieHealthToNextWave;                                         //+0x5594
-    int mZombieHealthWaveStart;                                          //+0x5598
-    int mZombieCountDown;                                                //+0x559C
-    int mZombieCountDownStart;                                           //+0x55A0
-    int mHugeWaveCountDown;                                              //+0x55A4
-    bool mHelpDisplayed[NUM_ADVICE_TYPES];                               //+0x55A8
+    bool mPaused;                                                     //+0x164
+    GridSquareType mGridSquareType[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y]; //+0x168
+    int mGridCelLook[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y];               //+0x240
+    int mGridCelOffset[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y][2];          //+0x318
+    int mGridCelFog[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y + 1];            //+0x4C8
+    bool mEnableGraveStones;                                          //+0x5C4
+    int mSpecialGraveStoneX;                                          //+0x5C8
+    int mSpecialGraveStoneY;                                          //+0x5CC
+    float mFogOffset;                                                 //+0x5D0
+    int mFogBlownCountDown;                                           //+0x5D4
+    PlantRowType mPlantRow[MAX_GRID_SIZE_Y];                          //+0x5D8
+    int mWaveRowGotLawnMowered[MAX_GRID_SIZE_Y];                      //+0x5F0
+    int mBonusLawnMowersRemaining;                                    //+0x608
+    int mIceMinX[MAX_GRID_SIZE_Y];                                    //+0x60C
+    int mIceTimer[MAX_GRID_SIZE_Y];                                   //+0x624
+    ParticleSystemID mIceParticleID[MAX_GRID_SIZE_Y];                 //+0x63C
+    TodSmoothArray mRowPickingArray[MAX_GRID_SIZE_Y];                 //+0x654
+    ZombieType mZombiesInWave[MAX_ZOMBIE_WAVES][MAX_ZOMBIES_IN_WAVE]; //+0x6B4
+    bool mZombieAllowed[100];                                         //+0x54D4
+    int mSunCountDown;                                                //+0x5538
+    int mNumSunsFallen;                                               //+0x553C
+    int mShakeCounter;                                                //+0x5540
+    int mShakeAmountX;                                                //+0x5544
+    int mShakeAmountY;                                                //+0x5548
+    BackgroundType mBackground;                                       //+0x554C
+    int mLevel;                                                       //+0x5550
+    int mSodPosition;                                                 //+0x5554
+    int mPrevMouseX;                                                  //+0x5558
+    int mPrevMouseY;                                                  //+0x555C
+    int mSunMoney;                                                    //+0x5560
+    int mNumWaves;                                                    //+0x5564
+    int mMainCounter;                                                 //+0x5568
+    int mEffectCounter;                                               //+0x556C
+    int mDrawCount;                                                   //+0x5570
+    int mRiseFromGraveCounter;                                        //+0x5574
+    int mOutOfMoneyCounter;                                           //+0x5578
+    int mCurrentWave;                                                 //+0x557C
+    int mTotalSpawnedWaves;                                           //+0x5580
+    TutorialState mTutorialState;                                     //+0x5584
+    ParticleSystemID mTutorialParticleID;                             //+0x5588
+    int mTutorialTimer;                                               //+0x558C
+    int mLastBungeeWave;                                              //+0x5590
+    int mZombieHealthToNextWave;                                      //+0x5594
+    int mZombieHealthWaveStart;                                       //+0x5598
+    int mZombieCountDown;                                             //+0x559C
+    int mZombieCountDownStart;                                        //+0x55A0
+    int mHugeWaveCountDown;                                           //+0x55A4
+    bool mHelpDisplayed[static_cast<size_t>(AdviceType::NUM_ADVICE_TYPES)];
+    //+0x55A8
     AdviceType mHelpIndex;                                               //+0x55EC
     bool mFinalBossKilled;                                               //+0x55F0
     bool mShowShovel;                                                    //+0x55F1
@@ -224,7 +225,7 @@ public:
     _Font *mDebugFont;                  //+0x158
     CutScene *mCutScene;                //+0x15C
     Challenge *mChallenge;              //+0x160
-    BoardData mBoardData;               //+0x164-0x57AC
+    BoardData mBoardData{};             //+0x164-0x57AC
 
 public:
     Board(LawnApp *theApp);
@@ -299,7 +300,7 @@ public:
 
     void TryToSaveGame();
     /*inline*/
-    bool NeedSaveGame();
+    bool NeedSaveGame() const;
     /*inline*/
     bool RowCanHaveZombies(int theRow);
     void ProcessDeleteQueue();
@@ -372,7 +373,7 @@ public:
     /*inline*/
     static int GetIceZPos(int theRow);
     /*inline*/
-    bool CanAddBobSled();
+    bool CanAddBobSled() const;
     /*inline*/
     void ShakeBoard(int theShakeAmountX, int theShakeAmountY);
     int CountUntriggerLawnMowers();
@@ -387,7 +388,7 @@ public:
     /*inline*/
     Zombie *AddZombieInRow(ZombieType theZombieType, int theRow, int theFromWave);
     /*inline*/
-    bool IsPoolSquare(int theGridX, int theGridY);
+    bool IsPoolSquare(int theGridX, int theGridY) const;
     void PickZombieWaves();
     void StopAllZombieSounds();
     /*inline*/
@@ -400,7 +401,7 @@ public:
     Plant *GetPumpkinAt(int theGridX, int theGridY);
     Plant *GetFlowerPotAt(int theGridX, int theGridY);
     static bool CanZombieSpawnOnLevel(ZombieType theZombieType, int theLevel);
-    bool IsZombieWaveDistributionOk();
+    bool IsZombieWaveDistributionOk() const;
     void PickBackground();
     void InitZombieWaves();
     void InitSurvivalStage();
@@ -418,7 +419,7 @@ public:
     void UpdateLevelEndSequence();
     LawnMower *GetBottomLawnMower();
     bool CanDropLoot();
-    ZombieType GetIntroducedZombieType();
+    ZombieType GetIntroducedZombieType() const;
     void PickSpecialGraveStone();
     float GetPosYBasedOnRow(float thePosX, int theRow);
     void NextWaveComing();
@@ -473,7 +474,7 @@ public:
     void TutorialArrowRemove();
     int CountCoinsBeingCollected();
     void BungeeDropZombie(const BungeeDropGrid *theBungeeDropGrid, ZombieType theZombieType);
-    void SetupBungeeDrop(BungeeDropGrid *theBungeeDropGrid);
+    static void SetupBungeeDrop(BungeeDropGrid *theBungeeDropGrid);
     /*inline*/
     void PutZombieInWave(ZombieType theZombieType, int theWaveNumber, ZombiePicker *theZombiePicker);
     /*inline*/
@@ -488,7 +489,7 @@ public:
     int GetLiveGargantuarCount(); // @Patoke: implemented
     /*inline*/
     int GetNumWavesPerSurvivalStage();
-    int GetLevelRandSeed();
+    int GetLevelRandSeed() const;
     void AddBossRenderItem(RenderItem *theRenderList, int &theCurRenderItem, Zombie *theBossZombie);
     /*inline*/
     GridItem *GetCraterAt(int theGridX, int theGridY);
@@ -502,7 +503,7 @@ public:
     GridItem *AddACrater(int theGridX, int theGridY);
     void InitLawnMowers();
     /*inline*/
-    bool IsPlantInCursor();
+    bool IsPlantInCursor() const;
     void HighlightPlantsForMouse(int theMouseX, int theMouseY);
     void ClearFogAroundPlant(const Plant *thePlant, int theSize);
     /*inline*/
@@ -534,12 +535,12 @@ public:
     /*inline*/
     bool IsLastStandFinalStage();
     /*inline*/
-    int GetNumWavesPerFlag();
+    int GetNumWavesPerFlag() const;
     int GetCurrentPlantCost(SeedType theSeedType, SeedType theImitaterType);
     /*inline*/
     bool PlantUsesAcceleratedPricing(SeedType theSeedType);
     void FreezeEffectsForCutscene(bool theFreeze);
-    void LoadBackgroundImages();
+    void LoadBackgroundImages() const;
     bool CanUseGameObject(GameObjectType theGameObject);
     void SetMustacheMode(bool theEnableMustache);
     int CountCoinByType(CoinType theCoinType);
@@ -556,7 +557,7 @@ public:
     bool MouseHitTestPlant(int x, int y, HitResult *theHitResult);
 
     /*inline*/
-    Reanimation *CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder);
+    Reanimation *CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder) const;
     void CompleteEndLevelSequenceForSaving();
     void RemoveZombiesForRepick();
     int GetGraveStonesCount();
@@ -567,6 +568,9 @@ public:
     void DoTypingCheck(KeyCode theKey);
     int CountZombieByType(ZombieType theZombieType);
     static /*inline*/ bool IsZombieTypeSpawnedOnly(ZombieType theZombieType);
+
+    // Array accessor for enum class
+    bool &IsHelpDisplayed(AdviceType theHelpIndex);
 };
 
 extern bool gShownMoreSunTutorial;

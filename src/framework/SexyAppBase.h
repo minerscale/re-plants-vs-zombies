@@ -137,7 +137,7 @@ public:
     UINT mNotifyGameMessage;
     //	CritSect				mCritSect;
     bool mBetaValidate;
-    uchar mAdd8BitMaxTable[512];
+    uint8_t mAdd8BitMaxTable[512];
     WidgetManager *mWidgetManager;
     DialogMap mDialogMap;
     DialogList mDialogList;
@@ -348,7 +348,7 @@ protected:
     );
     //	bool					RegistryReadKey(const std::string& theValueName, uint32_t &theType, std::vector<uint8_t>
     //&theValue, uint32_t &theLength);
-    bool RegistryWrite(const std::string &theValueName, uint32_t theType, const uchar *theValue, uint32_t theLength);
+    bool RegistryWrite(const std::string &theValueName, uint32_t theType, const uint8_t *theValue, uint32_t theLength);
 
     // Demo recording helpers
     void ProcessDemo();
@@ -546,7 +546,7 @@ public:
     bool RegistryWriteString(const std::string &theValueName, const std::string &theString);
     bool RegistryWriteInteger(const std::string &theValueName, int theValue);
     bool RegistryWriteBoolean(const std::string &theValueName, bool theValue);
-    bool RegistryWriteData(const std::string &theValueName, const uchar *theValue, ulong theLength);
+    bool RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, ulong theLength);
     bool RegistryEraseKey(const SexyString &theKeyName);
     void RegistryEraseValue(const SexyString &theValueName);
 

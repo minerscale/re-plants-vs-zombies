@@ -48,8 +48,8 @@
 
 using namespace Sexy;
 
-const int DEMO_FILE_ID = 0x42BEEF78;
-const int DEMO_VERSION = 2;
+constexpr int DEMO_FILE_ID = 0x42BEEF78;
+constexpr int DEMO_VERSION = 2;
 
 SexyAppBase *Sexy::gSexyAppBase = nullptr;
 
@@ -524,7 +524,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
     fread(&mRandSeed, 4, 1, aFP);
     SRand(mRandSeed);
 
-    ushort aStrLen = 4;
+    uint16_t aStrLen = 4;
     fread(&aStrLen, 2, 1, aFP);
     if (aStrLen > 255) aStrLen = 255;
     char aStr[256];
@@ -545,7 +545,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
     int aBytesLeft = ftell(aFP) - aFilePos;
     fseek(aFP, aFilePos, SEEK_SET);
 
-    uchar *aBuffer;
+    uint8_t *aBuffer;
     // read marker list
     if (aVersion >= 2) {
         int aSize;
@@ -559,7 +559,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
 
         Buffer aMarkerBuffer;
 
-        aBuffer = new uchar[aSize];
+        aBuffer = new uint8_t[aSize];
         fread(aBuffer, 1, aSize, aFP);
         aMarkerBuffer.WriteBytes(aBuffer, aSize);
         aMarkerBuffer.SeekFront();
@@ -592,7 +592,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
         return false;
     }
 
-    aBuffer = new uchar[aBytesLeft];
+    aBuffer = new uint8_t[aBytesLeft];
     fread(aBuffer, 1, aBytesLeft, aFP);
 
     mDemoBuffer.WriteBytes(aBuffer, aBytesLeft);
@@ -617,7 +617,7 @@ void SexyAppBase::WriteDemoBuffer() {
 
             unreachable();
             /* FIXME
-            ushort aStrLen = mProductVersion.length();
+            uint16_t aStrLen = mProductVersion.length();
             fwrite(&aStrLen, 2, 1, aFP);
             fwrite(mProductVersion.c_str(), 1, mProductVersion.length(), aFP);*/
 
@@ -660,7 +660,7 @@ void SexyAppBase::DemoSyncBuffer(Buffer *theBuffer) {
         mDemoBuffer.WriteNumBits(0, 1);
         mDemoBuffer.WriteNumBits(DEMO_SYNC, 5);
         mDemoBuffer.WriteLong(theBuffer->GetDataLen());
-        mDemoBuffer.WriteBytes((uchar *)theBuffer->GetDataPtr(), theBuffer->GetDataLen());
+        mDemoBuffer.WriteBytes((uint8_t *)theBuffer->GetDataPtr(), theBuffer->GetDataLen());
     }
 }
 
@@ -990,10 +990,10 @@ std::string SexyAppBase::GetProductVersion(const std::string & /*thePath*/) {
     // Get Product Version
     std::string aProductVersion;
 
-    uint aSize = aGetFileVersionInfoSizeFunc((char*) thePath.c_str(), 0);
+    uint32_t aSize = aGetFileVersionInfoSizeFunc((char*) thePath.c_str(), 0);
     if (aSize > 0)
     {
-        uchar* aVersionBuffer = new uchar[aSize];
+        uint8_t* aVersionBuffer = new uint8_t[aSize];
         aGetFileVersionInfoFunc((char*) thePath.c_str(), 0, aSize, aVersionBuffer);
         char* aBuffer;
         if (aVerQueryValueFunc(aVersionBuffer,
@@ -1381,7 +1381,7 @@ double SexyAppBase::GetLoadingThreadProgress() {
 }
 
 bool SexyAppBase::RegistryWrite(
-    const std::string &theValueName, uint32_t theType, const uchar *theValue, uint32_t theLength
+    const std::string &theValueName, uint32_t theType, const uint8_t *theValue, uint32_t theLength
 ) {
     if (mRegKey.length() == 0) return false;
 
@@ -1423,20 +1423,20 @@ bool SexyAppBase::RegistryWrite(
 }
 
 bool SexyAppBase::RegistryWriteString(const std::string &theValueName, const std::string &theString) {
-    return RegistryWrite(theValueName, REG_SZ, (uchar *)theString.c_str(), theString.length());
+    return RegistryWrite(theValueName, REG_SZ, (uint8_t *)theString.c_str(), theString.length());
 }
 
 bool SexyAppBase::RegistryWriteInteger(const std::string &theValueName, int theValue) {
-    return RegistryWrite(theValueName, REG_DWORD, (uchar *)&theValue, sizeof(int));
+    return RegistryWrite(theValueName, REG_DWORD, (uint8_t *)&theValue, sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteBoolean(const std::string &theValueName, bool theValue) {
     int aValue = theValue ? 1 : 0;
-    return RegistryWrite(theValueName, REG_DWORD, (uchar *)&aValue, sizeof(int));
+    return RegistryWrite(theValueName, REG_DWORD, (uint8_t *)&aValue, sizeof(int));
 }
 
-bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uchar *theValue, ulong theLength) {
-    return RegistryWrite(theValueName, REG_BINARY, (uchar *)theValue, theLength);
+bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, ulong theLength) {
+    return RegistryWrite(theValueName, REG_BINARY, (uint8_t *)theValue, theLength);
 }
 
 void SexyAppBase::WriteToRegistry() {
@@ -1843,7 +1843,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string &theFileName, Buffer *the
         int aFileSize = p_ftell(aFP);
         p_fseek(aFP, 0, SEEK_SET);
 
-        auto aData = new uchar[aFileSize];
+        auto aData = new uint8_t[aFileSize];
 
         p_fread(aData, 1, aFileSize, aFP);
         p_fclose(aFP);
@@ -2393,7 +2393,7 @@ void SexyAppBase::EndPopup() {
     if (mWidgetManager->mDownButtons) {
         mWidgetManager->DoMouseUps();
         unreachable(); // TODO
-                       // ReleaseCapture();
+        // ReleaseCapture();
     }
 }
 
@@ -2667,7 +2667,7 @@ static INT_PTR CALLBACK JumpToTimeDialogProc(HWND hwnd, UINT msg, WPARAM wParam,
                 char aBuf[1024];
                 DWORD aLength = 1000;
                 DWORD aType = REG_SZ;
-                if (RegQueryValueExA(aGameKey, "DemoJumpTime", 0, &aType, (uchar*) aBuf, &aLength) == ERROR_SUCCESS)
+                if (RegQueryValueExA(aGameKey, "DemoJumpTime", 0, &aType, (uint8_t*) aBuf, &aLength) == ERROR_SUCCESS)
                 {
                     aBuf[aLength] = 0;
                     SetWindowTextA(anEdit,aBuf);
@@ -3104,7 +3104,7 @@ LRESULT CALLBACK SexyAppBase::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 							break;
 					}
 				}
-					
+
 				break;
 			}*/
 
@@ -5024,7 +5024,8 @@ void SexyAppBase::DoParseCmdLine(int argc, char *argv[]) {
 
     // something to parse?
     if (argc > 1) {
-        std::string aCmdLine{}; // Create a space seprated list of command line arguments
+        std::string aCmdLine{};
+        // Create a space seprated list of command line arguments
 
         aCmdLine.append(argv[1]);
         for (int i = 2; i < argc; ++i) {
@@ -5679,7 +5680,7 @@ DDImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
         aDestBits = anImage->mColorTable = new ulong[256];
         aNumColors = 256;
 
-        anImage->mColorIndices = new uchar[anImage->mWidth*theImage->mHeight];
+        anImage->mColorIndices = new uint8_t[anImage->mWidth*theImage->mHeight];
         memcpy(anImage->mColorIndices, aSrcMemoryImage->mColorIndices, anImage->mWidth*theImage->mHeight);
     }
 
@@ -6081,7 +6082,7 @@ void SexyAppBase::DemoSyncRefreshRate() {
         mDemoBuffer.WriteNumBits(0, 1);
         mDemoBuffer.WriteNumBits(DEMO_VIDEO_DATA, 5);
         mDemoBuffer.WriteBoolean(mIsWindowed);
-        uchar aByte = static_cast<uchar>(mSyncRefreshRate);
+        uint8_t aByte = static_cast<uint8_t>(mSyncRefreshRate);
         mDemoBuffer.WriteByte(aByte);
     }
 }

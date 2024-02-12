@@ -219,7 +219,7 @@ void LawnMower::Draw(Graphics *g) const {
         mMowerHeight != MowerHeight::MOWER_HEIGHT_DOWN_TO_POOL && mMowerHeight != MowerHeight::MOWER_HEIGHT_IN_POOL &&
         mMowerState != LawnMowerState::MOWER_SQUISHED) {
         int aShadowType = 0;
-        const float aScaleX = 1.0f;
+        constexpr float aScaleX = 1.0f;
         float aScaleY = 1.0f;
         if (mBoard->StageIsNight()) {
             aShadowType = 1;

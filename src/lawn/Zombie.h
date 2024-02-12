@@ -407,7 +407,7 @@ public:
     const SexyChar *mZombieName;
 };
 
-extern ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES]; // 0x69DA80
+extern ZombieDefinition gZombieDefs[ZombieType::NUM_ZOMBIE_TYPES]; // 0x69DA80
 
 /*inline*/
 ZombieDefinition &GetZombieDefinition(ZombieType theZombieType);

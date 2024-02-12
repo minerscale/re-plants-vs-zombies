@@ -16,8 +16,8 @@
 #include "zlib.h"
 
 static const char *FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
-static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;
-static const unsigned int SAVE_FILE_VERSION = 2U;
+static constexpr unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;
+static constexpr unsigned int SAVE_FILE_VERSION = 2U;
 static unsigned int SAVE_FILE_DATE = crc32(0, (Bytef *)FILE_COMPILE_TIME_STRING, strlen(FILE_COMPILE_TIME_STRING));
 //[0x6AA7EC]
 
@@ -42,10 +42,10 @@ void SaveGameContext::SyncBytes(void *theDest, int theReadSize) {
         if (mFailed) {
             memset(theDest, 0, theReadSize);
         } else {
-            mBuffer.ReadBytes(static_cast<uchar *>(theDest), theReadSize);
+            mBuffer.ReadBytes(static_cast<uint8_t *>(theDest), theReadSize);
         }
     } else {
-        mBuffer.WriteBytes(static_cast<uchar *>(theDest), theReadSize);
+        mBuffer.WriteBytes(static_cast<uint8_t *>(theDest), theReadSize);
     }
 }
 

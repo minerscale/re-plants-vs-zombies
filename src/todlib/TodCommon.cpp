@@ -340,11 +340,6 @@ int TodAnimateCurve(
     );
 }
 
-int RandRangeInt(int theMin, int theMax) {
-    TOD_ASSERT(theMin <= theMax);
-    return Rand(theMax - theMin + 1) + theMin;
-}
-
 // 0x511CB0
 float RandRangeFloat(float theMin, float theMax) {
     TOD_ASSERT(theMin <= theMax);
@@ -415,7 +410,7 @@ void TodDrawStringMatrix(
         }
 
         int aMaxXPos = aCurXPos;
-        for (auto aKernItr = aFont->mActiveLayerList.begin(); aKernItr != aFont->mActiveLayerList.end(); aKernItr++) {
+        for (auto aKernItr = aFont->mActiveLayerList.begin(); aKernItr != aFont->mActiveLayerList.end(); ++aKernItr) {
             FontLayer *aLayer = aKernItr->mBaseFontLayer;
             CharData *aCharData = aLayer->GetCharData(aChar);
             double aScale = aFont->mScale;
@@ -488,8 +483,8 @@ void TodDrawStringMatrix(
         aCurXPos = aMaxXPos;
     }
 
-    for (auto aRenderCommand : aRenderCommandPool) {
-        RenderCommand &cmd = aRenderCommand.second;
+    for (auto val : aRenderCommandPool | std::views::values) {
+        RenderCommand &cmd = val;
 
         int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
         if (cmd.mImage) {
@@ -595,8 +590,8 @@ void TodBltMatrix(
     // float aOffsetY = 0.0f;
     // if (gSexyAppBase->Is3DAccelerated())
     //{
-    const float aOffsetX = 0.0;
-    const float aOffsetY = 0.0;
+    constexpr float aOffsetX = 0.0;
+    constexpr float aOffsetY = 0.0;
     //}
     /*
     else if (theDrawMode == Graphics::DRAWMODE_ADDITIVE)
@@ -962,7 +957,7 @@ bool TodResourceManager::TodLoadNextResource() {
         case ResType_Image: {
             const ImageRes *anImageRes = static_cast<ImageRes *>(aRes);
             if (anImageRes->mImage != nullptr) {
-                mCurResGroupListItr++;
+                ++mCurResGroupListItr;
                 continue;
             }
 
@@ -972,7 +967,7 @@ bool TodResourceManager::TodLoadNextResource() {
         case ResType_Sound: {
             const SoundRes *aSoundRes = static_cast<SoundRes *>(aRes);
             if (aSoundRes->mSoundId != -1) {
-                mCurResGroupListItr++;
+                ++mCurResGroupListItr;
                 continue;
             }
 
@@ -982,7 +977,7 @@ bool TodResourceManager::TodLoadNextResource() {
         case ResType_Font: {
             const FontRes *aFontRes = static_cast<FontRes *>(aRes);
             if (aFontRes->mFont != nullptr) {
-                mCurResGroupListItr++;
+                ++mCurResGroupListItr;
                 continue;
             }
 
@@ -1011,7 +1006,7 @@ bool TodFindFontPath(_Font *theFont, std::string *thePath) {
 }
 
 bool TodResourceManager::FindFontPath(const _Font *theFont, std::string *thePath) {
-    for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++) {
+    for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); ++anItr) {
         const FontRes *aFontRes = static_cast<FontRes *>(anItr->second);
         const _Font *aFont = aFontRes->mFont;
         if (aFont == theFont) {
@@ -1023,7 +1018,7 @@ bool TodResourceManager::FindFontPath(const _Font *theFont, std::string *thePath
 }
 
 bool TodResourceManager::FindImagePath(const Image *theImage, std::string *thePath) {
-    for (auto anItr = mImageMap.begin(); anItr != mImageMap.end(); anItr++) {
+    for (auto anItr = mImageMap.begin(); anItr != mImageMap.end(); ++anItr) {
         const ImageRes *aImageRes = static_cast<ImageRes *>(anItr->second);
         const Image *aImage = (Image *)aImageRes->mImage;
         if (aImage == theImage) {

@@ -73,8 +73,8 @@ public:
 
 protected:
     int GetWidgetFlags() const;
-    void MouseEnter(Widget *theWidget);
-    void MouseLeave(Widget *theWidget);
+    static void MouseEnter(Widget *theWidget);
+    static void MouseLeave(Widget *theWidget);
 
 protected:
     void SetBaseModal(Widget *theWidget, const FlagsMod &theBelowFlagsMod);
@@ -83,7 +83,7 @@ public:
     WidgetManager(SexyAppBase *theApplet);
     ~WidgetManager() override;
 
-    void FreeResources();
+    static void FreeResources();
     void AddBaseModal(Widget *theWidget, const FlagsMod &theBelowFlagsMod);
     void AddBaseModal(Widget *theWidget);
     void RemoveBaseModal(Widget *theWidget);
@@ -96,7 +96,7 @@ public:
     void LostFocus();
     void InitModalFlags(ModalFlags *theModalFlags);
     void DrawWidgetsTo(Graphics *g);
-    void DoMouseUps(Widget *theWidget, ulong theDownCode);
+    void DoMouseUps(Widget *theWidget, ulong theDownCode) const;
     void DoMouseUps();
     void DeferOverlay(Widget *theWidget, int thePriority);
     void FlushDeferredOverlayWidgets(int theMaxPriority);
@@ -108,7 +108,7 @@ public:
     void RemovePopupCommandWidget();
     void MousePosition(int x, int y);
     void RehupMouse();
-    void RemapMouse(int &theX, int &theY);
+    void RemapMouse(int &theX, int &theY) const;
     bool MouseUp(int x, int y, int theClickCount);
     bool MouseDown(int x, int y, int theClickCount);
     bool MouseMove(int x, int y);
@@ -119,9 +119,9 @@ public:
     bool KeyDown(KeyCode key);
     bool KeyUp(KeyCode key);
 
-    bool IsLeftButtonDown();
-    bool IsMiddleButtonDown();
-    bool IsRightButtonDown();
+    bool IsLeftButtonDown() const;
+    bool IsMiddleButtonDown() const;
+    bool IsRightButtonDown() const;
 };
 } // namespace Sexy
 

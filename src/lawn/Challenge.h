@@ -78,7 +78,7 @@ public:
     SeedType BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches);
     int BeghouledBoardHasMatch(BeghouledBoardState *theBoardState);
     /*inline*/
-    SeedType BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
+    static SeedType BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     int BeghouledVerticalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     int BeghouledHorizontalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     /*inline*/
@@ -114,7 +114,7 @@ public:
     void InitZombieWavesFromList(const ZombieType *theZombieList, int theListLength) const;
     void InitZombieWaves();
     /*inline*/
-    Rect SlotMachineGetHandleRect();
+    Rect SlotMachineGetHandleRect() const;
     void UpdateSlotMachine();
     void DrawSlotMachine(Graphics *g);
     int UpdateToolTip(int theX, int theY);
@@ -205,7 +205,7 @@ public:
     /*inline*/
     void IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, int theGridY = -1);
     void AdvanceCrazyDaveDialog();
-    void BeghouledFlashPlant(int theFlashX, int theFlashY, int theFromX, int theFromY, int theToX, int theToY);
+    void BeghouledFlashPlant(int theFlashX, int theFlashY, int theFromX, int theFromY, int theToX, int theToY) const;
     void BeghouledFlashAMatch();
     int BeghouledFlashFromBoardState(
         BeghouledBoardState *theBoardState, int theFromX, int theFromY, int theToX, int theToY
@@ -216,7 +216,7 @@ public:
     void LastStandUpdate();
     void WhackAZombiePlaceGraves(int theGraveCount) const;
     int BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY);
-    int BeghouledTwistValidMove(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
+    static int BeghouledTwistValidMove(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     void BeghouledTwistMouseDown(int x, int y);
     int BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     int BeghouledTwistFlashMatch(BeghouledBoardState *theBoardState, int theGridX, int theGridY);
@@ -232,7 +232,7 @@ public:
     /*inline*/
     int PuzzleIsAwardStage();
     void IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY);
-    void WhackAZombieUpdate();
+    void WhackAZombieUpdate() const;
     void LastStandCompletedStage();
     void TreeOfWisdomUpdate();
     void TreeOfWisdomFertilize();

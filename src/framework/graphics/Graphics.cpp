@@ -101,7 +101,7 @@ void Graphics::SetLinearBlend(bool linear) { mLinearBlend = linear; }
 bool Graphics::GetLinearBlend() { return mLinearBlend; }
 
 void Graphics::ClearRect(int theX, int theY, int theWidth, int theHeight) {
-    Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight).Intersection(mClipRect);
+    const Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight).Intersection(mClipRect);
     mDestImage->ClearRect(aDestRect);
 }
 
@@ -110,7 +110,7 @@ void Graphics::ClearRect(const Rect &theRect) { ClearRect(theRect.mX, theRect.mY
 void Graphics::FillRect(int theX, int theY, int theWidth, int theHeight) {
     if (mColor.mAlpha == 0) return;
 
-    Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight).Intersection(mClipRect);
+    const Rect aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight).Intersection(mClipRect);
     mDestImage->FillRect(aDestRect, mColor, mDrawMode);
 }
 
@@ -119,9 +119,9 @@ void Graphics::FillRect(const Rect &theRect) { FillRect(theRect.mX, theRect.mY, 
 void Graphics::DrawRect(int theX, int theY, int theWidth, int theHeight) {
     if (mColor.mAlpha == 0) return;
 
-    auto aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight);
-    auto aFullDestRect = Rect(theX + mTransX, theY + mTransY, theWidth + 1, theHeight + 1);
-    Rect aFullClippedRect = aFullDestRect.Intersection(mClipRect);
+    const auto aDestRect = Rect(theX + mTransX, theY + mTransY, theWidth, theHeight);
+    const auto aFullDestRect = Rect(theX + mTransX, theY + mTransY, theWidth + 1, theHeight + 1);
+    const Rect aFullClippedRect = aFullDestRect.Intersection(mClipRect);
 
     if (aFullDestRect == aFullClippedRect) {
         mDestImage->DrawRect(aDestRect, mColor, mDrawMode);
@@ -168,7 +168,7 @@ void Graphics::PFInsert(int i, int y) // append edge i to end of active list
     double dx;
     const Point *p, *q;
 
-    int j = i < mPFNumVertices - 1 ? i + 1 : 0;
+    const int j = i < mPFNumVertices - 1 ? i + 1 : 0;
     if (mPFPoints[i].mY < mPFPoints[j].mY) {
         p = &mPFPoints[i];
         q = &mPFPoints[j];
@@ -195,10 +195,10 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
     int k, j;
     /* list of vertex indices, sorted by mPFPoints[ind[j]].y */
 
-    int aMinX = mClipRect.mX;
-    int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
-    int aMinY = mClipRect.mY;
-    int aMaxY = mClipRect.mY + mClipRect.mHeight - 1;
+    const int aMinX = mClipRect.mX;
+    const int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
+    const int aMinY = mClipRect.mY;
+    const int aMaxY = mClipRect.mY + mClipRect.mHeight - 1;
 
     mPFNumVertices = theNumVertices;
     mPFPoints = theVertexList;
@@ -215,8 +215,8 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 
     mPFNumActiveEdges = 0; /* start with empty active list */
     k = 0;                 /* ind[k] is next vertex to process */
-    int y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
-    int y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
+    const int y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
+    const int y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
     /* ymax of polygon */
 
     for (int y = y0; y <= y1; y++) {
@@ -227,7 +227,7 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
         for (; (k < mPFNumVertices) && (mPFPoints[ind[k]].mY + mTransY <= y + 0.5); k++) {
             // to simplify, if mPFPoints.mY=y+.5, pretend it's above
             // invariant: y-.5 < mPFPoints[i].mY <= y+.5
-            int i = ind[k];
+            const int i = ind[k];
             // insert or delete edges before and after vertex i (i-1 to i,
             // and i to i+1) from active list if they cross scanline y
 
@@ -311,10 +311,10 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
     int k, j;
     /* list of vertex indices, sorted by mPFPoints[ind[j]].y */
 
-    int aMinX = mClipRect.mX;
-    int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
-    int aMinY = mClipRect.mY;
-    int aMaxY = mClipRect.mY + mClipRect.mHeight - 1;
+    const int aMinX = mClipRect.mX;
+    const int aMaxX = mClipRect.mX + mClipRect.mWidth - 1;
+    const int aMinY = mClipRect.mY;
+    const int aMaxY = mClipRect.mY + mClipRect.mHeight - 1;
 
     mPFNumVertices = theNumVertices;
     mPFPoints = theVertexList;
@@ -331,8 +331,8 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
 
     mPFNumActiveEdges = 0; /* start with empty active list */
     k = 0;                 /* ind[k] is next vertex to process */
-    int y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
-    int y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
+    const int y0 = std::max(aMinY, static_cast<int>(ceil(mPFPoints[ind[0]].mY - 0.5 + mTransY))); /* ymin of polygon */
+    const int y1 = std::min(aMaxY, static_cast<int>(floor(mPFPoints[ind[mPFNumVertices - 1]].mY - 0.5 + mTransY)));
     /* ymax of polygon */
 
     for (int y = y0; y <= y1; y++) {
@@ -395,7 +395,7 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
                         double m = 1.0 / mPFActiveEdgeList[j].mDX, b = mPFActiveEdgeList[j].b,
                                c = fabs(mPFActiveEdgeList[j].mDX);
                         do {
-                            double _y = m * xl + b;
+                            const double _y = m * xl + b;
                             lErr = std::min(255, static_cast<int>(fabs((_y)-y - .5) * 255));
                             coverRow[xl - aCoverLeft] = std::min(255, coverRow[xl - aCoverLeft] + lErr);
                             xl++;
@@ -411,7 +411,7 @@ void Graphics::PolyFillAA(const Point *theVertexList, int theNumVertices, bool c
                         double m = 1.0 / mPFActiveEdgeList[j + 1].mDX, b = mPFActiveEdgeList[j + 1].b,
                                c = fabs(mPFActiveEdgeList[j + 1].mDX);
                         do {
-                            double _y = m * xr + b;
+                            const double _y = m * xr + b;
                             rErr = std::min(255, static_cast<int>(fabs((_y)-y - .5) * 255));
                             coverRow[xr - aCoverLeft] = std::min(255, coverRow[xr - aCoverLeft] + rErr);
                             xr--;
@@ -455,7 +455,7 @@ bool Graphics::DrawLineClipHelper(double *theStartX, double *theStartY, double *
     if (aStartX < mClipRect.mX) {
         if (aEndX < mClipRect.mX) return false;
 
-        double aSlope = (aEndY - aStartY) / (aEndX - aStartX);
+        const double aSlope = (aEndY - aStartY) / (aEndX - aStartX);
         aStartY += (mClipRect.mX - aStartX) * aSlope;
         aStartX = mClipRect.mX;
     }
@@ -463,7 +463,7 @@ bool Graphics::DrawLineClipHelper(double *theStartX, double *theStartY, double *
     if (aEndX >= mClipRect.mX + mClipRect.mWidth) {
         if (aStartX >= mClipRect.mX + mClipRect.mWidth) return false;
 
-        double aSlope = (aEndY - aStartY) / (aEndX - aStartX);
+        const double aSlope = (aEndY - aStartY) / (aEndX - aStartX);
         aEndY += (mClipRect.mX + mClipRect.mWidth - 1 - aEndX) * aSlope;
         aEndX = mClipRect.mX + mClipRect.mWidth - 1;
     }
@@ -477,7 +477,7 @@ bool Graphics::DrawLineClipHelper(double *theStartX, double *theStartY, double *
     if (aStartY < mClipRect.mY) {
         if (aEndY < mClipRect.mY) return false;
 
-        double aSlope = (aEndX - aStartX) / (aEndY - aStartY);
+        const double aSlope = (aEndX - aStartX) / (aEndY - aStartY);
         aStartX += (mClipRect.mY - aStartY) * aSlope;
 
         aStartY = mClipRect.mY;
@@ -486,7 +486,7 @@ bool Graphics::DrawLineClipHelper(double *theStartX, double *theStartY, double *
     if (aEndY >= mClipRect.mY + mClipRect.mHeight) {
         if (aStartY >= mClipRect.mY + mClipRect.mHeight) return false;
 
-        double aSlope = (aEndX - aStartX) / (aEndY - aStartY);
+        const double aSlope = (aEndX - aStartX) / (aEndY - aStartY);
         aEndX += (mClipRect.mY + mClipRect.mHeight - 1 - aEndY) * aSlope;
         aEndY = mClipRect.mY + mClipRect.mHeight - 1;
     }
@@ -534,8 +534,8 @@ void Graphics::DrawImage(Sexy::Image *theImage, int theX, int theY) {
     theX += mTransX;
     theY += mTransY;
 
-    Rect aDestRect = Rect(theX, theY, theImage->GetWidth(), theImage->GetHeight()).Intersection(mClipRect);
-    Rect aSrcRect(aDestRect.mX - theX, aDestRect.mY - theY, aDestRect.mWidth, aDestRect.mHeight);
+    const Rect aDestRect = Rect(theX, theY, theImage->GetWidth(), theImage->GetHeight()).Intersection(mClipRect);
+    const Rect aSrcRect(aDestRect.mX - theX, aDestRect.mY - theY, aDestRect.mWidth, aDestRect.mHeight);
 
     if ((aSrcRect.mWidth > 0) && (aSrcRect.mHeight > 0))
         mDestImage->Blt(
@@ -555,7 +555,7 @@ void Graphics::DrawImage(Image *theImage, int theX, int theY, const Rect &theSrc
     theY += mTransY;
 
     if (mScaleX != 1 || mScaleY != 1) {
-        Rect aDestRect(
+        const Rect aDestRect(
             mScaleOrigX + floor((theX - mScaleOrigX) * mScaleX), mScaleOrigY + floor((theY - mScaleOrigY) * mScaleY),
             ceil(theSrcRect.mWidth * mScaleX), ceil(theSrcRect.mHeight * mScaleY)
         );
@@ -565,8 +565,8 @@ void Graphics::DrawImage(Image *theImage, int theX, int theY, const Rect &theSrc
         return;
     }
 
-    Rect aDestRect = Rect(theX, theY, theSrcRect.mWidth, theSrcRect.mHeight).Intersection(mClipRect);
-    Rect aSrcRect(
+    const Rect aDestRect = Rect(theX, theY, theSrcRect.mWidth, theSrcRect.mHeight).Intersection(mClipRect);
+    const Rect aSrcRect(
         theSrcRect.mX + aDestRect.mX - theX, theSrcRect.mY + aDestRect.mY - theY, aDestRect.mWidth, aDestRect.mHeight
     );
 
@@ -596,13 +596,15 @@ void Graphics::DrawImageMirror(Image *theImage, int theX, int theY, const Rect &
         (theSrcRect.mY + theSrcRect.mHeight > theImage->GetHeight()))
         return;
 
-    Rect aDestRect = Rect(theX, theY, theSrcRect.mWidth, theSrcRect.mHeight).Intersection(mClipRect);
+    const Rect aDestRect = Rect(theX, theY, theSrcRect.mWidth, theSrcRect.mHeight).Intersection(mClipRect);
 
-    int aTotalClip = theSrcRect.mWidth - aDestRect.mWidth;
-    int aLeftClip = aDestRect.mX - theX;
-    int aRightClip = aTotalClip - aLeftClip;
+    const int aTotalClip = theSrcRect.mWidth - aDestRect.mWidth;
+    const int aLeftClip = aDestRect.mX - theX;
+    const int aRightClip = aTotalClip - aLeftClip;
 
-    Rect aSrcRect(theSrcRect.mX + aRightClip, theSrcRect.mY + aDestRect.mY - theY, aDestRect.mWidth, aDestRect.mHeight);
+    const Rect aSrcRect(
+        theSrcRect.mX + aRightClip, theSrcRect.mY + aDestRect.mY - theY, aDestRect.mWidth, aDestRect.mHeight
+    );
 
     if ((aSrcRect.mWidth > 0) && (aSrcRect.mHeight > 0))
         mDestImage->BltMirror(
@@ -616,7 +618,8 @@ void Graphics::DrawImageMirror(Image *theImage, const Rect &theDestRect, const R
         return;
     }
 
-    auto aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
+    const auto aDestRect =
+        Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
 
     mDestImage->StretchBltMirror(
         theImage, aDestRect, theSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -624,8 +627,8 @@ void Graphics::DrawImageMirror(Image *theImage, const Rect &theDestRect, const R
 }
 
 void Graphics::DrawImage(Image *theImage, int theX, int theY, int theStretchedWidth, int theStretchedHeight) {
-    auto aDestRect = Rect(theX + mTransX, theY + mTransY, theStretchedWidth, theStretchedHeight);
-    auto aSrcRect = Rect(0, 0, theImage->mWidth, theImage->mHeight);
+    const auto aDestRect = Rect(theX + mTransX, theY + mTransY, theStretchedWidth, theStretchedHeight);
+    const auto aSrcRect = Rect(0, 0, theImage->mWidth, theImage->mHeight);
 
     mDestImage->StretchBlt(
         theImage, aDestRect, aSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -633,7 +636,8 @@ void Graphics::DrawImage(Image *theImage, int theX, int theY, int theStretchedWi
 }
 
 void Graphics::DrawImage(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect) {
-    auto aDestRect = Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
+    const auto aDestRect =
+        Rect(theDestRect.mX + mTransX, theDestRect.mY + mTransY, theDestRect.mWidth, theDestRect.mHeight);
 
     mDestImage->StretchBlt(
         theImage, aDestRect, theSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mFastStretch
@@ -644,7 +648,7 @@ void Graphics::DrawImageF(Image *theImage, float theX, float theY) {
     theX += mTransX;
     theY += mTransY;
 
-    Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
+    const Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
     mDestImage->BltF(theImage, theX, theY, aSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode);
 }
 
@@ -660,13 +664,13 @@ void Graphics::DrawImageF(Image *theImage, float theX, float theY, const Rect &t
 
 void Graphics::DrawImageRotated(Image *theImage, int theX, int theY, double theRot, const Rect *theSrcRect) {
     if (theSrcRect == nullptr) {
-        int aRotCenterX = theImage->GetWidth() / 2;
-        int aRotCenterY = theImage->GetHeight() / 2;
+        const int aRotCenterX = theImage->GetWidth() / 2;
+        const int aRotCenterY = theImage->GetHeight() / 2;
 
         DrawImageRotatedF(theImage, theX, theY, theRot, aRotCenterX, aRotCenterY, theSrcRect);
     } else {
-        int aRotCenterX = theSrcRect->mWidth / 2;
-        int aRotCenterY = theSrcRect->mHeight / 2;
+        const int aRotCenterX = theSrcRect->mWidth / 2;
+        const int aRotCenterY = theSrcRect->mHeight / 2;
 
         DrawImageRotatedF(theImage, theX, theY, theRot, aRotCenterX, aRotCenterY, theSrcRect);
     }
@@ -674,13 +678,13 @@ void Graphics::DrawImageRotated(Image *theImage, int theX, int theY, double theR
 
 void Graphics::DrawImageRotatedF(Image *theImage, float theX, float theY, double theRot, const Rect *theSrcRect) {
     if (theSrcRect == nullptr) {
-        float aRotCenterX = theImage->GetWidth() / 2.0f;
-        float aRotCenterY = theImage->GetHeight() / 2.0f;
+        const float aRotCenterX = theImage->GetWidth() / 2.0f;
+        const float aRotCenterY = theImage->GetHeight() / 2.0f;
 
         DrawImageRotatedF(theImage, theX, theY, theRot, aRotCenterX, aRotCenterY, theSrcRect);
     } else {
-        float aRotCenterX = theSrcRect->mWidth / 2.0f;
-        float aRotCenterY = theSrcRect->mHeight / 2.0f;
+        const float aRotCenterX = theSrcRect->mWidth / 2.0f;
+        const float aRotCenterY = theSrcRect->mHeight / 2.0f;
 
         DrawImageRotatedF(theImage, theX, theY, theRot, aRotCenterX, aRotCenterY, theSrcRect);
     }
@@ -700,7 +704,7 @@ void Graphics::DrawImageRotatedF(
     theY += mTransY;
 
     if (theSrcRect == nullptr) {
-        Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
+        const Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
         mDestImage->BltRotated(
             theImage, theX, theY, aSrcRect, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, theRot,
             theRotCenterX, theRotCenterY
@@ -713,7 +717,7 @@ void Graphics::DrawImageRotatedF(
 }
 
 void Graphics::DrawImageMatrix(Image *theImage, const SexyMatrix3 &theMatrix, float x, float y) {
-    Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
+    const Rect aSrcRect(0, 0, theImage->mWidth, theImage->mHeight);
     mDestImage->BltMatrix(
         theImage, x + mTransX, y + mTransY, theMatrix, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode,
         aSrcRect, mLinearBlend
@@ -738,12 +742,12 @@ void Graphics::DrawImageTransformHelper(
     }
 
     // Translate into appropriate graphics call
-    float w2 = theSrcRect.mWidth / 2.0f;
-    float h2 = theSrcRect.mHeight / 2.0f;
+    const float w2 = theSrcRect.mWidth / 2.0f;
+    const float h2 = theSrcRect.mHeight / 2.0f;
 
     if (theTransform.mHaveRot) {
-        float rx = w2 - theTransform.mTransX1;
-        float ry = h2 - theTransform.mTransY1;
+        const float rx = w2 - theTransform.mTransX1;
+        const float ry = h2 - theTransform.mTransY1;
 
         x = x + theTransform.mTransX2 - rx + 0.5f;
         y = y + theTransform.mTransY2 - ry + 0.5f;
@@ -762,13 +766,13 @@ void Graphics::DrawImageTransformHelper(
             mirror = true;
         }
 
-        float sw = w2 * theTransform.mScaleX;
-        float sh = h2 * theTransform.mScaleY;
+        const float sw = w2 * theTransform.mScaleX;
+        const float sh = h2 * theTransform.mScaleY;
 
         x = x + theTransform.mTransX2 - sw;
         y = y + theTransform.mTransY2 - sh;
 
-        Rect aDestRect(x, y, sw * 2, sh * 2);
+        const Rect aDestRect(x, y, sw * 2, sh * 2);
         DrawImageMirror(theImage, aDestRect, theSrcRect, mirror);
     } else {
         x = x + theTransform.mTransX1 + theTransform.mTransX2 - w2 + 0.5f;
@@ -801,7 +805,7 @@ void Graphics::DrawImageTransformF(
 
 void Graphics::DrawTriangleTex(Image *theTexture, const TriVertex &v1, const TriVertex &v2, const TriVertex &v3) {
     // TriVertex v[1][3] = {{v1,v2,v3}};
-    std::array v{v1, v2, v3};
+    const std::array v{v1, v2, v3};
     mDestImage->BltTrianglesTex(
         theTexture, &v, 1, mClipRect, mColorizeImages ? mColor : Color::White, mDrawMode, mTransX, mTransY, mLinearBlend
     );
@@ -919,9 +923,9 @@ void Graphics::DrawImageCel(Image *theImageStrip, int theX, int theY, int theCel
     if (theCelRow < 0 || theCelCol < 0 || theCelRow >= theImageStrip->mNumRows || theCelCol >= theImageStrip->mNumCols)
         return;
 
-    int aCelWidth = theImageStrip->mWidth / theImageStrip->mNumCols;
-    int aCelHeight = theImageStrip->mHeight / theImageStrip->mNumRows;
-    Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
+    const int aCelWidth = theImageStrip->mWidth / theImageStrip->mNumCols;
+    const int aCelHeight = theImageStrip->mHeight / theImageStrip->mNumRows;
+    const Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
 
     DrawImage(theImageStrip, theX, theY, aSrcRect);
 }
@@ -934,9 +938,9 @@ void Graphics::DrawImageCel(Image *theImageStrip, const Rect &theDestRect, int t
     if (theCelRow < 0 || theCelCol < 0 || theCelRow >= theImageStrip->mNumRows || theCelCol >= theImageStrip->mNumCols)
         return;
 
-    int aCelWidth = theImageStrip->mWidth / theImageStrip->mNumCols;
-    int aCelHeight = theImageStrip->mHeight / theImageStrip->mNumRows;
-    Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
+    const int aCelWidth = theImageStrip->mWidth / theImageStrip->mNumCols;
+    const int aCelHeight = theImageStrip->mHeight / theImageStrip->mNumRows;
+    const Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
 
     DrawImage(theImageStrip, theDestRect, aSrcRect);
 }
@@ -981,10 +985,10 @@ int Graphics::WriteString(
             {
                 unsigned long aColor = 0;
                 if (theString[i + 1] == _S('o')) {
-                    if (sexystrncmp(theString.c_str() + i + 1, _S("oldclr"), 6) == 0) aColor = theOldColor;
+                    if (strncmp(theString.c_str() + i + 1, _S("oldclr"), 6) == 0) aColor = theOldColor;
                 } else {
                     for (int aDigitNum = 0; aDigitNum < 6; aDigitNum++) {
-                        SexyChar aChar = theString[i + aDigitNum + 1];
+                        const SexyChar aChar = theString[i + aDigitNum + 1];
                         int aVal = 0;
 
                         if ((aChar >= _S('0')) && (aChar <= _S('9'))) aVal = aChar - _S('0');
@@ -1036,7 +1040,7 @@ int Graphics::WriteWordWrapped(
     const Rect &theRect, const SexyString &theLine, int theLineSpacing, int theJustification, int *theMaxWidth,
     int theMaxChars, int *theLastWidth
 ) {
-    Color anOrigColor = GetColor();
+    const Color anOrigColor = GetColor();
     int anOrigColorInt = anOrigColor.ToInt();
     if ((anOrigColorInt & 0xFF000000) == 0xFF000000) anOrigColorInt &= ~0xFF000000;
 
@@ -1092,7 +1096,7 @@ int Graphics::WriteWordWrapped(
                 // theRect.mWidth, 	theJustification, true, aLineStartPos, aSpacePos-aLineStartPos, anOrigColorInt,
                 //theMaxChars);
 
-                int aPhysPos = theRect.mY + aYOffset + mTransY;
+                const int aPhysPos = theRect.mY + aYOffset + mTransY;
                 if ((aPhysPos >= mClipRect.mY) && (aPhysPos < mClipRect.mY + mClipRect.mHeight + theLineSpacing)) {
                     WriteWordWrappedHelper(
                         this, theLine, theRect.mX + anIndentX, theRect.mY + aYOffset, theRect.mWidth, theJustification,
@@ -1141,7 +1145,7 @@ int Graphics::WriteWordWrapped(
 
     if (aLineStartPos < static_cast<int>(theLine.length())) // write the last piece
     {
-        int aWrittenWidth = WriteWordWrappedHelper(
+        const int aWrittenWidth = WriteWordWrappedHelper(
             this, theLine, theRect.mX + anIndentX, theRect.mY + aYOffset, theRect.mWidth, theJustification, true,
             aLineStartPos, theLine.length() - aLineStartPos, anOrigColorInt, theMaxChars
         );
@@ -1174,16 +1178,16 @@ int Graphics::DrawStringWordWrapped(
     const SexyString &theLine, int theX, int theY, int theWrapWidth, int theLineSpacing, int theJustification,
     int *theMaxWidth
 ) {
-    int aYOffset = mFont->GetAscent() - mFont->GetAscentPadding();
+    const int aYOffset = mFont->GetAscent() - mFont->GetAscentPadding();
 
-    Rect aRect(theX, theY - aYOffset, theWrapWidth, 0);
+    const Rect aRect(theX, theY - aYOffset, theWrapWidth, 0);
     return WriteWordWrapped(aRect, theLine, theLineSpacing, theJustification, theMaxWidth);
 }
 
 int Graphics::GetWordWrappedHeight(int theWidth, const SexyString &theLine, int theLineSpacing, int *theMaxWidth) {
     Graphics aTestG;
     aTestG.SetFont(mFont);
-    int aHeight = aTestG.WriteWordWrapped(Rect(0, 0, theWidth, 0), theLine, theLineSpacing, -1, theMaxWidth);
+    const int aHeight = aTestG.WriteWordWrapped(Rect(0, 0, theWidth, 0), theLine, theLineSpacing, -1, theMaxWidth);
 
     return aHeight;
 }

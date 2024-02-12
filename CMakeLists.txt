@@ -10,82 +10,82 @@ project(PlantsVsZombies C CXX)
 # Global configuration types
 ################################################################################
 set(CMAKE_CONFIGURATION_TYPES
-    "Debug"
-    "Release"
-    CACHE STRING "List of supported configurations." FORCE
+        "Debug"
+        "Release"
+        CACHE STRING "List of supported configurations." FORCE
 )
 
-set(CMAKE_SKIP_BUILD_RPATH         FALSE)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
 
 # @Patoke todo: probably add MSVC counterparts?
-if(MSVC)
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if (MSVC)
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(universal_link_flags
-                "/MT /LTCG"
+                    "/MT /LTCG"
             )
-        endif()
-        set(universal_compiler_flags 
-            "/Ob2" "/GL" "/Ox" "/arch:AVX2" "/flavor:INTEL64"
+        endif ()
+        set(universal_compiler_flags
+                "/Ob2" "/GL" "/Ox" "/arch:AVX2" "/flavor:INTEL64"
         )
-    else()
-        if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    else ()
+        if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(universal_link_flags "/MTd")
-        endif()
+        endif ()
         set(universal_compiler_flags "")
-    endif()
-else()
+    endif ()
+else ()
     set(universal_compiler_flags
-        "-Wno-unused-command-line-argument"
-        "-march=native"
-        "-fdiagnostics-color=always"
-        "-pipe"
-        "-pthread"
-        # Remove these for proper release build
-        "-g"
-        "-fno-omit-frame-pointer"
-        "-fstack-protector-all"
-        #"-fno-inline"
+            "-Wno-unused-command-line-argument"
+            "-march=native"
+            "-fdiagnostics-color=always"
+            "-pipe"
+            "-pthread"
+            # Remove these for proper release build
+            "-g"
+            "-fno-omit-frame-pointer"
+            "-fstack-protector-all"
+            #"-fno-inline"
     )
 
     set(universal_link_flags
-        "-fuse-ld=lld"
+            "-fuse-ld=lld"
     )
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set(universal_compiler_flags
-            "${universal_compiler_flags}"
-            "-O3"
-            "-flto"
+                "${universal_compiler_flags}"
+                "-O3"
+                "-flto"
         )
-    else()
+    else ()
         set(universal_compiler_flags
-            "${universal_compiler_flags}"
-            "-O3"
+                "${universal_compiler_flags}"
+                "-O3"
         )
-    endif()
-endif()
+    endif ()
+endif ()
 #set(universal_cxxflags "${CMAKE_CXX_FLAGS} ")
 #set(universal_cflags   "${CMAKE_C_FLAGS} ${universal_compiler_flags}")
 
-if(MSVC)
+if (MSVC)
     set(warn_flags "")
-else()
+else ()
     set(warn_flags
-        "-Wall"
-        "-Wextra"
-        "-Werror"
+            "-Wall"
+            "-Wextra"
+            "-Werror"
     )
 
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(warn_flags
-            ${warn_flags}
-            "-fsanitize=address,undefined"
+                ${warn_flags}
+                "-fsanitize=address,undefined"
         )
-    endif()
-endif()
+    endif ()
+endif ()
 
 add_compile_options(${universal_compiler_flags})
 add_link_options(${universal_link_flags})
@@ -93,10 +93,10 @@ add_link_options(${universal_link_flags})
 # set(CMAKE_C_FLAGS   "${universal_compiler_flags}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-if(MSVC)
+if (MSVC)
     set(CMAKE_RC_COMPILER_INIT windres)
     ENABLE_LANGUAGE(RC)
-endif()
+endif ()
 
 add_executable(${PROJECT_NAME})
 target_compile_options(${PROJECT_NAME} PRIVATE ${warn_flags})

@@ -6,7 +6,7 @@
 class DataReader {
 protected:
     FILE *mFile;       //+0x4
-    char *mData;       //+0x8
+    const char *mData; //+0x8
     uint32_t mDataLen; //+0xC
     uint32_t mDataPos; //+0x10
     bool mOwnData;     //+0x14
@@ -74,13 +74,13 @@ using IntToPointerMap = std::map<int, void *>;
 
 class DataSync {
 protected:
-    DataReader *mReader;
-    DataWriter *mWriter;
-    int mVersion;
+    DataReader *mReader{};
+    DataWriter *mWriter{};
+    int mVersion{};
     PointerToIntMap mPointerToIntMap;
     IntToPointerMap mIntToPointerMap;
     std::vector<void **> mPointerSyncList;
-    int mCurPointerIndex;
+    int mCurPointerIndex{};
 
 protected:
     void ResetPointerTable();
@@ -103,7 +103,7 @@ public:
     void SyncLong(int32_t &theNum);
     void SyncLong(unsigned char &theNum);
     void SyncLong(unsigned short &theNum);
-    void SyncLong(uint32_t &theNum);
+    void SyncLong(uint32_t &theNum) const;
     //	void					SyncLong(int& theNum);
     void SyncSLong(char &theNum);
     void SyncSLong(short &theNum);

@@ -39,7 +39,7 @@ void DataReader::OpenMemory(const void *theData, uint32_t theDataLen, bool takeO
         delete[] mData;
     }
 
-    mData = (char *)theData;
+    mData = static_cast<const char *>(theData);
     mDataLen = theDataLen;
     mOwnData = takeOwnership;
 }
@@ -155,7 +155,7 @@ void DataSync::SyncBytes(void *theData, uint32_t theDataLen) const {
     }
 }
 
-void DataSync::SyncLong(uint32_t &theNum) {
+void DataSync::SyncLong(uint32_t &theNum) const {
     if (mReader) {
         theNum = mReader->ReadLong();
     } else {

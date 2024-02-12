@@ -56,8 +56,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 10.0f;
         mPosY -= 8.0f;
 
-        const float aPosX = 9.0f;
-        const float aPosY = 9.0f;
+        constexpr float aPosX = 9.0f;
+        constexpr float aPosY = 9.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_SILVER);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -68,8 +68,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 10.0f;
         mPosY -= 8.0f;
 
-        const float aPosX = 9.0f;
-        const float aPosY = 9.0f;
+        constexpr float aPosX = 9.0f;
+        constexpr float aPosY = 9.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_COIN_GOLD);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -80,8 +80,8 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         mPosX -= 15.0f;
         mPosY -= 15.0f;
 
-        const float aPosX = -3.0f;
-        const float aPosY = 4.0f;
+        constexpr float aPosX = -3.0f;
+        constexpr float aPosY = 4.0f;
         Reanimation *aCoinReanim = mApp->AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_DIAMOND);
         aCoinReanim->SetPosition(mPosX + aPosX, mPosY + aPosY);
         aCoinReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
@@ -148,44 +148,43 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
             const SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_1_DAY) {
-            const SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER,
-                                          SeedType::SEED_CHERRYBOMB, SeedType::SEED_WALLNUT,
-                                          SeedType::SEED_REPEATER,   SeedType::SEED_POTATOMINE,
-                                          SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
+            constexpr SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER,
+                                              SeedType::SEED_CHERRYBOMB, SeedType::SEED_WALLNUT,
+                                              SeedType::SEED_REPEATER,   SeedType::SEED_POTATOMINE,
+                                              SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
 
             const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
-            const SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
-                                          SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
-                                          SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
-                                          SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
+            constexpr SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
+                                              SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
+                                              SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
+                                              SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
 
             const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL) {
-            const SeedType aSeedList[] = {SeedType::SEED_LILYPAD,     SeedType::SEED_SQUASH,
-                                          SeedType::SEED_THREEPEATER, SeedType::SEED_TANGLEKELP,
-                                          SeedType::SEED_JALAPENO,    SeedType::SEED_SPIKEWEED,
-                                          SeedType::SEED_TORCHWOOD,   SeedType::SEED_TALLNUT};
+            constexpr SeedType aSeedList[] = {SeedType::SEED_LILYPAD,     SeedType::SEED_SQUASH,
+                                              SeedType::SEED_THREEPEATER, SeedType::SEED_TANGLEKELP,
+                                              SeedType::SEED_JALAPENO,    SeedType::SEED_SPIKEWEED,
+                                              SeedType::SEED_TORCHWOOD,   SeedType::SEED_TALLNUT};
 
             const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
-            const SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,
-                                          SeedType::SEED_CACTUS,       SeedType::SEED_BLOVER,
-                                          SeedType::SEED_SPLITPEA,     SeedType::SEED_STARFRUIT,
-                                          SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
+            constexpr SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,
+                                              SeedType::SEED_CACTUS,       SeedType::SEED_BLOVER,
+                                              SeedType::SEED_SPLITPEA,     SeedType::SEED_STARFRUIT,
+                                              SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
 
             const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF) {
-            const SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
-                                          SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
-                                          SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
+            constexpr SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
+                                              SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
+                                              SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
 
-            const auto aSeedType =
-                static_cast<SeedType>(TodPickFromArray((intptr_t *)(aSeedList), std::size(aSeedList)));
+            const auto aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
         } else {
             const SeedType aSeedType = ZenGarden::PickRandomSeedType();

@@ -20,7 +20,7 @@
 #include "widget/WidgetManager.h"
 #include <chrono>
 
-static StoreItem gStoreItemSpots[NUM_STORE_PAGES][MAX_PAGE_SPOTS] = {
+static StoreItem gStoreItemSpots[static_cast<int>(StorePages::NUM_STORE_PAGES)][MAX_PAGE_SPOTS] = {
     {STORE_ITEM_PACKET_UPGRADE,    STORE_ITEM_POOL_CLEANER,      STORE_ITEM_RAKE,              STORE_ITEM_ROOF_CLEANER,
      STORE_ITEM_PLANT_GATLINGPEA,                                                                                                                  STORE_ITEM_PLANT_TWINSUNFLOWER, STORE_ITEM_PLANT_GLOOMSHROOM,
      STORE_ITEM_PLANT_CATTAIL                                                                                                                                                                                                      },
@@ -51,7 +51,7 @@ StoreScreen::StoreScreen(LawnApp *theApp)
     mBubbleClickToContinue = false;
     mAmbientSpeechCountDown = 200;
     mPreviousAmbientSpeechIndex = -1;
-    mPage = STORE_PAGE_SLOT_UPGRADES;
+    mPage = StorePages::STORE_PAGE_SLOT_UPGRADES;
     mMouseOverItem = STORE_ITEM_INVALID;
     mHatchTimer = 0;
     mShakeX = 0;
@@ -64,8 +64,9 @@ StoreScreen::StoreScreen(LawnApp *theApp)
     TodLoadResources("DelayLoad_Store");
     Dialog::Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
     mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
-    mPottedPlantSpecs.mDrawVariation =
-        static_cast<DrawVariation>(RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN));
+    mPottedPlantSpecs.mDrawVariation = static_cast<DrawVariation>(
+        RandRangeInt(DrawVariation::VARIATION_MARIGOLD_WHITE, DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN)
+    );
 
     mBackButton = new NewLawnButton(nullptr, StoreScreen::StoreScreen_Back, this);
     mBackButton->mDoFinger = true;
@@ -108,7 +109,7 @@ StoreScreen::StoreScreen(LawnApp *theApp)
     mOverlayWidget = new StoreScreenOverlay(this);
     mOverlayWidget->Resize(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
-    if (!IsPageShown(STORE_PAGE_PLANT_UPGRADES)) {
+    if (!IsPageShown(StorePages::STORE_PAGE_PLANT_UPGRADES)) {
         mPrevButton->mDisabledImage = Sexy::IMAGE_STORE_PREVBUTTONDISABLED;
         mPrevButton->SetDisabled(true);
         mNextButton->mDisabledImage = Sexy::IMAGE_STORE_NEXTBUTTONDISABLED;
@@ -133,11 +134,11 @@ StoreScreen::~StoreScreen() {
 StoreItem StoreScreen::GetStoreItemType(const int theSpotIndex) const {
     // 这个函数原版是穷举判断的，这里优化一下……
 
-    if (mPage < NUM_STORE_PAGES && theSpotIndex < MAX_PAGE_SPOTS) {
-        if (mPage == STORE_PAGE_SLOT_UPGRADES && theSpotIndex == 6 && mApp->IsTrialStageLocked()) {
+    if (mPage < StorePages::NUM_STORE_PAGES && theSpotIndex < MAX_PAGE_SPOTS) {
+        if (mPage == StorePages::STORE_PAGE_SLOT_UPGRADES && theSpotIndex == 6 && mApp->IsTrialStageLocked()) {
             return STORE_ITEM_PVZ;
         }
-        return gStoreItemSpots[mPage][theSpotIndex];
+        return gStoreItemSpots[static_cast<int>(mPage)][theSpotIndex];
     }
 
     TOD_ASSERT();
@@ -281,7 +282,8 @@ void StoreScreen::DrawItemIcon(
         );
         const Rect aRect(aPosX, aPosY + 6, 55, 70);
         TodDrawStringWrapped(
-            g, aSlotText, aRect, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_CENTER_VERTICAL_MIDDLE
+            g, aSlotText, aRect, Sexy::FONT_HOUSEOFTERROR16, Color::White,
+            DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
     } else if (theItemType == STORE_ITEM_POOL_CLEANER) {
         g->DrawImage(Sexy::IMAGE_ICON_POOLCLEANER, aPosX + 1, aPosY + 7);
@@ -309,12 +311,18 @@ void StoreScreen::DrawItemIcon(
         g->DrawImage(Sexy::IMAGE_WATERINGCANGOLD, aPosX - 14, aPosY - 4);
     } else if (theItemType == STORE_ITEM_FERTILIZER) {
         g->DrawImage(Sexy::IMAGE_FERTILIZER, aPosX - 11, aPosY - 2);
-        TodDrawString(g, _S("x5"), aPosX + 56, aPosY + 62, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+        TodDrawString(
+            g, _S("x5"), aPosX + 56, aPosY + 62, Sexy::FONT_HOUSEOFTERROR16, Color::White,
+            DrawStringJustification::DS_ALIGN_RIGHT
+        );
     } else if (theItemType == STORE_ITEM_PHONOGRAPH) {
         g->DrawImage(Sexy::IMAGE_PHONOGRAPH, aPosX - 12, aPosY + 3);
     } else if (theItemType == STORE_ITEM_BUG_SPRAY) {
         g->DrawImage(Sexy::IMAGE_BUG_SPRAY, aPosX - 12, aPosY + 3);
-        TodDrawString(g, _S("x5"), aPosX + 56, aPosY + 62, Sexy::FONT_HOUSEOFTERROR16, Color::White, DS_ALIGN_RIGHT);
+        TodDrawString(
+            g, _S("x5"), aPosX + 56, aPosY + 62, Sexy::FONT_HOUSEOFTERROR16, Color::White,
+            DrawStringJustification::DS_ALIGN_RIGHT
+        );
     } else if (theItemType == STORE_ITEM_GARDENING_GLOVE) {
         g->DrawImage(Sexy::IMAGE_ZEN_GARDENGLOVE, aPosX - 12, aPosY + 3);
     } else if (theItemType == STORE_ITEM_WHEEL_BARROW) {
@@ -340,7 +348,10 @@ void StoreScreen::DrawItem(Graphics *g, const int theItemPosition, const StoreIt
     if (theItemType != STORE_ITEM_PVZ) {
         g->DrawImage(Sexy::IMAGE_STORE_PRICETAG, aPosX - 3, aPosY + 70);
         const SexyString aCostString = LawnApp::GetMoneyString(GetItemCost(theItemType));
-        TodDrawString(g, aCostString, aPosX + 23, aPosY + 85, Sexy::FONT_BRIANNETOD12, Color::Black, DS_ALIGN_CENTER);
+        TodDrawString(
+            g, aCostString, aPosX + 23, aPosY + 85, Sexy::FONT_BRIANNETOD12, Color::Black,
+            DrawStringJustification::DS_ALIGN_CENTER
+        );
     }
     if (IsComingSoon(theItemType)) {
         Rect aRect(aPosX, aPosY, 60, 70);
@@ -348,12 +359,14 @@ void StoreScreen::DrawItem(Graphics *g, const int theItemPosition, const StoreIt
             aRect.mX -= 4;
         }
         TodDrawStringWrapped(
-            g, _S("[COMING_SOON]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0), DS_ALIGN_CENTER_VERTICAL_MIDDLE
+            g, _S("[COMING_SOON]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0),
+            DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
     } else if (IsItemSoldOut(theItemType)) {
         const Rect aRect(aPosX, aPosY, 50, 70);
         TodDrawStringWrapped(
-            g, _S("[SOLD_OUT]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0), DS_ALIGN_CENTER_VERTICAL_MIDDLE
+            g, _S("[SOLD_OUT]"), aRect, Sexy::FONT_HOUSEOFTERROR16, Color(255, 0, 0),
+            DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
         );
     } else if (mMouseOverItem == theItemType) {
         if (theItemType >= 0 && theItemType <= 8) {
@@ -416,19 +429,21 @@ void StoreScreen::Draw(Graphics *g) {
 
     if (!mPrevButton->mDisabled) {
         int aNumPages = 0;
-        for (StorePages aPage = STORE_PAGE_SLOT_UPGRADES; aPage < NUM_STORE_PAGES;
-             aPage = static_cast<StorePages>(aPage + 1)) {
+        using StorePagesIterator =
+            EnumIterator<StorePages, StorePages::STORE_PAGE_SLOT_UPGRADES, StorePages::NUM_STORE_PAGES>;
+        for (const auto aPage : StorePagesIterator()) {
             if (IsPageShown(aPage)) {
                 aNumPages++;
             }
         }
 
         const SexyString aPageString = TodReplaceNumberString(
-            TodReplaceNumberString(_S("[STORE_PAGE]"), _S("{PAGE}"), mPage), _S("{NUM_PAGES}"), aNumPages
+            TodReplaceNumberString(_S("[STORE_PAGE]"), _S("{PAGE}"), static_cast<int>(mPage)), _S("{NUM_PAGES}"),
+            aNumPages
         );
         TodDrawString(
             g, aPageString, STORESCREEN_PAGESTRING_X, STORESCREEN_COINBANK_Y, Sexy::FONT_BRIANNETOD12,
-            Color(80, 80, 80), DS_ALIGN_CENTER
+            Color(80, 80, 80), DrawStringJustification::DS_ALIGN_CENTER
         );
     }
 }
@@ -556,7 +571,7 @@ void StoreScreen::Update() {
 
     if (mWaitForDialog) return;
 
-    if (mApp->mCrazyDaveState == CRAZY_DAVE_OFF) {
+    if (mApp->mCrazyDaveState == CrazyDaveState::CRAZY_DAVE_OFF) {
         if (mDrawnOnce) {
             StorePreload();
         }
@@ -564,7 +579,8 @@ void StoreScreen::Update() {
     }
 
     mStoreTime++;
-    if (mApp->mCrazyDaveState != CRAZY_DAVE_OFF && mApp->mCrazyDaveState != CRAZY_DAVE_ENTERING) {
+    if (mApp->mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_OFF &&
+        mApp->mCrazyDaveState != CrazyDaveState::CRAZY_DAVE_ENTERING) {
         if (mHatchTimer > 0) {
             mHatchTimer--;
             mBackButton->mX -= mShakeX;
@@ -688,15 +704,15 @@ void StoreScreen::ButtonPress(const int theId) {
 // 0x48C440
 bool StoreScreen::IsPageShown(const StorePages thePage) {
     // 试玩模式下，仅显示默认页
-    if (mApp->IsTrialStageLocked()) return thePage == STORE_PAGE_SLOT_UPGRADES;
+    if (mApp->IsTrialStageLocked()) return thePage == StorePages::STORE_PAGE_SLOT_UPGRADES;
     // 一周目完成后，所有页全解锁
     if (mApp->HasFinishedAdventure()) return true;
     // 到达或已通过冒险模式 5-2 关卡时，显示紫卡页
-    if (thePage == STORE_PAGE_PLANT_UPGRADES) return mApp->mPlayerInfo->mLevel >= 42;
+    if (thePage == StorePages::STORE_PAGE_PLANT_UPGRADES) return mApp->mPlayerInfo->mLevel >= 42;
     // 到达或已通过冒险模式 5-5 关卡时，显示花园工具页
-    if (thePage == STORE_PAGE_ZEN1) return mApp->mPlayerInfo->mLevel >= 45;
+    if (thePage == StorePages::STORE_PAGE_ZEN1) return mApp->mPlayerInfo->mLevel >= 45;
     // 冒险模式未完成时，不显示智慧树工具页
-    return thePage != STORE_PAGE_ZEN2;
+    return thePage != StorePages::STORE_PAGE_ZEN2;
 }
 
 // 0x48C4D0
@@ -710,14 +726,14 @@ void StoreScreen::ButtonDepress(const int theId) {
         EnableButtons(false);
         do {
             if (theId == StoreScreen::StoreScreen_Prev) {
-                mPage = static_cast<StorePages>(mPage - 1);
-                if (mPage < STORE_PAGE_SLOT_UPGRADES) {
-                    mPage = STORE_PAGE_ZEN2;
+                mPage = static_cast<StorePages>(static_cast<int>(mPage) - 1);
+                if (mPage < StorePages::STORE_PAGE_SLOT_UPGRADES) {
+                    mPage = StorePages::STORE_PAGE_ZEN2;
                 }
             } else {
-                mPage = static_cast<StorePages>(mPage + 1);
-                if (mPage >= NUM_STORE_PAGES) {
-                    mPage = STORE_PAGE_SLOT_UPGRADES;
+                mPage = static_cast<StorePages>(static_cast<int>(mPage) + 1);
+                if (mPage >= StorePages::NUM_STORE_PAGES) {
+                    mPage = StorePages::STORE_PAGE_SLOT_UPGRADES;
                 }
             }
         } while (!IsPageShown(mPage));
@@ -861,8 +877,9 @@ void StoreScreen::PurchaseItem(const StoreItem theStoreItem) {
             } else if (IsPottedPlant(theStoreItem)) {
                 mApp->mZenGarden->AddPottedPlant(&mPottedPlantSpecs);
                 mPottedPlantSpecs.InitializePottedPlant(SEED_MARIGOLD);
-                mPottedPlantSpecs.mDrawVariation =
-                    static_cast<DrawVariation>(RandRangeInt(VARIATION_MARIGOLD_WHITE, VARIATION_MARIGOLD_LIGHT_GREEN));
+                mPottedPlantSpecs.mDrawVariation = static_cast<DrawVariation>(
+                    RandRangeInt(DrawVariation::VARIATION_MARIGOLD_WHITE, DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN)
+                );
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = GetCurrentDaysSince2000();
             } else {
                 TOD_ASSERT(theStoreItem >= STORE_ITEM_PLANT_GATLINGPEA && theStoreItem < (StoreItem)MAX_PURCHASES);
@@ -929,7 +946,7 @@ void StoreScreen::AdvanceCrazyDaveDialog() {
         mApp->WriteCurrentUserConfig();
         mApp->PlaySample(Sexy::SOUND_DIAMOND);
         Coin *aCoin = mCoins.DataArrayAlloc();
-        aCoin->CoinInitialize(80, 520, COIN_DIAMOND, COIN_MOTION_FROM_PRESENT);
+        aCoin->CoinInitialize(80, 520, CoinType::COIN_DIAMOND, CoinMotion::COIN_MOTION_FROM_PRESENT);
         aCoin->mVelX = 0;
         aCoin->mVelY = -5;
     } else if (aMessage == 902 || aMessage == 1002) {
@@ -979,7 +996,7 @@ void StoreScreen::MouseDown(const int x, const int y, const int theClickCount) {
 
 // 0x48D2E0
 void StoreScreen::EnableButtons(const bool theEnable) {
-    if (mEasyBuyingCheat || IsPageShown(STORE_PAGE_PLANT_UPGRADES) || !theEnable) {
+    if (mEasyBuyingCheat || IsPageShown(StorePages::STORE_PAGE_PLANT_UPGRADES) || !theEnable) {
         mNextButton->mMouseVisible = theEnable;
         mNextButton->SetDisabled(!theEnable);
         mPrevButton->mMouseVisible = theEnable;
