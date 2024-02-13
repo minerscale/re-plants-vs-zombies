@@ -13,14 +13,25 @@
 #include <cstring>
 #include <cwctype>
 #include <execution>
+#include <format>
 #include <list>
 #include <map>
 #include <mutex>
 #include <optional>
-#include <print>
 #include <set>
 #include <string>
 #include <vector>
+
+namespace std {
+template <class... Types> void println(FILE *const Stream, const std::format_string<Types...> Fmt, Types &&...Args) {
+    std::fprintf(Stream, std::format(Fmt, std::forward<Types>(Args)...).c_str());
+    std::fputc('\n', Stream);
+}
+
+template <class... Types> void println(const std::format_string<Types...> Fmt, Types &&...Args) {
+    println(stdout, Fmt, std::forward<Types>(Args)...);
+}
+} // namespace std
 
 #ifdef __GNUC__
 #include <bits/chrono.h>

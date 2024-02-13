@@ -1592,7 +1592,10 @@ void VkInterface::cursorPositionCallback(double xpos, double ypos) {
     }
 }
 
-void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) { widgetManager->MouseWheel(yoffset); }
+void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) {
+    (void)xoffset; // unusued
+    widgetManager->MouseWheel(yoffset);
+}
 
 void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
     constexpr auto mouseButtonTranslationTable = const_generate_sparse_array<std::array<std::pair<int, int>, 3>{

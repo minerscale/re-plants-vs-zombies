@@ -578,8 +578,8 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                         //	if (aLayer->mCharData[aCharNum].mImageRect.mHeight + aLayer->mCharData[aCharNum].mOffset.mY
                         //> aLayer->mDefaultHeight) 		aLayer->mDefaultHeight =
                         //aLayer->mCharData[aCharNum].mImageRect.mHeight + aLayer->mCharData[aCharNum].mOffset.mY;
-                        for (auto &val : aLayer->mCharDataMap | std::views::values) {
-                            CharData *aCharData = val.get();
+                        for (auto &val : aLayer->mCharDataMap) {
+                            CharData *aCharData = val.second.get();
                             if (aCharData->mImageRect.mHeight + aCharData->mOffset.mY > aLayer->mDefaultHeight) {
                                 aLayer->mDefaultHeight = aCharData->mImageRect.mHeight + aCharData->mOffset.mY;
                             }

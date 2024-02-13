@@ -485,8 +485,8 @@ void TodDrawStringMatrix(
         aCurXPos = aMaxXPos;
     }
 
-    for (auto val : aRenderCommandPool | std::views::values) {
-        RenderCommand &cmd = val;
+    for (auto &val : aRenderCommandPool) {
+        RenderCommand &cmd = val.second;
 
         int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
         if (cmd.mImage) {

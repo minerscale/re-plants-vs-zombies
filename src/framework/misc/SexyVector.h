@@ -1,9 +1,10 @@
 #ifndef __SEXYVECTOR_H__
 #define __SEXYVECTOR_H__
 
+#include <math.h>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/gtx/norm.hpp>
-#include <math.h>
 
 namespace Sexy {
 ///////////////////////////////////////////////////////////////////////////////

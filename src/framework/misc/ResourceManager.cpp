@@ -746,8 +746,8 @@ int ResourceManager::GetNumResources(const std::string &theGroup, ResMap &theMap
     if (theGroup.empty()) return theMap.size();
 
     int aCount = 0;
-    for (const auto aRes : theMap | std::views::values) {
-        if (aRes->mResGroup == theGroup && !aRes->mFromProgram) ++aCount;
+    for (const auto &aRes : theMap) {
+        if (aRes.second->mResGroup == theGroup && !aRes.second->mFromProgram) ++aCount;
     }
 
     return aCount;

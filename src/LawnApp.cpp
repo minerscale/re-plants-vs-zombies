@@ -1508,8 +1508,12 @@ void LawnApp::LoadingThreadProc() {
     const auto groups = {"LoadingImages", "LoadingFonts", "LoadingSounds"};
     constexpr int group_ave_ms_to_load[] = {9, 54, 54};
 
-    for (const auto [i, group] : std::views::enumerate(groups)) {
-        mNumLoadingThreadTasks += mResourceManager->GetNumResources(group) * group_ave_ms_to_load[i];
+    { // TODO: replace these with views::enumerate when it's ready.
+        int i = 0;
+        for (const auto &group : groups) {
+            mNumLoadingThreadTasks += mResourceManager->GetNumResources(group) * group_ave_ms_to_load[i];
+            ++i;
+        }
     }
 
     // mNumLoadingThreadTasks += 636;
@@ -1524,8 +1528,12 @@ void LawnApp::LoadingThreadProc() {
     TodHesitationBracket aHesitationResources("Resources");
     TodHesitationTrace("loading thread start");
 
-    for (const auto [i, group] : std::views::enumerate(groups)) {
-        LoadGroup(group, group_ave_ms_to_load[i]);
+    { // TODO: replace these with views::enumerate when it's ready.
+        int i = 0;
+        for (const auto &group : groups) {
+            LoadGroup(group, group_ave_ms_to_load[i]);
+            ++i;
+        }
     }
 
     if (mLoadingFailed || mShutdown || mCloseRequest) return;

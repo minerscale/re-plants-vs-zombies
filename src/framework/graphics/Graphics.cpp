@@ -270,7 +270,7 @@ void Graphics::PolyFill(const Point *theVertexList, int theNumVertices, bool con
 
     mDestImage->FillScanLines(aSpans, aSpanPos, mColor, mDrawMode);
 
-    delete ind;
+    delete[] ind;
     delete mPFActiveEdgeList;
 }
 
