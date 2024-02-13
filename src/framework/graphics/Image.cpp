@@ -130,7 +130,7 @@ int AnimInfo::GetCel(int theTime) {
     else return mFrameMap[aFrame];
 }
 
-int Image::GetAnimCel(int theTime) {
+int Image::GetAnimCel(int theTime) const {
     if (mAnimInfo == nullptr) return 0;
     else return mAnimInfo->GetCel(theTime);
 }

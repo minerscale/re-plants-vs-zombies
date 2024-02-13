@@ -9,31 +9,32 @@
 namespace Vk {
 class VkInterface : public WindowInterface<VkInterface> {
 public:
-    VkInterface(int width, int height, WidgetManager *mWidgetManager);
+    VkInterface(int width, int height, WidgetManager *mWidgetManager, bool fullscreen);
     ~VkInterface();
 
-    Image *GetScreenImage();
-    int
+    static void UpdateWindowOptions(const int width, const int height, const bool fullscreen);
+    static Image *GetScreenImage();
+    static int
     CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, const void *pvANDPlane, const void *pvXORPlane);
-    void EnforceCursor();
-    void ShowWindow();
+    static void EnforceCursor();
+    static void ShowWindow();
     void PollEvents();
-    bool IsFocused();
-    void RehupFocus();
-    bool ShouldClose();
-    void ReleaseMouseCapture();
-    void Draw();
+    static bool IsFocused();
+    static void RehupFocus();
+    bool ShouldClose() const;
+    static void ReleaseMouseCapture();
+    static void Draw();
 
 private:
     bool windowShouldClose = false;
-    void framebufferResizeCallback();
-    void windowFocusCallback(bool focused);
-    void cursorPositionCallback(double xpos, double ypos);
-    void mouseWheelCallback(double xoffset, double yoffset);
+    static void framebufferResizeCallback();
+    static void windowFocusCallback(bool focused);
+    static void cursorPositionCallback(double xpos, double ypos);
+    static void mouseWheelCallback(double xoffset, double yoffset);
     void mouseButtonCallback(int button, int state, int clicks);
     void keyCallback(uint32_t key, uint8_t state);
-    void charCallback(char codepoint[32]);
-    void cursorEnterCallback(int entered);
+    static void charCallback(char codepoint[32]);
+    static void cursorEnterCallback(int entered);
     void windowCloseCallback();
 };
 } // namespace Vk

@@ -11,21 +11,7 @@
 #include <chrono>
 #endif
 
-class TimePoint : public std::chrono::time_point<std::chrono::system_clock> {
-public:
-    TimePoint() : std::chrono::time_point<std::chrono::system_clock>() {}
-
-    TimePoint(const std::chrono::time_point<std::chrono::system_clock> &t)
-        : std::chrono::time_point<std::chrono::system_clock>(t) {}
-
-    TimePoint(const std::chrono::seconds &t) : std::chrono::time_point<std::chrono::system_clock>(t) {}
-
-    TimePoint(const std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<int64_t, std::nano>> &t) {
-        *this = std::chrono::time_point<std::chrono::system_clock>(
-            std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch())
-        );
-    }
-};
+using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 class PottedPlant {
 public:

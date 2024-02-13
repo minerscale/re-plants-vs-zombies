@@ -535,7 +535,7 @@ void ZenGarden::PlantWatered(const Plant *thePlant) const {
         aTimeSpan = 9;
     }
     aPottedPlant->mLastWateredTime = TimeToUnixEpoch(
-        getTime() - std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::seconds(aTimeSpan))
+        getTime() - std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::seconds(aTimeSpan))
     );
 
     mApp->PlayFoley(FoleyType::FOLEY_SPAWN_SUN);

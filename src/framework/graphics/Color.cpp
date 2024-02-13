@@ -7,18 +7,16 @@ Color Color::White(255, 255, 255);
 
 Color::Color() : mRed(0), mGreen(0), mBlue(0), mAlpha(255) {}
 
-Color::Color(int theColor)
+Color::Color(const int theColor)
     : mRed((theColor >> 16) & 0xFF), mGreen((theColor >> 8) & 0xFF), mBlue((theColor) & 0xFF),
       mAlpha((theColor >> 24) & 0xFF) {
     if (mAlpha == 0) mAlpha = 0xff;
 }
 
-Color::Color(int theColor, int theAlpha)
+Color::Color(const int theColor, const int theAlpha)
     : mRed((theColor >> 16) & 0xFF), mGreen((theColor >> 8) & 0xFF), mBlue((theColor) & 0xFF), mAlpha(theAlpha) {}
 
-Color::Color(int theRed, int theGreen, int theBlue) : mRed(theRed), mGreen(theGreen), mBlue(theBlue), mAlpha(0xFF) {}
-
-Color::Color(int theRed, int theGreen, int theBlue, int theAlpha)
+Color::Color(const int theRed, const int theGreen, const int theBlue, const int theAlpha)
     : mRed(theRed), mGreen(theGreen), mBlue(theBlue), mAlpha(theAlpha) {}
 
 Color::Color(const SexyRGBA &theColor) : mRed(theColor.r), mGreen(theColor.g), mBlue(theColor.b), mAlpha(theColor.a) {}
@@ -37,7 +35,7 @@ int Color::GetBlue() const { return mBlue; }
 
 int Color::GetAlpha() const { return mAlpha; }
 
-int &Color::operator[](int theIdx) {
+int &Color::operator[](const int theIdx) {
     static int aJunk = 0;
 
     switch (theIdx) {
@@ -49,7 +47,7 @@ int &Color::operator[](int theIdx) {
     }
 }
 
-int Color::operator[](int theIdx) const {
+int Color::operator[](const int theIdx) const {
     switch (theIdx) {
     case 0:  return mRed;
     case 1:  return mGreen;

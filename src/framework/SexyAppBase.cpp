@@ -402,7 +402,7 @@ SexyAppBase::~SexyAppBase() {
     }*/
 
     // delete mDDInterface;
-    delete mWindowInterface;
+    mWindowInterface.reset();
     delete mMusicInterface;
     delete mSoundManager;
 
@@ -1427,16 +1427,16 @@ bool SexyAppBase::RegistryWriteString(const std::string &theValueName, const std
 }
 
 bool SexyAppBase::RegistryWriteInteger(const std::string &theValueName, int theValue) {
-    return RegistryWrite(theValueName, REG_DWORD, (uint8_t *)&theValue, sizeof(int));
+    return RegistryWrite(theValueName, REG_DWORD, reinterpret_cast<uint8_t *>(&theValue), sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteBoolean(const std::string &theValueName, bool theValue) {
     int aValue = theValue ? 1 : 0;
-    return RegistryWrite(theValueName, REG_DWORD, (uint8_t *)&aValue, sizeof(int));
+    return RegistryWrite(theValueName, REG_DWORD, reinterpret_cast<uint8_t *>(&aValue), sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, ulong theLength) {
-    return RegistryWrite(theValueName, REG_BINARY, (uint8_t *)theValue, theLength);
+    return RegistryWrite(theValueName, REG_BINARY, theValue, theLength);
 }
 
 void SexyAppBase::WriteToRegistry() {
@@ -1452,8 +1452,8 @@ void SexyAppBase::WriteToRegistry() {
 }
 
 bool SexyAppBase::RegistryEraseKey(const SexyString &_theKeyName) {
-    std::string theKeyName = SexyStringToStringFast(_theKeyName);
-    if (mRegKey.length() == 0) return false;
+    const std::string &theKeyName = SexyStringToStringFast(_theKeyName);
+    if (mRegKey.empty()) return false;
 
     if (mPlayingDemoBuffer) {
         if (mManualShutdown) return true;
@@ -4221,7 +4221,12 @@ void SexyAppBase::Done3dTesting() {}
 std::string SexyAppBase::NotifyCrashHook() { return ""; }
 
 void SexyAppBase::MakeWindow() {
-    mWindowInterface = new Vk::VkInterface(mWidth, mHeight, mWidgetManager);
+    if (mWindowInterface == nullptr) {
+        mWindowInterface = std::make_unique<Vk::VkInterface>(mWidth, mHeight, mWidgetManager, !mIsWindowed);
+    } else {
+        mWindowInterface->UpdateWindowOptions(mWidth, mHeight, !mIsWindowed);
+    }
+
     mWindowInterface->EnforceCursor();
 
     if ((mPlayingDemoBuffer) || (mIsWindowed && !mFullScreenWindow)) {
@@ -4229,73 +4234,6 @@ void SexyAppBase::MakeWindow() {
     } else {
         mIsPhysWindowed = false;
     }
-
-    /*char aStr[256];
-    sprintf(aStr, "HWND: %d\r\n", mHWnd);
-    OutputDebugString(aStr);*/
-
-    // SetWindowLongPtr(mHWnd, GWLP_USERDATA, (intptr_t) this);
-
-    // Enable 3d setting
-    bool is3D = false;
-    bool is3DOptionSet = RegistryReadBoolean("Is3D", &is3D);
-    if (is3DOptionSet) {
-        if (mAutoEnable3D) {
-            mAutoEnable3D = false;
-            mTest3D = true;
-        }
-
-        if (is3D) mTest3D = true;
-
-        // mDDInterface->mIs3D = is3D;
-    }
-
-    /* DD init code, unnecesary, we do this in the WindowInterface
-    int aResult = InitDDInterface();
-
-    if (mDDInterface->mD3DTester!=NULL && mDDInterface->mD3DTester->ResultsChanged())
-        RegistryEraseValue(_S("Is3D"));
-
-    if ((mIsWindowed) && (aResult == DDInterface::RESULT_INVALID_COLORDEPTH))
-    {
-        if (mForceWindowed)
-        {
-            Popup(GetString("PLEASE_SET_COLOR_DEPTH", _S("Please set your desktop color depth to 16 bit.")));
-            DoExit(1);
-        }
-        else
-        {
-            mForceFullscreen = true;
-            SwitchScreenMode(false);
-        }
-        return;
-    }
-    else if ((!mIsWindowed) &&
-        ((aResult == DDInterface::RESULT_EXCLUSIVE_FAIL) ||
-         (aResult == DDInterface::RESULT_DISPCHANGE_FAIL)))
-    {
-        mForceWindowed = true;
-        SwitchScreenMode(true);
-    }
-    else if (aResult == DDInterface::RESULT_3D_FAIL)
-    {
-        Set3DAcclerated(false);
-        return;
-    }
-    else if (aResult != DDInterface::RESULT_OK)
-    {
-        if (Is3DAccelerated())
-        {
-            Set3DAcclerated(false);
-            return;
-        }
-        else
-        {
-            Popup(GetString("FAILED_INIT_DIRECTDRAW", _S("Failed to initialize DirectDraw: ")) +
-    StringToSexyString(DDInterface::ResultToString(aResult) + " " + mDDInterface->mErrorString)); DoExit(1);
-        }
-    }
-    */
 
     bool isActive = mActive;
 
@@ -4364,11 +4302,11 @@ void SexyAppBase::LoadingThreadProcStub(void *theArg) {
 
     aSexyApp->LoadingThreadProc();
 
-    printf(
-        "Resource Loading Time: %lldms\n", std::chrono::duration_cast<std::chrono::milliseconds>(
-                                               std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
-                                           )
-                                               .count()
+    std::println(
+        "Resource Loading Time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(
+                                           std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
+                                       )
+                                           .count()
     );
 
     aSexyApp->mLoadingThreadCompleted = true;
@@ -4459,17 +4397,13 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool /*is3d*/, bool force)
         return;
     }
 
-    unreachable();
-    /* TODO
-
     // Set 3d acceleration preference
-    Set3DAcclerated(is3d,false);
+    // Set3DAcclerated(is3d,false);
 
     // Always make the app windowed when playing demos, in order to
     //  make it easier to track down bugs.  We place this after the
     //  sanity check just so things get re-initialized and stuff
-    //if (mPlayingDemoBuffer)
-    //	wantWindowed = true;
+    if (mPlayingDemoBuffer) wantWindowed = true;
 
     mIsWindowed = wantWindowed;
 
@@ -4477,7 +4411,7 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool /*is3d*/, bool force)
 
     // We need to do this check to allow IE to get focus instead of
     //  stealing it away for ourselves
-    if (!mIsOpeningURL)
+    /*if (!mIsOpeningURL)
     {
         ::ShowWindow(mHWnd, SW_NORMAL);
         ::SetForegroundWindow(mHWnd);
@@ -4491,9 +4425,9 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool /*is3d*/, bool force)
     if (mSoundManager!=NULL)
     {
         mSoundManager->SetCooperativeWindow(mHWnd);
-    }
+    }*/
 
-    mLastTime = timeGetTime();*/
+    mLastTime = std::chrono::high_resolution_clock::now();
 }
 
 void SexyAppBase::SwitchScreenMode(bool wantWindowed) { SwitchScreenMode(wantWindowed, true); }
@@ -4826,39 +4760,27 @@ void SexyAppBase::Start() {
 
     WaitForLoadingThread();
 
-    // char aString[256];
-    printf(
-        "Seconds       = %g\n",
+    std::println(
+        "Seconds      = {}",
         std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - aStartTime)
             .count()
     );
-    // sprintf(aString, "Count         = %d\r\n", aCount);
-    // sprintf(aString, "Sleep Count   = %d\r\n", mSleepCount);
-    printf("Sleep Count   = %d\n", mSleepCount);
-    // sprintf(aString, "Update Count  = %d\r\n", mUpdateCount);
-    printf("Update Count  = %d\n", mUpdateCount);
-    // sprintf(aString, "Draw Count    = %d\r\n", mDrawCount);
-    printf("Draw Count    = %d\n", mDrawCount);
-    // OutputDebugStringA(aString);
-    printf("Draw Time     = %lld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
-    // sprintf(aString, "Draw Time     = %d\r\n", mDrawTime);
-    printf("Screen Blt    = %lld\n", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
-    // sprintf(aString, "Screen Blt    = %d\r\n", mScreenBltTime);
+    std::println("Sleep Count  = {}", mSleepCount);
+    std::println("Update Count = {}", mUpdateCount);
+    std::println("Draw Count   = {}", mDrawCount);
+    std::println("Draw Time    = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
+    std::println("Screen Blt   = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
 
-    // OutputDebugStringA(aString);
     if (mDrawTime + mScreenBltTime > std::chrono::milliseconds(0)) {
-        printf(
-            "Avg FPS       = %d\n",
+        std::println(
+            "Avg FPS       = {}",
             mDrawCount * 1000 /
                 static_cast<int>(
                     1000 *
                     (std::chrono::duration_cast<std::chrono::duration<float>>(mDrawTime + mScreenBltTime)).count()
                 )
         );
-        // sprintf(aString, "Avg FPS       = %d\r\n", (mDrawCount*1000)/(mDrawTime+mScreenBltTime));
     }
-
-    // timeEndPeriod(1);
 
     PreTerminate();
 

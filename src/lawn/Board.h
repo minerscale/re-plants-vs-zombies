@@ -309,23 +309,23 @@ public:
     /*inline*/
     bool StageIsNight();
     /*inline*/
-    bool StageHasPool();
+    bool StageHasPool() const;
     /*inline*/
-    bool StageHas6Rows();
+    bool StageHas6Rows() const;
     /*inline*/
-    bool StageHasFog();
+    bool StageHasFog() const;
     /*inline*/
-    bool StageIsDayWithoutPool();
+    bool StageIsDayWithoutPool() const;
     /*inline*/
-    bool StageIsDayWithPool();
+    bool StageIsDayWithPool() const;
     bool StageHasGraveStones();
-    int PixelToGridX(int theX, int theY);
-    int PixelToGridY(int theX, int theY);
+    int PixelToGridX(int theX, int theY) const;
+    int PixelToGridY(int theX, int theY) const;
     /*inline*/
     int GridToPixelX(int theGridX, int theGridY);
     int GridToPixelY(int theGridX, int theGridY);
     /*inline*/
-    int PixelToGridXKeepOnBoard(int theX, int theY);
+    int PixelToGridXKeepOnBoard(const int theX, const int theY) const;
     /*inline*/
     int PixelToGridYKeepOnBoard(int theX, int theY);
     void UpdateGameObjects();
@@ -413,7 +413,7 @@ public:
     void DrawFog(Graphics *g);
     void UpdateFog();
     /*inline*/
-    int LeftFogColumn();
+    int LeftFogColumn() const;
     static /*inline*/ bool IsZombieTypePoolOnly(ZombieType theZombieType);
     void DropLootPiece(int thePosX, int thePosY, int theDropFactor);
     void UpdateLevelEndSequence();
@@ -425,9 +425,9 @@ public:
     void NextWaveComing();
     bool BungeeIsTargetingCell(int theGridX, int theGridY);
     /*inline*/
-    int PlantingPixelToGridX(int theX, int theY, SeedType theSeedType);
+    int PlantingPixelToGridX(int theX, int theY, const SeedType theSeedType) const;
     /*inline*/
-    int PlantingPixelToGridY(int theX, int theY, SeedType theSeedType);
+    int PlantingPixelToGridY(int theX, int theY, const SeedType theSeedType);
     Plant *FindUmbrellaPlant(int theGridX, int theGridY);
     void SetTutorialState(TutorialState theTutorialState);
     void DoFwoosh(int theRow);
@@ -459,14 +459,14 @@ public:
         int theDamageRangeFlags
     ); // @Patoke: modified function prototype
     /*inline*/
-    int GetSeedBankExtraWidth();
+    int GetSeedBankExtraWidth() const;
     bool IsFlagWave(int theWaveNumber);
     void DrawHouseDoorTop(Graphics *g);
     void DrawHouseDoorBottom(Graphics *g);
     Zombie *GetBossZombie();
     bool HasConveyorBeltSeedBank();
     /*inline*/
-    bool StageHasRoof();
+    bool StageHasRoof() const;
     void SpawnZombiesFromPool();
     void SpawnZombiesFromSky();
     void PickUpTool(GameObjectType theObjectType);
@@ -520,7 +520,7 @@ public:
     GridItem *GetSquirrelAt(int theGridX, int theGridY);
     GridItem *GetZenToolAt(int theGridX, int theGridY);
     bool IsPlantInGoldWateringCanRange(int theMouseX, int theMouseY, const Plant *thePlant);
-    bool StageHasZombieWalkInFromRight();
+    bool StageHasZombieWalkInFromRight() const;
     void PlaceRake();
     GridItem *GetRake();
     /*inline*/
@@ -548,7 +548,7 @@ public:
     void DrawZenWheelBarrowButton(Graphics *g, int theOffsetY);
     void DrawZenButtons(Graphics *g);
     /*inline*/
-    void OffsetYForPlanting(int &theY, SeedType theSeedType);
+    void OffsetYForPlanting(int &theY, const SeedType theSeedType) const;
     void SetDanceMode(bool theEnableDance);
     void SetFutureMode(bool theEnableFuture);
     void SetPinataMode(bool theEnablePinata);

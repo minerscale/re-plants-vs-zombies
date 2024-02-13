@@ -1513,6 +1513,11 @@ VkInterface::~VkInterface() {
     renderMutex.unlock();
 }
 
+void VkInterface::UpdateWindowOptions(const int width, const int height, const bool fullscreen) {
+    SDL_SetWindowSize(window, width, height);
+    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
 void VkInterface::framebufferResizeCallback() { framebufferResized = true; }
 
 void VkInterface::windowFocusCallback(bool focused) {
@@ -1620,7 +1625,8 @@ void VkInterface::keyCallback(uint32_t key, uint8_t state) {
 }
 
 void VkInterface::charCallback(char codepoint[32]) {
-    widgetManager->KeyChar(std::string(codepoint)[0]); // broken, but one day utf8
+    widgetManager->KeyChar(std::string(codepoint)[0]);
+    // broken, but one day utf8
 }
 
 void VkInterface::windowCloseCallback() {
@@ -1658,18 +1664,20 @@ void VkInterface::PollEvents() {
 
 bool Vk::VkInterface::IsFocused() { return widgetManager->mApp->mActive; }
 
-void initSDL(int width, int height) {
+void initSDL(const int width, const int height, const bool fullscreen) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    window = SDL_CreateWindow(
-        "Plants Vs Zombies", 400, 200, width, height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI
-    );
+    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+    if (fullscreen) {
+        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+
+    window = SDL_CreateWindow("Plants Vs Zombies", 400, 200, width, height, flags);
 }
 
-VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager) {
+VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager, bool fullscreen) {
     widgetManager = mWidgetManager;
-    initSDL(width, height);
+    initSDL(width, height, fullscreen);
 
     // Init vulkan
     createInstance();
@@ -1759,7 +1767,7 @@ Image *VkInterface::GetScreenImage() { return windowImage; }
 
 void VkInterface::ShowWindow() { SDL_ShowWindow(window); }
 
-bool VkInterface::ShouldClose() { return windowShouldClose; }
+bool VkInterface::ShouldClose() const { return windowShouldClose; }
 
 void VkInterface::ReleaseMouseCapture() { SDL_ShowCursor(SDL_ENABLE); }
 

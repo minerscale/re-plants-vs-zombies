@@ -60,9 +60,9 @@ public:
 
     int GetWidth() const;
     int GetHeight();
-    int GetCelWidth();           // returns the width of just 1 cel in a strip of images
-    int GetCelHeight();          // like above but for vertical strips
-    int GetAnimCel(int theTime); // use animinfo to return appropriate cel to draw at the time
+    int GetCelWidth();                 // returns the width of just 1 cel in a strip of images
+    int GetCelHeight();                // like above but for vertical strips
+    int GetAnimCel(int theTime) const; // use animinfo to return appropriate cel to draw at the time
     Rect GetAnimCelRect(int theTime);
     Rect GetCelRect(int theCel);             // Gets the rectangle for the given cel at the specified row/col
     Rect GetCelRect(int theCol, int theRow); // Same as above, but for an image with both multiple rows and cols

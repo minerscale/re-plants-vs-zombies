@@ -414,5 +414,6 @@ tools/run/
 tools/read-compiled/target
 *.sublime-workspace
 
-Dependencies/*
+external/*
 /launch.cmd
+

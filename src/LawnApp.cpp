@@ -1505,16 +1505,18 @@ void LawnApp::LoadingThreadProc() {
         mTitleScreen->mLoaderScreenIsLoaded = true;
     }
 
-    const char *groups[] = {"LoadingFonts", "LoadingImages", "LoadingSounds"};
-    int group_ave_ms_to_load[] = {54, 9, 54};
-    for (int i = 0; i < 3; i++) {
-        mNumLoadingThreadTasks += mResourceManager->GetNumResources(groups[i]) * group_ave_ms_to_load[i];
+    const auto groups = {"LoadingImages", "LoadingFonts", "LoadingSounds"};
+    constexpr int group_ave_ms_to_load[] = {9, 54, 54};
+
+    for (const auto [i, group] : std::views::enumerate(groups)) {
+        mNumLoadingThreadTasks += mResourceManager->GetNumResources(group) * group_ave_ms_to_load[i];
     }
+
     // mNumLoadingThreadTasks += 636;
     mNumLoadingThreadTasks -= 744;
     // I have no idea why but the count is off by this much.
     mNumLoadingThreadTasks += GetNumPreloadingTasks();
-    mNumLoadingThreadTasks += mMusic->GetNumLoadingTasks();
+    mNumLoadingThreadTasks += Music::GetNumLoadingTasks();
 
     auto aTimer = std::chrono::high_resolution_clock::now();
 
@@ -1522,12 +1524,13 @@ void LawnApp::LoadingThreadProc() {
     TodHesitationBracket aHesitationResources("Resources");
     TodHesitationTrace("loading thread start");
 
-    LoadGroup("LoadingImages", 9);
-    LoadGroup("LoadingFonts", 54);
-    LoadGroup("LoadingSounds", 54);
+    for (const auto [i, group] : std::views::enumerate(groups)) {
+        LoadGroup(group, group_ave_ms_to_load[i]);
+    }
+
     if (mLoadingFailed || mShutdown || mCloseRequest) return;
 
-    aHesitationResources.EndBracket();
+    TodHesitationBracket::EndBracket();
 
     TodTrace(
         "loading: '%s' %d ms", "resources",

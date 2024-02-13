@@ -130,14 +130,11 @@ bool ResourceManager::Fail(const std::string &theErrorText) {
 
         int aLineNum = mXMLParser->GetCurrentLineNum();
 
-        char aLineNumStr[16];
-        sprintf(aLineNumStr, "%d", aLineNum);
-
         mError = theErrorText;
 
-        if (aLineNum > 0) mError += std::string(" on Line ") + aLineNumStr;
+        if (aLineNum > 0) mError += std::format(" on Line {}", aLineNum);
 
-        if (mXMLParser->GetFileName().length() > 0) mError += " in File '" + mXMLParser->GetFileName() + "'";
+        if (!mXMLParser->GetFileName().empty()) mError += std::format(" in File '{}'", mXMLParser->GetFileName());
     }
 
     return false;
@@ -199,7 +196,7 @@ bool ResourceManager::ParseSoundResource(XMLElement &theElement) {
         }
     }
 
-    XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("volume"));
+    auto anItr = theElement.mAttributes.find(_S("volume"));
     if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%lf"), &aRes->mVolume);
 
     anItr = theElement.mAttributes.find(_S("pan"));
@@ -232,7 +229,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
             mError = "";
             mHasFailed = false;
             ImageRes *oldRes = aRes;
-            aRes = static_cast<ImageRes *>(mImageMap[oldRes->mId]);
+            aRes = dynamic_cast<ImageRes *>(mImageMap[oldRes->mId]);
             aRes->mPath = oldRes->mPath;
             aRes->mXMLAttributes = oldRes->mXMLAttributes;
             delete oldRes;
@@ -251,7 +248,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
     aRes->mMinimizeSubdivisions = theElement.mAttributes.contains(_S("minsubdivide"));
     aRes->mAutoFindAlpha = !theElement.mAttributes.contains(_S("noalpha"));
 
-    XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("alphaimage"));
+    auto anItr = theElement.mAttributes.find(_S("alphaimage"));
     if (anItr != theElement.mAttributes.end()) aRes->mAlphaImage = mDefaultPath + SexyStringToStringFast(anItr->second);
 
     aRes->mAlphaColor = 0xFFFFFF;
@@ -325,7 +322,7 @@ bool ResourceManager::ParseFontResource(XMLElement &theElement) {
             mError = "";
             mHasFailed = false;
             FontRes *oldRes = aRes;
-            aRes = static_cast<FontRes *>(mFontMap[oldRes->mId]);
+            aRes = dynamic_cast<FontRes *>(mFontMap[oldRes->mId]);
             aRes->mPath = oldRes->mPath;
             aRes->mXMLAttributes = oldRes->mXMLAttributes;
             delete oldRes;
@@ -335,7 +332,7 @@ bool ResourceManager::ParseFontResource(XMLElement &theElement) {
         }
     }
 
-    XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("image"));
+    auto anItr = theElement.mAttributes.find(_S("image"));
     if (anItr != theElement.mAttributes.end()) aRes->mImagePath = SexyStringToStringFast(anItr->second);
 
     anItr = theElement.mAttributes.find(_S("tags"));
@@ -363,7 +360,7 @@ bool ResourceManager::ParseFontResource(XMLElement &theElement) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::ParseSetDefaults(XMLElement &theElement) {
-    XMLParamMap::iterator anItr = theElement.mAttributes.find(_S("path"));
+    auto anItr = theElement.mAttributes.find(_S("path"));
     if (anItr != theElement.mAttributes.end())
         mDefaultPath = RemoveTrailingSlash(SexyStringToStringFast(anItr->second)) + '/';
 
@@ -530,7 +527,7 @@ Image *ResourceManager::LoadImage(const std::string &theName) {
     auto anItr = mImageMap.find(theName);
     if (anItr == mImageMap.end()) return nullptr;
 
-    auto aRes = static_cast<ImageRes *>(anItr->second);
+    auto aRes = dynamic_cast<ImageRes *>(anItr->second);
 
     if (aRes->mImage != nullptr) return aRes->mImage;
 
@@ -637,7 +634,7 @@ _Font *ResourceManager::LoadFont(const std::string &theName) {
     auto anItr = mFontMap.find(theName);
     if (anItr == mFontMap.end()) return nullptr;
 
-    auto aRes = static_cast<FontRes *>(anItr->second);
+    auto aRes = dynamic_cast<FontRes *>(anItr->second);
     if (aRes->mFont != nullptr) return aRes->mFont;
 
     if (aRes->mFromProgram) return nullptr;
@@ -664,21 +661,21 @@ bool ResourceManager::LoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            auto anImageRes = static_cast<ImageRes *>(aRes);
+            auto anImageRes = dynamic_cast<ImageRes *>(aRes);
             if (anImageRes->mImage != nullptr) continue;
 
             return DoLoadImage(anImageRes);
         }
 
         case ResType_Sound: {
-            auto aSoundRes = static_cast<SoundRes *>(aRes);
+            auto aSoundRes = dynamic_cast<SoundRes *>(aRes);
             if (aSoundRes->mSoundId != -1) continue;
 
             return DoLoadSound(aSoundRes);
         }
 
         case ResType_Font: {
-            auto aFontRes = static_cast<FontRes *>(aRes);
+            auto aFontRes = dynamic_cast<FontRes *>(aRes);
             if (aFontRes->mFont != nullptr) continue;
 
             return DoLoadFont(aFontRes);
@@ -707,7 +704,7 @@ void ResourceManager::StartLoadResources(const std::string &theGroup) {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-void ResourceManager::DumpCurResGroup(std::string &theDestStr) {
+void ResourceManager::DumpCurResGroup(std::string &theDestStr) const {
     const ResList *rl = &mResGroupMap.find(mCurResGroup)->second;
     auto it = rl->begin();
     theDestStr =
@@ -749,8 +746,7 @@ int ResourceManager::GetNumResources(const std::string &theGroup, ResMap &theMap
     if (theGroup.empty()) return theMap.size();
 
     int aCount = 0;
-    for (auto anItr = theMap.begin(); anItr != theMap.end(); ++anItr) {
-        BaseRes *aRes = anItr->second;
+    for (const auto aRes : theMap | std::views::values) {
         if (aRes->mResGroup == theGroup && !aRes->mFromProgram) ++aCount;
     }
 
@@ -778,25 +774,25 @@ int ResourceManager::GetNumResources(const std::string &theGroup) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 Image *ResourceManager::GetImage(const std::string &theId) {
-    auto anItr = mImageMap.find(theId);
-    if (anItr != mImageMap.end()) return static_cast<ImageRes *>(anItr->second)->mImage;
-    else return nullptr;
+    const auto anItr = mImageMap.find(theId);
+    if (anItr != mImageMap.end()) return dynamic_cast<ImageRes *>(anItr->second)->mImage;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 int ResourceManager::GetSound(const std::string &theId) {
-    auto anItr = mSoundMap.find(theId);
-    if (anItr != mSoundMap.end()) return static_cast<SoundRes *>(anItr->second)->mSoundId;
-    else return -1;
+    const auto anItr = mSoundMap.find(theId);
+    if (anItr != mSoundMap.end()) return dynamic_cast<SoundRes *>(anItr->second)->mSoundId;
+    return -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 _Font *ResourceManager::GetFont(const std::string &theId) {
-    auto anItr = mFontMap.find(theId);
-    if (anItr != mFontMap.end()) return static_cast<FontRes *>(anItr->second)->mFont;
-    else return nullptr;
+    const auto anItr = mFontMap.find(theId);
+    if (anItr != mFontMap.end()) return dynamic_cast<FontRes *>(anItr->second)->mFont;
+    return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -804,7 +800,7 @@ _Font *ResourceManager::GetFont(const std::string &theId) {
 Image *ResourceManager::GetImageThrow(const std::string &theId) {
     auto anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) {
-        auto aRes = static_cast<ImageRes *>(anItr->second);
+        const auto aRes = dynamic_cast<ImageRes *>(anItr->second);
 
         if (aRes->mImage != nullptr) return aRes->mImage;
 

@@ -148,11 +148,13 @@ float TodCalcSmoothWeight(float aWeight, float aLastPicked, float aSecondLastPic
         return 0.0f;
     }
 
-    const float aExpectedLength1 = 1.0f / aWeight;                        // theLastPicked 的期望值
-    const float aExpectedLength2 = aExpectedLength1 * 2.0f;               // theSecondLastPicked 的期望值
-    const float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1; // 相较于 theLastPicked 的期望值，提前的轮数
-    const float aAdvancedLength2 =
-        aSecondLastPicked + 1.0f - aExpectedLength2; // 相较于 theSecondLastPicked 的期望值，提前的轮数
+    const float aExpectedLength1 = 1.0f / aWeight; // theLastPicked 的期望值
+    const float aExpectedLength2 = aExpectedLength1 * 2.0f;
+    // theSecondLastPicked 的期望值
+    const float aAdvancedLength1 = aLastPicked + 1.0f - aExpectedLength1;
+    // 相较于 theLastPicked 的期望值，提前的轮数
+    const float aAdvancedLength2 = aSecondLastPicked + 1.0f - aExpectedLength2;
+    // 相较于 theSecondLastPicked 的期望值，提前的轮数
     const float aFactor1 = 1.0f + aAdvancedLength1 / aExpectedLength1 * 2.0f;
     // = aWeight * aLastPicked * 2 + aWeight * 2 - 1
     const float aFactor2 = 1.0f + aAdvancedLength2 / aExpectedLength2 * 2.0f;
@@ -941,7 +943,7 @@ void TodResourceManager::AddImageToMap(Image *theImage, const std::string &thePa
 }
 
 bool TodLoadNextResource() {
-    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->TodLoadNextResource();
+    return dynamic_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->TodLoadNextResource();
 }
 
 // 0x513330
@@ -955,7 +957,7 @@ bool TodResourceManager::TodLoadNextResource() {
 
         switch (aRes->mType) {
         case ResType_Image: {
-            const ImageRes *anImageRes = static_cast<ImageRes *>(aRes);
+            const ImageRes *anImageRes = dynamic_cast<ImageRes *>(aRes);
             if (anImageRes->mImage != nullptr) {
                 ++mCurResGroupListItr;
                 continue;
@@ -965,7 +967,7 @@ bool TodResourceManager::TodLoadNextResource() {
         }
 
         case ResType_Sound: {
-            const SoundRes *aSoundRes = static_cast<SoundRes *>(aRes);
+            const SoundRes *aSoundRes = dynamic_cast<SoundRes *>(aRes);
             if (aSoundRes->mSoundId != -1) {
                 ++mCurResGroupListItr;
                 continue;
@@ -975,7 +977,7 @@ bool TodResourceManager::TodLoadNextResource() {
         }
 
         case ResType_Font: {
-            const FontRes *aFontRes = static_cast<FontRes *>(aRes);
+            const FontRes *aFontRes = dynamic_cast<FontRes *>(aRes);
             if (aFontRes->mFont != nullptr) {
                 ++mCurResGroupListItr;
                 continue;
@@ -997,7 +999,7 @@ bool TodResourceManager::TodLoadNextResource() {
 }
 
 bool TodFindImagePath(Image *theImage, std::string *thePath) {
-    return static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
+    return dynamic_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->FindImagePath(theImage, thePath);
 }
 
 // @Patoke implemented

@@ -46,6 +46,10 @@ public:
     CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, const void *pvANDPlane, const void *pvXORPlane) {
         return static_cast<T *>(this)->CreateCursor(xHotSpot, yHotSpot, nWidth, nHeight, pvANDPlane, pvXORPlane);
     }
+
+    void UpdateWindowOptions(const int width, const int height, const bool fullscreen) {
+        static_cast<T *>(this)->UpdateWindowOptions(width, height, fullscreen);
+    }
 };
 
 #endif // WINDOW_INTERFACE_H

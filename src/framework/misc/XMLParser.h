@@ -72,12 +72,12 @@ public:
     void SetStringSource(const std::string &theString);
     bool NextElement(XMLElement *theElement);
     SexyString GetErrorText();
-    int GetCurrentLineNum();
+    int GetCurrentLineNum() const;
     std::string GetFileName();
 
     inline void AllowComments(bool doAllow) { mAllowComments = doAllow; }
 
-    bool HasFailed();
+    bool HasFailed() const;
     bool EndOfFile();
 };
 }; // namespace Sexy

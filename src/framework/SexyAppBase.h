@@ -305,7 +305,7 @@ public:
 
     std::unique_ptr<RegistryEmulator> mRegHandle;
 
-    WindowInterface<Vk::VkInterface> *mWindowInterface;
+    std::unique_ptr<WindowInterface<Vk::VkInterface>> mWindowInterface;
 
 #ifdef ZYLOM
     uint mZylomGameId;
@@ -538,7 +538,7 @@ public:
     //	bool					DemoCheckHandle(HANDLE theHandle);
 
     // Registry access methods
-    bool RegistryGetSubKeys(const std::string &theKeyName, StringVector *theSubKeys);
+    static bool RegistryGetSubKeys(const std::string &theKeyName, StringVector *theSubKeys);
     bool RegistryReadString(const std::string &theValueName, std::string *theString);
     bool RegistryReadInteger(const std::string &theValueName, int *theValue);
     bool RegistryReadBoolean(const std::string &theValueName, bool *theValue);
@@ -548,7 +548,7 @@ public:
     bool RegistryWriteBoolean(const std::string &theValueName, bool theValue);
     bool RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, ulong theLength);
     bool RegistryEraseKey(const SexyString &theKeyName);
-    void RegistryEraseValue(const SexyString &theValueName);
+    static void RegistryEraseValue(const SexyString &theValueName);
 
     // File access methods
     bool WriteBufferToFile(const std::string &theFileName, const Buffer *theBuffer);

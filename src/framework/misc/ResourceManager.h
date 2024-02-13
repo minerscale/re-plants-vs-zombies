@@ -134,7 +134,7 @@ public: // @Patoke todo: revert to protected
     virtual bool DoLoadFont(FontRes *theRes);
     virtual bool DoLoadSound(SoundRes *theRes);
 
-    int GetNumResources(const std::string &theGroup, ResMap &theMap);
+    static int GetNumResources(const std::string &theGroup, ResMap &theMap);
 
 public:
     ResourceManager(SexyAppBase *theApp);
@@ -187,7 +187,7 @@ public:
 
     const ResList *GetCurResGroupList() { return mCurResGroupList; }
     std::string GetCurResGroup() { return mCurResGroup; }
-    void DumpCurResGroup(std::string &theDestStr);
+    void DumpCurResGroup(std::string &theDestStr) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

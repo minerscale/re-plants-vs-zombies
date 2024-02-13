@@ -305,7 +305,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
             wchar_t c;
             int aVal;
 
-            if (mBufferedText.size() > 0) {
+            if (!mBufferedText.empty()) {
                 c = mBufferedText[mBufferedText.size() - 1];
                 mBufferedText.pop_back();
 
@@ -325,8 +325,6 @@ bool XMLParser::NextElement(XMLElement *theElement) {
             }
 
             if (aVal == 1) {
-                bool processChar = false;
-
                 if (c == L'\n') {
                     mLineNum++;
                 }
@@ -362,6 +360,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                         break;
                     }
                 } else {
+                    bool processChar = false;
                     if (c == L'"') {
                         inQuote = !inQuote;
                         if (theElement->mType == XMLElement::TYPE_NONE || theElement->mType == XMLElement::TYPE_ELEMENT)
@@ -395,7 +394,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                     insertEnd = true;
                                 } else {
                                     // Probably isn't committed yet
-                                    if (aAttributeKey.length() > 0) {
+                                    if (!aAttributeKey.empty()) {
                                         //										theElement->mAttributes[aLastAttributeKey]
                                         //= aAttributeValue;
 
@@ -412,7 +411,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                         aAttributeValue = L"";
                                     }
 
-                                    if (aLastAttributeKey.length() > 0) {
+                                    if (!aLastAttributeKey.empty()) {
                                         SexyString aVal =
                                             theElement->mAttributes[WStringToSexyString(aLastAttributeKey)];
 
@@ -461,7 +460,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                     // OLD: mBufferedText = "</" + theElement->mValue + ">" + mBufferedText;
                                 }
 
-                                if (mSection.length() != 0) mSection += _S("/");
+                                if (!mSection.empty()) mSection += _S("/");
 
                                 mSection += theElement->mValue;
 
@@ -517,7 +516,7 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                         if (theElement->mType == XMLElement::TYPE_START) {
                             if (hasSpace) {
                                 if ((!doingAttribute) || ((!AttributeVal) && (c != _S('='))) ||
-                                    ((AttributeVal) && ((aAttributeValue.length() > 0) || gotEndQuote))) {
+                                    ((AttributeVal) && ((!aAttributeValue.empty()) || gotEndQuote))) {
                                     if (doingAttribute) {
                                         aAttributeKey = XMLDecodeString(aAttributeKey);
                                         aAttributeValue = XMLDecodeString(aAttributeValue);
@@ -593,10 +592,10 @@ bool XMLParser::NextElement(XMLElement *theElement) {
     }
 }
 
-bool XMLParser::HasFailed() { return mHasFailed; }
+bool XMLParser::HasFailed() const { return mHasFailed; }
 
 SexyString XMLParser::GetErrorText() { return mErrorText; }
 
-int XMLParser::GetCurrentLineNum() { return mLineNum; }
+int XMLParser::GetCurrentLineNum() const { return mLineNum; }
 
 std::string XMLParser::GetFileName() { return mFileName; }
