@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 namespace ImageLib {
 class Image;
@@ -185,8 +186,8 @@ public:
     virtual void DeleteResources(const std::string &theGroup);
     void DeleteExtraImageBuffers(const std::string &theGroup);
 
-    const ResList *GetCurResGroupList() { return mCurResGroupList; }
-    std::string GetCurResGroup() { return mCurResGroup; }
+    const ResList *GetCurResGroupList() const { return mCurResGroupList; }
+    std::string GetCurResGroup() const { return mCurResGroup; }
     void DumpCurResGroup(std::string &theDestStr) const;
 };
 
@@ -195,7 +196,7 @@ public:
 struct ResourceManagerException : public std::exception {
     std::string what;
 
-    ResourceManagerException(const std::string &theWhat) : what(theWhat) {}
+    explicit ResourceManagerException(std::string theWhat) : what(std::move(theWhat)) {}
 };
 } // namespace Sexy
 

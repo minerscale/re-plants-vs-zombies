@@ -816,7 +816,7 @@ Image *ResourceManager::GetImageThrow(const std::string &theId) {
 int ResourceManager::GetSoundThrow(const std::string &theId) {
     auto anItr = mSoundMap.find(theId);
     if (anItr != mSoundMap.end()) {
-        auto aRes = static_cast<SoundRes *>(anItr->second);
+        auto aRes = dynamic_cast<SoundRes *>(anItr->second);
         if (aRes->mSoundId != -1) return aRes->mSoundId;
 
         if (mAllowMissingProgramResources && aRes->mFromProgram) return -1;
@@ -831,7 +831,7 @@ int ResourceManager::GetSoundThrow(const std::string &theId) {
 _Font *ResourceManager::GetFontThrow(const std::string &theId) {
     auto anItr = mFontMap.find(theId);
     if (anItr != mFontMap.end()) {
-        auto aRes = static_cast<FontRes *>(anItr->second);
+        auto aRes = dynamic_cast<FontRes *>(anItr->second);
         if (aRes->mFont != nullptr) return aRes->mFont;
 
         if (mAllowMissingProgramResources && aRes->mFromProgram) return nullptr;
@@ -852,7 +852,7 @@ bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage) {
     if (anItr != mImageMap.end()) {
         anItr->second->DeleteResource();
 
-        static_cast<ImageRes *>(anItr->second)->mImage = theImage;
+        dynamic_cast<ImageRes *>(anItr->second)->mImage = theImage;
         //((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;
         return true;
     } else return false;
@@ -864,7 +864,7 @@ bool ResourceManager::ReplaceSound(const std::string &theId, int theSound) {
     auto anItr = mSoundMap.find(theId);
     if (anItr != mSoundMap.end()) {
         anItr->second->DeleteResource();
-        static_cast<SoundRes *>(anItr->second)->mSoundId = theSound;
+        dynamic_cast<SoundRes *>(anItr->second)->mSoundId = theSound;
         return true;
     } else return false;
 }
@@ -875,7 +875,7 @@ bool ResourceManager::ReplaceFont(const std::string &theId, _Font *theFont) {
     auto anItr = mFontMap.find(theId);
     if (anItr != mFontMap.end()) {
         anItr->second->DeleteResource();
-        static_cast<FontRes *>(anItr->second)->mFont = theFont;
+        dynamic_cast<FontRes *>(anItr->second)->mFont = theFont;
         return true;
     } else return false;
 }
@@ -887,5 +887,5 @@ const XMLParamMap &ResourceManager::GetImageAttributes(const std::string &theId)
 
     auto anItr = mImageMap.find(theId);
     if (anItr != mImageMap.end()) return anItr->second->mXMLAttributes;
-    else return aStrMap;
+    return aStrMap;
 }

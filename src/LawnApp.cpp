@@ -1029,8 +1029,8 @@ bool LawnApp::KillAlmanacDialog() {
 }
 
 // 0x4516F0
-bool LawnApp::NeedPauseGame() {
-    if (mDialogList.size() == 0) return false;
+bool LawnApp::NeedPauseGame() const {
+    if (mDialogList.empty()) return false;
 
     if (mDialogList.size() == 1 && mDialogList.front()->mId != Dialogs::DIALOG_NEW_GAME) {
         int anId = mDialogList.front()->mId;
@@ -1060,7 +1060,7 @@ void LawnApp::ModalClose() {
 // 0x451800
 bool LawnApp::KillDialog(int theDialogId) {
     if (SexyAppBase::KillDialog(theDialogId)) {
-        if (mDialogMap.size() == 0) {
+        if (mDialogMap.empty()) {
             if (mBoard) {
                 mWidgetManager->SetFocus(mBoard);
             } else if (mGameSelector) {
@@ -1795,23 +1795,23 @@ SexyString LawnApp::GetStageString(int theLevel) {
     return StrFormat("%d-%d", aArea, aSub);
 }
 
-bool LawnApp::IsAdventureMode() { return mGameMode == GameMode::GAMEMODE_ADVENTURE; }
+bool LawnApp::IsAdventureMode() const { return mGameMode == GameMode::GAMEMODE_ADVENTURE; }
 
 // 0x4536D0
-bool LawnApp::IsSurvivalMode() {
+bool LawnApp::IsSurvivalMode() const {
     return mGameMode >= GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1 &&
            mGameMode <= GameMode::GAMEMODE_SURVIVAL_ENDLESS_STAGE_5;
 }
 
 // 0x4536F0
-bool LawnApp::IsPuzzleMode() {
+bool LawnApp::IsPuzzleMode() const {
     return (mGameMode >= GameMode::GAMEMODE_SCARY_POTTER_1 && mGameMode <= GameMode::GAMEMODE_SCARY_POTTER_ENDLESS) ||
            (mGameMode >= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 && mGameMode <= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS
            );
 }
 
 // 0x453710
-bool LawnApp::IsChallengeMode() { return !IsAdventureMode() && !IsPuzzleMode() && !IsSurvivalMode(); }
+bool LawnApp::IsChallengeMode() const { return !IsAdventureMode() && !IsPuzzleMode() && !IsSurvivalMode(); }
 
 bool LawnApp::IsSurvivalNormal(GameMode theGameMode) {
     int aLevel = theGameMode - GameMode::GAMEMODE_SURVIVAL_NORMAL_STAGE_1;
@@ -1843,7 +1843,7 @@ bool LawnApp::IsContinuousChallenge() {
            mGameMode == GameMode::GAMEMODE_INTRO || mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST;
 }
 
-bool LawnApp::IsArtChallenge() {
+bool LawnApp::IsArtChallenge() const {
     if (mBoard == nullptr) return false;
 
     return mGameMode == GameMode::GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT ||
@@ -1881,7 +1881,7 @@ bool LawnApp::IsWallnutBowlingLevel() {
 }
 
 // 0x453870
-bool LawnApp::IsSlotMachineLevel() { return (mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE); }
+bool LawnApp::IsSlotMachineLevel() const { return (mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SLOT_MACHINE); }
 
 // 0x453890
 bool LawnApp::IsWhackAZombieLevel() {
@@ -2194,7 +2194,7 @@ bool LawnApp::HasBeatenChallenge(GameMode theGameMode) {
 }
 
 // 0x454170
-bool LawnApp::HasFinishedAdventure() { return mPlayerInfo && mPlayerInfo->mFinishedAdventure > 0; }
+bool LawnApp::HasFinishedAdventure() const { return mPlayerInfo && mPlayerInfo->mFinishedAdventure > 0; }
 
 // 0x454190
 bool LawnApp::IsFirstTimeAdventureMode() { return IsAdventureMode() && !HasFinishedAdventure(); }

@@ -199,7 +199,7 @@ SeedType gArtChallengeStarFruit[MAX_GRID_SIZE_Y][MAX_GRID_SIZE_X] = {
 
 // 0x41F1B0
 Challenge::Challenge() {
-    mApp = static_cast<LawnApp *>(gSexyAppBase);
+    mApp = dynamic_cast<LawnApp *>(gSexyAppBase);
     mBoard = mApp->mBoard;
     mBeghouledMouseCapture = false;
     mBeghouledMouseDownX = 0;
@@ -219,11 +219,11 @@ Challenge::Challenge() {
     mBeghouledMatchesThisMove = 0;
     mRainCounter = 0;
     mTreeOfWisdomTalkIndex = 0;
-    for (int i = 0; i < 6; i++)
-        mReanimClouds[i] = REANIMATIONID_NULL;
+    for (auto &mReanimCloud : mReanimClouds)
+        mReanimCloud = REANIMATIONID_NULL;
     memset(mBeghouledEated, 0, sizeof(mBeghouledEated));
-    for (int i = 0; i < static_cast<int>(BeghouledUpgrade::NUM_BEGHOULED_UPGRADES); i++)
-        mBeghouledPurcasedUpgrade[i] = false;
+    for (int &i : mBeghouledPurcasedUpgrade)
+        i = false;
 
     if (mApp->mBoard && mApp->mGameMode == GAMEMODE_CHALLENGE_SLOT_MACHINE) {
         const Rect aHandleRect = SlotMachineGetHandleRect();
@@ -238,9 +238,9 @@ Challenge::Challenge() {
 
 // 0x41F320
 void Challenge::LoadBeghouledBoardState(BeghouledBoardState *theBoardState) const {
-    for (int i = 0; i < MAX_GRID_SIZE_X; i++)
-        for (int j = 0; j < MAX_GRID_SIZE_Y; j++)
-            theBoardState->mSeedType[i][j] = SEED_NONE;
+    for (auto &i : theBoardState->mSeedType)
+        for (auto &j : i)
+            j = SEED_NONE;
 
     Plant *aPlant = nullptr;
     while (mBoard->IteratePlants(aPlant))
@@ -344,9 +344,9 @@ void Challenge::StartLevel() {
     }
     if (mApp->IsSurvivalMode() && mSurvivalStage == 0) {
         const SexyString aMessage =
-            mApp->IsSurvivalNormal(aGameMode)
+            LawnApp::IsSurvivalNormal(aGameMode)
                 ? TodReplaceNumberString(_S("[ADVICE_SURVIVE_FLAGS]"), _S("{FLAGS}"), SURVIVAL_NORMAL_FLAGS)
-            : mApp->IsSurvivalHard(aGameMode)
+            : LawnApp::IsSurvivalHard(aGameMode)
                 ? TodReplaceNumberString(_S("[ADVICE_SURVIVE_FLAGS]"), _S("{FLAGS}"), SURVIVAL_HARD_FLAGS)
                 : _S("[ADVICE_SURVIVE_ENDLESS]");
         mBoard->DisplayAdvice(aMessage, MESSAGE_STYLE_HINT_FAST, AdviceType::ADVICE_SURVIVE_FLAGS);
@@ -457,7 +457,7 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 }
 
 // 0x420220
-int Challenge::BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY) {
+int Challenge::BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY) const {
     theGridX = mBoard->PixelToGridX(theX - 40, theY - 40);
     theGridY = mBoard->PixelToGridY(theX - 40, theY - 40);
     if (theGridX == -1 || theGridY == -1 || theGridX > 6 || theGridY > 3) {
@@ -472,7 +472,7 @@ int Challenge::BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, 
 void Challenge::BeghouledTwistMouseDown(int x, int y) {
     if (mBoard->HasLevelAwardDropped()) return;
 
-    BeghouledBoardState aBoardState;
+    BeghouledBoardState aBoardState{};
     LoadBeghouledBoardState(&aBoardState);
 
     int aGridX, aGridY;
@@ -591,7 +591,8 @@ SeedType Challenge::BeghouledGetPlantAt(int theGridX, int theGridY, const Beghou
 }
 
 // 0x420A50
-void Challenge::BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState) {
+void Challenge::BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, const BeghouledBoardState *theBoardState)
+    const {
     const SeedType aSeedType = BeghouledGetPlantAt(theGridX, theGridY, theBoardState);
     do {
         Plant *aPlant = mBoard->GetTopPlantAt(theGridX, theGridY, PlantPriority::TOPPLANT_ANY);
@@ -603,7 +604,8 @@ void Challenge::BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, Begho
 }
 
 // 0x420B60
-void Challenge::BeghouledRemoveVerticalMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState) {
+void Challenge::BeghouledRemoveVerticalMatch(int theGridX, int theGridY, const BeghouledBoardState *theBoardState)
+    const {
     const SeedType aSeedType = BeghouledGetPlantAt(theGridX, theGridY, theBoardState);
     do {
         Plant *aPlant = mBoard->GetTopPlantAt(theGridX, theGridY, PlantPriority::TOPPLANT_ANY);
@@ -656,10 +658,10 @@ void Challenge::BeghouledClearCrater(int theCount) {
     mBoard->ClearAdvice(AdviceType::ADVICE_BEGHOULED_USE_CRATER_1);
     mBoard->ClearAdvice(AdviceType::ADVICE_BEGHOULED_USE_CRATER_2);
 
-    for (int aGridX = 0; aGridX < MAX_GRID_SIZE_X; aGridX++) {
+    for (auto &aGridX : mBeghouledEated) {
         for (int aGridY = 0; aGridY < BEGHOULED_MAX_GRIDSIZEY; aGridY++) {
-            if (mBeghouledEated[aGridX][aGridY]) {
-                mBeghouledEated[aGridX][aGridY] = false;
+            if (aGridX[aGridY]) {
+                aGridX[aGridY] = false;
                 if (--theCount == 0) {
                     BeghouledUpdateCraters();
                     return;
@@ -749,7 +751,7 @@ void Challenge::BeghouledRemoveMatches(BeghouledBoardState *theBoardState) {
 }
 
 // 0x4214C0
-int Challenge::BeghouledHorizontalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState) {
+int Challenge::BeghouledHorizontalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState) {
     const SeedType aSeedType = BeghouledGetPlantAt(theGridX, theGridY, theBoardState);
     if (aSeedType == SEED_NONE || BeghouledGetPlantAt(theGridX - 1, theGridY, theBoardState) == aSeedType) return 0;
 
@@ -760,7 +762,7 @@ int Challenge::BeghouledHorizontalMatchLength(int theGridX, int theGridY, Beghou
 }
 
 // 0x421520
-int Challenge::BeghouledVerticalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState) {
+int Challenge::BeghouledVerticalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState) {
     const SeedType aSeedType = BeghouledGetPlantAt(theGridX, theGridY, theBoardState);
     if (aSeedType == SEED_NONE || BeghouledGetPlantAt(theGridX, theGridY - 1, theBoardState) == aSeedType) return 0;
 
@@ -771,7 +773,7 @@ int Challenge::BeghouledVerticalMatchLength(int theGridX, int theGridY, Beghoule
 }
 
 // 0x421590
-int Challenge::BeghouledBoardHasMatch(BeghouledBoardState *theBoardState) {
+int Challenge::BeghouledBoardHasMatch(const BeghouledBoardState *theBoardState) {
     for (int aCol = 0; aCol < 8; aCol++) {
         for (int aRow = 0; aRow < 5; aRow++) {
             if (BeghouledHorizontalMatchLength(aCol, aRow, theBoardState) >= 3 ||
@@ -783,8 +785,9 @@ int Challenge::BeghouledBoardHasMatch(BeghouledBoardState *theBoardState) {
 }
 
 // 0x4215E0
-SeedType
-Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches) {
+SeedType Challenge::BeghouledPickSeed(
+    int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches
+) const {
     TOD_ASSERT(theBoardState->mSeedType[theGridX][theGridY] == SEED_NONE);
     // SeedType* aSeedState = &theBoardState->mSeedType[theGridX][theGridY];
     int aCount = 0;
@@ -828,7 +831,7 @@ Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *th
 }
 
 // 0x4216E0
-void Challenge::BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches) {
+void Challenge::BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches) const {
     for (int aCol = 0; aCol < BEGHOULED_MAX_GRIDSIZEX; aCol++) {
         for (int aRow = 0; aRow < BEGHOULED_MAX_GRIDSIZEY; aRow++) {
             if (theBoardState->mSeedType[aCol][aRow] == SeedType::SEED_NONE && !mBeghouledEated[aCol][aRow]) {
@@ -5058,7 +5061,7 @@ int Challenge::TreeOfWisdomHitTest(int theX, int theY, HitResult *theHitResult) 
 }
 
 // 0x42DA90
-int Challenge::TreeOfWisdomCanFeed() {
+int Challenge::TreeOfWisdomCanFeed() const {
     if (mChallengeState == ChallengeState::STATECHALLENGE_TREE_JUST_GREW) return false;
 
     GridItem *aGridItem = nullptr;

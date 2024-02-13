@@ -929,7 +929,7 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
 }
 
 void TodAddImageToMap(Image *theImage, const std::string &thePath) {
-    static_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
+    dynamic_cast<TodResourceManager *>(gSexyAppBase->mResourceManager)->AddImageToMap(theImage, thePath);
 }
 
 // 0x513230

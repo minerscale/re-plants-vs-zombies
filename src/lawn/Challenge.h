@@ -75,12 +75,13 @@ public:
     void StartLevel();
     void BeghouledPopulateBoard();
     void LoadBeghouledBoardState(BeghouledBoardState *theState) const;
-    SeedType BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches);
-    int BeghouledBoardHasMatch(BeghouledBoardState *theBoardState);
+    SeedType
+    BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches) const;
+    static int BeghouledBoardHasMatch(const BeghouledBoardState *theBoardState);
     /*inline*/
     static SeedType BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
-    int BeghouledVerticalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
-    int BeghouledHorizontalMatchLength(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
+    static int BeghouledVerticalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
+    static int BeghouledHorizontalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     /*inline*/
     void BeghouledDragStart(int x, int y);
     void BeghouledDragUpdate(int x, int y);
@@ -89,8 +90,8 @@ public:
     int MouseDown(int x, int y, int theClickCount, const HitResult *theHitResult);
     int MouseUp(int x, int y);
     void ClearCursor();
-    void BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
-    void BeghouledRemoveVerticalMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
+    void BeghouledRemoveHorizontalMatch(int theGridX, int theGridY, const BeghouledBoardState *theBoardState) const;
+    void BeghouledRemoveVerticalMatch(int theGridX, int theGridY, const BeghouledBoardState *theBoardState) const;
     void BeghouledRemoveMatches(BeghouledBoardState *theBoardState);
     void Update();
     void UpdateBeghouled();
@@ -215,7 +216,7 @@ public:
     void IZombieScoreBrain(const GridItem *theBrain);
     void LastStandUpdate();
     void WhackAZombiePlaceGraves(int theGraveCount) const;
-    int BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY);
+    int BeghouledTwistSquareFromMouse(int theX, int theY, int &theGridX, int &theGridY) const;
     static int BeghouledTwistValidMove(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     void BeghouledTwistMouseDown(int x, int y);
     int BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
@@ -223,7 +224,7 @@ public:
     /*inline*/
     void BeghouledCancelMatchFlashing();
     void BeghouledStartFalling(ChallengeState theState);
-    void BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches);
+    void BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches) const;
     /*inline*/
     void BeghouledMakeStartBoard();
     void
@@ -255,7 +256,7 @@ public:
     void TreeOfWisdomBabble();
     void TreeOfWisdomGiveWisdom();
     void TreeOfWisdomSayRepeat();
-    int TreeOfWisdomCanFeed();
+    int TreeOfWisdomCanFeed() const;
 
     GridItem *GetPortalLeftRight(int theGridX, int theGridY, int theToLeft = true);
 };

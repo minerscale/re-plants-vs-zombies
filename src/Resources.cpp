@@ -1,53 +1,54 @@
 #include "Resources.h"
+
+#include "compiler/hash.h"
 #include "framework/misc/ResourceManager.h"
-#include <map>
 
 using namespace Sexy;
 
 bool gNeedRecalcVariableToIdMap = false;
 
+using ResourceFn = bool (*)(ResourceManager *);
+
+constexpr std::tuple<const char *, ResourceFn> RawResourcesFnMap[] = {
+    {"DelayLoad_Almanac",            ExtractDelayLoad_AlmanacResources           },
+    {"DelayLoad_AwardScreen",        ExtractDelayLoad_AwardScreenResources       },
+    {"DelayLoad_Background1",        ExtractDelayLoad_Background1Resources       },
+    {"DelayLoad_Background2",        ExtractDelayLoad_Background2Resources       },
+    {"DelayLoad_Background3",        ExtractDelayLoad_Background3Resources       },
+    {"DelayLoad_Background4",        ExtractDelayLoad_Background4Resources       },
+    {"DelayLoad_Background5",        ExtractDelayLoad_Background5Resources       },
+    {"DelayLoad_Background6",        ExtractDelayLoad_Background6Resources       },
+    {"DelayLoad_BackgroundUnsodded", ExtractDelayLoad_BackgroundUnsoddedResources},
+    {"DelayLoad_ChallengeScreen",    ExtractDelayLoad_ChallengeScreenResources   },
+    {"DelayLoad_Credits",            ExtractDelayLoad_CreditsResources           },
+    {"DelayLoad_GreenHouseGarden",   ExtractDelayLoad_GreenHouseGardenResources  },
+    {"DelayLoad_GreenHouseOverlay",  ExtractDelayLoad_GreenHouseOverlayResources },
+    {"DelayLoad_MushroomGarden",     ExtractDelayLoad_MushroomGardenResources    },
+    {"DelayLoad_Store",              ExtractDelayLoad_StoreResources             },
+    {"DelayLoad_Zombatar",           ExtractDelayLoad_ZombatarResources          },
+    {"DelayLoad_ZombieFinalNote",    ExtractDelayLoad_ZombieFinalNoteResources   },
+    {"DelayLoad_ZombieNote",         ExtractDelayLoad_ZombieNoteResources        },
+    {"DelayLoad_ZombieNote1",        ExtractDelayLoad_ZombieNote1Resources       },
+    {"DelayLoad_ZombieNote2",        ExtractDelayLoad_ZombieNote2Resources       },
+    {"DelayLoad_ZombieNote3",        ExtractDelayLoad_ZombieNote3Resources       },
+    {"DelayLoad_ZombieNote4",        ExtractDelayLoad_ZombieNote4Resources       },
+    {"DelayLoad_ZombieNoteHelp",     ExtractDelayLoad_ZombieNoteHelpResources    },
+    {"DelayLoad_Zombiquarium",       ExtractDelayLoad_ZombiquariumResources      },
+    {"Init",                         ExtractInitResources                        },
+    {"LoaderBar",                    ExtractLoaderBarResources                   },
+    {"LoadingFonts",                 ExtractLoadingFontsResources                },
+    {"LoadingImages",                ExtractLoadingImagesResources               },
+    {"LoadingSounds",                ExtractLoadingSoundsResources               },
+};
+
+constexpr auto ResourcesFnMap = compiler::OrderedHashMap(RawResourcesFnMap);
+
 // 0x474700
 bool Sexy::ExtractResourcesByName(ResourceManager *theResourceManager, const char *theName) {
-    // @Patoke: updated these, please use compiletime hashes
-    if (!strcmp(theName, "DelayLoad_Almanac")) return ExtractDelayLoad_AlmanacResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_AwardScreen")) return ExtractDelayLoad_AwardScreenResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background1")) return ExtractDelayLoad_Background1Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background2")) return ExtractDelayLoad_Background2Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background3")) return ExtractDelayLoad_Background3Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background4")) return ExtractDelayLoad_Background4Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background5")) return ExtractDelayLoad_Background5Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Background6")) return ExtractDelayLoad_Background6Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_BackgroundUnsodded"))
-        return ExtractDelayLoad_BackgroundUnsoddedResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ChallengeScreen"))
-        return ExtractDelayLoad_ChallengeScreenResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Credits")) return ExtractDelayLoad_CreditsResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_GreenHouseGarden"))
-        return ExtractDelayLoad_GreenHouseGardenResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_GreenHouseOverlay"))
-        return ExtractDelayLoad_GreenHouseOverlayResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_MushroomGarden"))
-        return ExtractDelayLoad_MushroomGardenResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Store")) return ExtractDelayLoad_StoreResources(theResourceManager);
-    //	if (!strcmp(theName, "DelayLoad_TreeOfWisdom")) return
-    //ExtractDelayLoad_TreeOfWisdomResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Zombatar")) return ExtractDelayLoad_ZombatarResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieFinalNote"))
-        return ExtractDelayLoad_ZombieFinalNoteResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNote")) return ExtractDelayLoad_ZombieNoteResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNote1")) return ExtractDelayLoad_ZombieNote1Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNote2")) return ExtractDelayLoad_ZombieNote2Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNote3")) return ExtractDelayLoad_ZombieNote3Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNote4")) return ExtractDelayLoad_ZombieNote4Resources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_ZombieNoteHelp"))
-        return ExtractDelayLoad_ZombieNoteHelpResources(theResourceManager);
-    if (!strcmp(theName, "DelayLoad_Zombiquarium")) return ExtractDelayLoad_ZombiquariumResources(theResourceManager);
-    if (!strcmp(theName, "Init")) return ExtractInitResources(theResourceManager);
-    if (!strcmp(theName, "LoaderBar")) return ExtractLoaderBarResources(theResourceManager);
-    if (!strcmp(theName, "LoadingFonts")) return ExtractLoadingFontsResources(theResourceManager);
-    if (!strcmp(theName, "LoadingImages")) return ExtractLoadingImagesResources(theResourceManager);
-    if (!strcmp(theName, "LoadingSounds")) return ExtractLoadingSoundsResources(theResourceManager);
-
+    const auto fn = ResourcesFnMap.find(theName);
+    if (fn.has_value()) {
+        return fn.value()(theResourceManager);
+    }
     unreachable();
 }
 

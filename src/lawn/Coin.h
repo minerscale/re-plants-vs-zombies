@@ -51,7 +51,7 @@ public:
     void Draw(Graphics *g);
     void Collect();
     /*inline*/
-    int GetSunValue();
+    int GetSunValue() const;
     static /*inline*/ int GetCoinValue(CoinType theCoinType);
     void UpdateFade();
     void UpdateFall();
@@ -62,8 +62,8 @@ public:
     bool IsMoney() const;
     /*inline*/
     bool IsSun();
-    float GetSunScale();
-    inline bool IsOnGround() { return false; }
+    float GetSunScale() const;
+    static inline bool IsOnGround() { return false; }
     SeedType GetFinalSeedPacketType();
     bool IsLevelAward();
     bool CoinGetsBouncyArrow();
@@ -72,7 +72,7 @@ public:
     void DroppedUsableSeed();
     void PlayCollectSound();
     void TryAutoCollectAfterLevelAward();
-    bool IsPresentWithAdvice();
+    bool IsPresentWithAdvice() const;
     void PlayLaunchSound();
     void PlayGroundSound();
 

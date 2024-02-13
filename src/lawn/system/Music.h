@@ -119,7 +119,7 @@ public:
     void FadeOut(int theFadeOutDuration);
     void SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune) const;
     unsigned long GetMusicOrder(MusicFile theMusicFile) const;
-    static void MusicCreditScreenInit();
+    void MusicCreditScreenInit();
     static int GetNumLoadingTasks();
 };
 

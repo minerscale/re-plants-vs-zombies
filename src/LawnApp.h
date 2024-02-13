@@ -215,13 +215,13 @@ public:
     void UpdateFrames() override;
     bool UpdateApp() override;
     /*inline*/
-    bool IsAdventureMode();
+    bool IsAdventureMode() const;
     /*inline*/
-    bool IsSurvivalMode();
+    bool IsSurvivalMode() const;
     bool IsContinuousChallenge();
     /*inline*/
-    bool IsArtChallenge();
-    bool NeedPauseGame();
+    bool IsArtChallenge() const;
+    bool NeedPauseGame() const;
     virtual void ShowResourceError(bool doExit = false);
     void ToggleSlowMo();
     void ToggleFastMo();
@@ -273,7 +273,7 @@ public:
     /*inline*/
     bool IsMiniBossLevel();
     /*inline*/
-    bool IsSlotMachineLevel();
+    bool IsSlotMachineLevel() const;
     /*inline*/
     bool IsLittleTroubleLevel();
     /*inline*/
@@ -297,7 +297,7 @@ public:
     static /*inline*/ bool IsSurvivalHard(GameMode theGameMode);
     static /*inline*/ bool IsSurvivalEndless(GameMode theGameMode);
     /*inline*/
-    bool HasFinishedAdventure();
+    bool HasFinishedAdventure() const;
     /*inline*/
     bool IsFirstTimeAdventureMode();
     /*inline*/
@@ -343,9 +343,9 @@ public:
     void BetaAddFile(std::list<std::string> &theUploadFileList, std::string theFileName, std::string theShortName);
     bool CanPauseNow();
     /*inline*/
-    bool IsPuzzleMode();
+    bool IsPuzzleMode() const;
     /*inline*/
-    bool IsChallengeMode();
+    bool IsChallengeMode() const;
     static /*inline*/ bool IsEndlessIZombie(GameMode theGameMode);
     void CrazyDaveDoneHanding();
     inline SexyString GetCurrentLevelName() { return _S("Unknown"); }

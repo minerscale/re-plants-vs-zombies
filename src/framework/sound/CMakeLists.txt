@@ -23,16 +23,16 @@ elseif (UNIX)
 endif ()
 
 FetchContent_Declare(
-    bass
-    URL ${BASS_SRC}
-    DOWNLOAD_EXTRACT_TIMESTAMP ${CMAKE_SOURCE_DIR}/external/bass/.timestamp
+        bass
+        URL ${BASS_SRC}
+        DOWNLOAD_EXTRACT_TIMESTAMP ${CMAKE_SOURCE_DIR}/external/bass/.timestamp
 )
 
 FetchContent_GetProperties(bass)
 if (NOT bass_POPULATED)
     FetchContent_Populate(bass)
     file(COPY ${bass_SOURCE_DIR}/${BASS_LIB} DESTINATION ${CMAKE_BINARY_DIR})
-endif()
+endif ()
 
 get_filename_component(bassfile ${BASS_LIB} NAME)
 

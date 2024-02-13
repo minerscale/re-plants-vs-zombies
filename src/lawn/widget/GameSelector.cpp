@@ -281,25 +281,24 @@ GameSelector::GameSelector(LawnApp *theApp) {
 
 // 0x449D00、0x449D20
 GameSelector::~GameSelector() {
-    if (mAdventureButton) delete mAdventureButton;
-    if (mMinigameButton) delete mMinigameButton;
-    if (mPuzzleButton) delete mPuzzleButton;
-    if (mOptionsButton) delete mOptionsButton;
-    if (mQuitButton) delete mQuitButton;
-    if (mHelpButton) delete mHelpButton;
-    if (mOverlayWidget) delete mOverlayWidget;
-    if (mStoreButton) delete mStoreButton;
-    if (mAlmanacButton) delete mAlmanacButton;
-    if (mZenGardenButton) delete mZenGardenButton;
-    if (mSurvivalButton) delete mSurvivalButton;
-    if (mChangeUserButton) delete mChangeUserButton;
+    delete mAdventureButton;
+    delete mMinigameButton;
+    delete mPuzzleButton;
+    delete mOptionsButton;
+    delete mQuitButton;
+    delete mHelpButton;
+    delete mOverlayWidget;
+    delete mStoreButton;
+    delete mAlmanacButton;
+    delete mZenGardenButton;
+    delete mSurvivalButton;
+    delete mChangeUserButton;
     // @Patoke: new widgets
-    if (mZombatarButton) delete mZombatarButton;
-    // if (mZombatarWidget) // todo @Patoke: add zombatar
-    //	delete mZombatarWidget;
-    if (mAchievementsButton) delete mAchievementsButton;
-    if (mAchievementsWidget) delete mAchievementsWidget;
-    if (mQuickPlayButton) delete mQuickPlayButton;
+    delete mZombatarButton;
+    // delete mZombatarWidget; // todo @Patoke: add zombatar
+    delete mAchievementsButton;
+    delete mAchievementsWidget;
+    delete mQuickPlayButton;
 
     delete mToolTip;
 }
@@ -667,6 +666,7 @@ void GameSelector::Update() {
 
         // @Patoke: make sure these are drawn even outside of bounds (force redraw)
         mAchievementsButton->MarkDirty();
+        mZenGardenButton->MarkDirty();
         mOptionsButton->MarkDirty();
         mHelpButton->MarkDirty();
         mQuitButton->MarkDirty();

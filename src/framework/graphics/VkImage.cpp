@@ -193,10 +193,6 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 
     if (!mWidth || !mHeight) throw std::runtime_error("Images with no size are not supported.");
 
-    renderMutex.lock();
-
-    endRenderPass();
-
     constexpr VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                                         VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 
@@ -207,7 +203,6 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     descriptor = createDescriptorSet(view, textureSampler);
 
     const VkDeviceSize imageSize = mWidth * mHeight * SCALE * SCALE * sizeof(uint32_t);
-
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
@@ -233,10 +228,9 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
     }
     vkUnmapMemory(device, stagingBufferMemory);
 
+    renderMutex.lock();
     uploadNewData(stagingBuffer);
-
     doDeleteInfo(deleteInfo{{}, {}, {}, stagingBufferMemory, {}, stagingBuffer});
-
     renderMutex.unlock();
 }
 
@@ -258,10 +252,6 @@ VkImage::VkImage(int width, int height, bool initialise, bool textureRepeat) {
 
     if (!mWidth || !mHeight) throw std::runtime_error("Images with no size are not supported.");
 
-    renderMutex.lock();
-
-    endRenderPass();
-
     constexpr VkImageUsageFlags flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                                         VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
 
@@ -275,6 +265,10 @@ VkImage::VkImage(int width, int height, bool initialise, bool textureRepeat) {
     } else {
         descriptor = createDescriptorSet(view, textureSampler);
     }
+
+    renderMutex.lock();
+
+    endRenderPass();
 
     if (initialise) {
         TransitionLayout(imageCommandBuffers[imageBufferIdx], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -624,12 +618,6 @@ void VkImage::BltEx(
     const int theDrawMode, bool blend
 ) {
     if (theClipRect.z <= 0 || theClipRect.w <= 0) return; // Can't draw regions with negative size.
-    renderMutex.lock();
-
-    VkImage::BeginDraw(theImage, theDrawMode);
-
-    SetViewportAndScissor(theClipRect);
-
     const SexyRGBA color = theColor.ToRGBA();
     const ImagePushConstants constants = {
         {theVertices[0], theVertices[1], theVertices[2], theVertices[3]},
@@ -637,6 +625,9 @@ void VkImage::BltEx(
         true, blend
     };
 
+    renderMutex.lock();
+    VkImage::BeginDraw(theImage, theDrawMode);
+    SetViewportAndScissor(theClipRect);
     vkCmdPushConstants(
         imageCommandBuffers[imageBufferIdx], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
         0, sizeof(ImagePushConstants), &constants
@@ -668,8 +659,8 @@ void VkImage::BltTrianglesTex(
         auto colorFromInt = [theColor](uint32_t c) { return c ? Color(c).ToRGBA() : theColor.ToRGBA(); };
 
         ImagePushConstants constants = {
-            {vertexToNative(triangle[0]),     vertexToNative(triangle[1]),     vertexToNative(triangle[2]),     glm::vec4(0)},
-            {colorFromInt(triangle[0].color), colorFromInt(triangle[1].color), colorFromInt(triangle[2].color), {}          },
+            {vertexToNative(triangle[0]),     vertexToNative(triangle[1]),     vertexToNative(triangle[2]),     {}},
+            {colorFromInt(triangle[0].color), colorFromInt(triangle[1].color), colorFromInt(triangle[2].color), {}},
             false,
             blend
         };
@@ -680,7 +671,6 @@ void VkImage::BltTrianglesTex(
         );
         vkCmdDraw(imageCommandBuffers[imageBufferIdx], 3, 1, 0, 0);
     }
-
     renderMutex.unlock();
 }
 

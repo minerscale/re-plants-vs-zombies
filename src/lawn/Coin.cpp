@@ -143,52 +143,67 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
 
         mWidth = IMAGE_PRESENT->GetCelWidth();
         mHeight = IMAGE_PRESENT->GetCelHeight();
-        if (mApp->IsSurvivalEndless(mApp->mGameMode) || mApp->IsEndlessIZombie(mApp->mGameMode) ||
-            mApp->IsEndlessScaryPotter(mApp->mGameMode)) {
-            const SeedType aSeedType = mApp->mZenGarden->PickRandomSeedType();
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_1_DAY) {
-            constexpr SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER,
-                                              SeedType::SEED_CHERRYBOMB, SeedType::SEED_WALLNUT,
-                                              SeedType::SEED_REPEATER,   SeedType::SEED_POTATOMINE,
-                                              SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
-
-            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_2_NIGHT) {
-            constexpr SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
-                                              SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
-                                              SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
-                                              SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
-
-            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_3_POOL) {
-            constexpr SeedType aSeedList[] = {SeedType::SEED_LILYPAD,     SeedType::SEED_SQUASH,
-                                              SeedType::SEED_THREEPEATER, SeedType::SEED_TANGLEKELP,
-                                              SeedType::SEED_JALAPENO,    SeedType::SEED_SPIKEWEED,
-                                              SeedType::SEED_TORCHWOOD,   SeedType::SEED_TALLNUT};
-
-            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_4_FOG) {
-            constexpr SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,
-                                              SeedType::SEED_CACTUS,       SeedType::SEED_BLOVER,
-                                              SeedType::SEED_SPLITPEA,     SeedType::SEED_STARFRUIT,
-                                              SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
-
-            const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else if (mBoard->mBoardData.mBackground == BackgroundType::BACKGROUND_5_ROOF) {
-            constexpr SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
-                                              SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
-                                              SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
-
-            const auto aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
-            mPottedPlantSpec.InitializePottedPlant(aSeedType);
-        } else {
+        if (LawnApp::IsSurvivalEndless(mApp->mGameMode) || LawnApp::IsEndlessIZombie(mApp->mGameMode) ||
+            LawnApp::IsEndlessScaryPotter(mApp->mGameMode)) {
             const SeedType aSeedType = ZenGarden::PickRandomSeedType();
             mPottedPlantSpec.InitializePottedPlant(aSeedType);
+        } else {
+            switch (mBoard->mBoardData.mBackground) {
+            case BackgroundType::BACKGROUND_1_DAY: {
+                constexpr SeedType aSeedList[] = {SeedType::SEED_PEASHOOTER, SeedType::SEED_SUNFLOWER,
+                                                  SeedType::SEED_CHERRYBOMB, SeedType::SEED_WALLNUT,
+                                                  SeedType::SEED_REPEATER,   SeedType::SEED_POTATOMINE,
+                                                  SeedType::SEED_SNOWPEA,    SeedType::SEED_CHOMPER};
+
+                const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+                break;
+            }
+
+            case BackgroundType::BACKGROUND_2_NIGHT: {
+                constexpr SeedType aSeedList[] = {SeedType::SEED_PUFFSHROOM,  SeedType::SEED_SUNSHROOM,
+                                                  SeedType::SEED_FUMESHROOM,  SeedType::SEED_GRAVEBUSTER,
+                                                  SeedType::SEED_HYPNOSHROOM, SeedType::SEED_SCAREDYSHROOM,
+                                                  SeedType::SEED_ICESHROOM,   SeedType::SEED_DOOMSHROOM};
+
+                const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+                break;
+            }
+            case BackgroundType::BACKGROUND_3_POOL: {
+                constexpr SeedType aSeedList[] = {SeedType::SEED_LILYPAD,     SeedType::SEED_SQUASH,
+                                                  SeedType::SEED_THREEPEATER, SeedType::SEED_TANGLEKELP,
+                                                  SeedType::SEED_JALAPENO,    SeedType::SEED_SPIKEWEED,
+                                                  SeedType::SEED_TORCHWOOD,   SeedType::SEED_TALLNUT};
+
+                const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+                break;
+            }
+            case BackgroundType::BACKGROUND_4_FOG: {
+                constexpr SeedType aSeedList[] = {SeedType::SEED_SEASHROOM,    SeedType::SEED_PLANTERN,
+                                                  SeedType::SEED_CACTUS,       SeedType::SEED_BLOVER,
+                                                  SeedType::SEED_SPLITPEA,     SeedType::SEED_STARFRUIT,
+                                                  SeedType::SEED_PUMPKINSHELL, SeedType::SEED_MAGNETSHROOM};
+
+                const SeedType aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+                break;
+            }
+            case BackgroundType::BACKGROUND_5_ROOF: {
+                constexpr SeedType aSeedList[] = {SeedType::SEED_CABBAGEPULT,    SeedType::SEED_KERNELPULT,
+                                                  SeedType::SEED_INSTANT_COFFEE, SeedType::SEED_GARLIC,
+                                                  SeedType::SEED_UMBRELLA,       SeedType::SEED_MELONPULT};
+
+                const auto aSeedType = TodPickFromArray(aSeedList, std::size(aSeedList));
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+                break;
+            }
+            default: {
+                const SeedType aSeedType = ZenGarden::PickRandomSeedType();
+                mPottedPlantSpec.InitializePottedPlant(aSeedType);
+            }
+            }
         }
     } else if (mType == CoinType::COIN_AWARD_MONEY_BAG || mType == CoinType::COIN_AWARD_BAG_DIAMOND) {
         mWidth = IMAGE_MONEYBAG->GetCelWidth();
@@ -307,7 +322,7 @@ bool Coin::IsSun() {
 }
 
 // 0x4309B0
-bool Coin::IsPresentWithAdvice() {
+bool Coin::IsPresentWithAdvice() const {
     return mType == CoinType::COIN_PRESENT_MINIGAMES || mType == CoinType::COIN_PRESENT_PUZZLE_MODE ||
            mType == CoinType::COIN_PRESENT_SURVIVAL_MODE;
 }
@@ -343,7 +358,7 @@ void Coin::ScoreCoin() {
 void Coin::StartFade() { mFadeCount = 15; }
 
 void Coin::UpdateFade() {
-    if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode) ||
+    if (LawnApp::IsEndlessIZombie(mApp->mGameMode) || LawnApp::IsEndlessScaryPotter(mApp->mGameMode) ||
         mType == CoinType::COIN_NOTE || !IsLevelAward()) {
         mFadeCount--;
         if (mFadeCount == 0) {
@@ -1010,12 +1025,12 @@ void Coin::Collect() {
     }
 }
 
-float Coin::GetSunScale() {
+float Coin::GetSunScale() const {
     return mType == CoinType::COIN_SMALLSUN ? 0.5f : mType == CoinType::COIN_LARGESUN ? 2.0f : 1.0f;
 }
 
 // 0x4329A0
-int Coin::GetSunValue() {
+int Coin::GetSunValue() const {
     return mType == CoinType::COIN_SUN        ? 25
            : mType == CoinType::COIN_SMALLSUN ? 15
            : mType == CoinType::COIN_LARGESUN ? 50
