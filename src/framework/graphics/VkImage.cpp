@@ -18,7 +18,6 @@
 #include <vulkan/vulkan_core.h>
 
 #include <avir.h>
-#include <avir_float4_sse.h>
 #include <lancir.h>
 
 namespace Vk {
@@ -178,13 +177,7 @@ void endRenderPass() {
 
 void doDeleteInfo(deleteInfo info) { deleteList[imageBufferIdx].emplace_back(info); }
 
-#ifdef LANCIR_SSE2
-using ImageResizerType = avir::CImageResizer<avir::fpclass_def<avir::float4>>;
-#else
-using ImageResizerType = avir::CImageResizer<>;
-#endif
-ImageResizerType ImageResizer(8);
-
+avir::CImageResizer<> ImageResizer(8);
 avir::CImageResizerVars resizeVars;
 
 VkImage::VkImage(const ImageLib::Image &theImage) {
