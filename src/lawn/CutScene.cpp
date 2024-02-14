@@ -303,7 +303,7 @@ void CutScene::PreloadResources() {
     }
 
     if (mApp->IsFirstTimeAdventureMode() && mBoard->mBoardData.mLevel <= 50) {
-        Plant::PreloadPlantResources(mApp->GetAwardSeedForLevel(mBoard->mBoardData.mLevel));
+        Plant::PreloadPlantResources(LawnApp::GetAwardSeedForLevel(mBoard->mBoardData.mLevel));
     }
 
     if (mCrazyDaveDialogStart != -1) {
@@ -669,7 +669,7 @@ void CutScene::StartLevelIntro() {
     } else if (mApp->IsFinalBossLevel() && mApp->IsAdventureMode() && !isRestart) {
         mCrazyDaveDialogStart = 2300;
     } else if (mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM) {
-        if (mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_TREE_FOOD)] < PURCHASE_COUNT_OFFSET) {
+        if (!mApp->mPlayerInfo->hasPurchaseInitialized(StoreItem::STORE_ITEM_TREE_FOOD)) {
             mCrazyDaveDialogStart = 3200;
             mBoard->mStoreButton->mBtnNoDraw = true;
         }
@@ -1329,7 +1329,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
     }
     // “这是你的智慧树，我会给你一些肥料让你开始的”
     if (mApp->mCrazyDaveMessageIndex == 3200) {
-        mApp->mPlayerInfo->mPurchases[29] = PURCHASE_COUNT_OFFSET + 5;
+        mApp->mPlayerInfo->InitializePurchase(StoreItem::STORE_ITEM_TREE_FOOD, 5);
         mBoard->mMenuButton->mBtnNoDraw = false;
         mBoard->mStoreButton->mBtnNoDraw = false;
     }

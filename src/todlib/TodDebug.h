@@ -1,5 +1,6 @@
 #ifndef __TODDEBUG_H__
 #define __TODDEBUG_H__
+#include <initializer_list>
 
 // #define NOMINMAX 1
 // #include <windows.h>
@@ -35,6 +36,17 @@ void *TodMalloc(int theSize);
 /*inline*/
 void TodFree(void *theBlock);
 void TodAssertInitForApp();
+
+template <class T> inline bool TodAssertContains(std::initializer_list<T> List, T Val) {
+    bool result = false;
+    for (auto &item : List) {
+        if (item == Val) {
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
 
 #if __has_builtin(__builtin_debugtrap)
 #define DBG_BREAK() __builtin_debugtrap()

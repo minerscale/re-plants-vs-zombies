@@ -1242,10 +1242,12 @@ void GameSelector::AddPreviewProfiles() {
         aProfile->mLevel = 1;
         aProfile->mFinishedAdventure = 2;
         aProfile->AddCoins(50000);
-        aProfile->mPurchases[StoreItem::STORE_ITEM_FERTILIZER] = PURCHASE_COUNT_OFFSET + 5;
-        aProfile->mPurchases[StoreItem::STORE_ITEM_BUG_SPRAY] = PURCHASE_COUNT_OFFSET + 5;
-        aProfile->mPurchases[StoreItem::STORE_ITEM_CHOCOLATE] = PURCHASE_COUNT_OFFSET + 5;
-        aProfile->mPurchases[StoreItem::STORE_ITEM_TREE_FOOD] = PURCHASE_COUNT_OFFSET + 5;
+
+        for (auto item :
+             {StoreItem::STORE_ITEM_FERTILIZER, StoreItem::STORE_ITEM_BUG_SPRAY, StoreItem::STORE_ITEM_CHOCOLATE,
+              StoreItem::STORE_ITEM_TREE_FOOD})
+            aProfile->InitializePurchase(item, 5);
+
         aProfile->mHasUnlockedMinigames = 1;
         aProfile->mHasUnlockedPuzzleMode = 1;
         aProfile->mPurchases[StoreItem::STORE_ITEM_PLANT_GATLINGPEA] = 1;

@@ -4829,7 +4829,7 @@ void Challenge::TreeOfWisdomInit() {
     aReanimTree->PlayReanim(
         StrFormat("anim_grow%d", aTreeSize).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f
     );
-    if (aTreeSize == 0 && mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET) {
+    if (aTreeSize == 0 && !mApp->mPlayerInfo->hasPurchaseInitialized(STORE_ITEM_TREE_FOOD)) {
         aReanimTree->mFrameCount += aReanimTree->mFrameStart;
         aReanimTree->mFrameStart = 0;
     } else {

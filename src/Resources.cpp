@@ -1,6 +1,6 @@
 #include "Resources.h"
 
-#include "compiler/hash.h"
+#include "compiler/map.h"
 #include "framework/misc/ResourceManager.h"
 
 using namespace Sexy;

@@ -1675,7 +1675,8 @@ void initSDL(const int width, const int height, const bool fullscreen) {
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
 
-    window = SDL_CreateWindow("Plants Vs Zombies", 400, 200, width, height, flags);
+    window =
+        SDL_CreateWindow("Plants Vs Zombies", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 }
 
 VkInterface::VkInterface(int width, int height, WidgetManager *mWidgetManager, bool fullscreen) {

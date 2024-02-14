@@ -1966,8 +1966,6 @@ void SexyAppBase::Shutdown() {
         // RestoreScreenResolution();
 
         if (mReadFromRegistry) WriteToRegistry();
-
-        // ImageLib::CloseJPEG2000();
     }
 }
 
@@ -5091,10 +5089,9 @@ bool SexyAppBase::ChangeDirHook(const char *theIntendedPath) {
 
 MusicInterface *SexyAppBase::CreateMusicInterface() {
     if (mNoSoundNeeded) return new DummyMusicInterface();
-    else if (mWantFMod) {
+    if (mWantFMod) {
         unreachable();
-        /* TODO
-        return new FModMusicInterface();*/
+        /* TODO return new FModMusicInterface();*/
     } else {
         printf("Bass dll currently loaded without HWnd, likely to cause problems on Windows\n");
         return new BassMusicInterface(nullptr);

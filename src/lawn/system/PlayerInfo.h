@@ -2,9 +2,10 @@
 #define __PLAYERINFO_H__
 
 #define MAX_POTTED_PLANTS 200
-#define PURCHASE_COUNT_OFFSET 1000
 
 #include "ConstEnums.h"
+
+#include <todlib/TodDebug.h>
 #ifdef __GNUC__
 #include <bits/chrono.h>
 #else
@@ -49,6 +50,12 @@ static inline uint32_t TimeToUnixEpoch(const TimePoint &t) {
 static inline TimePoint TimeFromUnixEpoch(const uint32_t &t) { return TimePoint(std::chrono::seconds(t)); }
 
 class DataSync;
+
+constexpr int32_t PURCHASE_COUNT_OFFSET = 1000;
+constexpr auto OffsetedStoreItem = {
+    StoreItem::STORE_ITEM_FERTILIZER, StoreItem::STORE_ITEM_BUG_SPRAY, StoreItem::STORE_ITEM_CHOCOLATE,
+    StoreItem::STORE_ITEM_TREE_FOOD
+};
 
 class PlayerInfo {
 public:
@@ -100,6 +107,26 @@ public:
     inline void SetLevel(int theLevel) { mLevel = theLevel; }
     /*inline*/
     void ResetChallengeRecord(GameMode theGameMode);
+
+    inline void PlayerInfo::InitializePurchase(const StoreItem theItem, const int32_t theQuantity) {
+        TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
+        mPurchases[static_cast<int>(theItem)] = PURCHASE_COUNT_OFFSET + theQuantity;
+    }
+
+    inline bool PlayerInfo::hasPurchaseInitialized(const StoreItem theItem) const {
+        TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
+        return mPurchases[static_cast<int>(theItem)] >= PURCHASE_COUNT_OFFSET;
+    }
+
+    inline int32_t PlayerInfo::GetPurchaseQuantity(const StoreItem theItem) const {
+        TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
+        return mPurchases[static_cast<int>(theItem)] - PURCHASE_COUNT_OFFSET;
+    }
+
+    inline void PlayerInfo::UpdatePurchase(const StoreItem theItem, const int32_t theQuantity) {
+        TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
+        mPurchases[static_cast<int>(theItem)] += theQuantity;
+    }
 };
 
 #endif

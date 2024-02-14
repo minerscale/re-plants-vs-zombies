@@ -169,20 +169,20 @@ bool StoreScreen::IsComingSoon(const StoreItem theStoreItem) {
     if (IsPottedPlant(theStoreItem)) return !mApp->HasFinishedAdventure();
     if (theStoreItem == STORE_ITEM_TREE_FOOD)
         return !mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_OF_WISDOM] ||
-               mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] < PURCHASE_COUNT_OFFSET;
+               !mApp->mPlayerInfo->hasPurchaseInitialized(STORE_ITEM_TREE_FOOD);
     return false;
 }
 
 // 0x48A9D0
-bool StoreScreen::IsItemSoldOut(const StoreItem theStoreItem) {
+bool StoreScreen::IsItemSoldOut(const StoreItem theStoreItem) const {
     const PlayerInfo *aPlayer = mApp->mPlayerInfo;
 
     switch (theStoreItem) {
     case STORE_ITEM_INVALID:          return false;
     case STORE_ITEM_PACKET_UPGRADE:   return aPlayer->mPurchases[STORE_ITEM_PACKET_UPGRADE] >= 4;
     case STORE_ITEM_FERTILIZER:
-    case STORE_ITEM_BUG_SPRAY:        return aPlayer->mPurchases[theStoreItem] - PURCHASE_COUNT_OFFSET > 15;
-    case STORE_ITEM_TREE_FOOD:        return aPlayer->mPurchases[STORE_ITEM_TREE_FOOD] - PURCHASE_COUNT_OFFSET > 10;
+    case STORE_ITEM_BUG_SPRAY:        return aPlayer->GetPurchaseQuantity(theStoreItem) > 15;
+    case STORE_ITEM_TREE_FOOD:        return aPlayer->GetPurchaseQuantity(theStoreItem) > 10;
     case STORE_ITEM_BONUS_LAWN_MOWER: return aPlayer->mPurchases[STORE_ITEM_BONUS_LAWN_MOWER] >= 2;
     default:                          {
         if (IsPottedPlant(theStoreItem))
@@ -196,7 +196,7 @@ bool StoreScreen::IsItemSoldOut(const StoreItem theStoreItem) {
 }
 
 // 0x48AAD0
-bool StoreScreen::IsItemUnavailable(const StoreItem theStoreItem) {
+bool StoreScreen::IsItemUnavailable(const StoreItem theStoreItem) const {
     if (mEasyBuyingCheat) return false;
 
     /*
@@ -846,15 +846,15 @@ void StoreScreen::PurchaseItem(const StoreItem theStoreItem) {
                     )
                         .count();
             } else if (theStoreItem == STORE_ITEM_FERTILIZER || theStoreItem == STORE_ITEM_BUG_SPRAY) {
-                if (mApp->mPlayerInfo->mPurchases[theStoreItem] < PURCHASE_COUNT_OFFSET) {
-                    mApp->mPlayerInfo->mPurchases[theStoreItem] = PURCHASE_COUNT_OFFSET;
+                if (!mApp->mPlayerInfo->hasPurchaseInitialized(theStoreItem)) {
+                    mApp->mPlayerInfo->InitializePurchase(theStoreItem, 0);
                 }
-                mApp->mPlayerInfo->mPurchases[theStoreItem] += 5;
+                mApp->mPlayerInfo->UpdatePurchase(theStoreItem, 5);
             } else if (theStoreItem == STORE_ITEM_TREE_FOOD) {
-                if (mApp->mPlayerInfo->mPurchases[theStoreItem] < PURCHASE_COUNT_OFFSET) {
-                    mApp->mPlayerInfo->mPurchases[theStoreItem] = PURCHASE_COUNT_OFFSET;
+                if (!mApp->mPlayerInfo->hasPurchaseInitialized(theStoreItem)) {
+                    mApp->mPlayerInfo->InitializePurchase(theStoreItem, 0);
                 }
-                mApp->mPlayerInfo->mPurchases[theStoreItem]++;
+                mApp->mPlayerInfo->UpdatePurchase(theStoreItem, 1);
             } else if (theStoreItem == STORE_ITEM_TREE_OF_WISDOM) {
                 mApp->mPlayerInfo->mPurchases[theStoreItem] = 1;
                 mApp->mPlayerInfo->mChallengeRecords[GAMEMODE_TREE_OF_WISDOM] = 1;

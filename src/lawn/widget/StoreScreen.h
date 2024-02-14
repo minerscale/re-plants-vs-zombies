@@ -56,8 +56,8 @@ public:
     bool IsFullVersionOnly(StoreItem theStoreItem) const;
     static /*inline*/ bool IsPottedPlant(StoreItem theStoreItem);
     bool IsComingSoon(StoreItem theStoreItem);
-    bool IsItemSoldOut(StoreItem theStoreItem);
-    bool IsItemUnavailable(StoreItem theStoreItem);
+    bool IsItemSoldOut(StoreItem theStoreItem) const;
+    bool IsItemUnavailable(StoreItem theStoreItem) const;
     static /*inline*/ void GetStorePosition(int theSpotIndex, int &thePosX, int &thePosY);
     void DrawItemIcon(Graphics *g, int theItemPosition, StoreItem theItemType, bool theIsForHighlight);
     void DrawItem(Graphics *g, int theItemPosition, StoreItem theItemType);
