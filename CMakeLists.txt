@@ -60,7 +60,7 @@ else ()
     else ()
         set(universal_compiler_flags
                 "${universal_compiler_flags}"
-                "-O3"
+                "-O0"
         )
     endif ()
 endif ()

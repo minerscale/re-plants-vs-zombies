@@ -108,22 +108,22 @@ public:
     /*inline*/
     void ResetChallengeRecord(GameMode theGameMode);
 
-    inline void PlayerInfo::InitializePurchase(const StoreItem theItem, const int32_t theQuantity) {
+    inline void InitializePurchase(const StoreItem theItem, const int32_t theQuantity) {
         TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
         mPurchases[static_cast<int>(theItem)] = PURCHASE_COUNT_OFFSET + theQuantity;
     }
 
-    inline bool PlayerInfo::hasPurchaseInitialized(const StoreItem theItem) const {
+    inline bool hasPurchaseInitialized(const StoreItem theItem) const {
         TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
         return mPurchases[static_cast<int>(theItem)] >= PURCHASE_COUNT_OFFSET;
     }
 
-    inline int32_t PlayerInfo::GetPurchaseQuantity(const StoreItem theItem) const {
+    inline int32_t GetPurchaseQuantity(const StoreItem theItem) const {
         TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
         return mPurchases[static_cast<int>(theItem)] - PURCHASE_COUNT_OFFSET;
     }
 
-    inline void PlayerInfo::UpdatePurchase(const StoreItem theItem, const int32_t theQuantity) {
+    inline void UpdatePurchase(const StoreItem theItem, const int32_t theQuantity) {
         TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));
         mPurchases[static_cast<int>(theItem)] += theQuantity;
     }

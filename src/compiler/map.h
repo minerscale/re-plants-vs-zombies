@@ -16,7 +16,7 @@ template <typename V, typename T, std::size_t Size> class OrderedHashMap {
 
 public:
     constexpr explicit OrderedHashMap(std::tuple<T, V> const (&raw)[Size]) noexcept : arr() {
-        for (auto i = 0; i < Size; ++i) {
+        for (size_t i = 0; i < Size; ++i) {
             auto [name, value] = raw[i];
             auto hash = compiler::hash(name);
             arr[i] = {hash, value};

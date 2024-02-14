@@ -197,10 +197,10 @@ bool ResourceManager::ParseSoundResource(XMLElement &theElement) {
     }
 
     auto anItr = theElement.mAttributes.find(_S("volume"));
-    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%lf"), &aRes->mVolume);
+    if (anItr != theElement.mAttributes.end()) sscanf(anItr->second.c_str(), _S("%lf"), &aRes->mVolume);
 
     anItr = theElement.mAttributes.find(_S("pan"));
-    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%d"), &aRes->mPanning);
+    if (anItr != theElement.mAttributes.end()) sscanf(anItr->second.c_str(), _S("%d"), &aRes->mPanning);
 
     return true;
 }
@@ -253,7 +253,7 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement) {
 
     aRes->mAlphaColor = 0xFFFFFF;
     anItr = theElement.mAttributes.find(_S("alphacolor"));
-    if (anItr != theElement.mAttributes.end()) scanf(anItr->second.c_str(), _S("%x"), &aRes->mAlphaColor);
+    if (anItr != theElement.mAttributes.end()) sscanf(anItr->second.c_str(), _S("%x"), &aRes->mAlphaColor);
 
     anItr = theElement.mAttributes.find(_S("variant"));
     if (anItr != theElement.mAttributes.end()) aRes->mVariant = SexyStringToStringFast(anItr->second);

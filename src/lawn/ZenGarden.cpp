@@ -253,7 +253,7 @@ bool ZenGarden::PlantCanHaveChocolate(const Plant *thePlant) {
 
 // 0x51D710
 bool ZenGarden::CanDropChocolate() {
-    return HasPurchasedStinky() && mApp->mPlayerInfo->hasPurchaseInitialized(StoreItem::STORE_ITEM_CHOCOLATE) < 10;
+    return HasPurchasedStinky() && mApp->mPlayerInfo->hasPurchaseInitialized(StoreItem::STORE_ITEM_CHOCOLATE);
 }
 
 // 0x51D740

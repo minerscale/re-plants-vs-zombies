@@ -769,7 +769,7 @@ bool DefinitionReadIntField(XMLParser *theXmlParser, int *theValue) {
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (scanf(aStringValue.c_str(), _S("%d"), theValue) == 1) return true;
+    if (sscanf(aStringValue.c_str(), _S("%d"), theValue) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
     return false;
@@ -779,7 +779,7 @@ bool DefinitionReadFloatField(XMLParser *theXmlParser, float *theValue) {
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (scanf(aStringValue.c_str(), _S("%f"), theValue) == 1) return true;
+    if (sscanf(aStringValue.c_str(), _S("%f"), theValue) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse float value '%s'", aStringValue.c_str());
     return false;
@@ -812,7 +812,7 @@ bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue) 
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
 
-    if (scanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
+    if (sscanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
 
     DefinitionXmlError(theXmlParser, "Can't parse vector2 value '%s'", aStringValue.c_str());
     return false;
@@ -919,7 +919,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
         if (aStringChars[anIdx] == '[') {
             // <range>
             anIdx++;
-            if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLowValue
+            if (sscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLowValue
             anIdx += aLen;
             aTrackNode.mLowValue = aValue;
             aTrackNode.mHighValue = aValue;
@@ -937,7 +937,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
                         break;
                     }
                 }
-                switch (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen))
+                switch (sscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen))
                 // mHighValue
                 {
                 case 1: // Float read successfully
@@ -956,7 +956,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
 
             if (aStringChars[anIdx] == ',') {
                 anIdx++;
-                if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
+                if (sscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
                 anIdx += aLen;
                 aTrackNode.mTime = aValue * 0.01;
             }
@@ -964,7 +964,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
             anIdx++;
         } else {
             // <norange>
-            if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLow/HighValue
+            if (sscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mLow/HighValue
             anIdx += aLen;
             aTrackNode.mLowValue = aValue;
             aTrackNode.mHighValue = aValue;
@@ -973,7 +973,7 @@ bool DefinitionReadFloatTrackField(XMLParser *theXmlParser, FloatParameterTrack 
 
             if (aStringChars[anIdx] == ',') {
                 anIdx++;
-                if (scanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
+                if (sscanf(aStringChars + anIdx, "%f%n", &aValue, &aLen) != 1) return false; // mTime
                 anIdx += aLen;
                 aTrackNode.mTime = aValue * 0.01;
             }
@@ -1058,7 +1058,7 @@ bool DefinitionReadFlagField(
 
     float aFlag;
     // This was obviously a bug, the casting is wrong, although amusingly it just woks since it's just a bit
-    if (scanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
+    if (sscanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
         DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
         return false;
     }

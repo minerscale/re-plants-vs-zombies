@@ -71,8 +71,8 @@ bool CheatDialog::AllowChar(const int theId, const SexyChar theChar) {
 
 bool CheatDialog::ApplyCheat() const {
     int aChallengeIndex;
-    if (scanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
-        scanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {
+    if (sscanf(mLevelEditWidget->mString.c_str(), _S("c%d"), &aChallengeIndex) == 1 ||
+        sscanf(mLevelEditWidget->mString.c_str(), _S("C%d"), &aChallengeIndex) == 1) {
         mApp->mGameMode = static_cast<GameMode>(ClampInt(aChallengeIndex, 0, NUM_CHALLENGE_MODES));
         return true;
     }
@@ -80,16 +80,16 @@ bool CheatDialog::ApplyCheat() const {
     int aLevel = -1;
     int aFinishedAdventure = 0;
     int aArea, aSubArea;
-    if (scanf(mLevelEditWidget->mString.c_str(), _S("f%d-%d"), &aArea, &aSubArea) == 2 ||
-        scanf(mLevelEditWidget->mString.c_str(), _S("F%d-%d"), &aArea, &aSubArea) == 2) {
+    if (sscanf(mLevelEditWidget->mString.c_str(), _S("f%d-%d"), &aArea, &aSubArea) == 2 ||
+        sscanf(mLevelEditWidget->mString.c_str(), _S("F%d-%d"), &aArea, &aSubArea) == 2) {
         aLevel = (aArea - 1) * LEVELS_PER_AREA + aSubArea;
         aFinishedAdventure = 1;
-    } else if (scanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || scanf(mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1) {
+    } else if (sscanf(mLevelEditWidget->mString.c_str(), _S("f%d"), &aLevel) == 1 || sscanf(mLevelEditWidget->mString.c_str(), _S("F%d"), &aLevel) == 1) {
         aFinishedAdventure = 1;
-    } else if (scanf(mLevelEditWidget->mString.c_str(), _S("%d-%d"), &aArea, &aSubArea) == 2) {
+    } else if (sscanf(mLevelEditWidget->mString.c_str(), _S("%d-%d"), &aArea, &aSubArea) == 2) {
         aLevel = (aArea - 1) * LEVELS_PER_AREA + aSubArea;
     } else {
-        scanf(mLevelEditWidget->mString.c_str(), _S("%d"), &aLevel);
+        sscanf(mLevelEditWidget->mString.c_str(), _S("%d"), &aLevel);
     }
 
     if (aLevel <= 0) {

@@ -415,5 +415,6 @@ tools/read-compiled/target
 *.sublime-workspace
 
 external/*
+external/
 /launch.cmd
 .idea/*

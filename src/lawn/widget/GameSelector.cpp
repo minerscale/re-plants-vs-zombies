@@ -1245,8 +1245,9 @@ void GameSelector::AddPreviewProfiles() {
 
         for (auto item :
              {StoreItem::STORE_ITEM_FERTILIZER, StoreItem::STORE_ITEM_BUG_SPRAY, StoreItem::STORE_ITEM_CHOCOLATE,
-              StoreItem::STORE_ITEM_TREE_FOOD})
+              StoreItem::STORE_ITEM_TREE_FOOD}) {
             aProfile->InitializePurchase(item, 5);
+        }
 
         aProfile->mHasUnlockedMinigames = 1;
         aProfile->mHasUnlockedPuzzleMode = 1;
