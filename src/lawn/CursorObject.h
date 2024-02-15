@@ -1,6 +1,7 @@
 #ifndef __CURSOROBJECT_H__
 #define __CURSOROBJECT_H__
 
+#include "ConstEnums.h"
 #include "GameObject.h"
 
 class CursorObject : public GameObject {
