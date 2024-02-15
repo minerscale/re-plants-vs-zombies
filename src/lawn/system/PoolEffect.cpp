@@ -24,7 +24,7 @@ void PoolEffect::PoolEffectInitialize() {
     has_shown = true;
 
     Sexy::ResourceManager::ImageRes aRes;
-    aRes.mPath = "./images/pool_caustic_effect.jpg";
+    aRes.mPath = "images/pool_caustic_effect.jpg";
     mCausticGrayscaleImage = ImageLib::GetImage(aRes, false);
 
     mCausticImage = std::make_unique<Vk::VkImage>(CAUSTIC_IMAGE_WIDTH, CAUSTIC_IMAGE_HEIGHT, false, true);
