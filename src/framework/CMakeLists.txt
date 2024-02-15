@@ -76,8 +76,6 @@ include_directories(${SDL_SOURCE_DIR}/include)
 
 FetchGit_Declare(https://github.com/libsdl-org/SDL_image/tree/release-2.8.x)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(SDL2IMAGE_JXL ON CACHE BOOL "" FORCE)
-set(SDL2IMAGE_JXL_SHARED OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(SDL_image)
 
 FetchGit_Declare(https://github.com/libsdl-org/SDL_ttf/tree/release-2.22.x)
