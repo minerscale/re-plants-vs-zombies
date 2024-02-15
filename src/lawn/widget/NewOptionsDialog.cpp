@@ -22,7 +22,12 @@ NewOptionsDialog::NewOptionsDialog(LawnApp *theApp, const bool theFromGameSelect
     mFromGameSelector = theFromGameSelector;
     Dialog::SetColor(Dialog::COLOR_BUTTON_TEXT, Color(255, 255, 100));
     mAlmanacButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Almanac, this, _S("[VIEW_ALMANAC_BUTTON]"));
-    mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, _S("[RESTART_LEVEL]"));
+
+    // @Minerscale, due to differences in pak files between the EA version and the Steam version,
+    // we need to select the right restart level text for each version. Stupid fix but stupid game.
+    std::string buttonString = TodStringTranslate("[RESTART_LEVEL_BUTTON]");
+    if (buttonString.starts_with("<Missing")) buttonString = TodStringTranslate("[RESTART_LEVEL]");
+    mRestartButton = MakeButton(NewOptionsDialog::NewOptionsDialog_Restart, this, _S(buttonString));
     // @Patoke: wrong local name
     mBackToMainButton = MakeButton(NewOptionsDialog::NewOptionsDialog_MainMenu, this, _S("[MAIN_MENU_BUTTON]"));
 
