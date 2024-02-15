@@ -3884,7 +3884,8 @@ void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int t
     Zombie *aZombie = mBoard->AddZombieInRow(theZombieType, theGridY, 0);
     if (theZombieType == ZOMBIE_BUNGEE) {
         aZombie->mTargetCol = theGridX;
-        aZombie->SetRow(theGridX);
+        aZombie->mTargetRow = theGridY;
+        aZombie->SetRow(theGridY);
         aZombie->mPosX = mBoard->GridToPixelX(theGridX, theGridY);
         aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
         aZombie->mRenderOrder = Board::MakeRenderOrder(RENDER_LAYER_GRAVE_STONE, theGridY, 7);

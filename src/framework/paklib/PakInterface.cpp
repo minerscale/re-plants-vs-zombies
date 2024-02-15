@@ -210,16 +210,18 @@ PFILE *PakInterface::OpenIndirectFile(const char *theFileName, const char *anAcc
 }
 
 std::optional<ChronoFileTime> PakInterface::GetFileTime(const std::string &theFileName) {
-    const auto &aFilePath = casepath(theFileName);
-    if (!aFilePath.empty() && std::filesystem::exists(aFilePath)) {
-        return std::filesystem::last_write_time(aFilePath);
-    }
-
     char anUpperName[256];
     FixFileName(theFileName.c_str(), anUpperName);
     auto anItr = mPakRecordMap.find(anUpperName);
     if (anItr != mPakRecordMap.end()) {
         return anItr->second.mFileTime.to_time_point();
+    }
+
+    // Should run casepath second since it makes a lot of syscalls to the OS,
+    // especially when it misses the cache and it's more likely to be in a pak file.
+    const auto &aFilePath = casepath(theFileName);
+    if (!aFilePath.empty() && std::filesystem::exists(aFilePath)) {
+        return std::filesystem::last_write_time(aFilePath);
     }
 
     return std::nullopt;

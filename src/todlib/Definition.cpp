@@ -665,16 +665,17 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     */
 
     auto srcTime = gPakInterface->GetFileTime(theXMLFilePath);
-    auto compiledTime = gPakInterface->GetFileTime(aCompiledFilePath);
+    std::string fixedPath = casepath(aCompiledFilePath);
+
+    if (!std::filesystem::exists(fixedPath)) return false;
+    auto compiledTime = std::filesystem::last_write_time(fixedPath);
 
     if (!srcTime.has_value()) {
         TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
         return false;
     }
 
-    if (!compiledTime.has_value()) return false;
-
-    return srcTime.value() < compiledTime.value();
+    return srcTime.value() < compiledTime;
 }
 
 void DefinitionFillWithDefaults(const DefMap *theDefMap, void *theDefinition) {

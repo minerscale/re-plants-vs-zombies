@@ -2,6 +2,7 @@
 #define __PAKINTERFACE_H__
 
 #include "framework/Common.h"
+#include <chrono>
 #include <list>
 #include <map>
 #include <string>
@@ -13,10 +14,15 @@ struct FileTime {
     uint32_t dwHighDateTime;
 
     [[nodiscard]] ChronoFileTime to_time_point() const {
-        // !TODO Cross-platform epoch conversion
-        return ChronoFileTime(std::chrono::file_clock::duration(
-            (static_cast<std::chrono::file_clock::rep>(dwHighDateTime) << 32) | dwLowDateTime
+        uint64_t gapOfWin32UnixEpoch = 116444736000000000;
+        uint64_t winFileTime = (((uint64_t)dwHighDateTime << 32) | dwLowDateTime) - gapOfWin32UnixEpoch;
+
+        // number of 100 nanoseconds since Jan 1st 1970
+        auto utc_time = std::chrono::utc_clock::time_point(std::chrono::duration_cast<std::chrono::utc_clock::duration>(
+            std::chrono::duration<uint64_t, std::ratio<1, 10000000>>(winFileTime)
         ));
+
+        return std::chrono::clock_cast<std::chrono::file_clock>(utc_time);
     }
 };
 
