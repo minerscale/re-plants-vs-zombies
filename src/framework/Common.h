@@ -39,9 +39,17 @@ template <class... Types> void println(const std::format_string<Types...> Fmt, T
 #include <chrono>
 #endif
 
-// Define unreachable()
+#ifndef __cpp_lib_unreachable
+[[noreturn]] inline void unreachable() {
+#if defined(_MSC_VER) && !defined(__clang__) // MSVC
+    __assume(false);
+#else
+    __builtin_unreachable();
+#endif
+}
+#endif // __cpp_lib_unreachable
+
 #ifdef _MSC_VER
-#define unreachable std::unreachable
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #else
@@ -65,8 +73,6 @@ using SexyString = std::string;
 #define LONG_LITTLEE_TO_NATIVE(l) (l)
 #define WORD_LITTLEE_TO_NATIVE(w) (w)
 
-using ulong = unsigned long;
-
 #ifndef _MSC_VER
 typedef unsigned char BYTE;
 typedef uint16_t WORD;
@@ -89,14 +95,14 @@ using SexyChar = SexyString::value_type;
 #define HAS_SEXYCHAR
 
 namespace Sexy {
-const ulong SEXY_RAND_MAX = 0x7FFFFFFF;
+constexpr uint32_t SEXY_RAND_MAX = 0x7FFFFFFF;
 
 extern bool gDebug;
 
 int Rand();
 int Rand(int range);
 float Rand(float range);
-void SRand(ulong theSeed);
+void SRand(uint32_t theSeed);
 extern std::string vformat(const char *fmt, va_list argPtr);
 extern std::wstring vformat(const wchar_t *fmt, va_list argPtr);
 extern std::string StrFormat(const char *fmt...);

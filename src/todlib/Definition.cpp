@@ -561,7 +561,7 @@ void *DefinitionUncompressCompiledBuffer(
     const Bytef *aSrc = (Bytef *)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));
     // 实际解压数据从第 3 个四字节开始
     // BuGFIXX!!
-    ulong aUncompressedSizeResult = aHeader->mUncompressedSize;
+    uLongf aUncompressedSizeResult = aHeader->mUncompressedSize;
     // 用作出参的未压缩数据实际长度
     const int aResult = uncompress(
         aUncompressedBuffer, &aUncompressedSizeResult, aSrc,
@@ -645,7 +645,7 @@ SexyString DefinitionGetCompiledFilePathFromXMLFilePath(const SexyString &theXML
     return _S("compiled/") + theXMLFilePath + _S(".compiled");
 }
 
-bool IsFileInPakFile(const SexyString &theFilePath) {
+inline bool IsFileInPakFile(const SexyString &theFilePath) {
     PFILE *pFile = p_fopen(theFilePath.c_str(), _S("rb"));
     const bool aIsInPak = pFile && !pFile->mFP;
     // 通过 mPakRecordMap.find 找到并打开的文件，其 mFP 为空指针（因为不是从实际文件中打开的）
@@ -657,50 +657,24 @@ bool IsFileInPakFile(const SexyString &theFilePath) {
 
 bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
-    if (IsFileInPakFile(aCompiledFilePath)) return true;
 
-#if !defined(_WIN32) // It should be abundantly clear that I didn't want to write this.
-
-    auto src_correct_name = casepath(theXMLFilePath);
-    auto compiled_correct_name = casepath(aCompiledFilePath);
-    if (src_correct_name == "") {
-        throw std::runtime_error("Can't find source file to compile: " + theXMLFilePath);
-        return false;
-    } else if (compiled_correct_name == "") {
-        return false;
-    }
-    bool rebuild =
-        std::filesystem::last_write_time(compiled_correct_name) > std::filesystem::last_write_time(src_correct_name);
-    return rebuild;
-#else
-    const auto src = std::filesystem::path(theXMLFilePath);
-    const auto compiled = std::filesystem::path(aCompiledFilePath);
-
-    if (!std::filesystem::exists(src)) {
-        TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
-        return false;
-    } else if (!std::filesystem::exists(compiled)) {
-        return false;
-    }
-    return std::filesystem::last_write_time(compiled) > std::filesystem::last_write_time(src);
-#endif
-
-    // Compare last file write times and ensure compiled file time is newer than the uncompiled time
-
+    // For now we don't even want to look in the pak files for their existence since they won't load anyway.
     /*
-    _WIN32_FILE_ATTRIBUTE_DATA lpFileData;
-    _FILETIME aCompiledFileTime;
-    bool aSucceed = GetFileAttributesEx(aCompiledFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard,
-    &lpFileData); if (aSucceed) aCompiledFileTime = lpFileData.ftLastWriteTime;
+    if (IsFileInPakFile(aCompiledFilePath))
+        return true;
+    */
 
-    if (!GetFileAttributesEx(theXMLFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData))
-    {
+    auto srcTime = gPakInterface->GetFileTime(theXMLFilePath);
+    auto compiledTime = gPakInterface->GetFileTime(aCompiledFilePath);
+
+    if (!srcTime.has_value()) {
         TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
         return false;
     }
-    else
-        return aSucceed && CompareFileTime(&aCompiledFileTime, &lpFileData.ftLastWriteTime) == 1;
-    */
+
+    if (!compiledTime.has_value()) return false;
+
+    return srcTime.value() < compiledTime.value();
 }
 
 void DefinitionFillWithDefaults(const DefMap *theDefMap, void *theDefinition) {

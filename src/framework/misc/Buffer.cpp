@@ -445,7 +445,7 @@ void Buffer::ReadBytes(uint8_t *theData, int theLen) const {
 void Buffer::ReadBuffer(ByteVector *theByteVector) const {
     theByteVector->clear();
 
-    ulong aLength = ReadLong();
+    uint32_t aLength = ReadLong();
     theByteVector->resize(aLength);
     ReadBytes(&(*theByteVector)[0], aLength);
 }
@@ -461,8 +461,8 @@ int Buffer::GetDataLen() const {
 
 int Buffer::GetDataLenBits() const { return mDataBitSize; }
 
-ulong Buffer::GetCRC32(ulong theSeed) const {
-    ulong aCRC = theSeed;
+uint32_t Buffer::GetCRC32(uint32_t theSeed) const {
+    uint32_t aCRC = theSeed;
     aCRC = UpdateCRC(aCRC, reinterpret_cast<const char *>(&mData[0]), static_cast<int>(mData.size()));
     return aCRC;
 }

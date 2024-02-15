@@ -6,9 +6,18 @@
 #include <map>
 #include <string>
 
+using ChronoFileTime = std::chrono::time_point<std::chrono::file_clock>;
+
 struct FileTime {
-    unsigned long dwLowDateTime;
-    unsigned long dwHighDateTime;
+    uint32_t dwLowDateTime;
+    uint32_t dwHighDateTime;
+
+    [[nodiscard]] ChronoFileTime to_time_point() const {
+        // !TODO Cross-platform epoch conversion
+        return ChronoFileTime(std::chrono::file_clock::duration(
+            (static_cast<std::chrono::file_clock::rep>(dwHighDateTime) << 32) | dwLowDateTime
+        ));
+    }
 };
 
 class PakCollection;
@@ -66,7 +75,7 @@ public:
     virtual PFILE *FOpen(const char *theFileName, const char *theAccess) = 0;
     //	virtual PFILE*			FOpen(const wchar_t* theFileName, const wchar_t* theAccess) { return NULL; }
     virtual int FClose(PFILE *theFile) = 0;
-    virtual int FSeek(PFILE *theFile, long theOffset, int theOrigin) = 0;
+    virtual int FSeek(PFILE *theFile, uint32_t theOffset, int theOrigin) = 0;
     virtual int FTell(PFILE *theFile) = 0;
     virtual size_t FRead(void *thePtr, int theElemSize, int theCount, PFILE *theFile) = 0;
     virtual int FGetC(PFILE *theFile) = 0;
@@ -96,13 +105,17 @@ public:
     bool AddPakFile(const std::string &theFileName);
     PFILE *FOpen(const char *theFileName, const char *theAccess) override;
     int FClose(PFILE *theFile) override;
-    int FSeek(PFILE *theFile, long theOffset, int theOrigin) override;
+    int FSeek(PFILE *theFile, uint32_t theOffset, int theOrigin) override;
     int FTell(PFILE *theFile) override;
     size_t FRead(void *thePtr, int theElemSize, int theCount, PFILE *theFile) override;
     int FGetC(PFILE *theFile) override;
     int UnGetC(int theChar, PFILE *theFile) override;
     char *FGetS(char *thePtr, int theSize, PFILE *theFile) override;
     int FEof(PFILE *theFile) override;
+
+    PFILE *OpenIndirectFile(const char *theFileName, const char *anAccess);
+    std::optional<ChronoFileTime> GetFileTime(const std::string &theFileName);
+
     /*
         HANDLE					FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData);
         BOOL					FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData);
@@ -118,7 +131,7 @@ extern PakInterface *gPakInterface;
 
 [[maybe_unused]] static int p_fclose(PFILE *theFile) { return gPakInterface->FClose(theFile); }
 
-[[maybe_unused]] static int p_fseek(PFILE *theFile, long theOffset, int theOrigin) {
+[[maybe_unused]] static int p_fseek(PFILE *theFile, uint32_t theOffset, int theOrigin) {
     return gPakInterface->FSeek(theFile, theOffset, theOrigin);
 }
 

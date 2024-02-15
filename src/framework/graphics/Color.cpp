@@ -57,7 +57,7 @@ int Color::operator[](const int theIdx) const {
     }
 }
 
-ulong Color::ToInt() const { return (mAlpha << 24) | (mRed << 16) | (mGreen << 8) | (mBlue); }
+uint32_t Color::ToInt() const { return (mAlpha << 24) | (mRed << 16) | (mGreen << 8) | (mBlue); }
 
 SexyRGBA Color::ToRGBA() const {
     SexyRGBA anRGBA;

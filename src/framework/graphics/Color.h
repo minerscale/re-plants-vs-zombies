@@ -33,7 +33,7 @@ public:
     int GetGreen() const;
     int GetBlue() const;
     int GetAlpha() const;
-    ulong ToInt() const;
+    uint32_t ToInt() const;
     SexyRGBA ToRGBA() const;
 
     int &operator[](int theIdx);

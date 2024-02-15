@@ -141,7 +141,7 @@ void WidgetManager::FlushDeferredOverlayWidgets(int theMaxPriority) {
     }
 }
 
-void WidgetManager::DoMouseUps(Widget *theWidget, ulong theDownCode) const {
+void WidgetManager::DoMouseUps(Widget *theWidget, uint32_t theDownCode) const {
     int aClickCountTable[3] = {1, -1, 3};
     for (int i = 0; i < 3; i++) {
         if ((theDownCode & (1 << i)) != 0) {

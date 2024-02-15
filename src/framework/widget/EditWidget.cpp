@@ -289,7 +289,7 @@ void EditWidget::ProcessKey(KeyCode theKey, SexyChar theChar) {
         if (aBaseString.length() > 0) {
             SexyString aString;
 
-            for (ulong i = 0; i < aBaseString.length(); i++) {
+            for (uint32_t i = 0; i < aBaseString.length(); i++) {
                 if ((aBaseString[i] == '\r') || (aBaseString[i] == '\n')) break;
 
                 if (mFont->CharWidth(aBaseString[i]) != 0) aString += aBaseString[i];

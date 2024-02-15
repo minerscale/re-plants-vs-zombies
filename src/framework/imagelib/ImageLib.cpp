@@ -7,6 +7,8 @@
 
 #include "ImageLib.h"
 
+#include "paklib/PakInterface.h"
+
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -15,10 +17,26 @@
 using namespace ImageLib;
 
 std::unique_ptr<Image> GetImageWithSDL(const std::string &theFileName) {
-    const std::string &corrected_path = casepath(theFileName);
-    if (corrected_path.empty()) return nullptr;
+    PFILE *aPFile = gPakInterface->FOpen(theFileName.c_str(), "rb");
+    if (!aPFile) return nullptr;
 
-    SDL_Surface *aSurface = IMG_Load(corrected_path.c_str());
+    SDL_RWops *aRwops = nullptr;
+
+    if (aPFile->mRecord != nullptr) {
+        const auto aDst = alloca(aPFile->mRecord->mSize);
+        gPakInterface->FRead(aDst, aPFile->mRecord->mSize, 1, aPFile);
+        aRwops = SDL_RWFromConstMem(aDst, aPFile->mRecord->mSize);
+    } else {
+        aRwops = SDL_RWFromFP(aPFile->mFP, SDL_FALSE);
+    }
+
+    if (!aRwops) {
+        gPakInterface->FClose(aPFile);
+        return nullptr;
+    }
+
+    SDL_Surface *aSurface = IMG_Load_RW(aRwops, 1);
+    gPakInterface->FClose(aPFile);
 
     if (!aSurface) return nullptr;
 

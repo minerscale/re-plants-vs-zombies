@@ -34,7 +34,7 @@ int Sexy::Rand(int range) { return gMTRand.Next(static_cast<unsigned long>(range
 
 float Sexy::Rand(float range) { return gMTRand.Next(range); }
 
-void Sexy::SRand(ulong theSeed) { gMTRand.SRand(theSeed); }
+void Sexy::SRand(uint32_t theSeed) { gMTRand.SRand(theSeed); }
 
 bool Sexy::CheckFor98Mill() {
     unreachable(); // FIXME (sort of, really it just needs removing)
@@ -941,7 +941,7 @@ std::string Sexy::XMLDecodeString(const std::string &theString) {
     // int aUTF8Len = 0;
     // int aUTF8CurVal = 0;
 
-    for (ulong i = 0; i < theString.length(); i++) {
+    for (uint32_t i = 0; i < theString.length(); i++) {
         char c = theString[i];
 
         if (c == '&') {
@@ -974,7 +974,7 @@ std::wstring Sexy::XMLDecodeString(const std::wstring &theString) {
     // int aUTF8Len = 0;
     // int aUTF8CurVal = 0;
 
-    for (ulong i = 0; i < theString.length(); i++) {
+    for (uint32_t i = 0; i < theString.length(); i++) {
         wchar_t c = theString[i];
 
         if (c == L'&') {
@@ -1005,7 +1005,7 @@ std::string Sexy::XMLEncodeString(const std::string &theString) {
 
     bool hasSpace = false;
 
-    for (ulong i = 0; i < theString.length(); i++) {
+    for (uint32_t i = 0; i < theString.length(); i++) {
         char c = theString[i];
 
         if (c == ' ') {
@@ -1045,7 +1045,7 @@ std::wstring Sexy::XMLEncodeString(const std::wstring &theString) {
 
     bool hasSpace = false;
 
-    for (ulong i = 0; i < theString.length(); i++) {
+    for (uint32_t i = 0; i < theString.length(); i++) {
         wchar_t c = theString[i];
 
         if (c == ' ') {

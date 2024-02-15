@@ -6,7 +6,7 @@
 
 using uint8_t = unsigned char;
 using uint16_t = unsigned short;
-using ulong = unsigned long;
+using uint32_t = uint32_t;
 
 enum { FILEFLAGS_END = 0x80 };
 
@@ -33,7 +33,7 @@ PakInterface::~PakInterface() {}
 bool PakInterface::AddPakFile(const std::string &theFileName) {
     // HANDLE aFileHandle = CreateFile(theFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0,
     // NULL);
-    FILE *aFileHandle = fopen("theFileName", "rb");
+    FILE *aFileHandle = fopen(theFileName.c_str(), "rb");
 
     if (!aFileHandle) return false;
 
@@ -56,7 +56,7 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
         return false;
     }
     */
-    mPakCollectionList.push_back(PakCollection(aFileSize));
+    mPakCollectionList.emplace_back(aFileSize);
     PakCollection *aPakCollection = &mPakCollectionList.back();
     /*
     aPakCollection->mFileHandle = aFileHandle;
@@ -64,12 +64,18 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
     aPakCollection->mDataPtr = aPtr;
     */
 
-    if (fread(aPakCollection->mDataPtr, aFileSize, 1, aFileHandle) != aFileSize) {
+    if (fread(aPakCollection->mDataPtr, 1, aFileSize, aFileHandle) != aFileSize) {
         fclose(aFileHandle);
         return false;
     }
 
     fclose(aFileHandle);
+
+    {
+        auto *aDataPtr = static_cast<uint8_t *>(aPakCollection->mDataPtr);
+        for (size_t i = 0; i < aFileSize; i++)
+            *aDataPtr++ ^= 0xF7;
+    }
 
     auto aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(theFileName), PakRecord())).first;
     PakRecord *aPakRecord = &(aRecordItr->second);
@@ -78,18 +84,18 @@ bool PakInterface::AddPakFile(const std::string &theFileName) {
     aPakRecord->mStartPos = 0;
     aPakRecord->mSize = aFileSize;
 
-    PFILE *aFP = FOpen(theFileName.c_str(), "rb");
+    PFILE *aFP = OpenIndirectFile(theFileName.c_str(), "rb");
     if (aFP == nullptr) return false;
 
-    ulong aMagic = 0;
-    FRead(&aMagic, sizeof(ulong), 1, aFP);
+    uint32_t aMagic = 0;
+    FRead(&aMagic, sizeof(uint32_t), 1, aFP);
     if (aMagic != 0xBAC04AC0) {
         FClose(aFP);
         return false;
     }
 
-    ulong aVersion = 0;
-    FRead(&aVersion, sizeof(ulong), 1, aFP);
+    uint32_t aVersion = 0;
+    FRead(&aVersion, sizeof(uint32_t), 1, aFP);
     if (aVersion > 0) {
         FClose(aFP);
         return false;
@@ -176,8 +182,17 @@ static void FixFileName(const char *theFileName, char *theUpperName) {
     }
 }
 
-// 0x5D85C0
-PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
+inline PFILE *OpenDirectFile(const char *theFileName, const char *anAccess) {
+    FILE *aFP = fcaseopen(theFileName, anAccess);
+    if (aFP == nullptr) return nullptr;
+    auto aPFP = new PFILE;
+    aPFP->mRecord = nullptr;
+    aPFP->mPos = 0;
+    aPFP->mFP = aFP;
+    return aPFP;
+}
+
+PFILE *PakInterface::OpenIndirectFile(const char *theFileName, const char *anAccess) {
     if ((strcasecmp(anAccess, "r") == 0) || (strcasecmp(anAccess, "rb") == 0) || (strcasecmp(anAccess, "rt") == 0)) {
         char anUpperName[256];
         FixFileName(theFileName, anUpperName);
@@ -191,14 +206,30 @@ PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
             return aPFP;
         }
     }
+    return nullptr;
+}
 
-    FILE *aFP = fcaseopen(theFileName, anAccess);
-    if (aFP == nullptr) return nullptr;
-    auto aPFP = new PFILE;
-    aPFP->mRecord = nullptr;
-    aPFP->mPos = 0;
-    aPFP->mFP = aFP;
-    return aPFP;
+std::optional<ChronoFileTime> PakInterface::GetFileTime(const std::string &theFileName) {
+    const auto &aFilePath = casepath(theFileName);
+    if (!aFilePath.empty() && std::filesystem::exists(aFilePath)) {
+        return std::filesystem::last_write_time(aFilePath);
+    }
+
+    char anUpperName[256];
+    FixFileName(theFileName.c_str(), anUpperName);
+    auto anItr = mPakRecordMap.find(anUpperName);
+    if (anItr != mPakRecordMap.end()) {
+        return anItr->second.mFileTime.to_time_point();
+    }
+
+    return std::nullopt;
+}
+
+// 0x5D85C0
+PFILE *PakInterface::FOpen(const char *theFileName, const char *anAccess) {
+    const auto aDirectFile = OpenDirectFile(theFileName, anAccess);
+    if (aDirectFile) return aDirectFile;
+    return OpenIndirectFile(theFileName, anAccess);
 }
 
 // 0x5D8780
@@ -209,7 +240,7 @@ int PakInterface::FClose(PFILE *theFile) {
 }
 
 // 0x5D87B0
-int PakInterface::FSeek(PFILE *theFile, long theOffset, int theOrigin) {
+int PakInterface::FSeek(PFILE *theFile, uint32_t theOffset, int theOrigin) {
     if (theFile->mRecord != nullptr) {
         if (theOrigin == SEEK_SET) theFile->mPos = theOffset;
         else if (theOrigin == SEEK_END) theFile->mPos = theFile->mRecord->mSize - theOffset;
@@ -234,11 +265,12 @@ size_t PakInterface::FRead(void *thePtr, int theElemSize, int theCount, PFILE *t
         int aSizeBytes = std::min(theElemSize * theCount, theFile->mRecord->mSize - theFile->mPos);
 
         // 取得在整个 pak 中开始读取的位置的指针
-        uint8_t *src = static_cast<uint8_t *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
-                       theFile->mPos;
-        auto dest = static_cast<uint8_t *>(thePtr);
-        for (int i = 0; i < aSizeBytes; i++)
-            *(dest++) = (*src++) ^ 0xF7; // 'Decrypt'
+        const uint8_t *src = static_cast<uint8_t *>(theFile->mRecord->mCollection->mDataPtr) +
+                             theFile->mRecord->mStartPos + theFile->mPos;
+        const auto dest = static_cast<uint8_t *>(thePtr);
+        // for (int i = 0; i < aSizeBytes; i++)
+        //    *(dest++) = (*src++) ;  ^ 0xF7; // 'Decrypt'
+        memcpy(dest, src, aSizeBytes);
         theFile->mPos += aSizeBytes;     // 读取完成后，移动当前读取位置的指针
         return aSizeBytes / theElemSize; // 返回实际读取的项数
     }
@@ -250,9 +282,9 @@ int PakInterface::FGetC(PFILE *theFile) {
     if (theFile->mRecord != nullptr) {
         for (;;) {
             if (theFile->mPos >= theFile->mRecord->mSize) return EOF;
-            char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
-                           theFile->mPos++) ^
-                         0xF7;
+            char aChar =
+                *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
+                  theFile->mPos++); // ^ 0xF7;
             if (aChar != '\r') return static_cast<uint8_t>(aChar);
         }
     }
@@ -278,9 +310,9 @@ char *PakInterface::FGetS(char *thePtr, int theSize, PFILE *theFile) {
                 if (anIdx == 0) return nullptr;
                 break;
             }
-            char aChar = *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
-                           theFile->mPos++) ^
-                         0xF7;
+            char aChar =
+                *(static_cast<char *>(theFile->mRecord->mCollection->mDataPtr) + theFile->mRecord->mStartPos +
+                  theFile->mPos++); // ^ 0xF7;
             if (aChar != '\r') thePtr[anIdx++] = aChar;
             if (aChar == '\n') break;
         }

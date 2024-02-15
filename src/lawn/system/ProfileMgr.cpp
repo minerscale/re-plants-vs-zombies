@@ -36,8 +36,8 @@ void ProfileMgr::SyncState(DataSync &theSync) {
         if (aReader) {
             mProfileMap.clear();
 
-            ulong aMaxProfileId = 0;
-            ulong aMaxUseSeq = 0;
+            uint32_t aMaxProfileId = 0;
+            uint32_t aMaxUseSeq = 0;
             for (int aProfileCount = aReader->ReadShort(); aProfileCount > 0; aProfileCount--) {
                 PlayerInfo aProfile;
                 aProfile.SyncSummary(theSync);

@@ -509,7 +509,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
     };
     AutoFile aCloseFile(aFP);
 
-    ulong aFileID;
+    uint32_t aFileID;
     fread(&aFileID, 4, 1, aFP);
 
     DBG_ASSERTE(aFileID == DEMO_FILE_ID);
@@ -518,7 +518,7 @@ bool SexyAppBase::ReadDemoBuffer(std::string &theError) {
         return false;
     }
 
-    ulong aVersion;
+    uint32_t aVersion;
     fread(&aVersion, 4, 1, aFP);
 
     fread(&mRandSeed, 4, 1, aFP);
@@ -607,10 +607,10 @@ void SexyAppBase::WriteDemoBuffer() {
         FILE *aFP = fopen(mDemoFileName.c_str(), "w+b");
 
         if (aFP != nullptr) {
-            ulong aFileID = DEMO_FILE_ID;
+            uint32_t aFileID = DEMO_FILE_ID;
             fwrite(&aFileID, 4, 1, aFP);
 
-            ulong aVersion = DEMO_VERSION;
+            uint32_t aVersion = DEMO_VERSION;
             fwrite(&aVersion, 4, 1, aFP);
 
             fwrite(&mRandSeed, 4, 1, aFP);
@@ -631,7 +631,7 @@ void SexyAppBase::WriteDemoBuffer() {
             fwrite(&aMarkerBufferSize, 4, 1, aFP);
             fwrite(aMarkerBuffer.GetDataPtr(), aMarkerBufferSize, 1, aFP);
 
-            ulong aDemoLength = mUpdateCount;
+            uint32_t aDemoLength = mUpdateCount;
             fwrite(&aDemoLength, 4, 1, aFP);
 
             fwrite(mDemoBuffer.GetDataPtr(), 1, mDemoBuffer.GetDataLen(), aFP);
@@ -650,7 +650,7 @@ void SexyAppBase::DemoSyncBuffer(Buffer *theBuffer) {
         DBG_ASSERTE(!mDemoIsShortCmd);
         DBG_ASSERTE(mDemoCmdNum == DEMO_SYNC);
 
-        ulong aLen = mDemoBuffer.ReadLong();
+        uint32_t aLen = mDemoBuffer.ReadLong();
 
         theBuffer->Clear();
         for (int i = 0; i < static_cast<int>(aLen); i++)
@@ -1323,9 +1323,9 @@ void SexyAppBase::DumpProgramInfo() {
 
         MemoryImage aCopiedImage(*aMemoryImage);
 
-        ulong* aBits = aCopiedImage.GetBits();
+        uint32_t* aBits = aCopiedImage.GetBits();
 
-        ulong* aThumbBitsPtr = anImageLibImage.mBits;
+        uint32_t* aThumbBitsPtr = anImageLibImage.mBits;
 
         for (int aThumbY = 0; aThumbY < aThumbHeight; aThumbY++)
             for (int aThumbX = 0; aThumbX < aThumbWidth; aThumbX++)
@@ -1435,7 +1435,7 @@ bool SexyAppBase::RegistryWriteBoolean(const std::string &theValueName, bool the
     return RegistryWrite(theValueName, REG_DWORD, reinterpret_cast<uint8_t *>(&aValue), sizeof(int));
 }
 
-bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, ulong theLength) {
+bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, uint32_t theLength) {
     return RegistryWrite(theValueName, REG_BINARY, theValue, theLength);
 }
 
@@ -1818,7 +1818,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string &theFileName, Buffer *the
         bool success = mDemoBuffer.ReadNumBits(1, false) != 0;
         if (!success) return false;
 
-        ulong aLen = mDemoBuffer.ReadLong();
+        uint32_t aLen = mDemoBuffer.ReadLong();
 
         theBuffer->Clear();
         for (int i = 0; i < static_cast<int>(aLen); i++)
@@ -2314,7 +2314,7 @@ bool SexyAppBase::DrawDirtyStuff() {
 #ifdef _DEBUG
         /*if (mFPSTime >= 5000) // Show FPS about every 5 seconds
         {
-            ulong aTickNow = GetTickCount();
+            uint32_t aTickNow = GetTickCount();
 
             OutputDebugString(StrFormat(_S("Theoretical FPS: %d\r\n"), (int) (mFPSCount * 1000 / mFPSTime)).c_str());
             OutputDebugString(StrFormat(_S("Actual      FPS: %d\r\n"), (mFPSFlipCount * 1000) / max((aTickNow -
@@ -5167,9 +5167,7 @@ void SexyAppBase::Init() {
         std::filesystem::current_path(mChangeDirTo);
     }
 
-    /*
     gPakInterface->AddPakFile("main.pak");
-    */
 
     /* TODO
     // Create a message we can use to talk to ourselves inter-process
@@ -5472,25 +5470,25 @@ const Rect& theRect2, double theFadeFactor)
     DDImage* anImage = new DDImage(mDDInterface);
     anImage->Create(aWidth, aHeight);
 
-    ulong* aDestBits = anImage->GetBits();
-    ulong* aSrcBits1 = aMemoryImage1->GetBits();
-    ulong* aSrcBits2 = aMemoryImage2->GetBits();
+    uint32_t* aDestBits = anImage->GetBits();
+    uint32_t* aSrcBits1 = aMemoryImage1->GetBits();
+    uint32_t* aSrcBits2 = aMemoryImage2->GetBits();
 
     int aSrc1Width = aMemoryImage1->GetWidth();
     int aSrc2Width = aMemoryImage2->GetWidth();
-    ulong aMult = (int) (theFadeFactor*256);
-    ulong aOMM = (256 - aMult);
+    uint32_t aMult = (int) (theFadeFactor*256);
+    uint32_t aOMM = (256 - aMult);
 
     for (int y = 0; y < aHeight; y++)
     {
-        ulong* s1 = &aSrcBits1[(y+theRect1.mY)*aSrc1Width+theRect1.mX];
-        ulong* s2 = &aSrcBits2[(y+theRect2.mY)*aSrc2Width+theRect2.mX];
-        ulong* d = &aDestBits[y*aWidth];
+        uint32_t* s1 = &aSrcBits1[(y+theRect1.mY)*aSrc1Width+theRect1.mX];
+        uint32_t* s2 = &aSrcBits2[(y+theRect2.mY)*aSrc2Width+theRect2.mX];
+        uint32_t* d = &aDestBits[y*aWidth];
 
         for (int x = 0; x < aWidth; x++)
         {
-            ulong p1 = *s1++;
-            ulong p2 = *s2++;
+            uint32_t p1 = *s1++;
+            uint32_t p2 = *s2++;
 
             //p1 = 0;
             //p2 = 0xFFFFFFFF;
@@ -5516,7 +5514,7 @@ void SexyAppBase::ColorizeImage(Image * /*theImage*/, const Color & /*theColor*/
     if (aSrcMemoryImage == NULL)
         return;
 
-    ulong* aBits;
+    uint32_t* aBits;
     int aNumColors;
 
     if (aSrcMemoryImage->mColorTable == NULL)
@@ -5535,7 +5533,7 @@ void SexyAppBase::ColorizeImage(Image * /*theImage*/, const Color & /*theColor*/
     {
         for (int i = 0; i < aNumColors; i++)
         {
-            ulong aColor = aBits[i];
+            uint32_t aColor = aBits[i];
 
             aBits[i] =
                 ((((aColor & 0xFF000000) >> 8) * theColor.mAlpha) & 0xFF000000) |
@@ -5548,7 +5546,7 @@ void SexyAppBase::ColorizeImage(Image * /*theImage*/, const Color & /*theColor*/
     {
         for (int i = 0; i < aNumColors; i++)
         {
-            ulong aColor = aBits[i];
+            uint32_t aColor = aBits[i];
 
             int aAlpha = ((aColor >> 24) * theColor.mAlpha) / 255;
             int aRed = (((aColor >> 16) & 0xFF) * theColor.mRed) / 255;
@@ -5583,8 +5581,8 @@ DDImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 
     anImage->Create(theImage->GetWidth(), theImage->GetHeight());
 
-    ulong* aSrcBits;
-    ulong* aDestBits;
+    uint32_t* aSrcBits;
+    uint32_t* aDestBits;
     int aNumColors;
 
     if (aSrcMemoryImage->mColorTable == NULL)
@@ -5596,7 +5594,7 @@ DDImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
     else
     {
         aSrcBits = aSrcMemoryImage->mColorTable;
-        aDestBits = anImage->mColorTable = new ulong[256];
+        aDestBits = anImage->mColorTable = new uint32_t[256];
         aNumColors = 256;
 
         anImage->mColorIndices = new uint8_t[anImage->mWidth*theImage->mHeight];
@@ -5608,7 +5606,7 @@ DDImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
     {
         for (int i = 0; i < aNumColors; i++)
         {
-            ulong aColor = aSrcBits[i];
+            uint32_t aColor = aSrcBits[i];
 
             aDestBits[i] =
                 ((((aColor & 0xFF000000) >> 8) * theColor.mAlpha) & 0xFF000000) |
@@ -5621,7 +5619,7 @@ DDImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
     {
         for (int i = 0; i < aNumColors; i++)
         {
-            ulong aColor = aSrcBits[i];
+            uint32_t aColor = aSrcBits[i];
 
             int aAlpha = ((aColor >> 24) * theColor.mAlpha) / 255;
             int aRed = (((aColor >> 16) & 0xFF) * theColor.mRed) / 255;
@@ -5793,7 +5791,7 @@ void SexyAppBase::RotateImageHue(Sexy::MemoryImage *theImage, int theDelta)
     theImage->BitsChanged();
 }*/
 
-ulong SexyAppBase::HSLToRGB(int h, int s, int l) {
+uint32_t SexyAppBase::HSLToRGB(int h, int s, int l) {
     int r;
     int g;
     int b;
@@ -5850,7 +5848,7 @@ ulong SexyAppBase::HSLToRGB(int h, int s, int l) {
     return 0xFF000000 | (r << 16) | (g << 8) | (b);
 }
 
-ulong SexyAppBase::RGBToHSL(int r, int g, int b) {
+uint32_t SexyAppBase::RGBToHSL(int r, int g, int b) {
     int maxval = std::max(r, std::max(g, b));
     int minval = std::min(r, std::min(g, b));
     int hue = 0;
@@ -5873,16 +5871,16 @@ ulong SexyAppBase::RGBToHSL(int r, int g, int b) {
     return 0xFF000000 | (hue) | (saturation << 8) | (luminosity << 16);
 }
 
-void SexyAppBase::HSLToRGB(const ulong *theSource, ulong *theDest, int theSize) {
+void SexyAppBase::HSLToRGB(const uint32_t *theSource, uint32_t *theDest, int theSize) {
     for (int i = 0; i < theSize; i++) {
-        ulong src = theSource[i];
+        uint32_t src = theSource[i];
         theDest[i] = (src & 0xFF000000) | (HSLToRGB((src & 0xFF), (src >> 8) & 0xFF, (src >> 16) & 0xFF) & 0x00FFFFFF);
     }
 }
 
-void SexyAppBase::RGBToHSL(const ulong *theSource, ulong *theDest, int theSize) {
+void SexyAppBase::RGBToHSL(const uint32_t *theSource, uint32_t *theDest, int theSize) {
     for (int i = 0; i < theSize; i++) {
-        ulong src = theSource[i];
+        uint32_t src = theSource[i];
         theDest[i] =
             (src & 0xFF000000) | (RGBToHSL(((src >> 16) & 0xFF), (src >> 8) & 0xFF, (src & 0xFF)) & 0x00FFFFFF);
     }

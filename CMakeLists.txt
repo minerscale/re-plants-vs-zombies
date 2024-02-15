@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 ################################################################################
 # Target
 ################################################################################
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 project(PlantsVsZombies C CXX)
 
 ################################################################################
@@ -22,14 +22,18 @@ set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
 # @Patoke todo: probably add MSVC counterparts?
 if (MSVC)
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(universal_compiler_flags
+                "/Ob2" "/Ox"
+        )
         if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             set(universal_link_flags
                     "/MT /LTCG"
             )
+            set(universal_compiler_flags
+                    ${universal_compiler_flags}
+                    "/GL" "/arch:AVX2" "/flavor:INTEL64"
+            )
         endif ()
-        set(universal_compiler_flags
-                "/Ob2" "/GL" "/Ox" "/arch:AVX2" "/flavor:INTEL64"
-        )
     else ()
         set(universal_compiler_flags "")
     endif ()

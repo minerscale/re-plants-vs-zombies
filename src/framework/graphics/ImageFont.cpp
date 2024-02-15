@@ -26,18 +26,18 @@ DataElement *SingleDataElement::Duplicate() {
 ListDataElement::ListDataElement() { mIsList = true; }
 
 ListDataElement::~ListDataElement() {
-    for (ulong i = 0; i < mElementVector.size(); i++)
+    for (uint32_t i = 0; i < mElementVector.size(); i++)
         delete mElementVector[i];
 }
 
 ListDataElement::ListDataElement(const ListDataElement &theListDataElement) {
     mIsList = true;
-    for (ulong i = 0; i < theListDataElement.mElementVector.size(); i++)
+    for (uint32_t i = 0; i < theListDataElement.mElementVector.size(); i++)
         mElementVector.push_back(theListDataElement.mElementVector[i]->Duplicate());
 }
 
 ListDataElement &ListDataElement::operator=(const ListDataElement &theListDataElement) {
-    ulong i;
+    uint32_t i;
 
     for (i = 0; i < mElementVector.size(); i++)
         delete mElementVector[i];
@@ -60,7 +60,7 @@ CharData::CharData() {
     mWidth = 0;
     mOrder = 0;
 
-    // for (ulong i = 0; i < 256; i++)
+    // for (uint32_t i = 0; i < 256; i++)
     //	mKerningOffsets[i] = 0;
 }
 
@@ -112,7 +112,7 @@ FontLayer::FontLayer(const FontLayer &theFontLayer)
       mBaseOrder(theFontLayer.mBaseOrder),
       // @Minerscale mUseAlphaCorrection wasn't initialised in the copy constructor causing UB
       mUseAlphaCorrection(theFontLayer.mUseAlphaCorrection) {
-    // ulong i;
+    // uint32_t i;
     //
     // for (i = 0; i < 256; i++)
     //	mCharData[i] = theFontLayer.mCharData[i];
@@ -132,7 +132,7 @@ FontData::FontData() {
     mRefCount = 0;
     mDefaultPointSize = 0;
 
-    // for (ulong i = 0; i < 256; i++)
+    // for (uint32_t i = 0; i < 256; i++)
     //	mCharMap[i] = (uint8_t) i;
 }
 
@@ -174,7 +174,7 @@ bool FontData::DataToLayer(DataElement *theSource, FontLayer **theFontLayer) {
 
     if (theSource->mIsList) return false;
 
-    const std::string aLayerName = StringToUpper(static_cast<SingleDataElement *>(theSource)->mString);
+    const std::string aLayerName = StringToUpper(dynamic_cast<SingleDataElement *>(theSource)->mString);
 
     const auto anItr = mFontLayerMap.find(aLayerName);
     if (anItr == mFontLayerMap.end()) {
@@ -207,14 +207,14 @@ bool FontData::GetColorFromDataElement(DataElement *theElement, Color &theColor)
     return true;
 }
 
-char32_t UTF8CharToUTF32Char(const std::string theString) {
+char32_t UTF8CharToUTF32Char(const std::string &theString) {
     char32_t ret = 0;
     memcpy(&ret, theString.data(), theString.length());
     return ret;
 }
 
 bool FontData::HandleCommand(const ListDataElement &theParams) {
-    std::string aCmd = static_cast<SingleDataElement *>(theParams.mElementVector[0])->mString;
+    std::string aCmd = dynamic_cast<SingleDataElement *>(theParams.mElementVector[0])->mString;
 
     bool invalidNumParams = false;
     bool invalidParamFormat = false;
@@ -269,7 +269,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
 
                 auto aRectList = new ListDataElement();
 
-                for (ulong aWidthNum = 0; aWidthNum < aWidthsVector.size(); aWidthNum++) {
+                for (uint32_t aWidthNum = 0; aWidthNum < aWidthsVector.size(); aWidthNum++) {
                     auto aRectElement = new ListDataElement();
                     aRectList->mElementVector.push_back(aRectElement);
 
@@ -316,7 +316,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
             if ((DataToStringVector(theParams.mElementVector[1], &aFromVector)) &&
                 (DataToStringVector(theParams.mElementVector[2], &aToVector))) {
                 if (aFromVector.size() == aToVector.size()) {
-                    for (ulong aMapIdx = 0; aMapIdx < aFromVector.size(); aMapIdx++) {
+                    for (uint32_t aMapIdx = 0; aMapIdx < aFromVector.size(); aMapIdx++) {
                         if ((aFromVector[aMapIdx].length() == 1) && (aToVector[aMapIdx].length() == 1)) {
                             // mCharMap[(uint8_t) aFromVector[aMapIdx][0]] = (uint8_t) aToVector[aMapIdx][0];
                             SexyChar fromChar = aFromVector[aMapIdx][0];
@@ -365,7 +365,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
 
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) &&
                 (DataToStringVector(theParams.mElementVector[2], &aStringVector))) {
-                for (ulong i = 0; i < aStringVector.size(); i++)
+                for (uint32_t i = 0; i < aStringVector.size(); i++)
                     aLayer->mRequiredTags.push_back(StringToUpper(aStringVector[i]));
             } else invalidParamFormat = true;
         } else invalidNumParams = true;
@@ -376,7 +376,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
 
             if ((DataToLayer(theParams.mElementVector[1], &aLayer)) &&
                 (DataToStringVector(theParams.mElementVector[2], &aStringVector))) {
-                for (ulong i = 0; i < aStringVector.size(); i++)
+                for (uint32_t i = 0; i < aStringVector.size(); i++)
                     aLayer->mExcludedTags.push_back(StringToUpper(aStringVector[i]));
             } else invalidParamFormat = true;
         } else invalidNumParams = true;
@@ -514,7 +514,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToIntVector(theParams.mElementVector[3], &aCharWidthsVector))) {
                 if (aCharsVector.size() == aCharWidthsVector.size()) {
-                    for (ulong i = 0; i < aCharsVector.size(); i++) {
+                    for (uint32_t i = 0; i < aCharsVector.size(); i++) {
                         // std::wstring aWString = UTF8StringToWString(aCharsVector[i]);
                         char32_t first_char = UTF8CharToUTF32Char(aCharsVector[i]);
                         aLayer->GetCharData(first_char)->mWidth = aCharWidthsVector[i];
@@ -550,7 +550,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                         int anImageWidth = aLayer->mImage->GetWidth();
                         int anImageHeight = aLayer->mImage->GetHeight();
 
-                        for (ulong i = 0; i < aCharsVector.size(); i++) {
+                        for (uint32_t i = 0; i < aCharsVector.size(); i++) {
                             IntVector aRectElement;
 
                             char32_t first_char = UTF8CharToUTF32Char(aCharsVector[i]);
@@ -601,7 +601,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToList(theParams.mElementVector[3], &aRectList))) {
                 if (aCharsVector.size() == aRectList.mElementVector.size()) {
-                    for (ulong i = 0; i < aCharsVector.size(); i++) {
+                    for (uint32_t i = 0; i < aCharsVector.size(); i++) {
                         auto aRectElement = IntVector();
 
                         char32_t first_char = UTF8CharToUTF32Char(aCharsVector[i]);
@@ -629,7 +629,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToStringVector(theParams.mElementVector[2], &aPairsVector)) &&
                 (DataToIntVector(theParams.mElementVector[3], &anOffsetsVector))) {
                 if (aPairsVector.size() == anOffsetsVector.size()) {
-                    for (ulong i = 0; i < aPairsVector.size(); i++) {
+                    for (uint32_t i = 0; i < aPairsVector.size(); i++) {
                         // Convert two utf8 chars to utf32
                         char32_t aChars[2]{};
                         int stringIdx = 0;
@@ -672,7 +672,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                 (DataToStringVector(theParams.mElementVector[2], &aCharsVector)) &&
                 (DataToIntVector(theParams.mElementVector[3], &aCharOrdersVector))) {
                 if (aCharsVector.size() == aCharOrdersVector.size()) {
-                    for (ulong i = 0; i < aCharsVector.size(); i++) {
+                    for (uint32_t i = 0; i < aCharsVector.size(); i++) {
                         if (aCharsVector[i].length() == 1) {
                             // aLayer->mCharData[(uint8_t) aCharsVector[i][0]].mOrder = aCharOrdersVector[i];
                             aLayer->GetCharData(aCharsVector[i][0])->mOrder = aCharOrdersVector[i];
@@ -731,7 +731,7 @@ bool FontData::Load(SexyAppBase *theSexyApp, const std::string &theFontDescFileN
 bool FontData::LoadLegacy(Image * /*theFontImage*/, const std::string & /*theFontDescFileName*/) {
     if (mInitialized) return false;
 
-    mFontLayerList.push_back(FontLayer(this));
+    mFontLayerList.emplace_back(this);
     FontLayer *aFontLayer = &mFontLayerList.back();
 
     const auto anItr = mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
@@ -846,7 +846,7 @@ ImageFont::ImageFont(Image * /*theFontImage*/) {
     mActiveListValid = false;
     mForceScaledImagesWhite = false;
 
-    mFontData->mFontLayerList.push_back(FontLayer(mFontData));
+    mFontData->mFontLayerList.emplace_back(mFontData);
     FontLayer *aFontLayer = &mFontData->mFontLayerList.back();
 
     // mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
@@ -897,7 +897,7 @@ void ImageFont::GenerateActiveFontLayers() {
 
     mActiveLayerList.clear();
 
-    ulong i;
+    uint32_t i;
 
     mAscent = 0;
     mAscentPadding = 0;
@@ -925,7 +925,7 @@ void ImageFont::GenerateActiveFontLayers() {
                     active = false;
 
             if (active) {
-                mActiveLayerList.push_back(ActiveFontLayer());
+                mActiveLayerList.emplace_back();
 
                 ActiveFontLayer *anActiveFontLayer = &mActiveLayerList.back();
 

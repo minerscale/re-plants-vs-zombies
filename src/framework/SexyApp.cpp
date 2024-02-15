@@ -62,7 +62,7 @@ bool SexyApp::Validate(const std::string& theUserName, const std::string& theReg
     BigInt n("42BF94023BBA6D040C8B81D9");
     BigInt e("11");
 
-    ulong i;
+    uint32_t i;
     std::string aDataString;
     bool space = false;
     for (i = 0; i < theUserName.size(); i++)

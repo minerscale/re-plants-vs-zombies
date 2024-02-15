@@ -33,7 +33,7 @@ std::string DescParser::Unquote(const std::string &theQuotedString) {
         std::string aLiteralString;
         bool lastWasQuote = false;
 
-        for (ulong i = 0; i < theQuotedString.length(); i++) {
+        for (uint32_t i = 0; i < theQuotedString.length(); i++) {
             if (theQuotedString[i] == aQuoteChar) {
                 if (lastWasQuote) aLiteralString += aQuoteChar;
 
@@ -51,7 +51,7 @@ std::string DescParser::Unquote(const std::string &theQuotedString) {
 bool DescParser::GetValues(ListDataElement *theSource, ListDataElement *theValues) {
     theValues->mElementVector.clear();
 
-    for (ulong aSourceNum = 0; aSourceNum < theSource->mElementVector.size(); aSourceNum++) {
+    for (uint32_t aSourceNum = 0; aSourceNum < theSource->mElementVector.size(); aSourceNum++) {
         if (theSource->mElementVector[aSourceNum]->mIsList) {
             auto aChildList = new ListDataElement();
             theValues->mElementVector.push_back(aChildList);
@@ -92,7 +92,7 @@ std::string DescParser::DataElementToString(DataElement *theDataElement) {
 
         std::string aString = "(";
 
-        for (ulong i = 0; i < aListDataElement->mElementVector.size(); i++) {
+        for (uint32_t i = 0; i < aListDataElement->mElementVector.size(); i++) {
             if (i != 0) aString += ", ";
 
             aString += DataElementToString(aListDataElement->mElementVector[i]);

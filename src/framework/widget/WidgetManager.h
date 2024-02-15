@@ -96,7 +96,7 @@ public:
     void LostFocus();
     void InitModalFlags(ModalFlags *theModalFlags);
     void DrawWidgetsTo(Graphics *g);
-    void DoMouseUps(Widget *theWidget, ulong theDownCode) const;
+    void DoMouseUps(Widget *theWidget, uint32_t theDownCode) const;
     void DoMouseUps();
     void DeferOverlay(Widget *theWidget, int thePriority);
     void FlushDeferredOverlayWidgets(int theMaxPriority);

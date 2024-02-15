@@ -51,7 +51,7 @@ void ListWidget::RemovedFromManager(WidgetManager *theManager) {
 SexyString ListWidget::GetSortKey(int theIdx) {
     SexyString aString = mLines[theIdx];
 
-    while (aString.length() < static_cast<ulong>(mMaxNumericPlaces))
+    while (aString.length() < static_cast<uint32_t>(mMaxNumericPlaces))
         aString = _S("0") + aString;
 
     if (mSortFromChild) return mChild->GetSortKey(theIdx) + aString;
@@ -189,7 +189,7 @@ void ListWidget::SetLine(int theIdx, const SexyString &theString) {
 int ListWidget::GetLineCount() { return mLines.size(); }
 
 int ListWidget::GetLineIdx(const SexyString &theLine) {
-    for (ulong i = 0; i < mLines.size(); i++)
+    for (uint32_t i = 0; i < mLines.size(); i++)
         if (strcmp(mLines[i].c_str(), theLine.c_str()) == 0) return i;
 
     return -1;
@@ -259,7 +259,7 @@ void ListWidget::RemoveAll() {
 int ListWidget::GetOptimalWidth() {
     int aMaxWidth = 0;
 
-    for (ulong i = 0; i < mLines.size(); i++)
+    for (uint32_t i = 0; i < mLines.size(); i++)
         aMaxWidth = std::max(aMaxWidth, mFont->StringWidth(mLines[i]));
 
     return aMaxWidth + 16;
