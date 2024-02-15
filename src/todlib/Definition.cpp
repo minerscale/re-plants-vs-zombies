@@ -1176,6 +1176,7 @@ void DefWriteToCacheString(void *&theWritePtr, char **theValue) {
 
 void DefWriteToCacheArray(void *&theWritePtr, DefinitionArrayDef *theValue, DefMap *theDefMap) {
     SMemW(theWritePtr, &theDefMap->mDefSize, sizeof(unsigned int));
+    if (!theValue->mArrayCount) return;
     SMemW(theWritePtr, theValue->mArrayData, theDefMap->mDefSize * theValue->mArrayCount);
     for (int i = 0; i < theValue->mArrayCount; ++i)
         DefMapWriteToCache(theWritePtr, theDefMap, (void *)((intptr_t)theValue->mArrayData + i * theDefMap->mDefSize));
