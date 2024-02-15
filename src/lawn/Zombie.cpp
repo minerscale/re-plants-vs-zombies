@@ -4523,7 +4523,9 @@ void Zombie::DrawBungeeReanim(Graphics *g) {
     DrawBungeeCord(g, -22);
     aBodyReanim->Draw(g);
 
-    Zombie *aDroppedZombie = mBoard->ZombieTryToGet(mRelatedZombieID);
+    Zombie *aDroppedZombie;
+    if (!mBoard) goto drawBungee;
+    aDroppedZombie = mBoard->ZombieTryToGet(mRelatedZombieID);
     if (aDroppedZombie) {
         Graphics aDropGraphics(*g);
         aDropGraphics.mTransY -= mAltitude;
@@ -4551,6 +4553,7 @@ void Zombie::DrawBungeeReanim(Graphics *g) {
         }
     }
 
+drawBungee:
     aBodyReanim->DrawRenderGroup(g, RENDER_GROUP_ARMS);
 }
 
@@ -6022,16 +6025,14 @@ void Zombie::BungeeDropPlant() {
 
 // 0x530480
 void Zombie::BungeeDie() {
-    BungeeDropPlant();
+    if (!mBoard) return;
 
-    if (mBoard)
     // 原版没有这个判断，因为 mBoard 为空时 DataArrayTryToGet() 不会实际用到 mBoard，此处为了确保安全就加上了这个判断
-    {
-        Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
-        if (aPlant) {
-            mBoard->mBoardData.mPlantsEaten++;
-            aPlant->Die();
-        }
+    BungeeDropPlant();
+    Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
+    if (aPlant) {
+        mBoard->mBoardData.mPlantsEaten++;
+        aPlant->Die();
     }
 
     Zombie *aZombie = mBoard->ZombieTryToGet(mRelatedZombieID);
