@@ -1855,10 +1855,10 @@ bool LawnApp::IsArtChallenge() const {
 }
 
 // 0x4537B0
-bool LawnApp::IsSquirrelLevel() { return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SQUIRREL; }
+bool LawnApp::IsSquirrelLevel() const { return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SQUIRREL; }
 
 // 0x4537D0
-bool LawnApp::IsIZombieLevel() {
+bool LawnApp::IsIZombieLevel() const {
     if (mBoard == nullptr) return false;
 
     return mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_2 ||
@@ -1869,11 +1869,11 @@ bool LawnApp::IsIZombieLevel() {
 }
 
 // 0x453820
-bool LawnApp::IsShovelLevel() { return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SHOVEL; }
+bool LawnApp::IsShovelLevel() const { return mBoard && mGameMode == GameMode::GAMEMODE_CHALLENGE_SHOVEL; }
 
 // 0x453840
 //  GOTY @Patoke: 0x456D10
-bool LawnApp::IsWallnutBowlingLevel() {
+bool LawnApp::IsWallnutBowlingLevel() const {
     if (mBoard == nullptr) return false;
 
     if (mGameMode == GameMode::GAMEMODE_CHALLENGE_WALLNUT_BOWLING ||

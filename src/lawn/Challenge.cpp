@@ -3880,7 +3880,7 @@ ZombieType Challenge::IZombieSeedTypeToZombieType(SeedType theSeedType) {
 }
 
 // 0x42A0F0
-void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY) {
+void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY) const {
     Zombie *aZombie = mBoard->AddZombieInRow(theZombieType, theGridY, 0);
     if (theZombieType == ZOMBIE_BUNGEE) {
         aZombie->mTargetCol = theGridX;
@@ -4274,13 +4274,23 @@ void Challenge::IZombieUpdate() {
 
     if (mBoard->mZombies.mSize == 0 && aSunMoney < 50 && !mBoard->HasLevelAwardDropped() && !anActive) {
         Coin *aCoin = nullptr;
+        bool noSunLeft = true;
+
         while (mBoard->IterateCoins(aCoin)) {
-            if (aCoin->IsMoney()) {
-                aCoin->Die();
+            if (aCoin->IsSun()) {
+                noSunLeft = false;
+                break;
             }
         }
 
-        mBoard->ZombiesWon(nullptr);
+        if (noSunLeft) {
+            while (mBoard->IterateCoins(aCoin)) {
+                if (aCoin->IsMoney()) {
+                    aCoin->Die();
+                }
+            }
+            mBoard->ZombiesWon(nullptr);
+        }
     }
 }
 

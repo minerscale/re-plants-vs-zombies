@@ -267,9 +267,9 @@ public:
     void EndLevel();
     inline bool IsIceDemo() { return false; }
     /*inline*/
-    bool IsShovelLevel();
+    bool IsShovelLevel() const;
     /*inline*/
-    bool IsWallnutBowlingLevel();
+    bool IsWallnutBowlingLevel() const;
     /*inline*/
     bool IsMiniBossLevel();
     /*inline*/
@@ -330,9 +330,9 @@ public:
     bool IsScaryPotterLevel();
     static /*inline*/ bool IsEndlessScaryPotter(GameMode theGameMode);
     /*inline*/
-    bool IsSquirrelLevel();
+    bool IsSquirrelLevel() const;
     /*inline*/
-    bool IsIZombieLevel();
+    bool IsIZombieLevel() const;
     /*inline*/
     bool CanShowZenGarden();
     static SexyString GetMoneyString(int theAmount);

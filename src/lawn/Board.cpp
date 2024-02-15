@@ -126,9 +126,9 @@ Board::Board(LawnApp *theApp) {
     mBoardData.mDiamondsCollected = 0;
     mBoardData.mPottedPlantsCollected = 0;
     mBoardData.mChocolateCollected = 0;
-    for (int y = 0; y < MAX_GRID_SIZE_Y; y++) {
-        for (int x = 0; x < 12; x++) {
-            mBoardData.mFwooshID[y][x] = ReanimationID::REANIMATIONID_NULL;
+    for (auto &y : mBoardData.mFwooshID) {
+        for (auto &x : y) {
+            x = ReanimationID::REANIMATIONID_NULL;
         }
     }
     mBoardData.mPrevMouseX = -1;
@@ -4364,9 +4364,10 @@ void Board::ZombiesWon(Zombie *theZombie) {
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
         aGameOverMsg = _S("[ZOMBIQUARIUM_DEATH_MESSAGE]");
     } else if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND) {
-        const SexyString aFlagStr = mApp->Pluralize(GetSurvivalFlagsCompleted(), _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
+        const SexyString aFlagStr =
+            LawnApp::Pluralize(GetSurvivalFlagsCompleted(), _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
         aGameOverMsg = TodReplaceString(_S("[LAST_STAND_DEATH_MESSAGE]"), _S("{FLAGS}"), aFlagStr);
-    } else if (mApp->IsEndlessIZombie(mApp->mGameMode) || mApp->IsEndlessScaryPotter(mApp->mGameMode)) {
+    } else if (LawnApp::IsEndlessIZombie(mApp->mGameMode) || LawnApp::IsEndlessScaryPotter(mApp->mGameMode)) {
         aGameOverMsg =
             TodReplaceNumberString(_S("[ENDLESS_PUZZLE_DEATH_MESSAGE]"), _S("{STREAK}"), mChallenge->mSurvivalStage);
     } else if (mApp->IsIZombieLevel()) {

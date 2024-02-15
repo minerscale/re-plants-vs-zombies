@@ -232,7 +232,7 @@ public:
     void PuzzlePhaseComplete(int theGridX, int theGridY);
     /*inline*/
     int PuzzleIsAwardStage();
-    void IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY);
+    void IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY) const;
     void WhackAZombieUpdate() const;
     void LastStandCompletedStage();
     void TreeOfWisdomUpdate();
