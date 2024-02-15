@@ -1985,7 +1985,7 @@ void Challenge::DrawBeghouled(Graphics *g) {
 
 // 0x4251E0
 void Challenge::DrawSlotMachine(Graphics *g) {
-    if (mApp->mGameScene != GameScenes::SCENE_ZOMBIES_WON) return;
+    if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON) return;
 
     auto gBoardParent = Graphics(*g);
     if (mSlotMachineRollCount < 3 && mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_NORMAL &&
@@ -4282,6 +4282,7 @@ void Challenge::IZombieUpdate() {
                 break;
             }
         }
+        aCoin = nullptr;
 
         if (noSunLeft) {
             while (mBoard->IterateCoins(aCoin)) {
