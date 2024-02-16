@@ -349,8 +349,6 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
     const auto aBOMType = simdutf::BOM::check_bom(aBuffer, aFileSize);
     aBufferPtr += simdutf::BOM::bom_byte_size(aBOMType);
 
-    std::println("Detecting BOM: {}", simdutf::BOM::bom_byte_size(aBOMType));
-
     char aBuffChar = 0;
 
     while (aBufferPtr < aBufferEnd) {

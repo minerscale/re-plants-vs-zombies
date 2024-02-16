@@ -331,7 +331,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) const {
         );
         aRechargeStr = TodReplaceString(aRechargeStr, _S("{WAIT_TIME}"), _S("[WAIT_TIME]"));
         TodDrawStringWrapped(
-            g, aRechargeStr, Rect(600, 520, 139, 50), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90),
+            g, aRechargeStr, Rect(575, 520, 164, 50), Sexy::FONT_BRIANNETOD12, Color(40, 50, 90),
             DrawStringJustification::DS_ALIGN_RIGHT
         );
     }

@@ -359,6 +359,7 @@ bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
         return OpenURL(mRegisterLink);
     }
      */
+    unreachable();
 }
 
 bool SexyApp::ShouldCheckForUpdate() {

@@ -241,12 +241,10 @@ void Music::MusicInit() {
 
 // 0x45AAC0
 void Music::MusicCreditScreenInit() {
-#ifndef _DEBUG
     BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
     if (aBass->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) ==
         aBass->mMusicMap.end()) // 如果尚未加载
         LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/ZombiesOnYourLawn.ogg");
-#endif
 }
 
 // 0x45ABB0

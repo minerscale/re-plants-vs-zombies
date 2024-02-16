@@ -1521,9 +1521,8 @@ void VkInterface::UpdateWindowOptions(const int width, const int height, const b
 void VkInterface::framebufferResizeCallback() { framebufferResized = true; }
 
 void VkInterface::windowFocusCallback(bool focused) {
-    widgetManager->mApp->mActive = focused;
-
-    if (focused) {
+    if (widgetManager->mApp->mActive != focused) {
+        widgetManager->mApp->mActive = focused;
         RehupFocus();
 
         // Potentially not required

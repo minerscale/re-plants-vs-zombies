@@ -64,7 +64,7 @@ endmacro()
 FetchGit_Declare(https://github.com/madler/zlib/tree/v1.3.1)
 FetchContent_MakeAvailable(zlib)
 
-FetchGit_Declare(https://github.com/sepcnt/simdutf/tree/patch-1)
+FetchGit_Declare(https://github.com/simdutf/simdutf/tree/0df857246627616ef912a784c21d2fbf73820446)
 FetchContent_MakeAvailable(simdutf)
 
 set(HAVE_SDL_LOADSO TRUE)
