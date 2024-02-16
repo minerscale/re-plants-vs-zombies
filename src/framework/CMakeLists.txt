@@ -65,11 +65,12 @@ FetchContent_MakeAvailable(zlib)
 
 set(HAVE_SDL_LOADSO TRUE)
 set(HAVE_SDL_THREADS TRUE)
-FetchGit_Declare(https://github.com/libsdl-org/SDL/tree/release-2.30.x)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 set(SDL_LIBC ON CACHE BOOL "" FORCE)
+FetchGit_Declare(https://github.com/libsdl-org/SDL/tree/release-2.30.x)
 FetchContent_MakeAvailable(SDL)
 
 include_directories(${SDL_SOURCE_DIR}/include)
