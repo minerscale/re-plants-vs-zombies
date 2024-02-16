@@ -148,12 +148,20 @@ void TodStringListLoad(const char *theFileName) {
         TodErrorMessageBox(Sexy::StrFormat("Failed to load string list file '%s'", theFileName).c_str(), "Error");
 }
 
-// 0x519410
-SexyString TodStringListFind(const SexyString &theName) {
+inline std::optional<SexyString> TodStringListFindOptional(const SexyString &theName) {
     const std::string aNameString = Sexy::SexyStringToString(theName);
     const auto anItr = gSexyAppBase->mStringProperties.find(aNameString);
     if (anItr != gSexyAppBase->mStringProperties.end()) {
         return Sexy::WStringToSexyString(anItr->second);
+    }
+    return std::nullopt;
+}
+
+// 0x519410
+SexyString TodStringListFind(const SexyString &theName) {
+    const auto aResult = TodStringListFindOptional(theName);
+    if (aResult.has_value()) {
+        return aResult.value();
     } else {
         return Sexy::StrFormat(_S("<Missing %s>"), theName.c_str());
     }

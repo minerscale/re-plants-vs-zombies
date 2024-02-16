@@ -37,9 +37,28 @@ bool TodStringListReadValue(const char *&thePtr, std::string &theValue);
 bool TodStringListReadItems(const char *theFileText);
 bool TodStringListReadFile(const char *theFileName);
 void TodStringListLoad(const char *theFileName);
+inline std::optional<SexyString> TodStringListFindOptional(const SexyString &theName);
 SexyString TodStringListFind(const SexyString &theName);
 SexyString TodStringTranslate(const SexyString &theString);
 SexyString TodStringTranslate(const SexyChar *theString);
+
+// Extended functions
+template <std::size_t N, typename T> SexyString TodStringTranslateFallBack(T const (&theStrings)[N]) {
+    static_assert(N > 0, "N must be greater than 0");
+    for (size_t i = 0; i < N - 1; i++) {
+        const auto theString = theStrings[i];
+        int aLen = std::char_traits<SexyChar>::length(theString);
+        if (aLen >= 3 && theString[0] == '[') {
+            const SexyString aName(theString + 1, aLen - 2); // 取“[”与“]”中间的部分
+            const auto aResult = TodStringListFindOptional(aName);
+            if (aResult.has_value()) {
+                return aResult.value();
+            }
+        } else return theString;
+    }
+    return TodStringTranslate(theStrings[N - 1]);
+}
+
 bool TodStringListExists(const SexyString &theString);
 void TodStringRemoveReturnChars(std::string &theString);
 bool CharIsSpaceInFormat(char theChar, const TodStringListFormat &theCurrentFormat);
