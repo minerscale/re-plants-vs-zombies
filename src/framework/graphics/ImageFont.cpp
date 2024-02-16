@@ -4,6 +4,7 @@
 #include "Image.h"
 #include "SexyAppBase.h"
 #include <queue>
+#include <simdutf.h>
 #include <vector>
 
 using namespace Sexy;
@@ -1136,10 +1137,15 @@ void ImageFont::DrawStringEx(
     g->SetColorizeImages(true);
 
     int aCurXPos = theX;
-    for (size_t idx = 0; idx < theString.length(); ++idx) {
-        SexyChar aChar = GetMappedChar(theString[idx]);
-        SexyChar aNextChar = 0;
-        if (idx + 1 < theString.length()) aNextChar = GetMappedChar(theString[idx + 1]);
+
+    auto aExpectedSize = simdutf::utf32_length_from_utf8(theString.c_str(), theString.length());
+    auto aUTF32String = static_cast<char32_t *>(alloca(aExpectedSize * sizeof(char32_t)));
+    auto aUTF32StringLength = simdutf::convert_utf8_to_utf32(theString.c_str(), theString.length(), aUTF32String);
+
+    for (size_t idx = 0; idx < aUTF32StringLength; idx++) {
+        char32_t aChar = GetMappedChar(aUTF32String[idx]);
+        char32_t aNextChar = 0;
+        if (idx + 1 < theString.length()) aNextChar = GetMappedChar(aUTF32String[idx + 1]);
         int aMaxXPos = aCurXPos;
 
         int layerOrderOffset = 0;

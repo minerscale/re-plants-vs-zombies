@@ -268,13 +268,9 @@ std::wstring Sexy::SexyStringToWString(const SexyString &theString) {
 }
 
 std::string Sexy::Trim(const std::string &theString) {
-    int aStartPos = 0;
-    while (aStartPos < static_cast<int>(theString.length()) && isspace(theString[aStartPos]))
-        aStartPos++;
-
-    int anEndPos = theString.length() - 1;
-    while (anEndPos >= 0 && isspace(theString[anEndPos]))
-        anEndPos--;
+    int aStartPos = theString.find_first_not_of(" \t\r\n");
+    if (aStartPos == -1) return "";
+    int anEndPos = theString.find_last_not_of(" \t\r\n");
 
     return theString.substr(aStartPos, anEndPos - aStartPos + 1);
 }

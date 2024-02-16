@@ -24,7 +24,7 @@ add_subdirectory(imagelib)
 
 
 ################################################################################
-# SDL external projects
+# External projects
 ################################################################################
 
 set(FETCHCONTENT_QUIET FALSE)
@@ -63,6 +63,9 @@ endmacro()
 
 FetchGit_Declare(https://github.com/madler/zlib/tree/v1.3.1)
 FetchContent_MakeAvailable(zlib)
+
+FetchGit_Declare(https://github.com/simdutf/simdutf/tree/v4.0.9)
+FetchContent_MakeAvailable(simdutf)
 
 set(HAVE_SDL_LOADSO TRUE)
 set(HAVE_SDL_THREADS TRUE)
@@ -114,6 +117,7 @@ target_link_libraries(
         SDL2_ttf::SDL2_ttf-static
         #SDL2_mixer::SDL2_mixer-static
         zlibstatic
+        simdutf::simdutf
         glm::glm
         avir
 )
@@ -129,4 +133,5 @@ target_include_directories(
         ${zlib_SOURCE_DIR}
         ${zlib_BINARY_DIR}
         ${avir_SOURCE_DIR}
+        ${simdutf_SOURCE_DIR}/include
 )

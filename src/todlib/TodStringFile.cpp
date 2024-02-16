@@ -4,6 +4,7 @@
 #include "TodDebug.h"
 #include "graphics/Font.h"
 #include "paklib/PakInterface.h"
+#include <simdutf.h>
 
 int gTodStringFormatCount;              //[0x69DE4C]
 TodStringListFormat *gTodStringFormats; //[0x69DA34]
@@ -133,9 +134,31 @@ bool TodStringListReadFile(const char *theFileName) {
         aSuccess = false;
     }
     aFileText[aSize] = '\0';
+
     if (aSuccess) {
-        aSuccess = TodStringListReadItems(aFileText);
+        auto aResult = simdutf::validate_utf8_with_errors(aFileText, aSize);
+        if (aResult.error == simdutf::error_code::SUCCESS || aResult.error == simdutf::error_code::TOO_LONG) {
+            aSuccess = TodStringListReadItems(aFileText);
+        } else {
+            const auto aCastedText = reinterpret_cast<const char16_t *>(aFileText);
+            size_t aOriginalSize = simdutf::count_utf16le(aCastedText, aSize / sizeof(char16_t));
+            auto aIsUTF16 = simdutf::validate_utf16(aCastedText, aOriginalSize);
+
+            if (!aIsUTF16) {
+                TodTrace("Failed to detect encoding of '%s'", theFileName);
+                aSuccess = false;
+            }
+
+            size_t aExpectedSize = simdutf::utf8_length_from_utf16(aCastedText, aOriginalSize);
+            auto aConvertedText = new char[aExpectedSize + 1];
+            size_t aConvertedSize = simdutf::convert_utf16_to_utf8(aCastedText, aOriginalSize, aConvertedText);
+            aConvertedText[aConvertedSize] = '\0';
+            auto aBomSize = simdutf::BOM::bom_byte_size(simdutf::encoding_type::UTF8);
+            aSuccess = TodStringListReadItems(aConvertedText + aBomSize);
+            delete[] aConvertedText;
+        }
     }
+
     p_fclose(pFile); // 关闭文件流
     delete[] aFileText;
 

@@ -324,7 +324,8 @@ bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
     return true;
 #endif
 
-    // Insert standard defines
+    /*
+    * // Insert standard defines
     DefinesMap aDefinesMap;
 
     aDefinesMap.insert(DefinesMap::value_type("Src", mRegSource));
@@ -357,6 +358,7 @@ bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
     } else {
         return OpenURL(mRegisterLink);
     }
+     */
 }
 
 bool SexyApp::ShouldCheckForUpdate() {
@@ -476,12 +478,11 @@ void SexyApp::OpenUpdateURL() {
 void SexyApp::HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue) {
     if (theParamName == "-version") {
         // Just print version info and then quit
+        std::println("Product: {}", mProdName);
+        // std::println("Version: {}", mProductVersion);
+        std::println("Build Num: {}", StrFormat("%d", mBuildNum));
+        std::println("Build Date: {}", mBuildDate);
 
-        std::string aVersionString = "Product: " + mProdName + "\r\n" +
-                                     //"Version: " + mProductVersion + "\r\n" +
-                                     "Build Num: " + StrFormat("%d", mBuildNum) + "\r\n" + "Build Date: " + mBuildDate;
-
-        printf("%s", aVersionString.c_str());
         DoExit(0);
     } else SexyAppBase::HandleCmdLineParam(theParamName, theParamValue);
 }
