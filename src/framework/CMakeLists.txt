@@ -41,6 +41,7 @@ macro(FetchGit_Declare link)
     elseif (${link} MATCHES "https://([^/]+)/([^/]+)/([^/]+)")
         set(name ${CMAKE_MATCH_3})
         set(url "https://${CMAKE_MATCH_1}/${CMAKE_MATCH_2}/${name}.git")
+        set(tag OFF)
     else ()
         message(FATAL_ERROR "Invalid link")
     endif ()
@@ -93,20 +94,10 @@ FetchContent_MakeAvailable(SDL_ttf)
 #set(BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
 #FetchContent_MakeAvailable(SDL2_mixer)
 
-FetchGit_Declare(https://github.com/g-truc/glm/tree/1.0.0)
+FetchGit_Declare(https://github.com/g-truc/glm/tree/1.0.0 is_header)
 FetchContent_MakeAvailable(glm)
 
-FetchContent_Declare(avir
-        GIT_REPOSITORY https://github.com/avaneev/avir.git
-        OVERRIDE_FIND_PACKAGE
-        GIT_PROGRESS TRUE
-        GIT_SHALLOW TRUE
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        SYSTEM
-        FETCHCONTENT_UPDATES_DISCONNECTED TRUE
-        SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/avir
-)
+FetchGit_Declare(https://github.com/avaneev/avir is_header)
 
 FetchContent_GetProperties(avir)
 if (NOT avir_POPULATED)

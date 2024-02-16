@@ -574,7 +574,6 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                         }
 
                         aLayer->mDefaultHeight = 0;
-
                         for (auto &val : aLayer->mCharDataMap) {
                             CharData *aCharData = val.second.get();
                             if (aCharData->mImageRect.mHeight + aCharData->mOffset.mY > aLayer->mDefaultHeight) {
