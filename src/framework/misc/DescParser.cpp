@@ -1,6 +1,9 @@
 #include "DescParser.h"
 #include "paklib/PakInterface.h"
 
+#include <simdutf/encoding_types.h>
+#include <simdutf/simdutf_version.h>
+
 using namespace Sexy;
 
 DescParser::DescParser() { mCmdSep = CMDSEP_SEMICOLON; }
@@ -332,9 +335,25 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
     PFILE *aStream = p_fopen(theFileName.c_str(), "r");
     if (aStream == nullptr) return false;
 
+    p_fseek(aStream, 0, SEEK_END);
+    const auto aFileSize = p_ftell(aStream);
+    p_fseek(aStream, 0, SEEK_SET);
+    const auto aBuffer = new uint8_t[aFileSize + 1];
+    p_fread(aBuffer, aFileSize, 1, aStream);
+    aBuffer[aFileSize] = 0;
+    p_fclose(aStream);
+
+    uint8_t *aBufferPtr = aBuffer;
+    uint8_t *aBufferEnd = aBuffer + aFileSize;
+
+    const auto aBOMType = simdutf::BOM::check_bom(aBuffer, aFileSize);
+    aBufferPtr += simdutf::BOM::bom_byte_size(aBOMType);
+
+    std::println("Detecting BOM: {}", simdutf::BOM::bom_byte_size(aBOMType));
+
     char aBuffChar = 0;
 
-    while (!p_feof(aStream)) {
+    while (aBufferPtr < aBufferEnd) {
         int aChar;
 
         bool skipLine = false;
@@ -349,8 +368,8 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
                 aChar = aBuffChar;
                 aBuffChar = 0;
             } else {
-                aChar = p_fgetc(aStream);
-                if (aChar == EOF) break;
+                aChar = *aBufferPtr++;
+                if (aChar == 0) break;
             }
 
             if (aChar != '\r') {
@@ -416,11 +435,12 @@ bool DescParser::LoadDescriptor(const std::string &theFileName) {
         }
     }
 
+    delete[] aBuffer;
+
     // Apparently VC6 doesn't have a clear() function for basic_strings
     mCurrentLine.clear();
     // mCurrentLine.erase();
     mCurrentLineNum = 0;
 
-    p_fclose(aStream);
     return !hasErrors;
 }
