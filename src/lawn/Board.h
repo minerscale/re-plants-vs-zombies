@@ -15,8 +15,9 @@
 
 using namespace Sexy;
 
-#define MAX_GRID_SIZE_X 9
-#define MAX_GRID_SIZE_Y 6
+constexpr int MAX_GRID_SIZE_X = 9;
+constexpr int MAX_GRID_SIZE_Y = 6;
+
 #define MAX_ZOMBIES_IN_WAVE 50
 #define MAX_ZOMBIE_WAVES 100
 #define MAX_GRAVE_STONES MAX_GRID_SIZE_X *MAX_GRID_SIZE_Y

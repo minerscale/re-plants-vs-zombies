@@ -802,20 +802,13 @@ SeedType Challenge::BeghouledPickSeed(
         case 3:  aSeedType = SeedType::SEED_SNOWPEA; break;
         case 4:  aSeedType = SeedType::SEED_WALLNUT; break;
         case 5:  aSeedType = SeedType::SEED_PEASHOOTER; break;
-        default: TOD_ASSERT(); break;
+        default: unreachable(); break;
         }
 
-        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)] &&
-            aSeedType == SeedType::SEED_PEASHOOTER) {
-            aSeedType = SeedType::SEED_REPEATER;
-        }
-        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)] &&
-            aSeedType == SeedType::SEED_PUFFSHROOM) {
-            aSeedType = SeedType::SEED_FUMESHROOM;
-        }
-        if (mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)] &&
-            aSeedType == SeedType::SEED_WALLNUT) {
-            aSeedType = SeedType::SEED_TALLNUT;
+        for (const auto &[upgrade, seedType, originalSeedType] : BeghouledUpgradeTable) {
+            if (mBeghouledPurcasedUpgrade[static_cast<int>(upgrade)] && aSeedType == originalSeedType) {
+                aSeedType = seedType;
+            }
         }
 
         theBoardState->mSeedType[theGridX][theGridY] = aSeedType;
@@ -1866,7 +1859,7 @@ void Challenge::Update() {
 // 0x4249F0
 SeedType Challenge::GetArtChallengeSeed(int theGridX, int theGridY) {
     if (theGridY < 6) {
-        TOD_ASSERT(theGridX >= 0 && theGridX < ART_CHALLEGE_SIZE_X && theGridY >= 0);
+        TOD_ASSERT(theGridX >= 0 && theGridX < MAX_GRID_SIZE_X && theGridY >= 0);
 
         const GameMode aGameMode = mApp->mGameMode;
         if (aGameMode == GAMEMODE_CHALLENGE_ART_CHALLENGE_WALLNUT) return gArtChallengeWallnut[theGridY][theGridX];
@@ -2914,98 +2907,48 @@ int Challenge::CanTargetZombieWithPortals(const Plant *thePlant, const Zombie *t
 }
 
 // 0x427A60
-void Challenge::BeghouledPacketClicked(const SeedPacket *theSeedPacket) {
-    /*
-    SeedType aPacketType = theSeedPacket->mPacketType;
-    int aPacketCost = mBoard->GetCurrentPlantCost(aPacketType, SEED_NONE);
-    if (!mBoard->CanTakeSunMoney(aPacketCost))
-        return;
-
-    int aUpgrade = aPacketType == SEED_REPEATER ? 0 : aPacketType == SEED_FUMESHROOM ? 1 : aPacketType == SEED_TALLNUT ?
-    2 : -1; if (aPacketType == SEED_BEGHOULED_BUTTON_SHUFFLE)
-    {
-        if (mChallengeState == STATECHALLENGE_BEGHOULED_FALLING || mChallengeState == STATECHALLENGE_BEGHOULED_MOVING)
-            return;
-        BeghouledShuffle();
-    }
-    else if (aPacketType == SEED_BEGHOULED_BUTTON_CRATER)
-    {
-        if (!BeghouledCanClearCrater() || mChallengeState == STATECHALLENGE_BEGHOULED_FALLING || mChallengeState ==
-    STATECHALLENGE_BEGHOULED_MOVING) return; BeghouledClearCrater(1);
-        BeghouledStartFalling(STATECHALLENGE_BEGHOULED_FALLING);
-    }
-    else if (aUpgrade != -1 && !mBeghouledPurcasedUpgrade[aUpgrade])
-    {
-        mBeghouledPurcasedUpgrade[aUpgrade] = true;
-        const SeedType gUpgradableSeedTypes[3] = { SEED_PEASHOOTER, SEED_PUFFSHROOM, SEED_WALLNUT };
-        SeedType aSeedPrimary = gUpgradableSeedTypes[aUpgrade];
-
-        Plant* aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant))
-        {
-            if (aPlant->mSeedType == aSeedPrimary)
-            {
-                aPlant->Die();
-                mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, aPacketType, SEED_NONE);
-            }
-        }
-        theSeedPacket->SetActivate(false);
-    }
-    */
-
+void Challenge::BeghouledPacketClicked(SeedPacket *theSeedPacket) {
     const int aPacketCost = mBoard->GetCurrentPlantCost(theSeedPacket->mPacketType, SEED_NONE);
     if (!mBoard->CanTakeSunMoney(aPacketCost)) return;
 
-    if (theSeedPacket->mPacketType == SEED_REPEATER &&
-        !mBoard->mChallenge
-             ->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)]) {
-        mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER)] =
-            true;
-
+    auto aUpgardeCallback = [&](const SeedType theSeedType, const BeghouledUpgrade theUpgrade,
+                                const SeedType theOriginalSeedType) {
+        if (mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(theUpgrade)]) return false;
+        mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(theUpgrade)] = true;
         Plant *aPlant = nullptr;
         while (mBoard->IteratePlants(aPlant)) {
-            if (aPlant->mSeedType == SEED_PEASHOOTER) {
+            if (aPlant->mSeedType == theOriginalSeedType) {
                 aPlant->Die();
-                mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_REPEATER, SEED_NONE);
+                mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, theSeedType, SEED_NONE);
             }
         }
-    } else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)]) {
-        mBoard->mChallenge
-            ->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM)] = true;
+        theSeedPacket->SetActivate(false);
+        return true;
+    };
 
-        Plant *aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant)) {
-            if (aPlant->mSeedType == SEED_PUFFSHROOM) {
-                aPlant->Die();
-                mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_FUMESHROOM, SEED_NONE);
-            }
-        }
-    } else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)]) {
-        mBoard->mChallenge->mBeghouledPurcasedUpgrade[static_cast<int>(BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT)] =
-            true;
-
-        Plant *aPlant = nullptr;
-        while (mBoard->IteratePlants(aPlant)) {
-            if (aPlant->mSeedType == SEED_WALLNUT) {
-                aPlant->Die();
-                mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_TALLNUT, SEED_NONE);
-            }
-        }
-    } else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_SHUFFLE) {
+    switch (theSeedPacket->mPacketType) {
+    case SEED_BEGHOULED_BUTTON_SHUFFLE:
         if (mChallengeState == ChallengeState::STATECHALLENGE_BEGHOULED_FALLING ||
             mChallengeState == ChallengeState::STATECHALLENGE_BEGHOULED_MOVING)
             return;
-
         BeghouledShuffle();
-    } else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_CRATER) {
+        break;
+    case SEED_BEGHOULED_BUTTON_CRATER:
         if (!BeghouledCanClearCrater() || mChallengeState == ChallengeState::STATECHALLENGE_BEGHOULED_FALLING ||
             mChallengeState == ChallengeState::STATECHALLENGE_BEGHOULED_MOVING)
             return;
-
         BeghouledClearCrater(1);
         BeghouledStartFalling(ChallengeState::STATECHALLENGE_BEGHOULED_FALLING);
+        break;
+    default:
+        for (const auto &[upgrade, seedType, originalSeedType] : BeghouledUpgradeTable) {
+            if (theSeedPacket->mPacketType == seedType) {
+                bool aSuccess = aUpgardeCallback(seedType, upgrade, originalSeedType);
+                if (!aSuccess) return;
+                break;
+            }
+        }
     }
-
     mBoard->TakeSunMoney(aPacketCost);
 }
 

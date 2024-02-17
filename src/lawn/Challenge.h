@@ -8,7 +8,6 @@
 
 #define BEGHOULED_MAX_GRIDSIZEX 8
 #define BEGHOULED_MAX_GRIDSIZEY 5
-#define ART_CHALLEGE_SIZE_X 8
 #define MAX_PICK_GRID_SIZE 50
 
 constexpr const int BEGHOULED_WINNING_SCORE = 75;
@@ -36,6 +35,13 @@ enum BeghouledUpgrade {
     BEGHOULED_UPGRADE_FUMESHROOM,
     BEGHOULED_UPGRADE_TALLNUT,
     NUM_BEGHOULED_UPGRADES
+};
+
+// Table of Beghouled upgrades (upgrade, seed type, original seed type)
+constexpr std::tuple<BeghouledUpgrade, SeedType, SeedType> BeghouledUpgradeTable[] = {
+    {BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER,   SEED_REPEATER,   SEED_PEASHOOTER},
+    {BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM, SEED_FUMESHROOM, SEED_PUFFSHROOM},
+    {BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT,    SEED_TALLNUT,    SEED_WALLNUT   },
 };
 
 struct BeghouledBoardState {
@@ -142,7 +148,7 @@ public:
     void MoveAPortal();
     int GetPortalDistanceToMower(int theGridY);
     GridItem *GetPortalToLeft(int theGridX, int theGridY);
-    void BeghouledPacketClicked(const SeedPacket *theSeedPacket);
+    void BeghouledPacketClicked(SeedPacket *theSeedPacket);
     void BeghouledShuffle();
     /*inline*/ int BeghouledCanClearCrater();
     void BeghouledUpdateCraters();

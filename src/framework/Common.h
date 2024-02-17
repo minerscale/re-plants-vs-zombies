@@ -20,6 +20,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <todlib/TodDebug.h>
 #include <vector>
 
 namespace std {

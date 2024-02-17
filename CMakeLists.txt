@@ -31,7 +31,7 @@ if (MSVC)
             )
             set(universal_compiler_flags
                     ${universal_compiler_flags}
-                    "/GL" "/arch:AVX2" "/flavor:INTEL64"
+                    "/GL" "/arch:AVX2"
             )
         endif ()
     else ()

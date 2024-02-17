@@ -3186,7 +3186,7 @@ void Board::MouseDownWithPlant(const int x, const int y, const int theClickCount
         } else if (aReason == PlantingReason::PLANTING_NOT_ON_ART) {
             const SexyString aSeedName =
                 Plant::GetNameString(mChallenge->GetArtChallengeSeed(aGridX, aGridY), SeedType::SEED_NONE);
-            const SexyString aMessage = TodReplaceString(_S("ADVICE_WRONG_ART_TYPE"), _S("{SEED}"), aSeedName);
+            const SexyString aMessage = TodReplaceString(_S("[ADVICE_WRONG_ART_TYPE]"), _S("{SEED}"), aSeedName);
             DisplayAdvice(aMessage, MessageStyle::MESSAGE_STYLE_HINT_FAST, AdviceType::ADVICE_PLANT_WRONG_ART_TYPE);
         } else if (aReason == PlantingReason::PLANTING_NEEDS_POT) {
             if (mApp->IsFirstTimeAdventureMode() && mBoardData.mLevel == 41) {
