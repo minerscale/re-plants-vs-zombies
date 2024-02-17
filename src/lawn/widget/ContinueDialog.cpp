@@ -113,9 +113,11 @@ void ContinueDialog::ButtonDepress(const int theId) {
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[RESTART_BUTTON]"));
             // aDialog->CalcSize(0, 0);
         } else {
+            const auto aTitleText = TodStringTranslateFallBack({_S("[NEW_GAME_HEADER]"), _S("New Game?")});
+            const auto aButtonText =
+                TodStringTranslateFallBack({_S("[NEW_GAME]"), _S("Are you sure that you want to start a new game?")});
             const auto aDialog = static_cast<LawnDialog *>(mApp->DoDialog(
-                Dialogs::DIALOG_RESTARTCONFIRM, true, _S("[NEW_GAME_HEADER]"), _S("[NEW_GAME]"), _S(""),
-                Dialog::BUTTONS_OK_CANCEL
+                Dialogs::DIALOG_RESTARTCONFIRM, true, aTitleText, aButtonText, _S(""), Dialog::BUTTONS_OK_CANCEL
             ));
             aDialog->mLawnYesButton->mLabel = TodStringTranslate(_S("[NEW_GAME_BUTTON]"));
             // aDialog->CalcSize(0, 0);
