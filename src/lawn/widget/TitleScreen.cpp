@@ -63,10 +63,10 @@ void TitleScreen::Draw(Graphics *g) {
 
         if (!mDrawnYet) {
             TodTraceAndLog(
-                "First Draw Time: %d ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                std::chrono::high_resolution_clock::now() - mApp->mTimeLoaded
-                                            )
-                                                .count()
+                "First Draw Time: {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(
+                                              std::chrono::high_resolution_clock::now() - mApp->mTimeLoaded
+                                          )
+                                              .count()
             );
             TodHesitationTrace("TitleScreen First Draw");
             mDrawnYet = true;

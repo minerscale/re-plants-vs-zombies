@@ -11,7 +11,6 @@
 #include <array>
 #include <atomic>
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>

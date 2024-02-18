@@ -388,7 +388,7 @@ inline bool DefReadFromCacheArray(void *&theReadPtr, DefinitionArrayDef *theArra
     // 先读取一个整数表示 theDefMap 描述的定义结构类的大小
     if (aDefSize != theDefMap->mDefSize) // 比较其与当前给出的定义结构图声明的大小是否一致
     {
-        TodTrace("cache has old def: array size");
+        fmt::println("cache has old def: array size");
         return false;
     }
     if (theArray->mArrayCount == 0) // 如果类中没有实例，则无需读取
@@ -547,13 +547,13 @@ void *DefinitionUncompressCompiledBuffer(
 ) {
     // theCompressedBuffer 的前两个四字节存有特殊数据，此处检测其长度是否足够 8 字节（即 2 个四字节）
     if (theCompressedBufferSize < 8) {
-        TodTrace("Compile def too small", theCompiledFilePath.c_str());
+        fmt::println("Compile def too small: {}", theCompiledFilePath);
         return nullptr;
     }
     // 将 theCompressedBuffer 的前两个四字节视为一个 CompressedDefinitionHeader
     const CompressedDefinitionHeader *aHeader = static_cast<CompressedDefinitionHeader *>(theCompressedBuffer);
     if (aHeader->mCookie != 0xDEADFED4L) {
-        TodTrace("Compiled fire cookie wrong: %s\n", theCompiledFilePath.c_str());
+        fmt::println("Compiled fire cookie wrong: {}", theCompiledFilePath);
         return nullptr;
     }
 
@@ -593,7 +593,7 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     p_fclose(pFile); // 关闭资源文件流并释放 pFile 占用的内存
     if (aReadCompressedFailed) {
         // 判断是否读取成功
-        TodTrace(_S("Failed to read compiled file: %s\n"), theCompiledFilePath.c_str());
+        fmt::println(_S("Failed to read compiled file: {}"), theCompiledFilePath);
         free(aCompressedBuffer);
         return false;
     }
@@ -607,7 +607,7 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     const uint32_t aDefHash = DefinitionCalcHash(theDefMap);
     // 计算 CRC 校验值，后将用于检测数据的完整性
     if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint32_t)) {
-        TodTrace(_S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
+        fmt::println(_S("Compiled file size too small: {}"), theCompiledFilePath);
         free(aUncompressedBuffer);
         return false;
     } // 检测解压数据的长度是否足够“定义数据 + 一个校验值记录数据”的长度
@@ -617,7 +617,7 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     uint32_t aCashHash;
     SMemR(aBufferPtr, &aCashHash, sizeof(uint32_t)); // 读取记录的 CRC 校验值
     if (aCashHash != aDefHash) {
-        TodTrace(_S("Compiled file schema wrong: %s\n"), theCompiledFilePath.c_str());
+        fmt::println(_S("Compiled file schema wrong: {}"), theCompiledFilePath);
         free(aUncompressedBuffer);
         return false;
     } // 判断校验值是否一致，若不一致则说明数据发生错误
@@ -633,7 +633,7 @@ bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *t
     free(aUncompressedBuffer);
 
     if (aResult && aReadMemSize != aUncompressedSize) {
-        TodTrace(_S("Compiled file wrong size: %s\n"), theCompiledFilePath.c_str());
+        fmt::println(_S("Compiled file wrong size: {}"), theCompiledFilePath);
         aResult = false;
     }
 
@@ -671,7 +671,7 @@ bool DefinitionIsCompiled(const SexyString &theXMLFilePath) {
     auto compiledTime = std::filesystem::last_write_time(fixedPath);
 
     if (!srcTime.has_value()) {
-        TodTrace(_S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
+        fmt::println(_S("Can't file source file to compile '{}'"), theXMLFilePath);
         return false;
     }
 
@@ -687,15 +687,10 @@ void DefinitionFillWithDefaults(const DefMap *theDefMap, void *theDefinition) {
                 (char *)""; // 将所有 char* 类型的成员变量赋值为空字符数组的指针
 }
 
-void DefinitionXmlError(XMLParser *theXmlParser, const char *theFormat, ...) {
-    va_list argList;
-    va_start(argList, theFormat);
-    const std::string aFormattedMessage = SexyStringToString(vformat(theFormat, argList));
-    va_end(argList);
-
+void DefinitionXmlErrorBase(XMLParser *theXmlParser, const std::string &theFormattedMessage) {
     const int aLine = theXmlParser->GetCurrentLineNum();
     const std::string aFileName = theXmlParser->GetFileName();
-    TodTraceAndLog("%s(%d): XML Definition Error: %s\n", aFileName.c_str(), aLine, aFormattedMessage.c_str());
+    TodTraceAndLog("{}({}): XML Definition Error: {}", aFileName.c_str(), aLine, theFormattedMessage.c_str());
 }
 
 bool DefinitionReadXMLString(XMLParser *theXmlParser, SexyString &theValue) {
@@ -746,7 +741,7 @@ bool DefinitionReadIntField(XMLParser *theXmlParser, int *theValue) {
 
     if (sscanf(aStringValue.c_str(), _S("%d"), theValue) == 1) return true;
 
-    DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
+    DefinitionXmlError(theXmlParser, "Can't parse int value '{}'", aStringValue);
     return false;
 }
 
@@ -756,7 +751,7 @@ bool DefinitionReadFloatField(XMLParser *theXmlParser, float *theValue) {
 
     if (sscanf(aStringValue.c_str(), _S("%f"), theValue) == 1) return true;
 
-    DefinitionXmlError(theXmlParser, "Can't parse float value '%s'", aStringValue.c_str());
+    DefinitionXmlError(theXmlParser, "Can't parse float value '{}'", aStringValue);
     return false;
 }
 
@@ -779,7 +774,7 @@ bool DefinitionReadEnumField(XMLParser *theXmlParser, int *theValue, DefSymbol *
 
     if (DefSymbolValueFromString(theSymbolMap, aStringValue.c_str(), theValue)) return true;
 
-    DefinitionXmlError(theXmlParser, "Can't parse enum value '%s'", aStringValue.c_str());
+    DefinitionXmlError(theXmlParser, "Can't parse enum value '{}'", aStringValue);
     return false;
 }
 
@@ -789,7 +784,7 @@ bool DefinitionReadVector2Field(XMLParser *theXmlParser, SexyVector2 *theValue) 
 
     if (sscanf(aStringValue.c_str(), _S("%f %f"), &theValue->x, &theValue->y) == 1) return true;
 
-    DefinitionXmlError(theXmlParser, "Can't parse vector2 value '%s'", aStringValue.c_str());
+    DefinitionXmlError(theXmlParser, "Can't parse vector2 value '{}'", aStringValue);
     return false;
 }
 
@@ -1034,7 +1029,7 @@ bool DefinitionReadFlagField(
     float aFlag;
     // This was obviously a bug, the casting is wrong, although amusingly it just woks since it's just a bit
     if (sscanf(aStringValue.c_str(), _S("%f"), &aFlag) != 1) {
-        DefinitionXmlError(theXmlParser, "Can't parse int value '%s'", aStringValue.c_str());
+        DefinitionXmlError(theXmlParser, "Can't parse int value '{}'", aStringValue);
         return false;
     }
 
@@ -1058,10 +1053,10 @@ bool DefinitionReadImageField(XMLParser *theXmlParser, Image **theImage) {
 
     if (DefinitionLoadImage(theImage, aStringValue)) return true;
 
-    const std::string aMessage = StrFormat(
-        "Failed to find image '%s' in %s", SexyStringToStringFast(aStringValue).c_str(),
-        theXmlParser->GetFileName().c_str()
+    const std::string aMessage = fmt::format(
+        "Failed to find image '{}' in {}", SexyStringToStringFast(aStringValue), theXmlParser->GetFileName()
     );
+
     TodErrorMessageBox(aMessage.c_str(), "Missing image");
 
     return false;
@@ -1073,9 +1068,8 @@ bool DefinitionReadFontField(XMLParser *theXmlParser, _Font **theFont) {
 
     if (DefinitionLoadFont(theFont, aStringValue)) return true;
 
-    const std::string aMessgae = StrFormat(
-        "Failed to find font '%s' in %s", SexyStringToStringFast(aStringValue).c_str(),
-        theXmlParser->GetFileName().c_str()
+    const std::string aMessgae = fmt::format(
+        "Failed to find font '{}' in {}", SexyStringToStringFast(aStringValue), theXmlParser->GetFileName()
     );
     TodErrorMessageBox(aMessgae.c_str(), "Missing font");
 
@@ -1147,11 +1141,11 @@ bool DefinitionReadField(XMLParser *theXmlParser, const DefMap *theDefMap, void 
             }
             if (aSuccess) return true;
 
-            DefinitionXmlError(theXmlParser, "Failed to read '%s' field", aXMLElement.mValue.c_str());
+            DefinitionXmlError(theXmlParser, "Failed to read '{}' field", aXMLElement.mValue);
             return false;
         }
     }
-    DefinitionXmlError(theXmlParser, "Ignoring unknown element '%s'", aXMLElement.mValue.c_str());
+    DefinitionXmlError(theXmlParser, "Ignoring unknown element '{}'", aXMLElement.mValue);
     // aXMLElement 未定义任何成员变量时
     return false;
 }
@@ -1275,7 +1269,7 @@ bool DefinitionCompileFile(
 ) {
     auto aXMLParser = XMLParser();
     if (!aXMLParser.OpenFile(theXMLFilePath)) {
-        TodTrace(_S("XML file not found: %s\n"), theXMLFilePath.c_str());
+        fmt::println(_S("XML file not found: {}"), theXMLFilePath);
         return false;
     } else if (!DefinitionLoadMap(&aXMLParser, theDefMap, theDefinition)) return false;
 
@@ -1295,11 +1289,11 @@ bool DefinitionCompileAndLoad(const SexyString &theXMLFilePath, DefMap *theDefMa
         const auto aTimer = std::chrono::high_resolution_clock::now();
 
         const bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-        TodTrace(
-            _S("compile %d ms:'%s'"),
+        fmt::println(
+            _S("compile {} ms:'{}'"),
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
                 .count(),
-            aCompiledFilePath.c_str()
+            aCompiledFilePath
         );
         TodHesitationTrace(_S("compiled %s"), aCompiledFilePath.c_str());
         return aResult;

@@ -31,8 +31,6 @@
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
-#include <fstream>
-#include <iostream>
 #include <iterator>
 #include <math.h>
 #include <memory>
@@ -1998,7 +1996,7 @@ void SexyAppBase::UpdateFrames() {
 
     static bool has_shown = false;
     if (!has_shown) {
-        printf("warning:  The image cleanup logic is probably busted since the app uses refrence counts\n");
+        fmt::println("warning:  The image cleanup logic is probably busted since the app uses refrence counts");
         has_shown = true;
     }
     // TODO
@@ -2159,7 +2157,7 @@ static void UpdateScreenSaverInfo(std::chrono::high_resolution_clock::time_point
 
     static bool has_shown = false;
     if (!has_shown) {
-        printf("warning:  UpdateScreenSaverInfo is a stub\n");
+        fmt::println("warning:  UpdateScreenSaverInfo is a stub");
         has_shown = true;
     }
     /* TODO (?? I mean, we're not using screensavers)
@@ -4297,7 +4295,7 @@ void SexyAppBase::LoadingThreadProcStub(void *theArg) {
 
     aSexyApp->LoadingThreadProc();
 
-    std::println(
+    fmt::println(
         "Resource Loading Time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(
                                            std::chrono::high_resolution_clock::now() - aSexyApp->mTimeLoaded
                                        )
@@ -4755,19 +4753,19 @@ void SexyAppBase::Start() {
 
     WaitForLoadingThread();
 
-    std::println(
+    fmt::println(
         "Seconds      = {}",
         std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - aStartTime)
             .count()
     );
-    std::println("Sleep Count  = {}", mSleepCount);
-    std::println("Update Count = {}", mUpdateCount);
-    std::println("Draw Count   = {}", mDrawCount);
-    std::println("Draw Time    = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
-    std::println("Screen Blt   = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
+    fmt::println("Sleep Count  = {}", mSleepCount);
+    fmt::println("Update Count = {}", mUpdateCount);
+    fmt::println("Draw Count   = {}", mDrawCount);
+    fmt::println("Draw Time    = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mDrawTime).count());
+    fmt::println("Screen Blt   = {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(mScreenBltTime).count());
 
     if (mDrawTime + mScreenBltTime > std::chrono::milliseconds(0)) {
-        std::println(
+        fmt::println(
             "Avg FPS       = {}",
             mDrawCount * 1000 /
                 static_cast<int>(
@@ -5029,7 +5027,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string &theParamName, const std:
         if (aNum <= 0) aNum = 5;
 
         int aDemoFileNum = GetMaxDemoFileNum(mDemoPrefix, aNum, true) + 1;
-        mDemoFileName = SexyStringToString(StrFormat(StringToSexyString(mDemoPrefix + "%d.dmo").c_str(), aDemoFileNum));
+        mDemoFileName = SexyStringToString(fmt::format("{}{}.dmo", mDemoPrefix, aDemoFileNum));
         if (mDemoFileName.length() < 2 || (mDemoFileName[1] != ':' && mDemoFileName[2] != '\\')) {
             mDemoFileName = GetAppDataFolder() + mDemoFileName;
         }
@@ -5040,7 +5038,7 @@ void SexyAppBase::HandleCmdLineParam(const std::string &theParamName, const std:
         if (aNum < 0) aNum = 0;
 
         int aDemoFileNum = GetMaxDemoFileNum(mDemoPrefix, aNum, false) - aNum;
-        mDemoFileName = SexyStringToString(StrFormat(StringToSexyString(mDemoPrefix + "%d.dmo").c_str(), aDemoFileNum));
+        mDemoFileName = SexyStringToString(fmt::format("{}{}.dmo", mDemoPrefix, aDemoFileNum));
         mRecordingDemoBuffer = false;
         mPlayingDemoBuffer = true;
     } else if (theParamName == "-record") {
@@ -5090,7 +5088,7 @@ MusicInterface *SexyAppBase::CreateMusicInterface() {
         unreachable();
         /* TODO return new FModMusicInterface();*/
     } else {
-        printf("Bass dll currently loaded without HWnd, likely to cause problems on Windows\n");
+        fmt::println("Bass dll currently loaded without HWnd, likely to cause problems on Windows");
         return new BassMusicInterface(nullptr);
     }
 }

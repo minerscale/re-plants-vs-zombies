@@ -26,11 +26,11 @@ public:
     bool mHasAlpha = false; // unused, but set by other parts of the code. Feel free to deprecate this.
 
     VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    ::VkImage image = nullptr;
-    VkImageView view = nullptr;
-    VkDeviceMemory memory = nullptr;
-    VkFramebuffer framebuffer = nullptr;
-    VkDescriptorSet descriptor = nullptr;
+    ::VkImage image = VK_NULL_HANDLE;
+    VkImageView view = VK_NULL_HANDLE;
+    VkDeviceMemory memory = VK_NULL_HANDLE;
+    VkFramebuffer framebuffer = VK_NULL_HANDLE;
+    VkDescriptorSet descriptor = VK_NULL_HANDLE;
 
     void TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 

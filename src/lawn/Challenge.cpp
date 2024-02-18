@@ -4740,7 +4740,7 @@ void Challenge::TreeOfWisdomDraw(Graphics *g) {
         }
 
         g->DrawImage(Sexy::IMAGE_STORE_SPEECHBUBBLE2, aPosX, aPosY);
-        const SexyString aText = StrFormat(_S("[TREE_OF_WISDOM_%d]"), mTreeOfWisdomTalkIndex);
+        const SexyString aText = fmt::format(_S("[TREE_OF_WISDOM_{}]"), mTreeOfWisdomTalkIndex);
         TodDrawStringWrapped(
             g, aText, Rect(aPosX + 25, aPosY + 6, 233, 144), Sexy::FONT_BRIANNETOD16, Color::Black,
             DrawStringJustification::DS_ALIGN_CENTER_VERTICAL_MIDDLE
@@ -4782,7 +4782,7 @@ void Challenge::TreeOfWisdomInit() {
 
     const int aTreeSize = ClampInt(TreeOfWisdomGetSize(), 1, 50);
     aReanimTree->PlayReanim(
-        StrFormat("anim_grow%d", aTreeSize).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f
+        fmt::format("anim_grow{}", aTreeSize).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 18.0f
     );
     if (aTreeSize == 0 && !mApp->mPlayerInfo->hasPurchaseInitialized(STORE_ITEM_TREE_FOOD)) {
         aReanimTree->mFrameCount += aReanimTree->mFrameStart;
@@ -4793,7 +4793,9 @@ void Challenge::TreeOfWisdomInit() {
 
     for (int i = 0; i < 6; i++) {
         Reanimation *aReanimCloud = mApp->AddReanimation(0, 0, 0, REANIM_TREEOFWISDOM_CLOUDS);
-        aReanimCloud->PlayReanim(StrFormat("Cloud%d", i + 1).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0);
+        aReanimCloud->PlayReanim(
+            fmt::format("Cloud{}", i + 1).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 0
+        );
         mReanimClouds[i] = mApp->ReanimationGetID(aReanimCloud);
 
         const int aCloudCounter = RandRangeInt(-6000, 2000);
@@ -4818,8 +4820,8 @@ void Challenge::TreeOfWisdomGrow() {
     const int aTreeSize = TreeOfWisdomGetSize();
     mApp->ReanimationGet(mReanimChallenge)
         ->PlayReanim(
-            StrFormat("anim_grow%d", ClampInt(aTreeSize, 1, 51)).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0,
-            8.0f
+            fmt::format("anim_grow{}", ClampInt(aTreeSize, 1, 51)).c_str(), ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD,
+            0, 8.0f
         );
     mApp->PlayFoley(FOLEY_PLANTGROW);
 

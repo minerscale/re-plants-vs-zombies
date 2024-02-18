@@ -821,8 +821,8 @@ void StoreScreen::PurchaseItem(const StoreItem theStoreItem) {
             mApp->mPlayerInfo->AddCoins(-GetItemCost(theStoreItem));
             if (theStoreItem == STORE_ITEM_PACKET_UPGRADE) {
                 ++mApp->mPlayerInfo->mPurchases[theStoreItem];
-                const SexyString aDialogLines = StrFormat(
-                    _S("Now you can choose to take %d seeds with you per level!"),
+                const SexyString aDialogLines = fmt::format(
+                    _S("Now you can choose to take {} seeds with you per level!"),
                     6 + mApp->mPlayerInfo->mPurchases[theStoreItem]
                 );
                 Dialog *aDialog = mApp->DoDialog(

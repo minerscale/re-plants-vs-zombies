@@ -469,12 +469,12 @@ void DrawSeedPacket(
         SexyString aCostStr;
         if (gLawnApp->mBoard && gLawnApp->mBoard->PlantUsesAcceleratedPricing(aSeedType)) {
             if (theUseCurrentCost) {
-                aCostStr = StrFormat(_S("%d"), gLawnApp->mBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
+                aCostStr = fmt::format(_S("{}"), gLawnApp->mBoard->GetCurrentPlantCost(theSeedType, theImitaterType));
             } else {
-                aCostStr = StrFormat(_S("%d+"), Plant::GetCost(theSeedType, theImitaterType));
+                aCostStr = fmt::format(_S("{}+"), Plant::GetCost(theSeedType, theImitaterType));
             }
         } else {
-            aCostStr = StrFormat(_S("%d"), Plant::GetCost(theSeedType, theImitaterType));
+            aCostStr = fmt::format(_S("{}"), Plant::GetCost(theSeedType, theImitaterType));
         }
 
         _Font *aTextFont = Sexy::FONT_PICO129;
@@ -832,7 +832,7 @@ void SeedBank::Draw(Graphics *g) {
     }
 
     if (!mBoard->HasConveyorBeltSeedBank()) {
-        const SexyString aMoneyLabel = StrFormat(_S("%d"), std::max(mBoard->mBoardData.mSunMoney, 0));
+        const SexyString aMoneyLabel = fmt::format(_S("{}"), std::max(mBoard->mBoardData.mSunMoney, 0));
         Color aMoneyColor(0, 0, 0);
         if (mBoard->mBoardData.mOutOfMoneyCounter > 0 && mBoard->mBoardData.mOutOfMoneyCounter % 20 < 10) {
             aMoneyColor = Color(255, 0, 0);

@@ -5,12 +5,8 @@
 
 #include "ConstEnums.h"
 
-#include <todlib/TodDebug.h>
-#ifdef __GNUC__
-#include <bits/chrono.h>
-#else
 #include <chrono>
-#endif
+#include <todlib/TodDebug.h>
 
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 

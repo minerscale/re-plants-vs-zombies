@@ -132,9 +132,9 @@ bool ResourceManager::Fail(const std::string &theErrorText) {
 
         mError = theErrorText;
 
-        if (aLineNum > 0) mError += std::format(" on Line {}", aLineNum);
+        if (aLineNum > 0) mError += fmt::format(" on Line {}", aLineNum);
 
-        if (!mXMLParser->GetFileName().empty()) mError += std::format(" in File '{}'", mXMLParser->GetFileName());
+        if (!mXMLParser->GetFileName().empty()) mError += fmt::format(" in File '{}'", mXMLParser->GetFileName());
     }
 
     return false;
@@ -504,7 +504,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes) {
     Image *anImage = gSexyAppBase->GetSharedImage(*theRes);
     ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-    if (anImage == nullptr) return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
+    if (anImage == nullptr) return Fail(fmt::format("Failed to load image: {}", theRes->mPath));
 
     theRes->mImage = anImage;
 
@@ -548,7 +548,8 @@ bool ResourceManager::DoLoadSound(SoundRes *theRes) {
     if (aSoundId < 0) return Fail("Out of free sound ids");
 
     if (!mApp->mSoundManager->LoadSound(aSoundId, aRes->mPath))
-        return Fail(StrFormat("Failed to load sound: %s", aRes->mPath.c_str()));
+        return Fail(fmt::format("Failed to load sound: {}", aRes->mPath));
+
     SEXY_PERF_END("ResourceManager:LoadSound");
 
     if (aRes->mVolume >= 0) mApp->mSoundManager->SetBaseVolume(aSoundId, aRes->mVolume);
@@ -605,7 +606,7 @@ bool ResourceManager::DoLoadFont(FontRes *theRes) {
     if (anImageFont != nullptr) {
         if (anImageFont->mFontData == nullptr || !anImageFont->mFontData->mInitialized) {
             delete aFont;
-            return Fail(StrFormat("Failed to load font: %s", theRes->mPath.c_str()));
+            return Fail(fmt::format("Failed to load font: {}", theRes->mPath));
         }
 
         if (!theRes->mTags.empty()) {
@@ -707,13 +708,12 @@ void ResourceManager::StartLoadResources(const std::string &theGroup) {
 void ResourceManager::DumpCurResGroup(std::string &theDestStr) const {
     const ResList *rl = &mResGroupMap.find(mCurResGroup)->second;
     auto it = rl->begin();
-    theDestStr =
-        StrFormat("About to dump %d elements from current res group name %s\r\n", rl->size(), mCurResGroup.c_str());
+    theDestStr = fmt::format("About to dump {} elements from current res group name {}\r\n", rl->size(), mCurResGroup);
 
     auto rl_end = rl->end();
     while (it != rl_end) {
         BaseRes *br = *it++;
-        std::string prefix = StrFormat("%s: %s\r\n", br->mId.c_str(), br->mPath.c_str());
+        std::string prefix = fmt::format("{}: {}\r\n", br->mId, br->mPath);
         theDestStr += prefix;
         if (br->mFromProgram) theDestStr += std::string("     res is from program\r\n");
         else if (br->mType == ResType_Image) theDestStr += std::string("     res is an image\r\n");
@@ -807,7 +807,7 @@ Image *ResourceManager::GetImageThrow(const std::string &theId) {
         if (mAllowMissingProgramResources && aRes->mFromProgram) return nullptr;
     }
 
-    Fail(StrFormat("Image resource not found: %s", theId.c_str()));
+    Fail(fmt::format("Image resource not found: {}", theId));
     throw ResourceManagerException(GetErrorText());
 }
 
@@ -822,7 +822,7 @@ int ResourceManager::GetSoundThrow(const std::string &theId) {
         if (mAllowMissingProgramResources && aRes->mFromProgram) return -1;
     }
 
-    Fail(StrFormat("Sound resource not found: %s", theId.c_str()));
+    Fail(fmt::format("Sound resource not found: {}", theId));
     throw ResourceManagerException(GetErrorText());
 }
 
@@ -837,7 +837,7 @@ _Font *ResourceManager::GetFontThrow(const std::string &theId) {
         if (mAllowMissingProgramResources && aRes->mFromProgram) return nullptr;
     }
 
-    Fail(StrFormat("Font resource not found: %s", theId.c_str()));
+    Fail(fmt::format("Font resource not found: {}", theId));
     throw ResourceManagerException(GetErrorText());
 }
 

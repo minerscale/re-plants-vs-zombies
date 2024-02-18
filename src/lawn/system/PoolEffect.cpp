@@ -20,7 +20,7 @@ void PoolEffect::PoolEffectInitialize() {
     mApp = gLawnApp;
 
     static bool has_shown = false;
-    if (!has_shown) printf("warning:  PoolEffect totally doesn't exist lol\n");
+    if (!has_shown) fmt::println("warning:  PoolEffect totally doesn't exist lol");
     has_shown = true;
 
     Sexy::ResourceManager::ImageRes aRes;

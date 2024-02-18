@@ -20,7 +20,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <limits>
 #include <map>
 #include <memory>
@@ -842,11 +841,12 @@ void createComputePipeline() {
         0,
         computeShaderStageInfo,
         computePipelineLayout,
-        nullptr,
+        VK_NULL_HANDLE,
         0,
     };
 
-    if (vkCreateComputePipelines(device, nullptr, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
+    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, VK_NULL_HANDLE, &computePipeline) !=
+        VK_SUCCESS) {
         throw std::runtime_error("filed to create compute pipeline!");
     }
 
@@ -970,10 +970,11 @@ void createGraphicsPipelines() {
     pipelineInfo.layout = pipelineLayout;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
-    pipelineInfo.basePipelineHandle = nullptr; // Optional
-    pipelineInfo.basePipelineIndex = -1;       // Optional
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+    pipelineInfo.basePipelineIndex = -1;              // Optional
 
-    if (vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, VK_NULL_HANDLE, &graphicsPipeline) !=
+        VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
@@ -984,8 +985,9 @@ void createGraphicsPipelines() {
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-    if (vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &graphicsPipelineAdditive) !=
-        VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(
+            device, VK_NULL_HANDLE, 1, &pipelineInfo, VK_NULL_HANDLE, &graphicsPipelineAdditive
+        ) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
@@ -1127,7 +1129,7 @@ void createSwapChain() {
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = nullptr;
+    createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
         throw std::runtime_error("failed to create swap chain!");
@@ -1327,7 +1329,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, [[maybe_unused]] void *pUserData
 ) {
-    std::cerr << "\033[0;31m" << pCallbackData->pMessage << "\033[0m" << std::endl << std::endl;
+    fmt::print("\033[0;31m{}\033[0m\n\n", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
@@ -1781,7 +1783,7 @@ void VkInterface::Draw() {
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
-        device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], nullptr, &imageIndex
+        device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex
     );
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {

@@ -922,7 +922,7 @@ bool TodResourceManager::TodLoadResources(const std::string &theGroup) {
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count();
     if (aDuration > 20) {
-        TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
+        TodTraceAndLog("LOADED: '{}' {} ms on {}", theGroup, aDuration, gGetCurrentLevelName());
     }
 
     return true;
@@ -1076,7 +1076,7 @@ SexyString TodReplaceNumberString(const SexyString &theText, const SexyChar *the
     SexyString aFinalString = TodStringTranslate(theText);
     const size_t aPos = aFinalString.find(theStringToFind);
     if (aPos != SexyString::npos) {
-        const SexyString aNumberString = StrFormat(_S("%d"), theNumber);
+        const SexyString aNumberString = fmt::format("{:d}", theNumber);
         aFinalString.replace(aPos, strlen(theStringToFind), aNumberString);
     }
 
@@ -1113,13 +1113,4 @@ int TodVsnprintf(char *theBuffer, int theSize, const char *theFormat, va_list th
         TOD_ASSERT(, "bad format string");
         return 1;
     }
-}
-
-int TodSnprintf(char *theBuffer, int theSize, const char *theFormat, ...) {
-    va_list argList;
-    va_start(argList, theFormat);
-    const int aCount = TodVsnprintf(theBuffer, theSize, theFormat, argList);
-    va_end(argList);
-
-    return aCount;
 }

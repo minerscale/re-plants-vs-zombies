@@ -4627,7 +4627,7 @@ void Zombie::DrawReanim(Graphics *g, const ZombieDrawPosition &theDrawPos, int t
     if (aBodyReanim == nullptr) {
         // @Patoke: missing debug check (this string is not in the game binaries)
 #ifdef _DEBUG
-        TodTrace("Missing zombie reanimation");
+        fmt::println("Missing zombie reanimation");
 #endif
         return;
     }

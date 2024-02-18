@@ -173,7 +173,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image *theImage);
 SexyString
 TodReplaceString(const SexyString &theText, const SexyChar *theStringToFind, const SexyString &theStringToSubstitute);
 SexyString TodReplaceNumberString(const SexyString &theText, const SexyChar *theStringToFind, int theNumber);
-int TodSnprintf(char *theBuffer, int theSize, const char *theFormat, ...);
+// int TodSnprintf(char *theBuffer, int theSize, const char *theFormat, ...);
 int TodVsnprintf(char *theBuffer, int theSize, const char *theFormat, va_list theArgList);
 
 TodAllocator *FindGlobalAllocator(int theSize);

@@ -654,8 +654,8 @@ AlmanacDialog *LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZomb
         aDialog->ShowZombie(theZombieType);
     }
 
-    TodTrace(
-        "almanac load time: %d ms",
+    fmt::println(
+        "almanac load time: {} ms",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - mTimer)
             .count()
     );
@@ -836,7 +836,7 @@ void LawnApp::DoConfirmDeleteUserDialog(const SexyString &theName) {
         Dialogs::DIALOG_CONFIRMDELETEUSER, true, _S("Are You Sure" /*"[ARE_YOU_SURE]"*/),
         // StrFormat(TodStringTranslate(_S("[DELETE_USER_WARNING]")).c_str(), StringToSexyStringFast(theName))
         // @Patoke: didn't access this as 'const char*'
-        StrFormat(_S("This will permanently remove '%s' from the player roster!") /**/, theName.c_str()), _S(""),
+        fmt::format(_S("This will permanently remove '{}' from the player roster!"), theName), _S(""),
         Dialog::BUTTONS_YES_NO
     );
 }
@@ -1123,7 +1123,7 @@ void LawnApp::Init() {
     // @Patoke: horrible debug checks, breaks the whole exe in release mode
     // #ifdef _DEBUG
     TodAssertInitForApp();
-    TodLog("session id: %u", mSessionID);
+    TodLog("session id: {:}", mSessionID);
     // #endif
 
     if (!mResourceManager->ParseResourcesFile("properties/resources.xml")) {
@@ -1157,8 +1157,8 @@ void LawnApp::Init() {
     mWidgetManager->SetFocus(mTitleScreen);
 
 #ifdef _DEBUG
-    TodTrace(
-        "loading: 'profiles' %d ms",
+    fmt::println(
+        "loading: 'profiles' {} ms",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - mTimer)
             .count()
     );
@@ -1192,8 +1192,8 @@ void LawnApp::Init() {
     mSukhbirCheck = new TypingCheck("sukhbir");
 
 #ifdef _DEBUG
-    TodTrace(
-        "loading: 'system' %d ms",
+    fmt::println(
+        "loading: 'system' {} ms",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - mTimer)
             .count()
     );
@@ -1205,8 +1205,8 @@ void LawnApp::Init() {
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LOADBAR_ZOMBIEHEAD, true);
 
 #ifdef _DEBUG
-    TodTrace(
-        "loading: 'loaderbar' %d ms",
+    fmt::println(
+        "loading: 'loaderbar' {} ms",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - mTimer)
             .count()
     );
@@ -1535,8 +1535,8 @@ void LawnApp::LoadingThreadProc() {
 
     TodHesitationBracket::EndBracket();
 
-    TodTrace(
-        "loading: '%s' %d ms", "resources",
+    fmt::println(
+        "loading: '{}' {} ms", "resources",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
@@ -1550,16 +1550,16 @@ void LawnApp::LoadingThreadProc() {
     mZenGarden = new ZenGarden();
     mReanimatorCache = new ReanimatorCache();
     TodFoleyInitialize(gLawnFoleyParamArray, std::size(gLawnFoleyParamArray));
-    TodTrace(
-        "loading: '%s' %d ms", "stuff",
+    fmt::println(
+        "loading: '{}' {} ms", "stuff",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
 
     aTimer = std::chrono::high_resolution_clock::now();
     TrailLoadDefinitions(gLawnTrailArray, std::size(gLawnTrailArray));
-    TodTrace(
-        "loading: '%s' %d ms", "trail",
+    fmt::println(
+        "loading: '{}' {} ms", "trail",
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
             .count()
     );
@@ -1795,7 +1795,7 @@ void LawnApp::PlayFoleyPitch(FoleyType theFoleyType, float thePitch) {
 SexyString LawnApp::GetStageString(int theLevel) {
     int aArea = ClampInt((theLevel - 1) / LEVELS_PER_AREA + 1, 1, ADVENTURE_AREAS + 1);
     int aSub = theLevel - (aArea - 1) * LEVELS_PER_AREA;
-    return StrFormat("%d-%d", aArea, aSub);
+    return fmt::format(_S("{}-{}"), aArea, aSub);
 }
 
 bool LawnApp::IsAdventureMode() const { return mGameMode == GameMode::GAMEMODE_ADVENTURE; }
@@ -2127,7 +2127,7 @@ void LawnApp::RemoveParticle(ParticleSystemID theParticleID) {
 
 // 0x453D20
 bool LawnApp::AdvanceCrazyDaveText() {
-    SexyString aMessageName = StrFormat(_S("[CRAZY_DAVE_%d]"), mCrazyDaveMessageIndex + 1);
+    SexyString aMessageName = fmt::format(_S("[CRAZY_DAVE_{}]"), mCrazyDaveMessageIndex + 1);
     if (!TodStringListExists(aMessageName)) {
         return false;
     }
@@ -2138,7 +2138,7 @@ bool LawnApp::AdvanceCrazyDaveText() {
 
 // 0x453DC0
 SexyString LawnApp::GetCrazyDaveText(int theMessageIndex) {
-    SexyString aMessage = StrFormat(_S("[CRAZY_DAVE_%d]"), theMessageIndex);
+    SexyString aMessage = fmt::format(_S("[CRAZY_DAVE_{}]"), theMessageIndex);
     aMessage = TodReplaceString(aMessage, _S("{PLAYER_NAME}"), mPlayerInfo->mName);
     aMessage = TodReplaceString(aMessage, _S("{MONEY}"), GetMoneyString(mPlayerInfo->mCoins));
     int aCost = StoreScreen::GetItemCost(StoreItem::STORE_ITEM_PACKET_UPGRADE);
@@ -2272,7 +2272,7 @@ void LawnApp::CrazyDaveDoneHanding() {
     ReanimatorTrackInstance *aHandTrackInstance = aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand");
     AttachmentDie(aHandTrackInstance->mAttachmentID);
 
-    TodTrace("DoneHanding");
+    fmt::println("DoneHanding");
 }
 
 // 0x454520
@@ -2362,7 +2362,7 @@ void LawnApp::CrazyDaveTalkMessage(const SexyString &theMessage) {
 
             Reanimation *aWallnutReanim = AddReanimation(0.0f, 0.0f, 0, ReanimationType::REANIM_WALLNUT);
             aWallnutReanim->PlayReanim("anim_idle", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
-            TodTrace("Handed");
+            fmt::println("Handed");
 
             ReanimatorTrackInstance *aHandTrackInstance = aCrazyDaveReanim->GetTrackInstanceByName("Dave_handinghand");
             AttachEffect *aAttachEffect =
@@ -2646,7 +2646,7 @@ int LawnApp::GetNumPreloadingTasks() {
 void LawnApp::PreloadForUser() {
     int aNumTasks = mNumLoadingThreadTasks /*+ GetNumPreloadingTasks()*/;
     if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN) {
-        TodTrace("preload canceled\n");
+        fmt::println("preload canceled");
         mNumLoadingThreadTasks = aNumTasks;
         return;
     }
@@ -2678,7 +2678,7 @@ void LawnApp::PreloadForUser() {
                 }
 
                 if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN) {
-                    TodTrace("preload canceled\n");
+                    fmt::println("preload canceled");
                     mNumLoadingThreadTasks = aNumTasks;
                     return;
                 }
@@ -2706,7 +2706,7 @@ void LawnApp::PreloadForUser() {
             }
 
             if (mTitleScreen && mTitleScreen->mQuickLoadKey != KeyCode::KEYCODE_UNKNOWN) {
-                TodTrace("preload canceled\n");
+                fmt::println("preload canceled");
                 mNumLoadingThreadTasks = aNumTasks;
                 return;
             }
@@ -2718,8 +2718,8 @@ void LawnApp::PreloadForUser() {
     }
 
     if (mCompletedLoadingThreadTasks != aNumTasks) {
-        printf(
-            "warning:  num preload tasks wasn't calculated correctly: supposed to be %d, was %d\n",
+        fmt::println(
+            "warning:  num preload tasks wasn't calculated correctly: supposed to be {}, was {}",
             mCompletedLoadingThreadTasks, aNumTasks
         );
         // TodTrace("num preload tasks wasn't calculated correctly");
@@ -2803,15 +2803,15 @@ void LawnApp::InitHook() {
 SexyString LawnApp::GetMoneyString(int theAmount) {
     int aValue = theAmount * 10;
     if (aValue > 999999) {
-        return StrFormat(
-            _S("$%d,%03d,%03d"), aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000,
+        return fmt::format(
+            _S("${:d},{:03d},{:03d}"), aValue / 1000000, (aValue - aValue / 1000000 * 1000000) / 1000,
             aValue - aValue / 1000 * 1000
         );
     }
     if (aValue > 9999) {
-        return StrFormat(_S("$%d,%03d"), aValue / 1000, aValue - aValue / 1000 * 1000);
+        return fmt::format(_S("${:d},{:03d}"), aValue / 1000, aValue - aValue / 1000 * 1000);
     }
-    return StrFormat(_S("$%d"), aValue);
+    return fmt::format(_S("${:d}"), aValue);
 }
 
 // 0x455EE0
@@ -2842,7 +2842,7 @@ SexyString LawnGetCurrentLevelName() {
         return gLawnApp->GetStageString(gLawnApp->mBoard->mBoardData.mLevel);
     }
     if (gLawnApp->IsAdventureMode()) {
-        return StrFormat(_S("F%d"), gLawnApp->GetStageString(gLawnApp->mBoard->mBoardData.mLevel).c_str());
+        return fmt::format(_S("F{}"), gLawnApp->GetStageString(gLawnApp->mBoard->mBoardData.mLevel));
     }
 
     return gLawnApp->GetCurrentChallengeDef().mChallengeName;

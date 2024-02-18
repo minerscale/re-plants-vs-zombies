@@ -522,7 +522,7 @@ void ChallengeScreen::Draw(Graphics *g) {
                                : mPageIndex == ChallengePage::CHALLENGE_PAGE_PUZZLE    ? 18
                                                                                        : 0;
     if (aTrophiesTotal > 0) {
-        const SexyString aTrophyString = StrFormat(_S("%d/%d"), aTrophiesGot, aTrophiesTotal);
+        const SexyString aTrophyString = fmt::format(_S("{}/{}"), aTrophiesGot, aTrophiesTotal);
         TodDrawString(
             g, aTrophyString, 739, 73, Sexy::FONT_DWARVENTODCRAFT12, Color(255, 240, 0),
             DrawStringJustification::DS_ALIGN_CENTER

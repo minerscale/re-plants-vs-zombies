@@ -161,7 +161,7 @@ bool FontData::Error(const std::string &theError) {
         std::string anErrorString = mFontErrorHeader + theError;
 
         if (mCurrentLine.length() > 0) {
-            anErrorString += " on Line " + StrFormat("%d:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
+            anErrorString += fmt::format(" on Line {}:\r\n\r\n{}", mCurrentLineNum, mCurrentLine);
         }
 
         mApp->Popup(anErrorString);

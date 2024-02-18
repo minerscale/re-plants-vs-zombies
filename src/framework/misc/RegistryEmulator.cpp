@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <filesystem>
 
-RegistryEmulator::RegistryEmulator(const std::string theFileName) : mREG_FILENAME{theFileName} {
+RegistryEmulator::RegistryEmulator(const std::string &theFileName) : mREG_FILENAME{theFileName} {
     if (!std::filesystem::exists(mREG_FILENAME)) return; // We're done here
 
     FILE *aRegFile = fopen(mREG_FILENAME.c_str(), "rb");
@@ -133,9 +133,9 @@ void RegistryEmulatorTest() {
     uint32_t aLength;
     if (aRegHandle.Read("PENGIS", aType, aReadTest, aLength)) {
         aReadTest.push_back('\0');
-        printf("%s\n", (char *)aReadTest.data());
-        printf("%d\n", aType);
-        printf("%d\n", aLength);
+        fmt::println("{}", reinterpret_cast<char *>(aReadTest.data()));
+        fmt::println("{}", aType);
+        fmt::println("{}", aLength);
     }
 
     auto test_string = "TEST STRING"; // static_cast<char*>("I HATE MINORITIES I HATE MINORITIES");

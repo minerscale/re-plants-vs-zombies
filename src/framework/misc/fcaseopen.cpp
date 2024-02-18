@@ -3,7 +3,6 @@
 #if !defined(_WIN32)
 #include <errno.h>
 #include <filesystem>
-#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>

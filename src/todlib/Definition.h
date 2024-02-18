@@ -74,13 +74,13 @@ public:
     void *(*mConstructorFunc)(void *); //+0x8：_DefClass 类型实例的构造函数的指针
 };
 
-void *__cdecl TodParticleDefinitionConstructor(void *thePointer); // 0x5155A0
-void *__cdecl TodEmitterDefinitionConstructor(void *thePointer);  // 0x5155C0
-void *__cdecl ParticleFieldConstructor(void *thePointer);         // 0x515620
-void *__cdecl TrailDefinitionConstructor(void *thePointer);       // 0x51B7F0
-void *__cdecl ReanimatorTransformConstructor(void *thePointer);   // 0x471570
-void *__cdecl ReanimatorTrackConstructor(void *thePointer);       // 0x4715B0
-void *__cdecl ReanimatorDefinitionConstructor(void *thePointer);  // 0x4715D0
+void *TodParticleDefinitionConstructor(void *thePointer); // 0x5155A0
+void *TodEmitterDefinitionConstructor(void *thePointer);  // 0x5155C0
+void *ParticleFieldConstructor(void *thePointer);         // 0x515620
+void *TrailDefinitionConstructor(void *thePointer);       // 0x51B7F0
+void *ReanimatorTransformConstructor(void *thePointer);   // 0x471570
+void *ReanimatorTrackConstructor(void *thePointer);       // 0x4715B0
+void *ReanimatorDefinitionConstructor(void *thePointer);  // 0x4715D0
 
 // extern DefField gParticleFieldDefFields[];  //0x69E2F8
 extern DefMap gParticleFieldDefMap; // 0x69E338
@@ -144,7 +144,14 @@ bool IsFileInPakFile(const SexyString &theFilePath);
 bool DefinitionIsCompiled(const SexyString &theXMLFilePath);
 bool DefinitionReadCompiledFile(const SexyString &theCompiledFilePath, DefMap *theDefMap, void *theDefinition);
 void DefinitionFillWithDefaults(const DefMap *theDefMap, void *theDefinition);
-void DefinitionXmlError(XMLParser *theXmlParser, char *theFormat, ...);
+
+void DefinitionXmlErrorBase(XMLParser *theXmlParser, const std::string &theFormattedMessage);
+template <class... Types>
+void DefinitionXmlError(XMLParser *theXmlParser, const fmt::format_string<Types...> theFmt, Types &&...Args) {
+    const std::string aFormattedMessage = fmt::format(theFmt, std::forward<Types>(Args)...);
+    DefinitionXmlErrorBase(theXmlParser, aFormattedMessage);
+}
+
 bool DefSymbolValueFromString(const DefSymbol *theSymbolMap, const char *theName, int *theResultValue);
 bool DefinitionReadXMLString(XMLParser *theXmlParser, SexyString &theValue);
 bool DefinitionReadIntField(XMLParser *theXmlParser, int *theValue);

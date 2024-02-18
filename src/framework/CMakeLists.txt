@@ -70,6 +70,11 @@ set(SIMDUTF_TOOLS OFF CACHE BOOL "" FORCE)
 set(SIMDUTF_ICONV OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(simdutf)
 
+FetchGit_Declare(https://github.com/fmtlib/fmt/tree/10.2.1)
+set(FMT_DOC OFF CACHE BOOL "" FORCE)
+set(FMT_TEST OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(fmt)
+
 set(HAVE_SDL_LOADSO TRUE)
 set(HAVE_SDL_THREADS TRUE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -122,6 +127,7 @@ target_link_libraries(
         zlibstatic
         simdutf::simdutf
         glm::glm
+        fmt::fmt
         avir
 )
 # Adds include directories
@@ -137,4 +143,5 @@ target_include_directories(
         ${zlib_BINARY_DIR}
         ${avir_SOURCE_DIR}
         ${simdutf_SOURCE_DIR}/include
+        ${fmt_SOURCE_DIR}/include
 )

@@ -16,9 +16,8 @@ void PropertiesParser::Fail(const SexyString &theErrorText) {
         int aLineNum = mXMLParser->GetCurrentLineNum();
 
         mError = theErrorText;
-        if (aLineNum > 0) mError += StrFormat(_S(" on Line %d"), aLineNum);
-        if (!mXMLParser->GetFileName().empty())
-            mError += StrFormat(_S(" in File '%s'"), mXMLParser->GetFileName().c_str());
+        if (aLineNum > 0) mError += fmt::format(_S(" on Line {}"), aLineNum);
+        if (!mXMLParser->GetFileName().empty()) mError += fmt::format(_S(" in File '{}'"), mXMLParser->GetFileName());
     }
 }
 

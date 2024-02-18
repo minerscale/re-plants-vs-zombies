@@ -2514,7 +2514,7 @@ Reanimation *Plant::AttachBlinkAnim(Reanimation *theReanimBody) {
     }
 
     if (aAnimToAttach == nullptr) {
-        TodTrace("Missing head anim");
+        fmt::println("Missing head anim");
         return nullptr;
     }
 
@@ -2534,7 +2534,7 @@ Reanimation *Plant::AttachBlinkAnim(Reanimation *theReanimBody) {
     } else if (aAnimToAttach->TrackExists("anim_idle")) {
         aBlinkReanim->AttachToAnotherReanimation(aAnimToAttach, "anim_idle");
     } else {
-        TodTrace("Missing anim_idle for blink");
+        fmt::println("Missing anim_idle for blink");
     }
 
     aBlinkReanim->mFilterEffect = theReanimBody->mFilterEffect;
@@ -4124,14 +4124,14 @@ int Plant::GetCost(SeedType theSeedType, SeedType theImitaterType) {
 //  GOTY @Patoke: 0x46B6C0
 SexyString Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
-    const SexyString aName = StrFormat(_S("[%s]"), aPlantDef.mPlantName);
+    const SexyString aName = fmt::format(_S("[{}]"), aPlantDef.mPlantName);
     SexyString aTranslatedName = TodStringTranslate(StringToSexyStringFast(aName));
 
     if (theSeedType == SeedType::SEED_IMITATER && theImitaterType != SeedType::SEED_NONE) {
         const PlantDefinition &aImitaterDef = GetPlantDefinition(theImitaterType);
-        const std::string aImitaterName = StrFormat(_S("[%s]"), aImitaterDef.mPlantName);
+        const std::string aImitaterName = fmt::format(_S("[{}]"), aImitaterDef.mPlantName);
         const std::string aTranslatedImitaterName = TodStringTranslate(StringToSexyStringFast(aImitaterName));
-        return StrFormat(_S("%s %s"), aTranslatedName.c_str(), aTranslatedImitaterName.c_str());
+        return fmt::format(_S("{} {}"), aTranslatedName, aTranslatedImitaterName);
     }
 
     return aTranslatedName;
@@ -4140,7 +4140,7 @@ SexyString Plant::GetNameString(SeedType theSeedType, SeedType theImitaterType) 
 // 0x467DB0
 SexyString Plant::GetToolTip(SeedType theSeedType) {
     const PlantDefinition &aPlantDef = GetPlantDefinition(theSeedType);
-    const SexyString aToolTip = StrFormat(_S("[%s_TOOLTIP]"), aPlantDef.mPlantName);
+    const SexyString aToolTip = fmt::format(_S("[{}_TOOLTIP]"), aPlantDef.mPlantName);
     return TodStringTranslate(aToolTip);
 }
 

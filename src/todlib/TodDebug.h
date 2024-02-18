@@ -1,5 +1,6 @@
 #ifndef __TODDEBUG_H__
 #define __TODDEBUG_H__
+#include <fmt/core.h>
 #include <initializer_list>
 
 // #define NOMINMAX 1
@@ -18,16 +19,48 @@ public:
     static inline void EndBracket() {}
 };
 
-void TodLog(const char *theFormat, ...);
 void TodLogString(const char *theMsg);
-void TodTrace(const char *theFormat, ...);
+
+template <class... Types> void TodLog(const fmt::format_string<Types...> theFormat, Types... theArgs) {
+    const std::string aButter = fmt::format(theFormat, std::forward<Types>(theArgs)...);
+    TodLogString(aButter.c_str());
+}
+
 void TodTraceMemory();
-void TodTraceAndLog(const char *theFormat, ...);
+
+template <class... Types> void TodTraceAndLog(const fmt::format_string<Types...> theFormat, Types... theArgs) {
+    auto aButter = fmt::format(theFormat, std::forward<Types>(theArgs)...);
+    aButter += '\n';
+    fmt::print("{}", aButter);
+    TodLogString(aButter.c_str());
+}
 void TodTraceWithoutSpamming(const char *theFormat, ...);
 void TodHesitationTrace(...);
 // void				TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage);
-void TodAssertFailed(const char *theCondition, const char *theFile, int theLine, const char *theMsg = "", ...);
-/*inline*/
+
+template <class... Types>
+void TodAssertFailed(
+    const char *theCondition, const char *theFile, int theLine, fmt::format_string<Types...> theFmt, Types &&...Args
+) {
+    const std::string aFormattedMsg = fmt::format(theFmt, std::forward<Types>(Args)...);
+    if (*theCondition != '\0') {
+        fmt::println("\n{}({})\nassertion failed: '{}'\n{}", theFile, theLine, theCondition, aFormattedMsg);
+    } else {
+        fmt::println("\n{}({})\nassertion failed: {}", theFile, theLine, aFormattedMsg);
+    }
+    exit(0);
+}
+
+template <class... Types>
+void TodAssertFailed(const char *theCondition, const char *theFile, int theLine, Types &&...Args) {
+    if (*theCondition != '\0') {
+        fmt::println("\n{}({})\nassertion failed: '{}'", theFile, theLine, theCondition);
+    } else {
+        fmt::println("\n{}({})\nassertion failed.", theFile, theLine);
+    }
+    exit(0);
+}
+
 void TodErrorMessageBox(const char *theMessage, const char *theTitle);
 // long __stdcall	TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo);
 

@@ -83,7 +83,7 @@ void PlayerInfo::SyncDetails(DataSync &theSync) {
 void PlayerInfo::LoadDetails() {
     try {
         Buffer aBuffer;
-        const std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+        const std::string aFileName = GetAppDataFolder() + fmt::format("userdata/user{}.dat", mId);
         if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false)) {
             return;
         }
@@ -93,7 +93,7 @@ void PlayerInfo::LoadDetails() {
         DataSync aSync(aReader);
         SyncDetails(aSync);
     } catch (DataReaderException &) {
-        TodTrace("Failed to player data, resetting it\n");
+        fmt::println("Failed to player data, resetting it\n");
         Reset();
     }
 }
@@ -107,13 +107,13 @@ void PlayerInfo::SaveDetails() {
     SyncDetails(aSync);
 
     MkDir(GetAppDataFolder() + "userdata");
-    const std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+    const std::string aFileName = GetAppDataFolder() + fmt::format("userdata/user{}.dat", mId);
     gSexyAppBase->WriteBytesToFile(aFileName, aWriter.GetDataPtr(), aWriter.GetDataLen());
 }
 
 // 0x469810
 void PlayerInfo::DeleteUserFiles() const {
-    const std::string aFilename = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
+    const std::string aFilename = GetAppDataFolder() + fmt::format("userdata/user{}.dat", mId);
     gSexyAppBase->EraseFile(aFilename);
 
     for (int i = 0; i < static_cast<int>(GameMode::NUM_GAME_MODES); i++) {

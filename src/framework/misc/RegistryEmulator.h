@@ -27,7 +27,7 @@
 
 class RegistryEmulator {
 public:
-    RegistryEmulator(const std::string);
+    explicit RegistryEmulator(const std::string &theFileName);
 
     RegistryEmulator() : RegistryEmulator("registry.dat") {}
 

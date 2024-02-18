@@ -63,35 +63,6 @@ void SexyTrace(const char *theStr) {
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-void SexyTraceFmt(const SexyChar *fmt...) {
-    // Does not append a newline by default, also takes vararg parameters
-
-    va_list argList;
-    va_start(argList, fmt);
-    std::string result = SexyStringToStringFast(vformat(fmt, argList));
-    va_end(argList);
-
-    if (gTraceFile == nullptr) {
-        gTraceFileNum = (gTraceFileNum + 1) % 2;
-        char aBuf[50];
-        sprintf(aBuf, "trace%d.txt", gTraceFileNum + 1);
-        gTraceFile = fopen(aBuf, "w");
-        if (gTraceFile == nullptr) return;
-    }
-
-    fprintf(gTraceFile, "%s", result.c_str());
-    fflush(gTraceFile);
-
-    gTraceFileLen += result.length();
-    if (gTraceFileLen > 100000) {
-        fclose(gTraceFile);
-        gTraceFile = nullptr;
-        gTraceFileLen = 0;
-    }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 void SexyMemAddTrack(void *addr, int asize, const char *fname, int lnum) {
@@ -201,15 +172,4 @@ void SexyDumpUnfreed() {
     sprintf(buf, "Total Unfreed: %d bytes (%dKB)\n\n", totalSize, totalSize / 1024);
     printf("%s", buf);
     fprintf(f, "%s", buf);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void OutputDebug(const SexyChar *fmt...) {
-    va_list argList;
-    va_start(argList, fmt);
-    std::string result = SexyStringToStringFast(vformat(fmt, argList));
-    va_end(argList);
-
-    printf("%s", result.c_str());
 }

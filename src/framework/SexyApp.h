@@ -58,7 +58,7 @@ public:
 
     //	bool					Validate(const std::string& theUserName, const std::string& theRegCode);
 
-    virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
+    // virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
     virtual bool OpenRegisterPage();
 
     void PreDisplayHook() override;

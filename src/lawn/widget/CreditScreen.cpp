@@ -1043,9 +1043,9 @@ void CreditScreen::Update() {
         const int aUnsyncedDuration = aDurationSinceStart - aDurationReanimation;
         int aUnsyncedFrames = (aUnsyncedDuration - 5) / 10;
         if (aUnsyncedFrames < 0) {
-            TodTrace("Movie playing too fast %d frames", 1 - aUnsyncedFrames);
+            fmt::println("Movie playing too fast {} frames", 1 - aUnsyncedFrames);
         } else if (aUnsyncedFrames > 5) {
-            TodTrace("Movie playing too slow %d frames", aUnsyncedFrames - 1);
+            fmt::println("Movie playing too slow {} frames", aUnsyncedFrames - 1);
         }
 
         if (aUnsyncedDuration > 10000) {

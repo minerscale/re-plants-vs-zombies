@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 # Target
 ################################################################################
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_ANDROID_STL_TYPE c++_static)
 project(PlantsVsZombies C CXX)
 
 ################################################################################
@@ -43,7 +44,7 @@ if (MSVC)
 else ()
     set(universal_compiler_flags
             "-Wno-unused-command-line-argument"
-            "-march=native"
+            "-Wno-deprecated-declarations"
             "-fdiagnostics-color=always"
             "-pipe"
             "-pthread"
@@ -53,6 +54,11 @@ else ()
             "-fstack-protector-all"
             #"-fno-inline"
     )
+
+    if (NOT ANDROID)
+            list(APPEND universal_compiler_flags "-march=native")
+    endif ()
+
 
     set(universal_link_flags
             "-fuse-ld=lld"

@@ -334,7 +334,7 @@ void ReanimationCreateAtlas(ReanimatorDefinition *theDefinition, ReanimationType
             .count();
     if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE) // （仅内测版）创建时间过长的报告
         TodTraceAndLog(
-            "loading:  Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str()
+            "loading:  Long atlas '{}' {} ms on {}", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str()
         );
 }
 
@@ -871,7 +871,7 @@ int Reanimation::FindTrackIndex(const char *theTrackName) {
     for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
         if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0) return aTrackIndex;
 
-    TodTrace("Can't find track '%s'", theTrackName);
+    fmt::println("Can't find track '{}'", theTrackName);
     return 0;
 }
 
@@ -1071,10 +1071,10 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
     } else // < 以下部分仅内测版执行 >
     {
         if (gAppHasUsedCheatKeys())
-            TodTraceAndLog("Cheater failed to preload '%s' on %s", aFileName.c_str(), gGetCurrentLevelName().c_str());
+            TodTraceAndLog("Cheater failed to preload '{}' on {}", aFileName.c_str(), gGetCurrentLevelName().c_str());
         else
             TodTraceAndLog(
-                "Non-cheater failed to preload '%s' on %s", aFileName.c_str(), gGetCurrentLevelName().c_str()
+                "Non-cheater failed to preload '{}' on {}", aFileName.c_str(), gGetCurrentLevelName().c_str()
             );
     } // < 以上部分仅内测版执行 >
 
@@ -1091,7 +1091,7 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
             .count();
     if (aDuration > 100) // （仅内测版）创建时间过长的报告
         TodTraceAndLog(
-            "loading:  Long reanim '%s' %d ms on %s", aFileName.c_str(), aDuration, gGetCurrentLevelName().c_str()
+            "loading:  Long reanim '{}' {} ms on {}", aFileName.c_str(), aDuration, gGetCurrentLevelName().c_str()
         );
 }
 
@@ -1338,7 +1338,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex) {
     ReanimationType aReanimationType = ReanimationType::REANIM_NONE;
     if (aAttacherInfo.mReanimName.size() != 0) // 如果附属轨道设定了当前的附属动画名称
     {
-        const std::string aReanimFileName = StrFormat("%s.reanim", aAttacherInfo.mReanimName.c_str());
+        const std::string aReanimFileName = fmt::format("{}.reanim", aAttacherInfo.mReanimName);
         for (unsigned int i = 0; i < gReanimationParamArraySize; i++) // 在动画参数数组中寻找动画文件名对应的动画类型
         {
             const ReanimationParams *aParams = &gReanimationParamArray[i];

@@ -442,7 +442,7 @@ bool LawnLoadGame(Board *theBoard, const std::string &theFilePath) {
         return false;
     }
 
-    TodTrace("Loaded save game");
+    fmt::println("Loaded save game");
     FixBoardAfterLoad(theBoard);
     theBoard->mApp->mGameScene = GameScenes::SCENE_PLAYING;
     return true;

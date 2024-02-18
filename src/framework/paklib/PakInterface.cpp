@@ -2,7 +2,6 @@
 #include "misc/fcaseopen.h"
 #include <cstdio>
 #include <filesystem>
-#include <fstream>
 
 using uint8_t = unsigned char;
 using uint16_t = unsigned short;

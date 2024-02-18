@@ -305,7 +305,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) const {
     g->DrawImage(Sexy::IMAGE_ALMANAC_PLANTCARD, 459, 86);
     const PlantDefinition &aPlantDef = GetPlantDefinition(mSelectedSeed);
     const SexyString aName = Plant::GetNameString(mSelectedSeed, SEED_NONE);
-    const SexyString aDescriptionName = StrFormat(_S("[%s_DESCRIPTION]"), aPlantDef.mPlantName);
+    const SexyString aDescriptionName = fmt::format(_S("[{}_DESCRIPTION]"), aPlantDef.mPlantName);
     TodDrawString(
         g, aName, 617, 288, Sexy::FONT_DWARVENTODCRAFT18YELLOW, Color::White, DrawStringJustification::DS_ALIGN_CENTER
     );
@@ -316,7 +316,7 @@ void AlmanacDialog::DrawPlants(Graphics *g) const {
 
     if (mSelectedSeed != SeedType::SEED_IMITATER) {
         const SexyString aCostStr = TodReplaceString(
-            StrFormat(_S("{KEYWORD}{COST}:{STAT} %d"), aPlantDef.mSeedCost), _S("{COST}"), _S("[COST]")
+            fmt::format("{{KEYWORD}}{{COST}}:{{STAT}} {}", aPlantDef.mSeedCost), _S("{COST}"), _S("[COST]")
         );
         TodDrawStringWrapped(
             g, aCostStr, Rect(485, 520, 134, 50), Sexy::FONT_BRIANNETOD12, Color::White,
@@ -441,7 +441,8 @@ void AlmanacDialog::DrawZombies(Graphics *g) const {
     g->DrawImage(Sexy::IMAGE_ALMANAC_ZOMBIECARD, 455, 78);
 
     ZombieDefinition &aZombieDef = GetZombieDefinition(mSelectedZombie);
-    SexyString aName = ZombieHasSilhouette(mSelectedZombie) ? _S("???") : StrFormat(_S("[%s]"), aZombieDef.mZombieName);
+    SexyString aName =
+        ZombieHasSilhouette(mSelectedZombie) ? _S("???") : fmt::format(_S("[{}]"), aZombieDef.mZombieName);
     TodDrawString(
         g, aName, 613, 362, Sexy::FONT_DWARVENTODCRAFT18GREENINSET, Color(190, 255, 235, 255),
         DrawStringJustification::DS_ALIGN_CENTER
@@ -450,7 +451,7 @@ void AlmanacDialog::DrawZombies(Graphics *g) const {
     SexyString aDescription;
     DrawStringJustification aAlign;
     if (ZombieHasDescription(mSelectedZombie)) {
-        aDescription = TodStringTranslate(StrFormat(_S("[%s_DESCRIPTION]"), aZombieDef.mZombieName));
+        aDescription = TodStringTranslate(fmt::format(_S("[{}_DESCRIPTION]"), aZombieDef.mZombieName));
         aAlign = DrawStringJustification::DS_ALIGN_LEFT;
     } else {
         aDescription = _S("[NOT_ENCOUNTERED_YET]");
@@ -470,8 +471,9 @@ void AlmanacDialog::DrawZombies(Graphics *g) const {
     // todo @Patoke: fix stuff that have another formatter after them, ex: "{KEYWORD}Weakness:{STAT} fume-shroom{METAL}
     // and magnet-shroom{KEYWORD}" (magnet-shroom will show with the {KEYWORD} colors)
     // @Patoke: added extra check for the zamboni zombie
+    // !TODO FIX THIS
     TodDrawStringWrapped(
-        g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 372 : 377, 258, 170),
+        g, aDescription, Rect(484, mSelectedZombie == ZombieType::ZOMBIE_ZAMBONI ? 372 : 377, 269, 170),
         Sexy::FONT_BRIANNETOD12, Color(40, 50, 90), aAlign
     );
 }

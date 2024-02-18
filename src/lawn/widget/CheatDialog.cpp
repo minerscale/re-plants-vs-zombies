@@ -19,9 +19,9 @@ CheatDialog::CheatDialog(LawnApp *theApp)
 
     SexyString aCheatStr;
     if (mApp->mGameMode != GameMode::GAMEMODE_ADVENTURE) {
-        aCheatStr = StrFormat(_S("C%d"), (int)mApp->mGameMode);
+        aCheatStr = fmt::format(_S("C{}"), (int)mApp->mGameMode);
     } else if (mApp->HasFinishedAdventure()) {
-        aCheatStr = StrFormat(_S("F%s"), mApp->GetStageString(mApp->mPlayerInfo->GetLevel()).c_str());
+        aCheatStr = fmt::format(_S("F{}"), mApp->GetStageString(mApp->mPlayerInfo->GetLevel()).c_str());
     } else {
         aCheatStr = mApp->GetStageString(mApp->mPlayerInfo->GetLevel());
     }

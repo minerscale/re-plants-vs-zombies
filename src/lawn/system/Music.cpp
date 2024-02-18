@@ -201,7 +201,7 @@ void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune
 void Music::LoadSong(MusicFile theMusicFile, const std::string &theFileName) {
     TodHesitationTrace("preloadsong");
     if (!TodLoadMusic(theMusicFile, theFileName)) {
-        TodTrace("music failed to load\n");
+        fmt::println("music failed to load");
         mMusicDisabled = true;
     } else {
         BASS_ChannelSetAttribute(

@@ -9,11 +9,12 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
 #include <cwctype>
 #include <execution>
-#include <format>
+#include <fmt/core.h>
 #include <list>
 #include <map>
 #include <mutex>
@@ -22,23 +23,6 @@
 #include <string>
 #include <todlib/TodDebug.h>
 #include <vector>
-
-namespace std {
-template <class... Types> void println(FILE *const Stream, const std::format_string<Types...> Fmt, Types &&...Args) {
-    std::fprintf(Stream, std::format(Fmt, std::forward<Types>(Args)...).c_str());
-    std::fputc('\n', Stream);
-}
-
-template <class... Types> void println(const std::format_string<Types...> Fmt, Types &&...Args) {
-    println(stdout, Fmt, std::forward<Types>(Args)...);
-}
-} // namespace std
-
-#ifdef __GNUC__
-#include <bits/chrono.h>
-#else
-#include <chrono>
-#endif
 
 #ifndef __cpp_lib_unreachable
 [[noreturn]] inline void unreachable() {
@@ -104,10 +88,10 @@ int Rand();
 int Rand(int range);
 float Rand(float range);
 void SRand(uint32_t theSeed);
-extern std::string vformat(const char *fmt, va_list argPtr);
-extern std::wstring vformat(const wchar_t *fmt, va_list argPtr);
-extern std::string StrFormat(const char *fmt...);
-extern std::wstring StrFormat(const wchar_t *fmt...);
+// extern std::string vformat(const char *fmt, va_list argPtr);
+// extern std::wstring vformat(const wchar_t *fmt, va_list argPtr);
+// extern std::string StrFormat(const char *fmt...);
+// extern std::wstring StrFormat(const wchar_t *fmt...);
 bool CheckFor98Mill();
 bool CheckForVista();
 std::string GetAppDataFolder();

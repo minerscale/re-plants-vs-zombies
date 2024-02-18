@@ -1,8 +1,6 @@
 #include "SexyApp.h"
 #include "Common.h"
 
-#include <fstream>
-
 using namespace Sexy;
 
 SexyApp *Sexy::gSexyApp = nullptr;
@@ -318,49 +316,49 @@ bool SexyApp::OpenHTMLTemplate(const std::string & /*theTemplateFile*/, const De
     return OpenURL(GetFullPath(anOutFilename));*/
 }
 
-bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
-#ifdef ZYLOM
-    ZylomGS_StandAlone_ShowBuyPage();
-    return true;
-#endif
+// bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap) {
+// #ifdef ZYLOM
+//     ZylomGS_StandAlone_ShowBuyPage();
+//    return true;
+// #endif
 
-    /*
-    * // Insert standard defines
-    DefinesMap aDefinesMap;
+/*
+* // Insert standard defines
+DefinesMap aDefinesMap;
 
-    aDefinesMap.insert(DefinesMap::value_type("Src", mRegSource));
-    aDefinesMap.insert(DefinesMap::value_type("ProdName", mProdName));
-    // aDefinesMap.insert(DefinesMap::value_type("Version", mProductVersion));
-    aDefinesMap.insert(DefinesMap::value_type("Variation", mVariation));
-    aDefinesMap.insert(DefinesMap::value_type("ReferId", mReferId));
-    aDefinesMap.insert(DefinesMap::value_type("DownloadId", StrFormat("%d", mDownloadId)));
-    aDefinesMap.insert(DefinesMap::value_type("TimesPlayed", StrFormat("%d", mTimesPlayed)));
-    aDefinesMap.insert(DefinesMap::value_type("TimesExecuted", StrFormat("%d", mTimesExecuted)));
-    aDefinesMap.insert(DefinesMap::value_type("TimedOut", mTimedOut ? "Y" : "N"));
+aDefinesMap.insert(DefinesMap::value_type("Src", mRegSource));
+aDefinesMap.insert(DefinesMap::value_type("ProdName", mProdName));
+// aDefinesMap.insert(DefinesMap::value_type("Version", mProductVersion));
+aDefinesMap.insert(DefinesMap::value_type("Variation", mVariation));
+aDefinesMap.insert(DefinesMap::value_type("ReferId", mReferId));
+aDefinesMap.insert(DefinesMap::value_type("DownloadId", StrFormat("%d", mDownloadId)));
+aDefinesMap.insert(DefinesMap::value_type("TimesPlayed", StrFormat("%d", mTimesPlayed)));
+aDefinesMap.insert(DefinesMap::value_type("TimesExecuted", StrFormat("%d", mTimesExecuted)));
+aDefinesMap.insert(DefinesMap::value_type("TimedOut", mTimedOut ? "Y" : "N"));
 
-    // Insert game specific stats
-    std::string aStatsString;
-    auto anItr = theStatsMap.begin();
-    while (anItr != theStatsMap.end()) {
-        std::string aKeyString = anItr->first;
-        std::string aValueString = anItr->second;
+// Insert game specific stats
+std::string aStatsString;
+auto anItr = theStatsMap.begin();
+while (anItr != theStatsMap.end()) {
+    std::string aKeyString = anItr->first;
+    std::string aValueString = anItr->second;
 
-        aStatsString += StrFormat("%04X", aKeyString.length()) + aKeyString + "S" +
-                        StrFormat("%04X", aValueString.length()) + aValueString;
+    aStatsString += StrFormat("%04X", aKeyString.length()) + aKeyString + "S" +
+                    StrFormat("%04X", aValueString.length()) + aValueString;
 
-        ++anItr;
-    }
-
-    aDefinesMap.insert(DefinesMap::value_type("Stats", aStatsString));
-
-    if (FileExists("register.tpl")) {
-        return OpenHTMLTemplate("register.tpl", aDefinesMap);
-    } else {
-        return OpenURL(mRegisterLink);
-    }
-     */
-    unreachable();
+    ++anItr;
 }
+
+aDefinesMap.insert(DefinesMap::value_type("Stats", aStatsString));
+
+if (FileExists("register.tpl")) {
+    return OpenHTMLTemplate("register.tpl", aDefinesMap);
+} else {
+    return OpenURL(mRegisterLink);
+}
+ */
+//    unreachable();
+// }
 
 bool SexyApp::ShouldCheckForUpdate() {
     if (mDontUpdate) return false;
@@ -394,7 +392,8 @@ void SexyApp::URLOpenSucceeded(const std::string &theURL) {
 
 bool SexyApp::OpenRegisterPage() {
     DefinesMap aStatsMap;
-    return OpenRegisterPage(aStatsMap);
+    return true;
+    // return OpenRegisterPage(aStatsMap);
 }
 
 /*
@@ -479,10 +478,10 @@ void SexyApp::OpenUpdateURL() {
 void SexyApp::HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue) {
     if (theParamName == "-version") {
         // Just print version info and then quit
-        std::println("Product: {}", mProdName);
+        fmt::println("Product: {}", mProdName);
         // std::println("Version: {}", mProductVersion);
-        std::println("Build Num: {}", StrFormat("%d", mBuildNum));
-        std::println("Build Date: {}", mBuildDate);
+        fmt::println("Build Num: {}", mBuildNum);
+        fmt::println("Build Date: {}", mBuildDate);
 
         DoExit(0);
     } else SexyAppBase::HandleCmdLineParam(theParamName, theParamValue);
@@ -510,7 +509,7 @@ std::string SexyApp::GetGameSEHInfo() {
 
 void SexyApp::GetSEHWebParams(DefinesMap *theDefinesMap) {
     theDefinesMap->insert(DefinesMap::value_type("username", mUserName));
-    theDefinesMap->insert(DefinesMap::value_type("buildnum", StrFormat("%d", mBuildNum)));
+    theDefinesMap->insert(DefinesMap::value_type("buildnum", fmt::format("{}", mBuildNum)));
     theDefinesMap->insert(DefinesMap::value_type("builddate", mBuildDate));
     theDefinesMap->insert(DefinesMap::value_type("referid", mReferId));
 }
@@ -575,9 +574,9 @@ void SexyApp::Init() {
     SEHCatcher::mSubmitHost = "www.popcap.com";
     */
 
-    printf("Product: %s\n", mProdName.c_str());
-    printf("BuildNum: %d\n", mBuildNum);
-    printf("BuildDate: %s\n", mBuildDate.c_str());
+    fmt::println("Product: {}", mProdName);
+    fmt::println("BuildNum: {}", mBuildNum);
+    fmt::println("BuildDate: {}", mBuildDate);
 
     SexyAppBase::Init();
 

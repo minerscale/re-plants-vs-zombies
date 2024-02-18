@@ -37,7 +37,7 @@ bool TodStringListReadValue(const char *&thePtr, std::string &theValue);
 bool TodStringListReadItems(const char *theFileText);
 bool TodStringListReadFile(const char *theFileName);
 void TodStringListLoad(const char *theFileName);
-inline std::optional<SexyString> TodStringListFindOptional(const SexyString &theName);
+std::optional<SexyString> TodStringListFindOptional(const SexyString &theName);
 SexyString TodStringListFind(const SexyString &theName);
 SexyString TodStringTranslate(const SexyString &theString);
 SexyString TodStringTranslate(const SexyChar *theString);

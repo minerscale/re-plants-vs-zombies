@@ -52,7 +52,7 @@ bool TodStringListReadName(const char *&thePtr, std::string &theName) {
     {
         if (strspn(thePtr, " \n\r\t") != strlen(thePtr)) // 如果文本不全是空白字符
         {
-            TodTrace("Failed to find string name");
+            fmt::println("Failed to find string name");
             return false;
         }
 
@@ -62,14 +62,14 @@ bool TodStringListReadName(const char *&thePtr, std::string &theName) {
         const char *aNameEnd = strchr(aNameStart + 1, ']');
         if (aNameEnd == nullptr) // 如果“[”后不存在“]”
         {
-            TodTrace("Failed to find ']'");
+            fmt::println("Failed to find ']'");
             return false;
         }
 
         const int aCount = aNameEnd - aNameStart - 1;
         theName = Sexy::Trim(std::string(aNameStart + 1, aCount)); // 取得中括号之间的部分并去除字符串前后的空白字符
         if (theName.size() == 0) {
-            TodTrace("Name Too Short");
+            fmt::println("Name Too Short");
             return false;
         }
 
@@ -119,7 +119,7 @@ bool TodStringListReadItems(const char *theFileText) {
 bool TodStringListReadFile(const char *theFileName) {
     PFILE *pFile = p_fopen(theFileName, "rb");
     if (pFile == nullptr) {
-        TodTrace("Failed to open '%s'", theFileName);
+        fmt::println("Failed to open '%s'", theFileName);
         return false;
     }
 
@@ -130,7 +130,7 @@ bool TodStringListReadFile(const char *theFileName) {
     bool aSuccess = true;
     if (p_fread(aFileText, sizeof(char), aSize, pFile) <= 0) // 按字节读取数据
     {
-        TodTrace("Failed to read '%s'", theFileName);
+        fmt::println("Failed to read '%s'", theFileName);
         aSuccess = false;
     }
     aFileText[aSize] = '\0';
@@ -145,7 +145,7 @@ bool TodStringListReadFile(const char *theFileName) {
             auto aIsUTF16 = simdutf::validate_utf16(aCastedText, aOriginalSize);
 
             if (!aIsUTF16) {
-                TodTrace("Failed to detect encoding of '%s'", theFileName);
+                fmt::println("Failed to detect encoding of '{}'", theFileName);
                 aSuccess = false;
             }
 
@@ -168,10 +168,10 @@ bool TodStringListReadFile(const char *theFileName) {
 // 0x519390
 void TodStringListLoad(const char *theFileName) {
     if (!TodStringListReadFile(theFileName))
-        TodErrorMessageBox(Sexy::StrFormat("Failed to load string list file '%s'", theFileName).c_str(), "Error");
+        TodErrorMessageBox(fmt::format("Failed to load string list file '{}'", theFileName).c_str(), "Error");
 }
 
-inline std::optional<SexyString> TodStringListFindOptional(const SexyString &theName) {
+std::optional<SexyString> TodStringListFindOptional(const SexyString &theName) {
     const std::string aNameString = Sexy::SexyStringToString(theName);
     const auto anItr = gSexyAppBase->mStringProperties.find(aNameString);
     if (anItr != gSexyAppBase->mStringProperties.end()) {
@@ -186,7 +186,7 @@ SexyString TodStringListFind(const SexyString &theName) {
     if (aResult.has_value()) {
         return aResult.value();
     } else {
-        return Sexy::StrFormat(_S("<Missing %s>"), theName.c_str());
+        return fmt::format(_S("<Missing {}>"), theName);
     }
 }
 

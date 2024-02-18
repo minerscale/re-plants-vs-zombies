@@ -2,6 +2,10 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 
+#ifdef __ANDROID__
+#include "SDL.h"
+#endif
+
 #include "LawnApp.h"
 #include "Resources.h"
 #include "todlib/TodStringFile.h"
@@ -18,6 +22,11 @@ int main(const int argc, char *argv[]) {
     gAppCloseRequest = LawnGetCloseRequest;
     gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
+
+#ifdef __ANDROID__
+    SetAppDataFolder(SDL_AndroidGetExternalStoragePath());
+#endif
+
     gLawnApp = new LawnApp();
     auto shouldChangeDir =
         (!Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml")) ||
