@@ -1766,6 +1766,7 @@ void Challenge::ZombieAtePlant(/*Zombie* theZombie,*/
     mBeghouledEated[thePlant->mPlantCol][thePlant->mRow] = true;
 
     if (mBoard->mSeedBank->mNumPackets == 4) {
+        mBoard->mSeedBank->mNumPackets += 1;
         mBoard->mSeedBank->mSeedPackets[4].SetPacketType(SEED_BEGHOULED_BUTTON_CRATER);
         mBoard->DisplayAdvice(
             _S("[ADVICE_BEGHOULED_USE_CRATER_1]"), MESSAGE_STYLE_HINT_FAST, AdviceType::ADVICE_BEGHOULED_USE_CRATER_1
@@ -2966,8 +2967,8 @@ void Challenge::BeghouledShuffle() {
 
 // 0x427D00
 int Challenge::BeghouledCanClearCrater() {
-    for (int aRow = 0; aRow < 5; aRow++) {
-        for (int aCol = 0; aCol < 8; aCol++) {
+    for (int aRow = 0; aRow < BEGHOULED_MAX_GRIDSIZEY; aRow++) {
+        for (int aCol = 0; aCol < BEGHOULED_MAX_GRIDSIZEX; aCol++) {
             if (mBeghouledEated[aCol][aRow]) {
                 return true;
             }
