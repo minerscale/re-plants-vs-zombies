@@ -6,6 +6,8 @@
 #include "WidgetManager.h"
 #include "graphics/Font.h"
 
+#include "SDL.h"
+
 using namespace Sexy;
 
 static int gEditWidgetColors[][3] = {
@@ -165,16 +167,19 @@ void EditWidget::UpdateCaretPos() {
 
 void EditWidget::GotFocus() {
     Widget::GotFocus();
+    /*
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
         unreachable(); // FIXME
-                       /*
+
                        SexyAppBase *anApp = mWidgetManager->mApp;
                        CreateCaret(anApp->mHWnd,NULL,0,0);
                        UpdateCaretPos();
                        ShowCaret(anApp->mHWnd);
-                       */
-    }
 
+    }
+    */
+
+    SDL_StartTextInput();
     mShowingCursor = true;
     mBlinkAcc = 0;
     MarkDirty();
@@ -182,15 +187,17 @@ void EditWidget::GotFocus() {
 
 void EditWidget::LostFocus() {
     Widget::LostFocus();
-
+    /*
     if (mWidgetManager && mWidgetManager->mApp->mTabletPC) {
         unreachable();
-        /* FIXME
+         FIXME
         HideCaret(mWidgetManager->mApp->mHWnd);
         DestroyCaret();
-        */
-    }
 
+    }
+    */
+
+    SDL_StopTextInput();
     mShowingCursor = false;
     MarkDirty();
 }
@@ -199,9 +206,11 @@ void EditWidget::Update() {
     Widget::Update();
 
     if (mHasFocus) {
-        if (mWidgetManager->mApp->mTabletPC) {
+        /*
+        *if (mWidgetManager->mApp->mTabletPC) {
             UpdateCaretPos();
         }
+         */
 
         if (++mBlinkAcc > mBlinkDelay) {
             MarkDirty();

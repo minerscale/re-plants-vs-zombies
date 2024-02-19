@@ -3,6 +3,46 @@
 #include <algorithm>
 
 namespace compiler {
+template <typename V, typename T, std::size_t Size> class OrderedMap {
+    using MapItem = std::tuple<T, V>;
+
+    struct HashItemComparator {
+        constexpr bool operator()(const MapItem &lhs, const MapItem &rhs) const {
+            return std::get<0>(lhs) < std::get<0>(rhs);
+        }
+    };
+
+    std::array<MapItem, Size> arr;
+
+public:
+    constexpr explicit OrderedMap(std::tuple<T, V> const (&raw)[Size]) noexcept : arr() {
+        for (size_t i = 0; i < Size; ++i) {
+            auto [idx, value] = raw[i];
+            arr[i] = {idx, value};
+        }
+        compiler::sort(arr, HashItemComparator());
+    }
+
+    constexpr std::optional<V> find(T idx) const {
+        const auto it = std::ranges::lower_bound(arr, std::make_tuple(idx, V{}), HashItemComparator());
+
+        if (it != arr.end() && std::get<0>(*it) == idx) {
+            return std::get<1>(*it);
+        }
+
+        return std::nullopt;
+    }
+
+    consteval V operator[](T idx) const {
+        auto v = find(idx);
+        if (v.has_value()) {
+            return v.value();
+        }
+        static_assert(!std::is_same_v<V, V>, "Key not found");
+        return V{};
+    }
+};
+
 template <typename V, typename T, std::size_t Size> class OrderedHashMap {
     using HashFnMapItem = std::tuple<decltype(compiler::hash(std::declval<T>())), V>;
 

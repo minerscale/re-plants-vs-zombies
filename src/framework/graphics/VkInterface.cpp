@@ -5,6 +5,7 @@
 #include "SDL_vulkan.h"
 #include "SexyAppBase.h"
 #include "VkCommon.h"
+#include "compiler/map.h"
 #include "graphics/Color.h"
 #include "graphics/VkImage.h"
 #include "graphics/WindowInterface.h"
@@ -16,6 +17,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <codecvt>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -235,84 +237,64 @@ public:
 
 std::map<int, std::unique_ptr<sdlCursor>> cursorMap;
 
-template <decltype(auto) arr> static constexpr auto const_generate_keymap() {
-    using T = decltype(arr)::value_type::second_type;
+constexpr auto GenerateAsciiKeymap() {
+    std::array<KeyCode, 256> sparse_array{};
 
-    for (auto &it : arr) {
-        // unset the keycode flag
-        it.first = it.first & (~(1 << 30));
-    }
-
-    constexpr auto max_key = std::max_element(arr.begin(), arr.end(), [](const auto &left, const auto &right) {
-                                 return left.first < right.first;
-                             })->first;
-
-    if (max_key > 512) {
-        throw std::runtime_error("max value of keymap is too large.");
-    }
-
-    std::array<T, max_key + 1> sparse_array{};
-
-    for (auto it : arr) {
-        sparse_array[it.first] = it.second;
-    }
-
-    for (size_t key = 0; key < arr.size(); ++key) {
-        if (!sparse_array[key]) {
-            int offset = key;
-            if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
-            else if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
-            else if (key >= SDLK_KP_0 && key <= SDLK_KP_9) offset = static_cast<int>(SDLK_KP_0) - KEYCODE_NUMPAD0;
-            else if (key >= SDLK_F1 && key <= SDLK_F24) offset = static_cast<int>(SDLK_F1) - KEYCODE_F1;
-            sparse_array[key] = static_cast<KeyCode>(key - offset);
-            // if we didn't find it the resulting keycode is key - key == 0
-        }
+    for (size_t key = 0; key < sparse_array.size(); ++key) {
+        auto offset = static_cast<int>(key);
+        if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
+        if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
+        // if (key >= (SDLK_KP_1 & ~SDLK_SCANCODE_MASK) && key <= (SDLK_KP_0 & ~SDLK_SCANCODE_MASK)) offset = (SDLK_KP_0
+        // & ~SDLK_SCANCODE_MASK) - KEYCODE_NUMPAD0; if (key >= (SDLK_F1 & ~SDLK_SCANCODE_MASK) && key <= (SDLK_F24 &
+        // ~SDLK_SCANCODE_MASK)) offset = static_cast<int>(SDLK_F1) - KEYCODE_F1;
+        sparse_array[key] = static_cast<KeyCode>(static_cast<int>(key) - offset);
     }
 
     return sparse_array;
 }
 
-constexpr auto keymap = const_generate_sparse_array<std::array<std::pair<uint16_t, KeyCode>, 37>{
-    {
-     {SDLK_BACKSPACE, KEYCODE_BACK},
-     {SDLK_TAB, KEYCODE_TAB},
-     {SDLK_CLEAR, KEYCODE_CLEAR},
-     {SDLK_RETURN, KEYCODE_RETURN},
-     {SDLK_PAUSE, KEYCODE_PAUSE},
-     {SDLK_CAPSLOCK, KEYCODE_CAPITAL},
-     {SDLK_ESCAPE, KEYCODE_ESCAPE},
-     {SDLK_SPACE, KEYCODE_SPACE},
-     {SDLK_PRIOR, KEYCODE_PRIOR},
-     {SDLK_END, KEYCODE_END},
-     {SDLK_HOME, KEYCODE_HOME},
-     {SDLK_LEFT, KEYCODE_LEFT},
-     {SDLK_UP, KEYCODE_UP},
-     {SDLK_RIGHT, KEYCODE_RIGHT},
-     {SDLK_DOWN, KEYCODE_DOWN},
-     {SDLK_SELECT, KEYCODE_SELECT},
-     {SDLK_EXECUTE, KEYCODE_EXECUTE},
-     {SDLK_PRINTSCREEN, KEYCODE_SNAPSHOT},
-     {SDLK_INSERT, KEYCODE_INSERT},
-     {SDLK_DELETE, KEYCODE_DELETE},
-     {SDLK_HELP, KEYCODE_HELP},
-     {SDLK_LGUI, KEYCODE_LWIN},
-     {SDLK_RGUI, KEYCODE_RWIN},
-     {SDLK_KP_MULTIPLY, KEYCODE_MULTIPLY},
-     {SDLK_KP_PLUS, KEYCODE_ADD},
-     {SDLK_KP_VERTICALBAR, KEYCODE_SEPARATOR},
-     {SDLK_KP_MINUS, KEYCODE_SUBTRACT},
-     {SDLK_KP_DECIMAL, KEYCODE_DECIMAL},
-     {SDLK_KP_DIVIDE, KEYCODE_DIVIDE},
-     {SDLK_NUMLOCKCLEAR, KEYCODE_NUMLOCK},
-     {SDLK_SCROLLLOCK, KEYCODE_SCROLL},
-     {SDLK_LSHIFT, KEYCODE_LSHIFT},
-     {SDLK_RSHIFT, KEYCODE_RSHIFT},
-     {SDLK_LCTRL, KEYCODE_LCONTROL},
-     {SDLK_RCTRL, KEYCODE_RCONTROL},
-     {SDLK_LALT, KEYCODE_LMENU},
-     {SDLK_RALT, KEYCODE_RMENU},
-     }
-}>();
+constexpr std::tuple<size_t, KeyCode> RawControlKeyMapping[] = {
+    {SDLK_BACKSPACE,      KEYCODE_BACK     },
+    {SDLK_TAB,            KEYCODE_TAB      },
+    {SDLK_CLEAR,          KEYCODE_CLEAR    },
+    {SDLK_RETURN,         KEYCODE_RETURN   },
+    {SDLK_PAUSE,          KEYCODE_PAUSE    },
+    {SDLK_CAPSLOCK,       KEYCODE_CAPITAL  },
+    {SDLK_ESCAPE,         KEYCODE_ESCAPE   },
+    {SDLK_SPACE,          KEYCODE_SPACE    },
+    {SDLK_PRIOR,          KEYCODE_PRIOR    },
+    {SDLK_END,            KEYCODE_END      },
+    {SDLK_HOME,           KEYCODE_HOME     },
+    {SDLK_LEFT,           KEYCODE_LEFT     },
+    {SDLK_UP,             KEYCODE_UP       },
+    {SDLK_RIGHT,          KEYCODE_RIGHT    },
+    {SDLK_DOWN,           KEYCODE_DOWN     },
+    {SDLK_SELECT,         KEYCODE_SELECT   },
+    {SDLK_EXECUTE,        KEYCODE_EXECUTE  },
+    {SDLK_PRINTSCREEN,    KEYCODE_SNAPSHOT },
+    {SDLK_INSERT,         KEYCODE_INSERT   },
+    {SDLK_DELETE,         KEYCODE_DELETE   },
+    {SDLK_HELP,           KEYCODE_HELP     },
+    {SDLK_LGUI,           KEYCODE_LWIN     },
+    {SDLK_RGUI,           KEYCODE_RWIN     },
+    {SDLK_KP_MULTIPLY,    KEYCODE_MULTIPLY },
+    {SDLK_KP_PLUS,        KEYCODE_ADD      },
+    {SDLK_KP_VERTICALBAR, KEYCODE_SEPARATOR},
+    {SDLK_KP_MINUS,       KEYCODE_SUBTRACT },
+    {SDLK_KP_DECIMAL,     KEYCODE_DECIMAL  },
+    {SDLK_KP_DIVIDE,      KEYCODE_DIVIDE   },
+    {SDLK_NUMLOCKCLEAR,   KEYCODE_NUMLOCK  },
+    {SDLK_SCROLLLOCK,     KEYCODE_SCROLL   },
+    {SDLK_LSHIFT,         KEYCODE_LSHIFT   },
+    {SDLK_RSHIFT,         KEYCODE_RSHIFT   },
+    {SDLK_LCTRL,          KEYCODE_LCONTROL },
+    {SDLK_RCTRL,          KEYCODE_RCONTROL },
+    {SDLK_LALT,           KEYCODE_LMENU    },
+    {SDLK_RALT,           KEYCODE_RMENU    },
+};
+
+constexpr auto ControlKeyMapping = compiler::OrderedMap(RawControlKeyMapping);
+constexpr auto AsciiKeyMapping = GenerateAsciiKeymap();
 
 /*===================================*
  | Implementations                   |
@@ -1599,7 +1581,7 @@ void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) {
 }
 
 void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
-    constexpr auto mouseButtonTranslationTable = const_generate_sparse_array<std::array<std::pair<int, int>, 3>{
+    constexpr auto mouseButtonTranslationTable = compiler::SparseArray<std::array<std::pair<int, int>, 3>{
         {
          {SDL_BUTTON_LEFT, 1},
          {SDL_BUTTON_RIGHT, -1},
@@ -1619,18 +1601,18 @@ void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
 void VkInterface::keyCallback(uint32_t key, uint8_t state) {
     if (key == SDLK_UNKNOWN) return;
 
-    auto code = keymap[key & (~(1 << 30))];
-
+    auto code = ControlKeyMapping.find(key);
+    if (!code.has_value()) code = AsciiKeyMapping[static_cast<uint8_t>(key & ~SDLK_SCANCODE_MASK)];
     if (state == SDL_PRESSED) {
-        widgetManager->KeyDown(code);
+        widgetManager->KeyDown(code.value());
     } else {
-        widgetManager->KeyUp(code);
+        widgetManager->KeyUp(code.value());
     }
 }
 
 void VkInterface::charCallback(char codepoint[32]) {
     widgetManager->KeyChar(std::string(codepoint)[0]);
-    // broken, but one day utf8
+    // !TODO: broken, but one day utf8
 }
 
 void VkInterface::windowCloseCallback() {
@@ -1675,6 +1657,9 @@ void initSDL(const int width, const int height, const bool fullscreen) {
     if (fullscreen) {
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
+
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+    SDL_SetHint(SDL_HINT_IME_SUPPORT_EXTENDED_TEXT, "1");
 
     window =
         SDL_CreateWindow("Plants Vs Zombies", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);

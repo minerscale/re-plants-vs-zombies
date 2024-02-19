@@ -290,7 +290,7 @@ VkImage::~VkImage() {
  *====================*/
 
 constexpr auto accessMaskMap =
-    const_generate_sparse_array<std::array<std::pair<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>>, 5>{
+    compiler::SparseArray<std::array<std::pair<VkImageLayout, std::pair<VkAccessFlags, VkPipelineStageFlags>>, 5>{
         {
          {VK_IMAGE_LAYOUT_UNDEFINED, {0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT}},
          {VK_IMAGE_LAYOUT_GENERAL,

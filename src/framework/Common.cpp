@@ -290,7 +290,7 @@ std::wstring Sexy::Trim(const std::wstring &theString) {
 bool Sexy::StringToInt(const std::string &theString, int *theIntVal) {
     *theIntVal = 0;
 
-    if (theString.length() == 0) return false;
+    if (theString.empty()) return false;
 
     int theRadix = 10;
     bool isNeg = false;

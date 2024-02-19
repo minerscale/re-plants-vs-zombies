@@ -172,36 +172,16 @@ LawnApp::~LawnApp() {
     delete mSoundSystem;
     delete mMusic;
 
-    if (mKonamiCheck) {
-        delete mKonamiCheck;
-    }
-    if (mMustacheCheck) {
-        delete mMustacheCheck;
-    }
-    if (mMoustacheCheck) {
-        delete mMoustacheCheck;
-    }
-    if (mSuperMowerCheck) {
-        delete mSuperMowerCheck;
-    }
-    if (mSuperMowerCheck2) {
-        delete mSuperMowerCheck2;
-    }
-    if (mFutureCheck) {
-        delete mFutureCheck;
-    }
-    if (mPinataCheck) {
-        delete mPinataCheck;
-    }
-    if (mDanceCheck) {
-        delete mDanceCheck;
-    }
-    if (mDaisyCheck) {
-        delete mDaisyCheck;
-    }
-    if (mSukhbirCheck) {
-        delete mSukhbirCheck;
-    }
+    delete mKonamiCheck;
+    delete mMustacheCheck;
+    delete mMoustacheCheck;
+    delete mSuperMowerCheck;
+    delete mSuperMowerCheck2;
+    delete mFutureCheck;
+    delete mPinataCheck;
+    delete mDanceCheck;
+    delete mDaisyCheck;
+    delete mSukhbirCheck;
 
     if (mGameSelector) {
         mWidgetManager->RemoveWidget(mGameSelector);
