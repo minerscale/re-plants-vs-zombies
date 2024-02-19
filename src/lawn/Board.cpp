@@ -2786,6 +2786,8 @@ void Board::UpdateToolTip() {
         return;
     }
 
+    if (mWidgetManager == nullptr) return;
+
     const int aMouseX = mWidgetManager->mLastMouseX - mX;
     const int aMouseY = mWidgetManager->mLastMouseY - mY;
 

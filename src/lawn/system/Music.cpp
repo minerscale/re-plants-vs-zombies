@@ -219,29 +219,25 @@ void Music::MusicTitleScreenInit() {
 
 // 0x45A980
 void Music::MusicInit() {
-#ifdef _DEBUG
     const int aNumLoadingTasks = mApp->mCompletedLoadingThreadTasks + GetNumLoadingTasks();
-#endif
 
     LoadSong(MusicFile::MUSIC_FILE_DRUMS, "sounds/mainmusic.mo3");
     mApp->mCompletedLoadingThreadTasks += /*原版*/ 3500; ///*内测版*/800;
     LoadSong(MusicFile::MUSIC_FILE_HIHATS, "sounds/mainmusic_hihats.mo3");
     mApp->mCompletedLoadingThreadTasks += /*原版*/ 3500; ///*内测版*/800;
 
-#ifdef _DEBUG
     LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
     mApp->mCompletedLoadingThreadTasks += /*原版*/ 3500; ///*内测版*/800;
     if (mApp->mCompletedLoadingThreadTasks != aNumLoadingTasks)
-        printf(
-            "warning:  Wrong number of tasks loaded. Supposed to be %d, was %d\n", aNumLoadingTasks,
+        TodTraceAndLog(
+            "warning:  Wrong number of tasks loaded. Supposed to be {}, was {}", aNumLoadingTasks,
             mApp->mCompletedLoadingThreadTasks
         );
-#endif
 }
 
 // 0x45AAC0
 void Music::MusicCreditScreenInit() {
-    BassMusicInterface *aBass = (BassMusicInterface *)mApp->mMusicInterface;
+    auto *aBass = static_cast<BassMusicInterface *>(mApp->mMusicInterface);
     if (aBass->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) ==
         aBass->mMusicMap.end()) // 如果尚未加载
         LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/ZombiesOnYourLawn.ogg");
@@ -436,9 +432,9 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
     }
 }
 
-unsigned long Music::GetMusicOrder(MusicFile theMusicFile) const {
+unsigned long Music::GetMusicOrder(const MusicFile theMusicFile) const {
     TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
-    return dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);
+    return dynamic_cast<BassMusicInterface *>(mApp->mMusicInterface)->GetMusicOrder(theMusicFile);
 }
 
 // 0x45B1B0
@@ -666,7 +662,7 @@ void Music::StartGameMusic() {
 void Music::GameMusicPause(bool thePause) {
     if (thePause) {
         if (!mPaused && mCurMusicTune != MusicTune::MUSIC_TUNE_NONE) {
-            const auto aBass = static_cast<BassMusicInterface *>(mMusicInterface);
+            const auto aBass = dynamic_cast<BassMusicInterface *>(mMusicInterface);
             const auto anItr = aBass->mMusicMap.find(mCurMusicFileMain);
             TOD_ASSERT(anItr != aBass->mMusicMap.end());
             const BassMusicInfo *aMusicInfo = &anItr->second;

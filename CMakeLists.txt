@@ -56,7 +56,7 @@ else ()
     )
 
     if (NOT ANDROID)
-            list(APPEND universal_compiler_flags "-march=native")
+        list(APPEND universal_compiler_flags "-march=native")
     endif ()
 
 
