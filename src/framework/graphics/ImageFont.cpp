@@ -1185,7 +1185,7 @@ int ImageFont::RenderStringToCommandPool(
             };
 
             const int anOrderIdx =
-                std::min(std::max(layerOrderOffset + aBaseFontLayer.mBaseOrder + aBaseCharData.mOrder + 128, 0), 255);
+                256 * (aBaseFontLayer.mBaseOrder + aBaseCharData.mOrder + 256 * layerOrderOffset) + idx;
 
             aRenderCommandPool.emplace_back(std::tuple<int, RenderCommand>(anOrderIdx, aRenderCommand));
 
@@ -1242,7 +1242,7 @@ void ImageFont::DrawStringEx(
 
     const int anOrigMode = g->GetDrawMode();
 
-    std::sort(aRenderCommandPool.begin(), aRenderCommandPool.end(), [](const auto &a, const auto &b) {
+    std::ranges::stable_sort(aRenderCommandPool, [](const auto &a, const auto &b) {
         return std::get<0>(a) < std::get<0>(b);
     });
 

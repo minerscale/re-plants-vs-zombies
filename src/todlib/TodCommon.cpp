@@ -396,7 +396,9 @@ void TodDrawStringViewMatrix(
     aFont->Prepare();
     aFont->RenderStringToCommandPool(aRenderCommandPool, 0, 0, theString, theColor, nullptr);
 
-    std::ranges::sort(aRenderCommandPool, [](const auto &a, const auto &b) { return std::get<0>(a) < std::get<0>(b); });
+    std::ranges::stable_sort(aRenderCommandPool, [](const auto &a, const auto &b) {
+        return std::get<0>(a) < std::get<0>(b);
+    });
 
     for (auto &[idx, cmd] : aRenderCommandPool) {
         const int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
