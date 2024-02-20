@@ -15,6 +15,8 @@
 #include "graphics/ImageFont.h"
 // #include "misc/PerfTimer.h"
 #include "misc/SexyMatrix.h"
+
+#include "simdutf.h"
 // #include "graphics/DDInterface.h"
 // #include "graphics/D3DInterface.h"
 
@@ -383,112 +385,21 @@ void TodDrawImageCelScaled(
     g->DrawImage(theImageStrip, aSrcRect, aDestRect);
 }
 
-/*
-static const int POOL_SIZE = 4096;
-static RenderCommand gRenderCommandPool[POOL_SIZE];
-static RenderCommand* gRenderTail[256];
-static RenderCommand* gRenderHead[256];
-*/
-// 0x511E50
-void TodDrawStringMatrix(
-    Graphics *g, const _Font *theFont, const SexyMatrix3 &theMatrix, const SexyString &theString, const Color &theColor
+void TodDrawStringViewMatrix(
+    Graphics *g, _Font *theFont, const SexyMatrix3 &theMatrix, const std::u32string_view &theString,
+    const Color &theColor
 ) {
-    std::multimap<int, RenderCommand> aRenderCommandPool;
-    SexyString aFinalString = TodStringTranslate(theString);
-
-    /*
-    memset(gRenderTail, 0, sizeof(gRenderTail));
-    memset(gRenderHead, 0, sizeof(gRenderHead));*/
-    auto aFont = (ImageFont *)theFont;
+    static std::vector<std::tuple<int, RenderCommand>> aRenderCommandPool;
+    const auto aFont = dynamic_cast<ImageFont *>(theFont);
     if (!aFont->mFontData->mInitialized) return;
 
     aFont->Prepare();
-    int aCurXPos = 0;
-    for (int aCharNum = 0; aCharNum < static_cast<int>(aFinalString.size()); aCharNum++) {
-        SexyChar aChar = aFont->GetMappedChar(aFinalString[aCharNum]);
-        SexyChar aNextChar = '\0';
-        if (aCharNum < static_cast<int>(aFinalString.size()) - 1) {
-            aNextChar = aFont->GetMappedChar(aFinalString[aCharNum + 1]);
-        }
+    aFont->RenderStringToCommandPool(aRenderCommandPool, 0, 0, theString, theColor, nullptr);
 
-        int aMaxXPos = aCurXPos;
-        for (auto aKernItr = aFont->mActiveLayerList.begin(); aKernItr != aFont->mActiveLayerList.end(); ++aKernItr) {
-            FontLayer *aLayer = aKernItr->mBaseFontLayer;
-            CharData *aCharData = aLayer->GetCharData(aChar);
-            double aScale = aFont->mScale;
-            int aLayerPointSize = aLayer->mPointSize;
-            if (aLayerPointSize) {
-                aScale *= static_cast<float>(aFont->mPointSize) / static_cast<float>(aLayerPointSize);
-            }
+    std::ranges::sort(aRenderCommandPool, [](const auto &a, const auto &b) { return std::get<0>(a) < std::get<0>(b); });
 
-            int anImageX, anImageY, aCharWidth, aSpacing;
-            if (aScale == 1.0f) {
-                anImageX = aCharData->mOffset.mX + aLayer->mOffset.mX + aCurXPos;
-                anImageY = aCharData->mOffset.mY + aLayer->mOffset.mY - aLayer->mAscent;
-                aCharWidth = aCharData->mWidth;
-
-                if (aNextChar == '\0') {
-                    aSpacing = 0;
-                } else {
-                    aSpacing = aLayer->mSpacing;
-
-                    // aSpacing += aCharData->mKerningOffsets[aNextChar];
-                    auto anItr = aCharData->mKerningOffsets.find(aNextChar);
-                    if (anItr != aCharData->mKerningOffsets.end()) {
-                        aSpacing += anItr->second;
-                    }
-                }
-            } else {
-                anImageX = aCurXPos + floor((aCharData->mOffset.mX + aLayer->mOffset.mX) * aScale);
-                anImageY = -floor((aLayer->mAscent - aLayer->mOffset.mY - aCharData->mOffset.mY) * aScale);
-                aCharWidth = aCharData->mWidth * aScale;
-
-                if (aNextChar == '\0') {
-                    aSpacing = 0;
-                } else {
-                    aSpacing = aLayer->mSpacing;
-
-                    // aSpacing += aCharData->mKerningOffsets[aNextChar] * aScale;
-                    auto anItr = aCharData->mKerningOffsets.find(aNextChar);
-                    if (anItr != aCharData->mKerningOffsets.end()) {
-                        aSpacing += anItr->second * aScale;
-                    }
-                }
-            }
-
-            Color aColor;
-            aColor.mRed = std::min(aLayer->mColorAdd.mRed + theColor.mRed * aLayer->mColorMult.mRed / 255, 255);
-            aColor.mGreen = std::min(aLayer->mColorAdd.mGreen + theColor.mGreen * aLayer->mColorMult.mGreen / 255, 255);
-            aColor.mBlue = std::min(aLayer->mColorAdd.mBlue + theColor.mBlue * aLayer->mColorMult.mBlue / 255, 255);
-            aColor.mAlpha = std::min(aLayer->mColorAdd.mAlpha + theColor.mAlpha * aLayer->mColorMult.mAlpha / 255, 255);
-            int anOrder = aCharData->mOrder + aLayer->mBaseOrder;
-
-            int anOrderIdx = std::min(std::max(anOrder + 128, 0), 255);
-            aRenderCommandPool.insert(std::pair<int, RenderCommand>(
-                anOrderIdx,
-                {
-                    .mImage = aKernItr->mScaledImage,
-                    .mDest = {anImageX, anImageY},
-                    .mSrc = aKernItr->mScaledCharImageRects.find(aChar)->second,
-                    .mMode = aLayer->mDrawMode,
-                    .mColor = aColor,
-                    .mUseAlphaCorrection = aLayer->mUseAlphaCorrection,
-                    .mNext = nullptr
-            }
-            ));
-
-            if (aMaxXPos < aCurXPos + aSpacing + aCharWidth) {
-                aMaxXPos = aCurXPos + aSpacing + aCharWidth;
-            }
-        }
-
-        aCurXPos = aMaxXPos;
-    }
-
-    for (auto &val : aRenderCommandPool) {
-        RenderCommand &cmd = val.second;
-
-        int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
+    for (auto &[idx, cmd] : aRenderCommandPool) {
+        const int aDrawMode = cmd.mMode != -1 ? cmd.mMode : g->GetDrawMode();
         if (cmd.mImage) {
             SexyTransform2D aTransform;
             float aPosX = cmd.mSrc.mWidth * 0.5f + cmd.mDest[0];
@@ -498,6 +409,23 @@ void TodDrawStringMatrix(
             TodBltMatrix(g, cmd.mImage, aTransform, g->mClipRect, cmd.mColor, aDrawMode, cmd.mSrc);
         }
     }
+
+    aRenderCommandPool.clear();
+}
+
+// 0x511E50
+void TodDrawStringMatrix(
+    Graphics *g, _Font *theFont, const SexyMatrix3 &theMatrix, const SexyString &theString, const Color &theColor
+) {
+    SexyString aFinalString = TodStringTranslate(theString);
+
+    const auto aExpectedSize = simdutf::utf32_length_from_utf8(theString.c_str(), theString.length());
+    const auto aUTF32String = std::unique_ptr<char32_t[]>(new char32_t[aExpectedSize]);
+    const auto aUTF32StringLength =
+        simdutf::convert_utf8_to_utf32(theString.c_str(), theString.length(), aUTF32String.get());
+    const auto aU32StringView = std::u32string_view(aUTF32String.get(), aUTF32StringLength);
+
+    TodDrawStringViewMatrix(g, theFont, theMatrix, aU32StringView, theColor);
 }
 
 // 0x512570

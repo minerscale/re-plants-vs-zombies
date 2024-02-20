@@ -243,6 +243,11 @@ public:
         int *theWidth
     );
 
+    virtual int RenderStringToCommandPool(
+        std::vector<std::tuple<int, RenderCommand>> &aRenderCommandPool, int theX, int theY,
+        const std::u32string_view &theString, const Color &theColor, RectList *theDrawnAreas
+    );
+
 public:
     ImageFont(SexyAppBase *theSexyApp, const std::string &theFontDescFileName);
     ImageFont(Image *theFontImage); // for constructing your own image font without a file descriptor

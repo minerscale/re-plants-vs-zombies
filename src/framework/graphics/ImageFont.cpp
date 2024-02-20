@@ -1111,41 +1111,16 @@ int ImageFont::CharWidthKern(SexyChar theChar, SexyChar thePrevChar) {
 
 int ImageFont::CharWidth(SexyChar theChar) { return CharWidthKern(theChar, 0); }
 
-// CritSect gRenderCritSec;
-/*
-static const int POOL_SIZE = 4096;
-static RenderCommand gRenderCommandPool[POOL_SIZE];
-static RenderCommand* gRenderTail[256];
-static RenderCommand* gRenderHead[256];
-*/
-void ImageFont::DrawStringEx(
-    Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, RectList *theDrawnAreas,
-    int *theWidth
+int ImageFont::RenderStringToCommandPool(
+    std::vector<std::tuple<int, RenderCommand>> &aRenderCommandPool, int theX, int theY,
+    const std::u32string_view &theString, const Color &theColor, RectList *theDrawnAreas
 ) {
-    // std::multimap<int, RenderCommand>aRenderCommandPool;
-    static std::array<std::vector<RenderCommand>, 256> aRenderCommandPool{};
-    if (theDrawnAreas != nullptr) theDrawnAreas->clear();
-
-    if (!mFontData->mInitialized) {
-        if (theWidth != nullptr) *theWidth = 0;
-        return;
-    }
-
-    Prepare();
-
-    const bool colorizeImages = g->GetColorizeImages();
-    g->SetColorizeImages(true);
-
     int aCurXPos = theX;
 
-    auto aExpectedSize = simdutf::utf32_length_from_utf8(theString.c_str(), theString.length());
-    auto aUTF32String = static_cast<char32_t *>(alloca(aExpectedSize * sizeof(char32_t)));
-    auto aUTF32StringLength = simdutf::convert_utf8_to_utf32(theString.c_str(), theString.length(), aUTF32String);
-
-    for (size_t idx = 0; idx < aUTF32StringLength; idx++) {
-        char32_t aChar = GetMappedChar(aUTF32String[idx]);
+    for (size_t idx = 0; idx < theString.length(); idx++) {
+        char32_t aChar = GetMappedChar(theString[idx]);
         char32_t aNextChar = 0;
-        if (idx + 1 < theString.length()) aNextChar = GetMappedChar(aUTF32String[idx + 1]);
+        if (idx + 1 < theString.length()) aNextChar = GetMappedChar(theString[idx + 1]);
         int aMaxXPos = aCurXPos;
 
         int layerOrderOffset = 0;
@@ -1212,8 +1187,7 @@ void ImageFont::DrawStringEx(
             const int anOrderIdx =
                 std::min(std::max(layerOrderOffset + aBaseFontLayer.mBaseOrder + aBaseCharData.mOrder + 128, 0), 255);
 
-            aRenderCommandPool[anOrderIdx].push_back(aRenderCommand);
-            // aRenderCommandPool.insert(std::pair<int, RenderCommand>(anOrderIdx, aRenderCommand));
+            aRenderCommandPool.emplace_back(std::tuple<int, RenderCommand>(anOrderIdx, aRenderCommand));
 
             if (theDrawnAreas != nullptr) {
                 Rect aDestRect(
@@ -1234,24 +1208,54 @@ void ImageFont::DrawStringEx(
         aCurXPos = aMaxXPos;
     }
 
-    if (theWidth != nullptr) *theWidth = aCurXPos - theX;
+    return aCurXPos - theX;
+}
+
+void ImageFont::DrawStringEx(
+    Graphics *g, int theX, int theY, const SexyString &theString, const Color &theColor, RectList *theDrawnAreas,
+    int *theWidth
+) {
+    static std::vector<std::tuple<int, RenderCommand>> aRenderCommandPool;
+    if (theDrawnAreas != nullptr) theDrawnAreas->clear();
+
+    if (!mFontData->mInitialized) {
+        if (theWidth != nullptr) *theWidth = 0;
+        return;
+    }
+
+    Prepare();
+
+    const bool colorizeImages = g->GetColorizeImages();
+    g->SetColorizeImages(true);
+
+    auto aExpectedSize = simdutf::utf32_length_from_utf8(theString.c_str(), theString.length());
+    auto aUTF32String = std::unique_ptr<char32_t[]>(new char32_t[aExpectedSize]);
+    auto aUTF32StringLength = simdutf::convert_utf8_to_utf32(theString.c_str(), theString.length(), aUTF32String.get());
+    const auto aUTF32StringView = std::u32string_view(aUTF32String.get(), aUTF32StringLength);
+
+    const auto aRenderWidth =
+        RenderStringToCommandPool(aRenderCommandPool, theX, theY, aUTF32StringView, theColor, theDrawnAreas);
+
+    if (theWidth != nullptr) *theWidth = aRenderWidth;
 
     const Color anOrigColor = g->GetColor();
 
     const int anOrigMode = g->GetDrawMode();
-    for (auto &aRenderVec : aRenderCommandPool) {
-        for (auto &cmd : aRenderVec) {
-            if (cmd.mMode != -1) g->SetDrawMode(cmd.mMode);
-            g->SetColor(Color(cmd.mColor));
-            if (cmd.mImage != nullptr) g->DrawImage(cmd.mImage, cmd.mDest[0], cmd.mDest[1], cmd.mSrc);
-            if (cmd.mMode != -1) g->SetDrawMode(anOrigMode);
-        }
 
-        aRenderVec.clear();
+    std::sort(aRenderCommandPool.begin(), aRenderCommandPool.end(), [](const auto &a, const auto &b) {
+        return std::get<0>(a) < std::get<0>(b);
+    });
+
+    for (auto &[idx, cmd] : aRenderCommandPool) {
+        if (cmd.mMode != -1) g->SetDrawMode(cmd.mMode);
+        g->SetColor(Color(cmd.mColor));
+        if (cmd.mImage != nullptr) g->DrawImage(cmd.mImage, cmd.mDest[0], cmd.mDest[1], cmd.mSrc);
+        if (cmd.mMode != -1) g->SetDrawMode(anOrigMode);
     }
 
     g->SetColor(anOrigColor);
     g->SetColorizeImages(colorizeImages);
+    aRenderCommandPool.clear();
 }
 
 void ImageFont::DrawString(

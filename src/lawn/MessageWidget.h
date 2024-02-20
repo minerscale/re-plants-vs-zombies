@@ -39,8 +39,7 @@ public:
     /*inline*/ void ClearLabel();
     inline bool IsBeingDisplayed() { return mDuration != 0; }
     /*inline*/ _Font *GetFont();
-    void
-    DrawReanimatedText(Sexy::Graphics *g, const Sexy::_Font *theFont, const Sexy::Color &theColor, float thePosY) const;
+    void DrawReanimatedText(Sexy::Graphics *g, Sexy::_Font *theFont, const Sexy::Color &theColor, float thePosY) const;
     void LayoutReanimText();
 };
 

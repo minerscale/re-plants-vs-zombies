@@ -141,8 +141,14 @@ void TodDrawString(
     Graphics *g, const SexyString &theText, int thePosX, int thePosY, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification
 );
+
+void TodDrawStringViewMatrix(
+    Graphics *g, _Font *theFont, const SexyMatrix3 &theMatrix, const std::u32string_view &theString,
+    const Color &theColor
+);
+
 void TodDrawStringMatrix(
-    Graphics *g, const _Font *theFont, const SexyMatrix3 &theMatrix, const SexyString &theString, const Color &theColor
+    Graphics *g, _Font *theFont, const SexyMatrix3 &theMatrix, const SexyString &theString, const Color &theColor
 );
 void TodDrawImageScaledF(Graphics *g, Image *theImage, float thePosX, float thePosY, float theScaleX, float theScaleY);
 void TodDrawImageCenterScaledF(

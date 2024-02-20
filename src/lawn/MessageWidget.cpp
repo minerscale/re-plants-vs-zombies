@@ -8,6 +8,8 @@
 #include "todlib/TodCommon.h"
 #include "todlib/TodStringFile.h"
 
+#include "simdutf.h"
+
 //(0x4081F1)
 MessageWidget::MessageWidget(LawnApp *theApp) {
     mApp = theApp;
@@ -191,9 +193,13 @@ void MessageWidget::Update() {
 }
 
 // 0x459710
-void MessageWidget::DrawReanimatedText(Graphics *g, const _Font *theFont, const Color &theColor, float thePosY) const {
-    const int aLabelLen = strlen(mLabel);
-    for (int aPos = 0; aPos < aLabelLen; aPos++) {
+void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color &theColor, float thePosY) const {
+    const auto aLabelLen = std::strlen(mLabel);
+    const auto aExpectedSize = simdutf::utf32_length_from_utf8(mLabel, aLabelLen);
+    const auto aUTF32String = std::unique_ptr<char32_t[]>(new char32_t[aExpectedSize]);
+    const auto aUTF32StringLength = simdutf::convert_utf8_to_utf32(mLabel, aLabelLen, aUTF32String.get());
+
+    for (int aPos = 0; aPos < aUTF32StringLength; aPos++) {
         const Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {
             break; // 当不存在文本动画时，跳出循环，直接返回
@@ -218,9 +224,10 @@ void MessageWidget::DrawReanimatedText(Graphics *g, const _Font *theFont, const 
 
         SexyMatrix3 aMatrix;
         Reanimation::MatrixFromTransform(aTransform, aMatrix);
-        SexyString aLetter;
-        aLetter.append(1, mLabel[aPos]);
-        TodDrawStringMatrix(g, theFont, aMatrix, aLetter, aFinalColor);
+        std::u32string aLetter;
+        aLetter.append(1, aUTF32String[aPos]);
+        // !TODO USE BATCH DRAWING
+        TodDrawStringViewMatrix(g, theFont, aMatrix, aLetter, aFinalColor);
     }
 }
 
