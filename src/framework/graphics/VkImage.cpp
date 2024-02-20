@@ -338,12 +338,15 @@ void transitionImageLayouts(
 
         image.first->layout = image.second;
 
-        barriers.push_back(barrier);
+        barriers.emplace_back(barrier);
     }
 
     vkCmdPipelineBarrier(
         commandBuffer, srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, barriers.size(), barriers.data()
     );
+
+    // Not strictly necessary but I'm feeling extra superstitious right now.
+    barriers.clear();
 }
 
 void VkImage::TransitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout) {
