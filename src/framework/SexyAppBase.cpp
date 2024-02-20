@@ -237,7 +237,11 @@ SexyAppBase::SexyAppBase() {
     mMuteCount = 0;
     mAutoMuteCount = 0;
     mDemoMute = false;
-    mMuteOnLostFocus = true;
+
+    // Fight me, this feature sucks dicks.
+    // I want there to be sound when I defocus my window.
+    // I can mute it if I want it muted. -- Aaron.
+    mMuteOnLostFocus = false;
     mCurHandleNum = 0;
     mFPSTime = std::chrono::milliseconds(0);
     mFPSStartTick = std::chrono::high_resolution_clock::now();
