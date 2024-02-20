@@ -1840,12 +1840,7 @@ bool LawnApp::IsSquirrelLevel() const { return mBoard && mGameMode == GameMode::
 // 0x4537D0
 bool LawnApp::IsIZombieLevel() const {
     if (mBoard == nullptr) return false;
-
-    return mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_2 ||
-           mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_3 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_4 ||
-           mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_5 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_6 ||
-           mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_7 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_8 ||
-           mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_9 || mGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
+    return mGameMode >= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1 && mGameMode <= GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_ENDLESS;
 }
 
 // 0x453820

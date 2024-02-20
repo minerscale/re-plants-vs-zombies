@@ -8591,12 +8591,14 @@ void Zombie::EnableMustache(bool theEnableMustache) {
 
     if (theEnableMustache) {
         aBodyReanim->AssignRenderGroupToPrefix("Zombie_mustache", RENDER_GROUP_NORMAL);
-
+        Image *aImage = nullptr;
         switch (RandRangeInt(1, 3)) {
-        case 1: aBodyReanim->SetImageOverride("Zombie_mustache", nullptr); break;
-        case 2: aBodyReanim->SetImageOverride("Zombie_mustache", IMAGE_REANIM_ZOMBIE_MUSTACHE2); break;
-        case 3: aBodyReanim->SetImageOverride("Zombie_mustache", IMAGE_REANIM_ZOMBIE_MUSTACHE3); break;
+        case 1:  break;
+        case 2:  aImage = IMAGE_REANIM_ZOMBIE_MUSTACHE2; break;
+        case 3:  aImage = IMAGE_REANIM_ZOMBIE_MUSTACHE3; break;
+        default: TOD_ASSERT(); break;
         }
+        aBodyReanim->SetImageOverride("Zombie_mustache", aImage);
     } else {
         aBodyReanim->AssignRenderGroupToPrefix("Zombie_mustache", RENDER_GROUP_HIDDEN);
     }
