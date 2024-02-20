@@ -199,7 +199,7 @@ void MessageWidget::DrawReanimatedText(Graphics *g, _Font *theFont, const Color 
     const auto aUTF32String = std::unique_ptr<char32_t[]>(new char32_t[aExpectedSize]);
     const auto aUTF32StringLength = simdutf::convert_utf8_to_utf32(mLabel, aLabelLen, aUTF32String.get());
 
-    for (int aPos = 0; aPos < aUTF32StringLength; aPos++) {
+    for (size_t aPos = 0; aPos < aUTF32StringLength; aPos++) {
         const Reanimation *aTextReanim = mApp->ReanimationTryToGet(mTextReanimID[aPos]);
         if (aTextReanim == nullptr) {
             break; // 当不存在文本动画时，跳出循环，直接返回

@@ -64,7 +64,7 @@ endmacro()
 FetchGit_Declare(https://github.com/madler/zlib/tree/v1.3.1)
 FetchContent_MakeAvailable(zlib)
 
-FetchGit_Declare(https://github.com/simdutf/simdutf/tree/0df857246627616ef912a784c21d2fbf73820446)
+FetchGit_Declare(https://github.com/simdutf/simdutf)
 set(SIMDUTF_TESTS OFF CACHE BOOL "" FORCE)
 set(SIMDUTF_TOOLS OFF CACHE BOOL "" FORCE)
 set(SIMDUTF_ICONV OFF CACHE BOOL "" FORCE)
