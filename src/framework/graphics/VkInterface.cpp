@@ -1309,11 +1309,27 @@ void pickPhysicalDevice() {
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    [[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, [[maybe_unused]] void *pUserData
 ) {
-    fmt::println("\033[0;31m{}\033[0m\n", pCallbackData->pMessage);
+    std::string severity;
+    switch (messageSeverity) {
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: severity = "\033[0;37mVERBOSE\033[0m"; break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:    severity = "\033[0;36mINFO\033[0m"; break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: severity = "\033[0;33mWARNING\033[0m"; break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:   severity = "\033[0;31mERROR\033[0m"; break;
+    default:                                              severity = "\033[0;37mUNKNOWN\033[0m"; break;
+    }
+
+    std::string type;
+    switch (messageType) {
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:     type = "General"; break;
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:  type = "Validation"; break;
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT: type = "Performance"; break;
+    default:                                              type = "Unknown"; break;
+    }
+
+    fmt::println("{} [{}]: {}", severity, type, pCallbackData->pMessage);
 
     return VK_FALSE;
 }
