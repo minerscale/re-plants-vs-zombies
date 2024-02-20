@@ -1289,16 +1289,17 @@ void pickPhysicalDevice() {
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-    // Use an ordered map to automatically sort candidates by increasing score
-    std::multimap<int, VkPhysicalDevice> candidates;
+    std::tuple<int, VkPhysicalDevice> candidate;
     for (const auto &device : devices) {
         int score = rateDeviceSuitability(device);
-        candidates.insert(std::make_pair(score, device));
+        if (score > std::get<0>(candidate)) {
+            candidate = {score, device};
+        }
     }
 
     // Check if the best candidate is suitable at all
-    if (candidates.rbegin()->first > 0) {
-        physicalDevice = candidates.rbegin()->second;
+    if (std::get<0>(candidate) > 0) {
+        physicalDevice = std::get<1>(candidate);
         vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
     } else {
         throw std::runtime_error("failed to find a suitable GPU!");
