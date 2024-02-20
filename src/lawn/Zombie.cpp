@@ -7941,7 +7941,7 @@ void Zombie::BossSpawnContact() {
             aZombieTypeCount--;
         }
 
-        aZombieType = static_cast<ZombieType>(TodPickFromArray((intptr_t *)gBossZombieList, aZombieTypeCount));
+        aZombieType = TodPickFromArray(gBossZombieList, aZombieTypeCount);
     }
 
     Zombie *aZombie = mBoard->AddZombieInRow(aZombieType, mTargetRow, 0);
