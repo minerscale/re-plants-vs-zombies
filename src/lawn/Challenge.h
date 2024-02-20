@@ -78,12 +78,11 @@ public:
     SeedType
     BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoardState *theBoardState, int theAllowMatches) const;
     static int BeghouledBoardHasMatch(const BeghouledBoardState *theBoardState);
-    /*inline*/
-    static SeedType BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
+    /*inline*/ static SeedType
+    BeghouledGetPlantAt(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     static int BeghouledVerticalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
     static int BeghouledHorizontalMatchLength(int theGridX, int theGridY, const BeghouledBoardState *theBoardState);
-    /*inline*/
-    void BeghouledDragStart(int x, int y);
+    /*inline*/ void BeghouledDragStart(int x, int y);
     void BeghouledDragUpdate(int x, int y);
     inline void BeghouledDragCancel() { mBeghouledMouseCapture = false; }
     int MouseMove(int x, int y);
@@ -102,8 +101,7 @@ public:
     void DrawBackdrop(Graphics *g);
     void DrawArtChallenge(Graphics *g);
     void CheckForCompleteArtChallenge(int theGridX, int theGridY);
-    /*inline*/
-    SeedType GetArtChallengeSeed(int theGridX, int theGridY);
+    /*inline*/ SeedType GetArtChallengeSeed(int theGridX, int theGridY);
     void PlantAdded(const Plant *thePlant);
     PlantingReason CanPlantAt(int theGridX, int theGridY, SeedType theSeedType);
     void DrawBeghouled(Graphics *g);
@@ -111,11 +109,9 @@ public:
     int BeghouledCheckForPossibleMoves(BeghouledBoardState *theBoardState);
     void BeghouledCheckStuckState();
     void InitZombieWavesSurvival();
-    /*inline*/
-    void InitZombieWavesFromList(const ZombieType *theZombieList, int theListLength) const;
+    /*inline*/ void InitZombieWavesFromList(const ZombieType *theZombieList, int theListLength) const;
     void InitZombieWaves();
-    /*inline*/
-    Rect SlotMachineGetHandleRect() const;
+    /*inline*/ Rect SlotMachineGetHandleRect() const;
     void UpdateSlotMachine();
     void DrawSlotMachine(Graphics *g);
     int UpdateToolTip(int theX, int theY);
@@ -133,8 +129,7 @@ public:
     void BeghouledScore(int theGridX, int theGridY, int theNumPlants, int theIsHorizontal);
     void DrawStormFlash(Graphics *g, int theTime, int theMaxAmount);
     void UpdateRainingSeeds();
-    /*inline*/
-    void PlayBossEnter();
+    /*inline*/ void PlayBossEnter();
     void UpdateConveyorBelt();
     void PortalStart();
     void UpdatePortalCombat();
@@ -149,16 +144,14 @@ public:
     GridItem *GetPortalToLeft(int theGridX, int theGridY);
     void BeghouledPacketClicked(const SeedPacket *theSeedPacket);
     void BeghouledShuffle();
-    /*inline*/
-    int BeghouledCanClearCrater();
+    /*inline*/ int BeghouledCanClearCrater();
     void BeghouledUpdateCraters();
     Zombie *ZombiquariumSpawnSnorkle();
     void ZombiquariumPacketClicked(const SeedPacket *theSeedPacket);
     void ZombiquariumMouseDown(int x, int y);
     void ZombiquariumDropBrain(int x, int y);
     void ZombiquariumUpdate();
-    /*inline*/
-    void ShovelAddWallnuts();
+    /*inline*/ void ShovelAddWallnuts();
     void ScaryPotterPlacePot(
         ScaryPotType theScaryPotType, ZombieType theZombieType, SeedType theSeedType, int theCount,
         const TodWeightedGridArray *theGridArray, int theGridArrayCount
@@ -170,8 +163,7 @@ public:
     int ScaryPotterIsCompleted();
     void ScaryPotterChangePotType(GridItemState thePotType, int theCount);
     void ScaryPotterPopulate();
-    /*inline*/
-    void ScaryPotterDontPlaceInCol(int theCol, TodWeightedGridArray *theGridArray, int theGridArrayCount);
+    /*inline*/ void ScaryPotterDontPlaceInCol(int theCol, TodWeightedGridArray *theGridArray, int theGridArrayCount);
     void ScaryPotterFillColumnWithPlant(
         int theCol, SeedType theSeedType, TodWeightedGridArray *theGridArray, int theGridArrayCount
     );
@@ -185,15 +177,13 @@ public:
     void IZombieUpdate();
     void IZombieDrawPlant(Graphics *g, Plant *thePlant);
     void IZombieSetPlantFilterEffect(const Plant *thePlant, FilterEffect theFilterEffect);
-    /*inline*/
-    int ScaryPotterCountSunInPot(const GridItem *theScaryPot);
+    /*inline*/ int ScaryPotterCountSunInPot(const GridItem *theScaryPot);
     int ScaryPotterCountPots();
     void IZombieInitLevel();
     void DrawRain(Graphics *g);
     void DrawWeather(Graphics *g);
     void SquirrelUpdate();
-    /*inline*/
-    int SquirrelCountUncaught();
+    /*inline*/ int SquirrelCountUncaught();
     void SquirrelStart();
     void SquirrelFound(GridItem *theSquirrel);
     void SquirrelPeek(GridItem *theSquirrel);
@@ -203,8 +193,7 @@ public:
     void UpdateRain();
     int IZombieEatBrain(Zombie *theZombie);
     GridItem *IZombieGetBrainTarget(Zombie *theZombie);
-    /*inline*/
-    void IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, int theGridY = -1);
+    /*inline*/ void IZombiePlacePlantInSquare(SeedType theSeedType, int theGridX, int theGridY = -1);
     void AdvanceCrazyDaveDialog();
     void BeghouledFlashPlant(int theFlashX, int theFlashY, int theFromX, int theFromY, int theToX, int theToY) const;
     void BeghouledFlashAMatch();
@@ -221,37 +210,29 @@ public:
     void BeghouledTwistMouseDown(int x, int y);
     int BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState *theBoardState);
     int BeghouledTwistFlashMatch(BeghouledBoardState *theBoardState, int theGridX, int theGridY);
-    /*inline*/
-    void BeghouledCancelMatchFlashing();
+    /*inline*/ void BeghouledCancelMatchFlashing();
     void BeghouledStartFalling(ChallengeState theState);
     void BeghouledFillHoles(BeghouledBoardState *theBoardState, int theAllowMatches) const;
-    /*inline*/
-    void BeghouledMakeStartBoard();
+    /*inline*/ void BeghouledMakeStartBoard();
     void
     BeghouledCreatePlants(const BeghouledBoardState *theOldBoardState, const BeghouledBoardState *theNewBoardState);
     void PuzzlePhaseComplete(int theGridX, int theGridY);
-    /*inline*/
-    int PuzzleIsAwardStage();
+    /*inline*/ int PuzzleIsAwardStage();
     void IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int theGridY) const;
     void WhackAZombieUpdate() const;
     void LastStandCompletedStage();
     void TreeOfWisdomUpdate();
     void TreeOfWisdomFertilize();
     void TreeOfWisdomInit();
-    /*inline*/
-    int TreeOfWisdomMouseOn(int theX, int theY);
-    /*inline*/
-    int TreeOfWisdomGetSize();
+    /*inline*/ int TreeOfWisdomMouseOn(int theX, int theY);
+    /*inline*/ int TreeOfWisdomGetSize();
     void TreeOfWisdomDraw(Graphics *g);
-    /*inline*/
-    void TreeOfWisdomNextGarden();
-    /*inline*/
-    void TreeOfWisdomToolUpdate(GridItem *theZenTool);
+    /*inline*/ void TreeOfWisdomNextGarden();
+    /*inline*/ void TreeOfWisdomToolUpdate(GridItem *theZenTool);
     void TreeOfWisdomOpenStore();
     void TreeOfWisdomLeave();
     void TreeOfWisdomGrow();
-    /*inline*/
-    void TreeOfWisdomTool(int theMouseX, int theMouseY);
+    /*inline*/ void TreeOfWisdomTool(int theMouseX, int theMouseY);
     int TreeOfWisdomHitTest(int theX, int theY, HitResult *theHitResult);
     void TreeOfWisdomBabble();
     void TreeOfWisdomGiveWisdom();

@@ -143,10 +143,8 @@ public:
     unsigned int mFoleyFlags;
 };
 
-/*inline*/
-void TodFoleyInitialize(FoleyParams *theFoleyParamArray, int theFoleyParamArraySize);
-/*inline*/
-void TodFoleyDispose();
+/*inline*/ void TodFoleyInitialize(FoleyParams *theFoleyParamArray, int theFoleyParamArraySize);
+/*inline*/ void TodFoleyDispose();
 FoleyParams *LookupFoley(FoleyType theFoleyType);
 
 extern int gFoleyParamArraySize;      //[0x6A9F04]
@@ -191,8 +189,7 @@ public:
     void GamePause(bool theEnteringPause);
     void PlayFoleyPitch(FoleyType theFoleyType, float thePitch);
     void CancelPausedFoley();
-    /*inline*/
-    void ApplyMusicVolume(const FoleyInstance *theFoleyInstance);
+    /*inline*/ void ApplyMusicVolume(const FoleyInstance *theFoleyInstance);
     void RehookupSoundWithMusicVolume();
 };
 

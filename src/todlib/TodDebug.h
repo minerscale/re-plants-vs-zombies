@@ -31,10 +31,8 @@ void TodAssertFailed(const char *theCondition, const char *theFile, int theLine,
 void TodErrorMessageBox(const char *theMessage, const char *theTitle);
 // long __stdcall	TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo);
 
-/*inline*/
-void *TodMalloc(int theSize);
-/*inline*/
-void TodFree(void *theBlock);
+/*inline*/ void *TodMalloc(int theSize);
+/*inline*/ void TodFree(void *theBlock);
 void TodAssertInitForApp();
 
 template <class T> inline bool TodAssertContains(std::initializer_list<T> List, T Val) {

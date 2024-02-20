@@ -521,9 +521,6 @@ bool XMLParser::NextElement(XMLElement *theElement) {
                                         aAttributeKey = XMLDecodeString(aAttributeKey);
                                         aAttributeValue = XMLDecodeString(aAttributeValue);
 
-                                        //										theElement->mAttributes[aAttributeKey] =
-                                        //aAttributeValue;
-
                                         AddAttribute(
                                             theElement, WStringToSexyString(aAttributeKey),
                                             WStringToSexyString(aAttributeValue)

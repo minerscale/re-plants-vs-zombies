@@ -50,18 +50,15 @@ public:
     void Update();
     void Draw(Graphics *g);
     void Collect();
-    /*inline*/
-    int GetSunValue() const;
+    /*inline*/ int GetSunValue() const;
     static /*inline*/ int GetCoinValue(CoinType theCoinType);
     void UpdateFade();
     void UpdateFall();
     void ScoreCoin();
     void UpdateCollected();
     Color GetColor();
-    /*inline*/
-    bool IsMoney() const;
-    /*inline*/
-    bool IsSun();
+    /*inline*/ bool IsMoney() const;
+    /*inline*/ bool IsSun();
     float GetSunScale() const;
     static inline bool IsOnGround() { return false; }
     SeedType GetFinalSeedPacketType();

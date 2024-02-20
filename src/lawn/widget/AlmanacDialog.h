@@ -55,8 +55,7 @@ public:
     void Draw(Graphics *g) override;
     static void GetSeedPosition(SeedType theSeedType, int &x, int &y);
     SeedType SeedHitTest(int x, int y) const;
-    /*inline*/
-    bool ZombieHasSilhouette(ZombieType theZombieType) const;
+    /*inline*/ bool ZombieHasSilhouette(ZombieType theZombieType) const;
     bool ZombieIsShown(ZombieType theZombieType) const;
     bool ZombieHasDescription(ZombieType theZombieType) const;
     static void GetZombiePosition(ZombieType theZombieType, int &x, int &y);
@@ -66,17 +65,13 @@ public:
     //	virtual void				KeyChar(char theChar);
 
     static ZombieType GetZombieType(int theIndex);
-    /*inline*/
-    void ShowPlant(SeedType theSeedType);
-    /*inline*/
-    void ShowZombie(ZombieType theZombieType);
+    /*inline*/ void ShowPlant(SeedType theSeedType);
+    /*inline*/ void ShowZombie(ZombieType theZombieType);
 };
 
 extern bool gZombieDefeated[NUM_ZOMBIE_TYPES];
 
-/*inline*/
-void AlmanacInitForPlayer();
-/*inline*/
-void AlmanacPlayerDefeatedZombie(ZombieType theZombieType);
+/*inline*/ void AlmanacInitForPlayer();
+/*inline*/ void AlmanacPlayerDefeatedZombie(ZombieType theZombieType);
 
 #endif

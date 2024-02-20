@@ -39,18 +39,14 @@ public:
 
     void ReanimAtlasCreate(const ReanimatorDefinition *theReanimDef);
     void ReanimAtlasDispose();
-    /*inline*/
-    void AddImage(Image *theImage);
-    /*inline*/
-    int FindImage(const Image *theImage);
+    /*inline*/ void AddImage(Image *theImage);
+    /*inline*/ int FindImage(const Image *theImage);
     bool ImageFits(int theImageCount, const Rect &rectTest, int theMaxWidth) const;
     bool ImageFindPlaceOnSide(
         ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth, bool theToRight
     ) const;
-    /*inline*/
-    bool ImageFindPlace(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
-    /*inline*/
-    bool PlaceAtlasImage(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    /*inline*/ bool ImageFindPlace(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
+    /*inline*/ bool PlaceAtlasImage(ReanimAtlasImage *theAtlasImageToPlace, int theImageCount, int theMaxWidth);
     int PickAtlasWidth() const;
     void ArrangeImages(int &theAtlasWidth, int &theAtlasHeight);
     ReanimAtlasImage *GetEncodedReanimAtlas(Image *theImage);

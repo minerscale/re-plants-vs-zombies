@@ -113,12 +113,10 @@ public:
     void AddTrophySparkle();
     void ClickedAdventure();
     void UpdateTooltip() const;
-    /*inline*/
-    bool ShouldDoZenTuturialBeforeAdventure();
+    /*inline*/ bool ShouldDoZenTuturialBeforeAdventure();
     void AddPreviewProfiles();
     // @Patoke: implement functions
-    /*inline*/
-    void SlideTo(int theX, int theY);
+    /*inline*/ void SlideTo(int theX, int theY);
     void ShowAchievementsScreen(); // @Patoke: unofficial name
 };
 

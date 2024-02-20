@@ -96,8 +96,7 @@ public:
     PlayerInfo();
 
     void Reset();
-    /*inline*/
-    void AddCoins(int theAmount);
+    /*inline*/ void AddCoins(int theAmount);
     void SyncSummary(DataSync &theSync);
     void SyncDetails(DataSync &theSync);
     void DeleteUserFiles() const;
@@ -105,8 +104,7 @@ public:
     void SaveDetails();
     inline int GetLevel() const { return mLevel; }
     inline void SetLevel(int theLevel) { mLevel = theLevel; }
-    /*inline*/
-    void ResetChallengeRecord(GameMode theGameMode);
+    /*inline*/ void ResetChallengeRecord(GameMode theGameMode);
 
     inline void InitializePurchase(const StoreItem theItem, const int32_t theQuantity) {
         TOD_ASSERT(TodAssertContains(OffsetedStoreItem, theItem));

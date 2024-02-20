@@ -40,8 +40,7 @@ public:
     AwardScreen(LawnApp *theApp, AwardType theAwardType, bool theShowingAchievements = false);
     ~AwardScreen() override;
 
-    /*inline*/
-    bool IsPaperNote() const;
+    /*inline*/ bool IsPaperNote() const;
 
     void Resize(int theX, int theY, int theWidth, int theHeight) override {
         Widget::Resize(theX, theY, theWidth, theHeight);

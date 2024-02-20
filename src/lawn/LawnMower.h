@@ -45,8 +45,7 @@ public:
     void UpdatePool();
     void MowZombie(Zombie *theZombie);
     void SquishMower();
-    /*inline*/
-    void EnableSuperMower(bool theEnable);
+    /*inline*/ void EnableSuperMower(bool theEnable);
 };
 
 #endif

@@ -47,8 +47,7 @@ int TodWriteString(
     Graphics *g, const SexyString &theString, int theX, int theY, TodStringListFormat &theCurrentFormat, int theWidth,
     DrawStringJustification theJustification, bool drawString, int theOffset, int theLength
 );
-/*inline*/
-int TodWriteWordWrappedHelper(
+/*inline*/ int TodWriteWordWrappedHelper(
     Graphics *g, const SexyString &theString, int theX, int theY, TodStringListFormat &theCurrentFormat, int theWidth,
     DrawStringJustification theJustification, bool drawString, int theOffset, int theLength, int theMaxChars
 );
@@ -56,8 +55,7 @@ int TodDrawStringWrappedHelper(
     Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification, bool drawString
 );
-/*inline*/
-void TodDrawStringWrapped(
+/*inline*/ void TodDrawStringWrapped(
     Graphics *g, const SexyString &theText, const Rect &theRect, _Font *theFont, const Color &theColor,
     DrawStringJustification theJustification
 );

@@ -374,9 +374,6 @@ public:
     // Public methods
     virtual void BeginPopup();
     virtual void EndPopup();
-    //	virtual int				MsgBox(const std::string &theText, const std::string &theTitle = "Message", int theFlags
-    //= MB_OK); 	virtual int				MsgBox(const std::wstring &theText, const std::wstring &theTitle = L"Message",
-    //int theFlags = MB_OK);
     virtual void Popup(const std::string &theString);
     virtual void Popup(const std::wstring &theString);
     virtual void LogScreenSaverError(const std::string &theError);
@@ -428,8 +425,6 @@ public:
     int GetCursor();
     void EnableCustomCursors(bool enabled);
     virtual std::unique_ptr<Image> GetImage(const ResourceManager::ImageRes &theRes);
-    //	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, DDImage*
-    //theImage, bool* isNew);
     Image *GetSharedImage(const std::string &theRes);
     void DeleteSharedImage(const std::string &theFileName);
     Image *GetSharedImage(const ResourceManager::ImageRes &theRes);
@@ -440,8 +435,6 @@ public:
     //	void					PrecacheNative(MemoryImage* theImage);
     void SetCursorImage(int theCursorNum, Image *theImage);
 
-    //	DDImage*				CreateCrossfadeImage(Image* theImage1, const Rect& theRect1, Image* theImage2, const
-    //Rect& theRect2, double theFadeFactor);
     void ColorizeImage(Image *theImage, const Color &theColor);
     //	DDImage*				CreateColorizedImage(Image* theImage, const Color& theColor);
     //	DDImage*				CopyImage(Image* theImage, const Rect& theRect);

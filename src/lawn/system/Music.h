@@ -97,26 +97,20 @@ public:
     static void MusicDispose() { ; }
     void MusicUpdate();
     void StopAllMusic();
-    /*inline*/
-    void PlayMusic(MusicTune theMusicTune, int theOffset = -1, int theDrumsOffset = -1);
-    /*inline*/
-    HMUSIC GetBassMusicHandle(MusicFile theMusicFile) const;
+    /*inline*/ void PlayMusic(MusicTune theMusicTune, int theOffset = -1, int theDrumsOffset = -1);
+    /*inline*/ HMUSIC GetBassMusicHandle(MusicFile theMusicFile) const;
     void StartGameMusic();
-    /*inline*/
-    void LoadSong(MusicFile theMusicFile, const std::string &theFileName);
+    /*inline*/ void LoadSong(MusicFile theMusicFile, const std::string &theFileName);
     void MusicResync() const;
     void UpdateMusicBurst();
-    /*inline*/
-    void StartBurst();
+    /*inline*/ void StartBurst();
     void GameMusicPause(bool thePause);
     void PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume);
     void MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusicFileToSync) const;
     bool TodLoadMusic(MusicFile theMusicFile, const std::string &theFileName) const;
     void MusicTitleScreenInit();
-    /*inline*/
-    void MakeSureMusicIsPlaying(MusicTune theMusicTune);
-    /*inline*/
-    void FadeOut(int theFadeOutDuration);
+    /*inline*/ void MakeSureMusicIsPlaying(MusicTune theMusicTune);
+    /*inline*/ void FadeOut(int theFadeOutDuration);
     void SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune) const;
     unsigned long GetMusicOrder(MusicFile theMusicFile) const;
     void MusicCreditScreenInit();

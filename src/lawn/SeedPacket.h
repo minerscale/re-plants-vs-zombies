@@ -33,12 +33,10 @@ public:
     bool MouseHitTest(int theX, int theY, HitResult *theHitResult);
     void Deactivate();
     void Activate();
-    /*inline*/
-    void SetActivate(bool theActivate);
+    /*inline*/ void SetActivate(bool theActivate);
     void PickNextSlotMachineSeed();
     void WasPlanted();
-    /*inline*/
-    void SlotMachineStart();
+    /*inline*/ void SlotMachineStart();
     void FlashIfReady();
     bool CanPickUp();
     void SetPacketType(SeedType theSeedType, SeedType theImitaterType = SeedType::SEED_NONE);
@@ -66,8 +64,7 @@ public:
     void AddSeed(SeedType theSeedType, bool thePlaceOnLeft = false);
     void RemoveSeed(int theIndex);
     int GetNumSeedsOnConveyorBelt();
-    /*inline*/
-    int CountOfTypeOnConveyorBelt(SeedType theSeedType);
+    /*inline*/ int CountOfTypeOnConveyorBelt(SeedType theSeedType);
     void UpdateConveyorBelt();
     void UpdateWidth();
     void RefreshAllPackets();

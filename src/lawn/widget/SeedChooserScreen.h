@@ -78,21 +78,16 @@ public:
     void CrazyDavePickSeeds();
     bool Has7Rows() const;
     void GetSeedPositionInChooser(int theIndex, int &x, int &y) const;
-    /*inline*/
-    void GetSeedPositionInBank(int theIndex, int &x, int &y);
-    /*inline*/
-    unsigned int SeedNotRecommendedToPick(SeedType theSeedType);
-    /*inline*/
-    bool SeedNotAllowedToPick(SeedType theSeedType);
-    /*inline*/
-    bool SeedNotAllowedDuringTrial(SeedType theSeedType);
+    /*inline*/ void GetSeedPositionInBank(int theIndex, int &x, int &y);
+    /*inline*/ unsigned int SeedNotRecommendedToPick(SeedType theSeedType);
+    /*inline*/ bool SeedNotAllowedToPick(SeedType theSeedType);
+    /*inline*/ bool SeedNotAllowedDuringTrial(SeedType theSeedType);
     void Draw(Graphics *g) override;
     void UpdateViewLawn();
     void LandFlyingSeed(ChosenSeed &theChosenSeed);
     void UpdateCursor();
     void Update() override;
-    /*inline*/
-    bool DisplayRepickWarningDialog(const SexyChar *theMessage);
+    /*inline*/ bool DisplayRepickWarningDialog(const SexyChar *theMessage);
     bool FlyersAreComming();
     bool FlyProtectionCurrentlyPlanted();
     bool CheckSeedUpgrade(SeedType theSeedTypeTo, SeedType theSeedTypeFrom);
@@ -101,20 +96,16 @@ public:
     virtual void ButtonDepress(int theId);
     SeedType SeedHitTest(int x, int y);
     SeedType FindSeedInBank(int theIndexInBank);
-    /*inline*/
-    void EnableStartButton(bool theEnabled);
+    /*inline*/ void EnableStartButton(bool theEnabled);
     void ClickedSeedInBank(ChosenSeed &theChosenSeed);
     void ClickedSeedInChooser(ChosenSeed &theChosenSeed);
     void ShowToolTip();
-    /*inline*/
-    void RemoveToolTip();
-    /*inline*/
-    void CancelLawnView();
+    /*inline*/ void RemoveToolTip();
+    /*inline*/ void CancelLawnView();
     void MouseUp(int x, int y, int theClickCount) override;
     void UpdateImitaterButton();
     void MouseDown(int x, int y, int theClickCount) override;
-    /*inline*/
-    bool PickedPlantType(SeedType theSeedType);
+    /*inline*/ bool PickedPlantType(SeedType theSeedType);
     void CloseSeedChooser();
     void KeyDown(KeyCode theKey) override;
     void KeyChar(SexyChar theChar) override;

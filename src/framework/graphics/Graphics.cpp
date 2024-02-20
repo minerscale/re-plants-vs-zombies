@@ -1092,10 +1092,6 @@ int Graphics::WriteWordWrapped(
         {
             int aWrittenWidth;
             if (aSpacePos != -1) {
-                // aWrittenWidth = WriteWordWrappedHelper(this, theLine, theRect.mX, theRect.mY + aYOffset,
-                // theRect.mWidth, 	theJustification, true, aLineStartPos, aSpacePos-aLineStartPos, anOrigColorInt,
-                //theMaxChars);
-
                 const int aPhysPos = theRect.mY + aYOffset + mTransY;
                 if ((aPhysPos >= mClipRect.mY) && (aPhysPos < mClipRect.mY + mClipRect.mHeight + theLineSpacing)) {
                     WriteWordWrappedHelper(

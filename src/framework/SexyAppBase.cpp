@@ -325,31 +325,33 @@ SexyAppBase::SexyAppBase() {
     else*/
     mTabletPC = false;
 
-    // gSEHCatcher.mApp = this;
+    /*
+    gSEHCatcher.mApp = this;
 
-    // std::wifstream stringsFile(_wfopen(L".\\properties\\fstrings", L"rb"));
-    //
-    // if(!stringsFile)
-    //{
-    //	MessageBox(NULL, "file missing: 'install-folder\\properties\\fstrings' Please re-install", "FATAL ERROR",
-    //MB_OK); 	DoExit(1);
-    // }
-    // std::getline(stringsFile, mString_HardwareAccelSwitchedOn);
-    // std::getline(stringsFile, mString_HardwareAccelConfirm);
-    // std::getline(stringsFile, mString_HardwareAccelNotWorking);
-    // std::getline(stringsFile, mString_SetColorDepth);
-    // std::getline(stringsFile, mString_FailedInitDirectDrawColon);
-    // std::getline(stringsFile, mString_UnableOpenProperties);
-    // std::getline(stringsFile, mString_SigCheckFailed);
-    // std::getline(stringsFile, mString_InvalidCommandLineParam);
-    // std::getline(stringsFile, mString_RequiresDirectX);
-    // std::getline(stringsFile, mString_YouNeedDirectX);
-    // std::getline(stringsFile, mString_FailedInitDirectDraw);
-    // std::getline(stringsFile, mString_FatalError);
-    // std::getline(stringsFile, mString_UnexpectedErrorOccured);
-    // std::getline(stringsFile, mString_PleaseHelpBy);
-    // std::getline(stringsFile, mString_FailedConnectPopcap);
-    // stringsFile.close();
+    std::wifstream stringsFile(_wfopen(L".\\properties\\fstrings", L"rb"));
+
+    if(!stringsFile)
+    {
+        MessageBox(NULL, "file missing: 'install-folder\\properties\\fstrings' Please re-install", "FATAL ERROR",
+    MB_OK); DoExit(1);
+    }
+    std::getline(stringsFile, mString_HardwareAccelSwitchedOn);
+    std::getline(stringsFile, mString_HardwareAccelConfirm);
+    std::getline(stringsFile, mString_HardwareAccelNotWorking);
+    std::getline(stringsFile, mString_SetColorDepth);
+    std::getline(stringsFile, mString_FailedInitDirectDrawColon);
+    std::getline(stringsFile, mString_UnableOpenProperties);
+    std::getline(stringsFile, mString_SigCheckFailed);
+    std::getline(stringsFile, mString_InvalidCommandLineParam);
+    std::getline(stringsFile, mString_RequiresDirectX);
+    std::getline(stringsFile, mString_YouNeedDirectX);
+    std::getline(stringsFile, mString_FailedInitDirectDraw);
+    std::getline(stringsFile, mString_FatalError);
+    std::getline(stringsFile, mString_UnexpectedErrorOccured);
+    std::getline(stringsFile, mString_PleaseHelpBy);
+    std::getline(stringsFile, mString_FailedConnectPopcap);
+    stringsFile.close();
+    */
 }
 
 SexyAppBase::~SexyAppBase() {
@@ -2438,10 +2440,7 @@ void SexyAppBase::Popup(const std::string &theString) {
     }
 
     BeginPopup();
-    if (!mShutdown)
-        printf("%s: %s\n", SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(), theString.c_str());
-    //::MessageBoxA(mHWnd, theString.c_str(), SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(),
-    //:MB_APPLMODAL | MB_ICONSTOP);
+    if (!mShutdown) fmt::println("{}: {}", SexyStringToString(GetString("FATAL_ERROR", _S("FATAL ERROR"))), theString);
     EndPopup();
 }
 
@@ -2456,8 +2455,6 @@ void SexyAppBase::Popup(const std::wstring &theString) {
         printf(
             "%ls: %ls\n", SexyStringToWString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(), theString.c_str()
         );
-    //::MessageBoxW(mHWnd, theString.c_str(), SexyStringToWString(GetString("FATAL_ERROR", _S("FATAL ERROR"))).c_str(),
-    //:MB_APPLMODAL | MB_ICONSTOP);
     EndPopup();
 }
 

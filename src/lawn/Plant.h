@@ -206,8 +206,7 @@ public:
     Rect GetPlantAttackRect(PlantWeapon thePlantWeapon = PlantWeapon::WEAPON_PRIMARY);
     Zombie *FindSquashTarget();
     void UpdateSquash();
-    /*inline*/
-    bool NotOnGround();
+    /*inline*/ bool NotOnGround();
     void DoSquashDamage();
     void BurnRow(int theRow);
     void IceZombies();
@@ -215,8 +214,7 @@ public:
     void UpdateGraveBuster();
     TodParticleSystem *AddAttachedParticle(int thePosX, int thePosY, int theRenderPosition, ParticleEffect theEffect);
     void GetPeaHeadOffset(int &theOffsetX, int &theOffsetY);
-    /*inline*/
-    bool MakesSun();
+    /*inline*/ bool MakesSun();
     static void DrawSeedType(
         const Graphics *g, SeedType theSeedType, SeedType theImitaterType, DrawVariation theDrawVariation,
         float thePosX, float thePosY
@@ -259,8 +257,7 @@ public:
     void UpdateCobCannon();
     void CobCannonFire(int theTargetX, int theTargetY);
     void UpdateGoldMagnetShroom();
-    /*inline*/
-    bool IsOnBoard();
+    /*inline*/ bool IsOnBoard();
     void RemoveEffects();
     void UpdateCoffeeBean();
     void UpdateUmbrella();
@@ -274,8 +271,7 @@ public:
     void SpikeRockTakeDamage();
     bool IsSpiky();
     static /*inline*/ void PreloadPlantResources(SeedType theSeedType);
-    /*inline*/
-    bool IsInPlay();
+    /*inline*/ bool IsInPlay();
     void UpdateNeedsFood() { ; }
     void PlayIdleAnim(float theRate);
     void UpdateFlowerPot();
@@ -303,5 +299,4 @@ public:
 
 extern PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES];
 
-/*inline*/
-PlantDefinition &GetPlantDefinition(SeedType theSeedType);
+/*inline*/ PlantDefinition &GetPlantDefinition(SeedType theSeedType);

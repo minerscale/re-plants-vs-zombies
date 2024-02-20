@@ -91,26 +91,19 @@ public:
     bool TodLoadResources(const std::string &theGroup);
 };
 
-/*inline*/
-bool TodLoadResources(const std::string &theGroup);
-/*inline*/
-bool TodLoadNextResource();
+/*inline*/ bool TodLoadResources(const std::string &theGroup);
+/*inline*/ bool TodLoadNextResource();
 void TodAddImageToMap(Image *theImage, const std::string &thePath);
 bool TodFindImagePath(Image *theImage, std::string *thePath);
 bool TodFindFontPath(_Font *theFont, std::string *thePath);
 
 // #################################################################################################### //
 
-/*inline*/
-float TodCurveQuad(float theTime);
-/*inline*/
-float TodCurveInvQuad(float theTime);
-/*inline*/
-float TodCurveS(float theTime);
-/*inline*/
-float TodCurveInvQuadS(float theTime);
-/*inline*/
-float TodCurveBounce(float theTime);
+/*inline*/ float TodCurveQuad(float theTime);
+/*inline*/ float TodCurveInvQuad(float theTime);
+/*inline*/ float TodCurveS(float theTime);
+/*inline*/ float TodCurveInvQuadS(float theTime);
+/*inline*/ float TodCurveBounce(float theTime);
 float TodCurveQuadS(float theTime);
 float TodCurveCubic(float theTime);
 float TodCurveInvCubic(float theTime);
@@ -133,12 +126,10 @@ int TodAnimateCurve(
     int theTimeStart, int theTimeEnd, int theTimeAge, int thePositionStart, int thePositionEnd, TodCurves theCurve
 );
 
-/*inline*/
-void TodScaleTransformMatrix(SexyMatrix3 &m, float x, float y, float theScaleX, float theScaleY);
+/*inline*/ void TodScaleTransformMatrix(SexyMatrix3 &m, float x, float y, float theScaleX, float theScaleY);
 void TodScaleRotateTransformMatrix(SexyMatrix3 &m, float x, float y, float rad, float theScaleX, float theScaleY);
 void SexyMatrix3ExtractScale(const SexyMatrix3 &m, float &theScaleX, float &theScaleY);
-/*inline*/
-void SexyMatrix3Translation(SexyMatrix3 &m, float x, float y);
+/*inline*/ void SexyMatrix3Translation(SexyMatrix3 &m, float x, float y);
 void SexyMatrix3Transpose(const SexyMatrix3 &m, SexyMatrix3 &r);                      // r = m ^ T
 void SexyMatrix3Inverse(const SexyMatrix3 &m, SexyMatrix3 &r);                        // r = m ^ -1
 void SexyMatrix3Multiply(SexyMatrix3 &m, const SexyMatrix3 &l, const SexyMatrix3 &r); // m = l × r
@@ -193,15 +184,13 @@ bool TodHasUsedCheatKeys();
 bool TodAppCloseRequest();
 
 //====================================================================================================//
-/*inline*/
-// T should be some kind of integer type
+/*inline*/ // T should be some kind of integer type
 // !TODO ADD CONCEPTS
 template <typename T> T RandRangeInt(T theMin, T theMax) {
     TOD_ASSERT(theMin <= theMax);
     return static_cast<T>(Rand(static_cast<int>(theMax) - static_cast<int>(theMin) + 1) + static_cast<int>(theMin));
 }
-/*inline*/
-float RandRangeFloat(float theMin, float theMax);
+/*inline*/ float RandRangeFloat(float theMin, float theMax);
 
 inline char ClampByte(char theNum, char theMin, char theMax) {
     return theNum <= theMin ? theMin : theNum >= theMax ? theMax : theNum;
@@ -232,8 +221,7 @@ inline bool FloatApproxEqual(float theFloatVal1, float theFloatVal2) {
 }
 
 Color GetFlashingColor(int theCounter, int theFlashTime);
-/*inline*/
-int ColorComponentMultiply(int theColor1, int theColor2);
+/*inline*/ int ColorComponentMultiply(int theColor1, int theColor2);
 Color ColorsMultiply(const Color &theColor1, const Color &theColor2);
 Color ColorAdd(const Color &theColor1, const Color &theColor2);
 

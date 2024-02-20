@@ -56,26 +56,26 @@ DefSymbol gParticleFlagSymbols[] = {
 DefSymbol gEmitterTypeSymbols[] = {
   //  0x69E260
     {0,  "Circle"           },
-      {1,  "Box"              },
-      {2,  "BoxPath"          },
-      {3,  "CirclePath"       },
-      {4,  "CircleEvenSpacing"},
-      {-1, nullptr            }
+    {1,  "Box"              },
+    {2,  "BoxPath"          },
+    {3,  "CirclePath"       },
+    {4,  "CircleEvenSpacing"},
+    {-1, nullptr            }
 };
 DefSymbol gParticleTypeSymbols[] = {
   //  0x69E200
     {1,  "Friction"        },
-      {2,  "Acceleration"    },
-      {3,  "Attractor"       },
-      {4,  "MaxVelocity"     },
+    {2,  "Acceleration"    },
+    {3,  "Attractor"       },
+    {4,  "MaxVelocity"     },
     {5,  "Velocity"        },
-      {6,  "Position"        },
-      {7,  "SystemPosition"  },
-      {8,  "GroundConstraint"},
+    {6,  "Position"        },
+    {7,  "SystemPosition"  },
+    {8,  "GroundConstraint"},
     {9,  "Shake"           },
-      {10, "Circle"          },
-      {11, "Away"            },
-      {-1, nullptr           }
+    {10, "Circle"          },
+    {11, "Away"            },
+    {-1, nullptr           }
 };
 
 DefField gParticleFieldDefFields[] = {

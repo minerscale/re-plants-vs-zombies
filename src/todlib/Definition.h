@@ -174,21 +174,14 @@ void DefWriteToCacheFont(void *&theWritePtr, _Font **theValue);
 
 void *DefinitionCompressCompiledBuffer(void *theBuffer, unsigned int theBufferSize, unsigned int *theResultSize);
 
-/*inline*/
-unsigned int DefGetSizeString(char **theValue);
-/*inline*/
-unsigned int DefinitionGetArraySize(DefinitionArrayDef *theValue, DefMap *theDefMap);
-/*inline*/
-unsigned int DefGetSizeFloatTrack(const FloatParameterTrack *theValue);
-/*inline*/
-unsigned int DefGetSizeImage(Image **theValue);
-/*inline*/
-unsigned int DefGetSizeFont(_Font **theValue);
+/*inline*/ unsigned int DefGetSizeString(char **theValue);
+/*inline*/ unsigned int DefinitionGetArraySize(DefinitionArrayDef *theValue, DefMap *theDefMap);
+/*inline*/ unsigned int DefGetSizeFloatTrack(const FloatParameterTrack *theValue);
+/*inline*/ unsigned int DefGetSizeImage(Image **theValue);
+/*inline*/ unsigned int DefGetSizeFont(_Font **theValue);
 
-/*inline*/
-unsigned int DefinitionGetDeepSize(const DefMap *theDefMap, void *theDefinition);
-/*inline*/
-unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition);
+/*inline*/ unsigned int DefinitionGetDeepSize(const DefMap *theDefMap, void *theDefinition);
+/*inline*/ unsigned int DefinitionGetSize(DefMap *theDefMap, void *theDefinition);
 /*inline*/ // void*        DefinitionAlloc(int theSize);
 void *DefinitionUncompressCompiledBuffer(
     void *theCompressedBuffer, size_t theCompressedBufferSize, size_t &theUncompressedSize,
@@ -211,13 +204,10 @@ bool DefinitionLoadXML(const SexyString &theFilename, DefMap *theDefMap, void *t
 void DefinitionFreeArrayField(DefinitionArrayDef *theArray, DefMap *theDefMap);
 void DefinitionFreeMap(const DefMap *theDefMap, void *theDefinition);
 
-/*inline*/
-bool FloatTrackIsSet(const FloatParameterTrack &theTrack);
-/*inline*/
-void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue);
+/*inline*/ bool FloatTrackIsSet(const FloatParameterTrack &theTrack);
+/*inline*/ void FloatTrackSetDefault(FloatParameterTrack &theTrack, float theValue);
 float FloatTrackEvaluate(const FloatParameterTrack &theTrack, float theTimeValue, float theInterp);
 float FloatTrackEvaluateFromLastTime(FloatParameterTrack &theTrack, float theTimeValue, float theInterp);
-/*inline*/
-bool FloatTrackIsConstantZero(const FloatParameterTrack &theTrack);
+/*inline*/ bool FloatTrackIsConstantZero(const FloatParameterTrack &theTrack);
 
 #endif

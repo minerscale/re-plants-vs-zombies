@@ -54,48 +54,47 @@ public:
 
 class LawnApp : public SexyApp {
 public:
-    Board *mBoard;                         //+0x768
-    TitleScreen *mTitleScreen;             //+0x76C
-    GameSelector *mGameSelector;           //+0x770
-    SeedChooserScreen *mSeedChooserScreen; //+0x774
-    AwardScreen *mAwardScreen;             //+0x778
-    CreditScreen *mCreditScreen;           //+0x77C
-    ChallengeScreen *mChallengeScreen;     //+0x780
-    TodFoley *mSoundSystem;                //+0x784
-    ButtonList mControlButtonList;         //+0x788
-    ImageList mCreatedImageList;           //+0x794
-    std::string mReferId;                  //+0x7A0
-    std::string mRegisterLink;             //+0x7BC
-    std::string mMod;                      //+0x7D8
-    bool mRegisterResourcesLoaded;         //+0x7F4
-    bool mTodCheatKeys;                    //+0x7F5
-    GameMode mGameMode;                    //+0x7F8
-    GameScenes mGameScene;                 //+0x7FC
-    bool mLoadingZombiesThreadCompleted;   //+0x800
-    bool mFirstTimeGameSelector;           //+0x801
-    int mGamesPlayed;                      //+0x804
-    int mMaxExecutions;                    //+0x808
-    int mMaxPlays;                         //+0x80C
-    int mMaxTime;                          //+0x810
-    bool mEasyPlantingCheat;               //+0x814
-    PoolEffect *mPoolEffect;               //+0x818
-    ZenGarden *mZenGarden;                 //+0x81C
-    EffectSystem *mEffectSystem;           //+0x820
-    ReanimatorCache *mReanimatorCache;     //+0x824
-    ProfileMgr *mProfileMgr;               //+0x828
-    PlayerInfo *mPlayerInfo;               //+0x82C
-    LevelStats *mLastLevelStats;           //+0x830
-    bool mCloseRequest;                    //+0x834
-    int mAppCounter;                       //+0x838
-    Music *mMusic;                         //+0x83C
-    ReanimationID mCrazyDaveReanimID;      //+0x840
-    CrazyDaveState mCrazyDaveState;        //+0x844
-    int mCrazyDaveBlinkCounter;            //+0x848
-    ReanimationID mCrazyDaveBlinkReanimID; //+0x84C
-    int mCrazyDaveMessageIndex;            //+0x850
-    SexyString mCrazyDaveMessageText;      //+0x854
-    int mAppRandSeed;                      //+0x870
-    //	HICON							mBigArrowCursor;								//+0x874
+    Board *mBoard;                                                         //+0x768
+    TitleScreen *mTitleScreen;                                             //+0x76C
+    GameSelector *mGameSelector;                                           //+0x770
+    SeedChooserScreen *mSeedChooserScreen;                                 //+0x774
+    AwardScreen *mAwardScreen;                                             //+0x778
+    CreditScreen *mCreditScreen;                                           //+0x77C
+    ChallengeScreen *mChallengeScreen;                                     //+0x780
+    TodFoley *mSoundSystem;                                                //+0x784
+    ButtonList mControlButtonList;                                         //+0x788
+    ImageList mCreatedImageList;                                           //+0x794
+    std::string mReferId;                                                  //+0x7A0
+    std::string mRegisterLink;                                             //+0x7BC
+    std::string mMod;                                                      //+0x7D8
+    bool mRegisterResourcesLoaded;                                         //+0x7F4
+    bool mTodCheatKeys;                                                    //+0x7F5
+    GameMode mGameMode;                                                    //+0x7F8
+    GameScenes mGameScene;                                                 //+0x7FC
+    bool mLoadingZombiesThreadCompleted;                                   //+0x800
+    bool mFirstTimeGameSelector;                                           //+0x801
+    int mGamesPlayed;                                                      //+0x804
+    int mMaxExecutions;                                                    //+0x808
+    int mMaxPlays;                                                         //+0x80C
+    int mMaxTime;                                                          //+0x810
+    bool mEasyPlantingCheat;                                               //+0x814
+    PoolEffect *mPoolEffect;                                               //+0x818
+    ZenGarden *mZenGarden;                                                 //+0x81C
+    EffectSystem *mEffectSystem;                                           //+0x820
+    ReanimatorCache *mReanimatorCache;                                     //+0x824
+    ProfileMgr *mProfileMgr;                                               //+0x828
+    PlayerInfo *mPlayerInfo;                                               //+0x82C
+    LevelStats *mLastLevelStats;                                           //+0x830
+    bool mCloseRequest;                                                    //+0x834
+    int mAppCounter;                                                       //+0x838
+    Music *mMusic;                                                         //+0x83C
+    ReanimationID mCrazyDaveReanimID;                                      //+0x840
+    CrazyDaveState mCrazyDaveState;                                        //+0x844
+    int mCrazyDaveBlinkCounter;                                            //+0x848
+    ReanimationID mCrazyDaveBlinkReanimID;                                 //+0x84C
+    int mCrazyDaveMessageIndex;                                            //+0x850
+    SexyString mCrazyDaveMessageText;                                      //+0x854
+    int mAppRandSeed;                                                      //+0x870
     PopDRMComm *mDRM;                                                      //+0x878
     intptr_t mSessionID;                                                   //+0x87C
     std::chrono::high_resolution_clock::duration mPlayTimeActiveSession;   //+0x880
@@ -178,8 +177,7 @@ public:
     void DoRegister();
     void DoRegisterError();
     bool CanDoRegisterDialog();
-    /*inline*/
-    bool WriteCurrentUserConfig() const;
+    /*inline*/ bool WriteCurrentUserConfig() const;
     void DoNeedRegisterDialog();
     void DoContinueDialog();
     void DoPauseDialog();
@@ -214,13 +212,10 @@ public:
     void ButtonMouseMove(int theId, int theX, int theY) override;
     void UpdateFrames() override;
     bool UpdateApp() override;
-    /*inline*/
-    bool IsAdventureMode() const;
-    /*inline*/
-    bool IsSurvivalMode() const;
+    /*inline*/ bool IsAdventureMode() const;
+    /*inline*/ bool IsSurvivalMode() const;
     bool IsContinuousChallenge();
-    /*inline*/
-    bool IsArtChallenge() const;
+    /*inline*/ bool IsArtChallenge() const;
     bool NeedPauseGame() const;
     virtual void ShowResourceError(bool doExit = false);
     void ToggleSlowMo();
@@ -230,78 +225,53 @@ public:
     void PlaySample(int theSoundNum) override;
     void FastLoad(GameMode theGameMode);
     static SexyString GetStageString(int theLevel);
-    /*inline*/
-    void KillChallengeScreen();
+    /*inline*/ void KillChallengeScreen();
     void ShowChallengeScreen(ChallengePage thePage);
     ChallengeDefinition &GetCurrentChallengeDef();
     void CheckForGameEnd();
     void CloseRequestAsync() override;
-    /*inline*/
-    bool IsChallengeWithoutSeedBank();
+    /*inline*/ bool IsChallengeWithoutSeedBank();
     AlmanacDialog *
     DoAlmanacDialog(SeedType theSeedType = SeedType::SEED_NONE, ZombieType theZombieType = ZombieType::ZOMBIE_INVALID);
     bool KillAlmanacDialog();
     int GetSeedsAvailable();
     Reanimation *AddReanimation(float theX, float theY, int theRenderOrder, ReanimationType theReanimationType);
     TodParticleSystem *AddTodParticle(float theX, float theY, int theRenderOrder, ParticleEffect theEffect);
-    /*inline*/
-    ParticleSystemID ParticleGetID(TodParticleSystem *theParticle);
-    /*inline*/
-    TodParticleSystem *ParticleGet(ParticleSystemID theParticleID);
-    /*inline*/
-    TodParticleSystem *ParticleTryToGet(ParticleSystemID theParticleID);
-    /*inline*/
-    ReanimationID ReanimationGetID(Reanimation *theReanimation);
-    /*inline*/
-    Reanimation *ReanimationGet(ReanimationID theReanimationID);
-    /*inline*/
-    Reanimation *ReanimationTryToGet(ReanimationID theReanimationID);
+    /*inline*/ ParticleSystemID ParticleGetID(TodParticleSystem *theParticle);
+    /*inline*/ TodParticleSystem *ParticleGet(ParticleSystemID theParticleID);
+    /*inline*/ TodParticleSystem *ParticleTryToGet(ParticleSystemID theParticleID);
+    /*inline*/ ReanimationID ReanimationGetID(Reanimation *theReanimation);
+    /*inline*/ Reanimation *ReanimationGet(ReanimationID theReanimationID);
+    /*inline*/ Reanimation *ReanimationTryToGet(ReanimationID theReanimationID);
     void RemoveReanimation(ReanimationID theReanimationID);
     void RemoveParticle(ParticleSystemID theParticleID);
     StoreScreen *ShowStoreScreen();
     void KillStoreScreen();
     bool HasSeedType(SeedType theSeedType);
-    /*inline*/
-    bool SeedTypeAvailable(SeedType theSeedType);
-    /*inline*/
-    void EndLevel();
+    /*inline*/ bool SeedTypeAvailable(SeedType theSeedType);
+    /*inline*/ void EndLevel();
     inline bool IsIceDemo() { return false; }
-    /*inline*/
-    bool IsShovelLevel() const;
-    /*inline*/
-    bool IsWallnutBowlingLevel() const;
-    /*inline*/
-    bool IsMiniBossLevel();
-    /*inline*/
-    bool IsSlotMachineLevel() const;
-    /*inline*/
-    bool IsLittleTroubleLevel();
-    /*inline*/
-    bool IsStormyNightLevel();
-    /*inline*/
-    bool IsFinalBossLevel();
-    /*inline*/
-    bool IsBungeeBlitzLevel();
+    /*inline*/ bool IsShovelLevel() const;
+    /*inline*/ bool IsWallnutBowlingLevel() const;
+    /*inline*/ bool IsMiniBossLevel();
+    /*inline*/ bool IsSlotMachineLevel() const;
+    /*inline*/ bool IsLittleTroubleLevel();
+    /*inline*/ bool IsStormyNightLevel();
+    /*inline*/ bool IsFinalBossLevel();
+    /*inline*/ bool IsBungeeBlitzLevel();
     static /*inline*/ SeedType GetAwardSeedForLevel(int theLevel);
     SexyString GetCrazyDaveText(int theMessageIndex);
-    /*inline*/
-    bool CanShowAlmanac();
-    /*inline*/
-    bool IsNight();
-    /*inline*/
-    bool CanShowStore();
-    /*inline*/
-    bool HasBeatenChallenge(GameMode theGameMode);
+    /*inline*/ bool CanShowAlmanac();
+    /*inline*/ bool IsNight();
+    /*inline*/ bool CanShowStore();
+    /*inline*/ bool HasBeatenChallenge(GameMode theGameMode);
     PottedPlant *GetPottedPlantByIndex(int thePottedPlantIndex);
     static /*inline*/ bool IsSurvivalNormal(GameMode theGameMode);
     static /*inline*/ bool IsSurvivalHard(GameMode theGameMode);
     static /*inline*/ bool IsSurvivalEndless(GameMode theGameMode);
-    /*inline*/
-    bool HasFinishedAdventure() const;
-    /*inline*/
-    bool IsFirstTimeAdventureMode();
-    /*inline*/
-    bool CanSpawnYetis();
+    /*inline*/ bool HasFinishedAdventure() const;
+    /*inline*/ bool IsFirstTimeAdventureMode();
+    /*inline*/ bool CanSpawnYetis();
     void CrazyDaveEnter();
     void UpdateCrazyDave();
     void CrazyDaveTalkIndex(int theMessageIndex);
@@ -321,54 +291,38 @@ public:
     void KillCreditScreen();
     static SexyString Pluralize(int theCount, const SexyChar *theSingular, const SexyChar *thePlural);
     int GetNumTrophies(ChallengePage thePage);
-    /*inline*/
-    bool EarnedGoldTrophy();
+    /*inline*/ bool EarnedGoldTrophy();
     inline bool IsRegistered() { return false; }
     inline bool IsExpired() { return false; }
     inline bool IsDRMConnected() { return false; }
-    /*inline*/
-    bool IsScaryPotterLevel();
+    /*inline*/ bool IsScaryPotterLevel();
     static /*inline*/ bool IsEndlessScaryPotter(GameMode theGameMode);
-    /*inline*/
-    bool IsSquirrelLevel() const;
-    /*inline*/
-    bool IsIZombieLevel() const;
-    /*inline*/
-    bool CanShowZenGarden();
+    /*inline*/ bool IsSquirrelLevel() const;
+    /*inline*/ bool IsIZombieLevel() const;
+    /*inline*/ bool CanShowZenGarden();
     static SexyString GetMoneyString(int theAmount);
     bool AdvanceCrazyDaveText();
-    /*inline*/
-    bool IsWhackAZombieLevel();
+    /*inline*/ bool IsWhackAZombieLevel();
     void UpdatePlayTimeStats();
     void BetaAddFile(std::list<std::string> &theUploadFileList, std::string theFileName, std::string theShortName);
     bool CanPauseNow();
-    /*inline*/
-    bool IsPuzzleMode() const;
-    /*inline*/
-    bool IsChallengeMode() const;
+    /*inline*/ bool IsPuzzleMode() const;
+    /*inline*/ bool IsChallengeMode() const;
     static /*inline*/ bool IsEndlessIZombie(GameMode theGameMode);
     void CrazyDaveDoneHanding();
     inline SexyString GetCurrentLevelName() { return _S("Unknown"); }
-    /*inline*/
-    int TrophiesNeedForGoldSunflower();
-    /*inline*/
-    int GetCurrentChallengeIndex();
+    /*inline*/ int TrophiesNeedForGoldSunflower();
+    /*inline*/ int GetCurrentChallengeIndex();
     void LoadGroup(const char *theGroupName, int theGroupAveMsToLoad);
-    //	void							TraceLoadGroup(const char* theGroupName, int theGroupTime, int
-    //theTotalGroupWeigth, int theTaskWeight);
+    // void TraceLoadGroup(const char* theGroupName, int theGroupTime, int theTotalGroupWeight, int theTaskWeight);
     void CrazyDaveStopSound();
-    /*inline*/
-    bool IsTrialStageLocked();
-    /*inline*/
-    void FinishZenGardenToturial();
+    /*inline*/ bool IsTrialStageLocked();
+    /*inline*/ void FinishZenGardenToturial();
     bool UpdatePlayerProfileForFinishingLevel();
     bool SaveFileExists();
-    /*inline*/
-    bool CanDoPinataMode();
-    /*inline*/
-    bool CanDoDanceMode();
-    /*inline*/
-    bool CanDoDaisyMode();
+    /*inline*/ bool CanDoPinataMode();
+    /*inline*/ bool CanDoDanceMode();
+    /*inline*/ bool CanDoDaisyMode();
     void SwitchScreenMode(bool wantWindowed, bool is3d, bool force = false) override;
     static /*inline*/ void CenterDialog(Dialog *theDialog, int theWidth, int theHeight);
 };

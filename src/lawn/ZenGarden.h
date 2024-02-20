@@ -40,8 +40,7 @@ public:
     ZenGarden();
 
     void ZenGardenInitLevel();
-    /*inline*/
-    void DrawPottedPlantIcon(Graphics *g, float x, float y, PottedPlant *thePottedPlant);
+    /*inline*/ void DrawPottedPlantIcon(Graphics *g, float x, float y, PottedPlant *thePottedPlant);
     void DrawPottedPlant(
         const Graphics *g, float x, float y, const PottedPlant *thePottedPlant, float theScale, bool theDrawPot
     );
@@ -59,8 +58,7 @@ public:
     void MouseDownWithFullWheelBarrow(int x, int y);
     void MouseDownWithEmptyWheelBarrow(Plant *thePlant);
     void GotoNextGarden();
-    /*inline*/
-    PottedPlant *GetPottedPlantInWheelbarrow();
+    /*inline*/ PottedPlant *GetPottedPlantInWheelbarrow();
     void RemovePottedPlant(Plant *thePlant) const;
     SpecialGridPlacement *GetSpecialGridPlacements(int &theCount) const;
     int PixelToGridX(int theX, int theY) const;
@@ -121,11 +119,9 @@ public:
     static void RefreshPlantNeeds(PottedPlant *thePottedPlant);
     void PlantSetLaunchCounter(Plant *thePlant);
     int PlantGetMinutesSinceHappy(const Plant *thePlant);
-    /*inline*/
-    bool IsStinkyHighOnChocolate();
+    /*inline*/ bool IsStinkyHighOnChocolate();
     void StinkyAnimRateUpdate(const GridItem *theStinky);
-    /*inline*/
-    bool PlantCanBeWatered(const Plant *thePlant) const;
+    /*inline*/ bool PlantCanBeWatered(const Plant *thePlant) const;
 };
 
 #endif

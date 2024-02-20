@@ -20,12 +20,8 @@ public:
     int mRenderOrder;
 
 public:
-    /*inline*/
-    GameObject();
-    /*inline*/
-    bool BeginDraw(Graphics *g) const;
-    /*inline*/
-    void EndDraw(Graphics *g);
-    /*inline*/
-    void MakeParentGraphicsFrame(Graphics *g);
+    /*inline*/ GameObject();
+    /*inline*/ bool BeginDraw(Graphics *g) const;
+    /*inline*/ void EndDraw(Graphics *g);
+    /*inline*/ void MakeParentGraphicsFrame(Graphics *g);
 };

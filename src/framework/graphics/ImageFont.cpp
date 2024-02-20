@@ -574,10 +574,7 @@ bool FontData::HandleCommand(const ListDataElement &theParams) {
                         }
 
                         aLayer->mDefaultHeight = 0;
-                        // for (int aCharNum = 0; aCharNum < 256; aCharNum++)
-                        //	if (aLayer->mCharData[aCharNum].mImageRect.mHeight + aLayer->mCharData[aCharNum].mOffset.mY
-                        //> aLayer->mDefaultHeight) 		aLayer->mDefaultHeight =
-                        //aLayer->mCharData[aCharNum].mImageRect.mHeight + aLayer->mCharData[aCharNum].mOffset.mY;
+
                         for (auto &val : aLayer->mCharDataMap) {
                             CharData *aCharData = val.second.get();
                             if (aCharData->mImageRect.mHeight + aCharData->mOffset.mY > aLayer->mDefaultHeight) {
@@ -942,7 +939,7 @@ void ImageFont::GenerateActiveFontLayers() {
 
                     // for (int aCharNum = 0; aCharNum < 256; aCharNum++)
                     //	anActiveFontLayer->mScaledCharImageRects[aCharNum] =
-                    //aFontLayer->GetCharData(aCharNum)->mImageRect;aFontLayer->mCharData[aCharNum].mImageRect;
+                    // aFontLayer->GetCharData(aCharNum)->mImageRect;aFontLayer->mCharData[aCharNum].mImageRect;
                     for (auto &anItr : aFontLayer->mCharDataMap) {
                         anActiveFontLayer->mScaledCharImageRects.insert(
                             CharRectMap::value_type(anItr.first, anItr.second->mImageRect)

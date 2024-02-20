@@ -424,8 +424,9 @@ TodParticle *TodParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount) 
 
     aParticle->mAnimationTimeValue = 0.0f;
     if (mEmitterDef->mAnimated || FloatTrackIsSet(mEmitterDef->mAnimationRate))
-        aParticle->mImageFrame = 0; // 如果定义了粒子动态或动画速率，则粒子的当前帧将在后续根据粒子时间值或动画循环率实时计算，此处先初始化为
-                                    // 0
+        aParticle->mImageFrame =
+            0; // 如果定义了粒子动态或动画速率，则粒子的当前帧将在后续根据粒子时间值或动画循环率实时计算，此处先初始化为
+               // 0
     else
         aParticle->mImageFrame =
             Sexy::Rand(mEmitterDef->mImageFrames); // 对于帧固定的粒子，在贴图的所有帧中随机取得一帧，后续一般不再变化

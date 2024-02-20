@@ -65,20 +65,14 @@ public:
 
     static /*inline*/ bool HaveButtonImage(const Image *theImage, const Rect &theRect);
     void DrawButtonImage(Graphics *g, Image *theImage, const Rect &theRect, int theX, int theY) const;
-    /*inline*/
-    void SetFont(_Font *theFont);
-    /*inline*/
-    bool IsButtonDown() const;
+    /*inline*/ void SetFont(_Font *theFont);
+    /*inline*/ bool IsButtonDown() const;
     void Draw(Graphics *g);
-    /*inline*/
-    void SetDisabled(bool theDisabled);
-    /*inline*/
-    bool IsMouseOver();
+    /*inline*/ void SetDisabled(bool theDisabled);
+    /*inline*/ bool IsMouseOver();
     void Update();
-    /*inline*/
-    void Resize(int theX, int theY, int theWidth, int theHeight);
-    /*inline*/
-    void SetLabel(const SexyString &theLabel);
+    /*inline*/ void Resize(int theX, int theY, int theWidth, int theHeight);
+    /*inline*/ void SetLabel(const SexyString &theLabel);
 };
 
 class LawnStoneButton : public DialogButton {
@@ -87,8 +81,7 @@ public:
         : DialogButton(theComponentImage, theId, theListener) {}
 
     void Draw(Graphics *g) override;
-    /*inline*/
-    void SetLabel(const SexyString &theLabel);
+    /*inline*/ void SetLabel(const SexyString &theLabel);
 };
 
 class NewLawnButton : public DialogButton {

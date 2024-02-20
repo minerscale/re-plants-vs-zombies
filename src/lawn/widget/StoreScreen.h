@@ -51,8 +51,7 @@ public:
     StoreScreen(LawnApp *theApp);
     ~StoreScreen() override;
 
-    /*inline*/
-    StoreItem GetStoreItemType(int theSpotIndex) const;
+    /*inline*/ StoreItem GetStoreItemType(int theSpotIndex) const;
     bool IsFullVersionOnly(StoreItem theStoreItem) const;
     static /*inline*/ bool IsPottedPlant(StoreItem theStoreItem);
     bool IsComingSoon(StoreItem theStoreItem);
@@ -63,28 +62,23 @@ public:
     void DrawItem(Graphics *g, int theItemPosition, StoreItem theItemType);
     void Draw(Graphics *g) override;
     void DrawOverlay(Graphics *g) override;
-    /*inline*/
-    void SetBubbleText(int theCrazyDaveMessage, int theTime, bool theClickToContinue);
+    /*inline*/ void SetBubbleText(int theCrazyDaveMessage, int theTime, bool theClickToContinue);
     void UpdateMouse();
     void StorePreload();
-    /*inline*/
-    bool CanInteractWithButtons();
+    /*inline*/ bool CanInteractWithButtons();
     void Update() override;
     void AddedToManager(WidgetManager *theWidgetManager) override;
     void RemovedFromManager(WidgetManager *theWidgetManager) override;
     void ButtonPress(int theId) override;
-    /*inline*/
-    bool IsPageShown(StorePages thePage);
+    /*inline*/ bool IsPageShown(StorePages thePage);
     void ButtonDepress(int theId) override;
     void KeyChar(char theChar) override;
     static /*inline*/ int GetItemCost(StoreItem theStoreItem);
-    /*inline*/
-    bool CanAffordItem(StoreItem theStoreItem);
+    /*inline*/ bool CanAffordItem(StoreItem theStoreItem);
     void PurchaseItem(StoreItem theStoreItem);
     void AdvanceCrazyDaveDialog();
     void MouseDown(int x, int y, int theClickCount) override;
-    /*inline*/
-    void EnableButtons(bool theEnable);
+    /*inline*/ void EnableButtons(bool theEnable);
     void SetupForIntro(int theDialogIndex);
 };
 

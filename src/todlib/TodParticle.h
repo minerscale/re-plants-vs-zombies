@@ -283,8 +283,7 @@ public:
     );
     TodParticleSystem *
     AllocParticleSystem(float theX, float theY, int theRenderOrder, ParticleEffect theParticleEffect);
-    /*inline*/
-    bool IsOverLoaded();
+    /*inline*/ bool IsOverLoaded();
 };
 
 class ParticleRenderParams {
@@ -371,8 +370,7 @@ public:
         TodParticle *theParticle, ParticleField *theParticleField, float theParticleTimeValue, int theFieldIndex
     ) const;
     void UpdateSystemField(ParticleField *theParticleField, float theParticleTimeValue, int theFieldIndex);
-    /*inline*/
-    float SystemTrackEvaluate(FloatParameterTrack &theTrack, ParticleSystemTracks theSystemTrack) const;
+    /*inline*/ float SystemTrackEvaluate(FloatParameterTrack &theTrack, ParticleSystemTracks theSystemTrack) const;
     static /*inline*/ float ParticleTrackEvaluate(
         FloatParameterTrack &theTrack, const TodParticle *theParticle, ParticleTracks theParticleTrack
     );
@@ -380,8 +378,7 @@ public:
     void DeleteNonCrossFading();
 };
 
-/*inline*/
-float CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
+/*inline*/ float CrossFadeLerp(float theFrom, float theTo, bool theFromIsSet, bool theToIsSet, float theFraction);
 void RenderParticle(
     Graphics *g, TodParticle *theParticle, const Color &theColor, ParticleRenderParams *theParams,
     TodTriangleGroup *theTriangleGroup

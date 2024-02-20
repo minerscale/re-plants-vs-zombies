@@ -33,8 +33,7 @@ public:
     ReanimationWidget();
     ~ReanimationWidget() override;
 
-    /*inline*/
-    void Dispose();
+    /*inline*/ void Dispose();
     void Draw(Graphics *) override;
     void Update() override;
     void AddReanimation(float x, float y, ReanimationType theReanimationType);
