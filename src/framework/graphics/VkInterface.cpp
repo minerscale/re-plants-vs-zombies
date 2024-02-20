@@ -239,14 +239,16 @@ std::map<int, std::unique_ptr<sdlCursor>> cursorMap;
 
 constexpr auto GenerateAsciiKeymap() {
     std::array<KeyCode, 256> sparse_array{};
+    constexpr int scan_shift = SDLK_SCANCODE_MASK - 128;
 
     for (size_t key = 0; key < sparse_array.size(); ++key) {
         auto offset = static_cast<int>(key);
         if (key >= SDLK_0 && key <= SDLK_9) offset = SDLK_0 - '0';
         if (key >= SDLK_a && key <= SDLK_z) offset = SDLK_a - 'A';
-        // if (key >= (SDLK_KP_1 & ~SDLK_SCANCODE_MASK) && key <= (SDLK_KP_0 & ~SDLK_SCANCODE_MASK)) offset = (SDLK_KP_0
-        // & ~SDLK_SCANCODE_MASK) - KEYCODE_NUMPAD0; if (key >= (SDLK_F1 & ~SDLK_SCANCODE_MASK) && key <= (SDLK_F24 &
-        // ~SDLK_SCANCODE_MASK)) offset = static_cast<int>(SDLK_F1) - KEYCODE_F1;
+        if (key >= (SDLK_KP_1 - scan_shift) && key <= (SDLK_KP_0 - scan_shift))
+            offset = (SDLK_KP_0 - scan_shift) - KEYCODE_NUMPAD0;
+        if (key >= (SDLK_F1 - scan_shift) && key <= (SDLK_F24 - scan_shift))
+            offset = (SDLK_F1 - scan_shift) - KEYCODE_F1;
         sparse_array[key] = static_cast<KeyCode>(static_cast<int>(key) - offset);
     }
 
@@ -1151,16 +1153,15 @@ void setWindowDimensions() {
     windowImageClipRect.z = newWidth;
     windowImageClipRect.w = newHeight;
     windowImageScale = pillarboxed ? newWidth / windowImage->mWidth : newHeight / windowImage->mHeight;
-    printf(
-        "x: %f, y: %f, z: %f, w: %f, scale: %f\n", windowImageClipRect.x, windowImageClipRect.y, windowImageClipRect.z,
+    fmt::println(
+        "x: {}, y: {}, z: {}, w: {}, scale: {}", windowImageClipRect.x, windowImageClipRect.y, windowImageClipRect.z,
         windowImageClipRect.w, windowImageScale
     );
 }
 
 void createWindowBuffer(int intendedWidth, int intendedHeight) {
-    if (windowImage) delete windowImage;
+    delete windowImage;
     windowImage = new VkImage(intendedWidth, intendedHeight);
-
     setWindowDimensions();
 }
 
@@ -1303,7 +1304,7 @@ void pickPhysicalDevice() {
         throw std::runtime_error("failed to find a suitable GPU!");
     }
 
-    printf("%s\n", physicalDeviceProperties.deviceName);
+    fmt::println("{}", physicalDeviceProperties.deviceName);
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -1311,7 +1312,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, [[maybe_unused]] void *pUserData
 ) {
-    fmt::print("\033[0;31m{}\033[0m\n\n", pCallbackData->pMessage);
+    fmt::println("\033[0;31m{}\033[0m\n", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
@@ -1331,27 +1332,28 @@ VkResult CreateDebugUtilsMessengerEXT(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo, const VkAllocationCallbacks *pAllocator,
     VkDebugUtilsMessengerEXT *pDebugMessenger
 ) {
-    const auto func =
-        (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+        vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
+    );
     if (func != nullptr) {
         return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-    } else {
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
+    return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
 void DestroyDebugUtilsMessengerEXT(
     VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator
 ) {
-    const auto func =
-        (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+        vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
+    );
     if (func != nullptr) {
         func(instance, debugMessenger, pAllocator);
     }
 }
 
 void setupDebugMessenger() {
-    if (!enableValidationLayers) return;
+    if constexpr (!enableValidationLayers) return;
 
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
@@ -1420,7 +1422,7 @@ void createInstance() {
         createInfo.ppEnabledLayerNames = validationLayers.data();
 
         populateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+        createInfo.pNext = &debugCreateInfo;
     } else {
         createInfo.enabledLayerCount = 0;
         createInfo.pNext = nullptr;
@@ -1495,6 +1497,17 @@ VkInterface::~VkInterface() {
     SDL_Quit();
 
     renderMutex.unlock();
+}
+
+int VkInterface::GetRefreshRate() {
+    static std::optional<int> aDisplayIdx = std::nullopt;
+    static SDL_DisplayMode aMode;
+    const auto aNewDisplayIdx = SDL_GetWindowDisplayIndex(window);
+    if (!aDisplayIdx.has_value() || aDisplayIdx.value() != aNewDisplayIdx) {
+        aDisplayIdx = aNewDisplayIdx;
+        SDL_GetDesktopDisplayMode(aDisplayIdx.value(), &aMode);
+    }
+    return aMode.refresh_rate;
 }
 
 void VkInterface::UpdateWindowOptions(const int width, const int height, const bool fullscreen) {
@@ -1580,7 +1593,7 @@ void Vk::VkInterface::mouseWheelCallback(double xoffset, double yoffset) {
     widgetManager->MouseWheel(yoffset);
 }
 
-void VkInterface::mouseButtonCallback(int button, int state, int clicks) {
+void VkInterface::mouseButtonCallback(int button, int state, int clicks) const {
     constexpr auto mouseButtonTranslationTable = compiler::SparseArray<std::array<std::pair<int, int>, 3>{
         {
          {SDL_BUTTON_LEFT, 1},
@@ -1602,7 +1615,10 @@ void VkInterface::keyCallback(uint32_t key, uint8_t state) {
     if (key == SDLK_UNKNOWN) return;
 
     auto code = ControlKeyMapping.find(key);
-    if (!code.has_value()) code = AsciiKeyMapping[static_cast<uint8_t>(key & ~SDLK_SCANCODE_MASK)];
+    if (!code.has_value()) {
+        if (key & SDLK_SCANCODE_MASK) key -= SDLK_SCANCODE_MASK - 128;
+        code = AsciiKeyMapping[static_cast<uint8_t>(key)];
+    }
     if (state == SDL_PRESSED) {
         widgetManager->KeyDown(code.value());
     } else {

@@ -1159,8 +1159,8 @@ void LawnApp::Init() {
     mKonamiCheck->AddKeyCode(KeyCode::KEYCODE_RIGHT);
     mKonamiCheck->AddKeyCode(KeyCode::KEYCODE_LEFT);
     mKonamiCheck->AddKeyCode(KeyCode::KEYCODE_RIGHT);
-    mKonamiCheck->AddChar('b');
-    mKonamiCheck->AddChar('a');
+    mKonamiCheck->AddChar('B');
+    mKonamiCheck->AddChar('A');
     mMustacheCheck = new TypingCheck("mustache");
     mMoustacheCheck = new TypingCheck("moustache");
     mSuperMowerCheck = new TypingCheck("trickedout");

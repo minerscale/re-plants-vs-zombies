@@ -50,6 +50,8 @@ public:
     void UpdateWindowOptions(const int width, const int height, const bool fullscreen) {
         static_cast<T *>(this)->UpdateWindowOptions(width, height, fullscreen);
     }
+
+    int GetRefreshRate() { return static_cast<T *>(this)->GetRefreshRate(); }
 };
 
 #endif // WINDOW_INTERFACE_H

@@ -2020,7 +2020,7 @@ void SexyAppBase::Redraw() {
 
     // Do mIsDrawing check because we could enter here at a bad time if any windows messages
     //  are processed during WidgetManager->Draw
-    if ((mIsDrawing) || (mShutdown)) return;
+    if (mIsDrawing || mShutdown) return;
 
     if (gScreenSaverActive) return;
 
@@ -4648,7 +4648,7 @@ void SexyAppBase::DoMainLoop() {
 bool SexyAppBase::UpdateAppStep(bool *updated) {
     static auto timer = std::chrono::high_resolution_clock::now();
     constexpr auto frame_length =
-        std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 80));
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 100));
 
     if (updated != nullptr) *updated = false;
 

@@ -3,8 +3,6 @@
 
 #include "framework/graphics/WindowInterface.h"
 #include "framework/widget/WidgetManager.h"
-#include <glm/fwd.hpp>
-#include <memory>
 
 namespace Vk {
 class VkInterface : public WindowInterface<VkInterface> {
@@ -12,6 +10,7 @@ public:
     VkInterface(int width, int height, WidgetManager *mWidgetManager, bool fullscreen);
     ~VkInterface();
 
+    int GetRefreshRate();
     static void UpdateWindowOptions(const int width, const int height, const bool fullscreen);
     static Image *GetScreenImage();
     static int
@@ -31,8 +30,8 @@ private:
     static void windowFocusCallback(bool focused);
     static void cursorPositionCallback(double xpos, double ypos);
     static void mouseWheelCallback(double xoffset, double yoffset);
-    void mouseButtonCallback(int button, int state, int clicks);
-    void keyCallback(uint32_t key, uint8_t state);
+    void mouseButtonCallback(int button, int state, int clicks) const;
+    static void keyCallback(uint32_t key, uint8_t state);
     static void charCallback(char codepoint[32]);
     static void cursorEnterCallback(int entered);
     void windowCloseCallback();
