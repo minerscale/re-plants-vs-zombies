@@ -61,7 +61,7 @@ size_t RegistryEmulator::GetNextKey(size_t theKeyIdx) {
 }
 
 bool RegistryEmulator::Read(
-    const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
+    const std::string &theValueName, SexyReg &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
 ) {
     size_t aKeyIdx = FindKey(theValueName);
     if (aKeyIdx == SIZE_MAX) return false;
@@ -98,7 +98,7 @@ bool RegistryEmulator::Erase(const std::string &theValueName) {
 }
 
 void RegistryEmulator::Write(
-    const std::string &theValueName, uint32_t theType, const uint8_t *theValue, uint32_t theLength
+    const std::string &theValueName, SexyReg theType, const uint8_t *theValue, uint32_t theLength
 ) {
     size_t aKeyIdx = FindKey(theValueName);
 

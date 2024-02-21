@@ -344,11 +344,11 @@ protected:
 
     // Registry helpers
     bool RegistryRead(
-        const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
+        const std::string &theValueName, SexyReg &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
     );
     //	bool					RegistryReadKey(const std::string& theValueName, uint32_t &theType, std::vector<uint8_t>
     //&theValue, uint32_t &theLength);
-    bool RegistryWrite(const std::string &theValueName, uint32_t theType, const uint8_t *theValue, uint32_t theLength);
+    bool RegistryWrite(const std::string &theValueName, SexyReg theType, const uint8_t *theValue, uint32_t theLength);
 
     // Demo recording helpers
     void ProcessDemo();

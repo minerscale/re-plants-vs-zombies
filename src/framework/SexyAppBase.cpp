@@ -1385,7 +1385,7 @@ double SexyAppBase::GetLoadingThreadProgress() {
 }
 
 bool SexyAppBase::RegistryWrite(
-    const std::string &theValueName, uint32_t theType, const uint8_t *theValue, uint32_t theLength
+    const std::string &theValueName, SexyReg theType, const uint8_t *theValue, uint32_t theLength
 ) {
     if (mRegKey.length() == 0) return false;
 
@@ -1427,20 +1427,20 @@ bool SexyAppBase::RegistryWrite(
 }
 
 bool SexyAppBase::RegistryWriteString(const std::string &theValueName, const std::string &theString) {
-    return RegistryWrite(theValueName, REG_SZ, (uint8_t *)theString.c_str(), theString.length());
+    return RegistryWrite(theValueName, SexyReg::SZ, (uint8_t *)theString.c_str(), theString.length());
 }
 
 bool SexyAppBase::RegistryWriteInteger(const std::string &theValueName, int theValue) {
-    return RegistryWrite(theValueName, REG_DWORD, reinterpret_cast<uint8_t *>(&theValue), sizeof(int));
+    return RegistryWrite(theValueName, SexyReg::DWORD, reinterpret_cast<uint8_t *>(&theValue), sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteBoolean(const std::string &theValueName, bool theValue) {
     int aValue = theValue ? 1 : 0;
-    return RegistryWrite(theValueName, REG_DWORD, reinterpret_cast<uint8_t *>(&aValue), sizeof(int));
+    return RegistryWrite(theValueName, SexyReg::DWORD, reinterpret_cast<uint8_t *>(&aValue), sizeof(int));
 }
 
 bool SexyAppBase::RegistryWriteData(const std::string &theValueName, const uint8_t *theValue, uint32_t theLength) {
-    return RegistryWrite(theValueName, REG_BINARY, theValue, theLength);
+    return RegistryWrite(theValueName, SexyReg::BINARY, theValue, theLength);
 }
 
 void SexyAppBase::WriteToRegistry() {
@@ -1607,7 +1607,7 @@ bool SexyAppBase::RegistryGetSubKeys(const std::string & /*theKeyName*/, StringV
 }
 
 bool SexyAppBase::RegistryRead(
-    const std::string &theValueName, uint32_t &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
+    const std::string &theValueName, SexyReg &theType, std::vector<uint8_t> &theValue, uint32_t &theLength
 ) {
     if (mRegKey.length() == 0) return false;
 
@@ -1623,7 +1623,7 @@ bool SexyAppBase::RegistryRead(
         bool success = mDemoBuffer.ReadNumBits(1, false) != 0;
         if (!success) return false;
 
-        theType = mDemoBuffer.ReadLong();
+        theType = (SexyReg)mDemoBuffer.ReadLong();
 
         uint32_t aLen = mDemoBuffer.ReadLong();
         theValue.resize(aLen);
@@ -1666,7 +1666,7 @@ bool SexyAppBase::RegistryRead(
             mDemoBuffer.WriteNumBits(0, 1);
             mDemoBuffer.WriteNumBits(DEMO_REGISTRY_READ, 5);
             mDemoBuffer.WriteNumBits(1, 1); // success
-            mDemoBuffer.WriteLong(theType);
+            mDemoBuffer.WriteLong((int32_t)theType);
             mDemoBuffer.WriteLong(theLength);
             mDemoBuffer.WriteBytes(theValue.data(), theLength);
         }
@@ -1677,11 +1677,11 @@ bool SexyAppBase::RegistryRead(
 bool SexyAppBase::RegistryReadString(const std::string &theKey, std::string *theString) {
     std::vector<uint8_t> aStr;
 
-    uint32_t aType;
+    SexyReg aType;
     uint32_t aLen;
     if (!RegistryRead(theKey, aType, aStr, aLen)) return false;
 
-    if (aType != REG_SZ) return false;
+    if (aType != SexyReg::SZ) return false;
 
     aStr.push_back('\0');
 
@@ -1690,12 +1690,12 @@ bool SexyAppBase::RegistryReadString(const std::string &theKey, std::string *the
 }
 
 bool SexyAppBase::RegistryReadInteger(const std::string &theKey, int *theValue) {
-    uint32_t aType;
+    SexyReg aType;
     std::vector<uint8_t> aLong;
     uint32_t aLen;
     if (!RegistryRead(theKey, aType, aLong, aLen)) return false;
 
-    if (aType != REG_DWORD) return false;
+    if (aType != SexyReg::DWORD) return false;
 
     *theValue = *(int *)aLong.data();
     return true;
@@ -1710,10 +1710,10 @@ bool SexyAppBase::RegistryReadBoolean(const std::string &theKey, bool *theValue)
 }
 
 bool SexyAppBase::RegistryReadData(const std::string &theKey, std::vector<uint8_t> &theValue, uint32_t &theLength) {
-    uint32_t aType;
+    SexyReg aType;
     if (!RegistryRead(theKey, aType, theValue, theLength)) return false;
 
-    if (aType != REG_BINARY) return false;
+    if (aType != SexyReg::BINARY) return false;
 
     return true;
 }
