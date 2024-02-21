@@ -330,7 +330,6 @@ public:
 SexyString LawnGetCurrentLevelName();
 bool LawnGetCloseRequest();
 bool LawnHasUsedCheatKeys();
-void BetaSubmitFunc();
 
 extern bool (*gAppCloseRequest)();     //[0x69E6A0]
 extern bool (*gAppHasUsedCheatKeys)(); //[0x69E6A4]

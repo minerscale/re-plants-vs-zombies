@@ -43,57 +43,6 @@ void TodLogString(const char *theMsg) {
 
 void TodHesitationTrace(...) {}
 
-void TodTraceWithoutSpamming(const char *theFormat, ...) {
-    static time_t gLastTraceTime = 0;
-    const time_t aTime = time(nullptr);
-    if (aTime < gLastTraceTime) {
-        return;
-    }
-
-    gLastTraceTime = aTime;
-    char aButter[1024];
-    va_list argList;
-    va_start(argList, theFormat);
-    const int aCount = TodVsnprintf(aButter, sizeof(aButter), theFormat, argList);
-    va_end(argList);
-
-    if (aButter[aCount - 1] != '\n') {
-        if (aCount + 1 < 1024) {
-            aButter[aCount] = '\n';
-            aButter[aCount + 1] = '\0';
-        } else {
-            aButter[aCount - 1] = '\n';
-        }
-    }
-
-    printf("%s", aButter);
-}
-
-/*
-void TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage)
-{
-    (void)theMessage;
-    Sexy::SEHCatcher::UnhandledExceptionFilter(exceptioninfo);
-}*/
-
-/*
-long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo)
-{
-    if (gInAssert)
-    {
-        TodLog("Exception during exception processing");
-    }
-    else
-    {
-        gInAssert = true;
-        TodLog("\nUnhandled Exception");
-        TodReportError(exceptioninfo, "Unhandled Exception");
-        gInAssert = false;
-    }
-
-    return EXCEPTION_EXECUTE_HANDLER;
-}*/
-
 void TodAssertInitForApp() {
     MkDir(GetAppDataFolder() + "userdata");
     const std::string aRelativeUserPath = GetAppDataFolder() + "userdata/";

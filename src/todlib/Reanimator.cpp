@@ -320,22 +320,12 @@ void ReanimationCreateAtlas(ReanimatorDefinition *theDefinition, ReanimationType
     if (theDefinition->mReanimAtlas != nullptr || TestBit(aParam.mReanimParamFlags, ReanimFlags::REANIM_NO_ATLAS))
         return; // 当动画已存在 Atlas 或无需 Atlas 时，直接退出
 
-    const auto aTimer = std::chrono::high_resolution_clock::now();
-
-    TodHesitationTrace("preatlas");
+    TodHesitationBracket<20> aHesitationBracket(
+        "loading atlas '{}' on {}", aParam.mReanimFileName, gGetCurrentLevelName()
+    );
     const auto aAtlas = new ReanimAtlas();
     theDefinition->mReanimAtlas = aAtlas; // 赋值动画 Atlas 指针
     aAtlas->ReanimAtlasCreate(theDefinition);
-
-    TodHesitationTrace("atlas '%s'", aParam.mReanimFileName);
-    // int aDuration = std::max(aTimer.GetDuration(), 0.0);
-    const int aDuration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
-            .count();
-    if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE) // （仅内测版）创建时间过长的报告
-        TodTraceAndLog(
-            "loading:  Long atlas '{}' {} ms on {}", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str()
-        );
 }
 
 void ReanimationPreload(ReanimationType theReanimationType) {
@@ -1078,21 +1068,12 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
             );
     } // < 以上部分仅内测版执行 >
 
-    const auto aTimer = std::chrono::high_resolution_clock::now();
-
-    TodHesitationBracket aHesitation("Load Reanim '%s'", aReanimParams->mReanimFileName);
+    TodHesitationBracket aHesitation("Load Reanim '{}'", aReanimParams->mReanimFileName);
     if (!ReanimationLoadDefinition(aFileName, aReanimDef)) {
         char aBuf[1024];
         sprintf(aBuf, "Failed to load reanim '%s'", aFileName.c_str());
         TodErrorMessageBox(aBuf, "Error");
     }
-    const int aDuration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - aTimer)
-            .count();
-    if (aDuration > 100) // （仅内测版）创建时间过长的报告
-        TodTraceAndLog(
-            "loading:  Long reanim '{}' {} ms on {}", aFileName.c_str(), aDuration, gGetCurrentLevelName().c_str()
-        );
 }
 
 // 0x473750

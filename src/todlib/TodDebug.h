@@ -3,22 +3,6 @@
 #include <fmt/core.h>
 #include <initializer_list>
 
-// #define NOMINMAX 1
-// #include <windows.h>
-
-class TodHesitationBracket {
-public:
-    char mMessage[256];
-    int mBracketStartTime;
-
-public:
-    explicit TodHesitationBracket(const char * /*theFormat*/, ...) : mMessage{}, mBracketStartTime(0) {}
-
-    ~TodHesitationBracket() {}
-
-    static inline void EndBracket() {}
-};
-
 void TodLogString(const char *theMsg);
 
 template <class... Types> void TodLog(const fmt::format_string<Types...> theFormat, Types... theArgs) {
@@ -34,9 +18,18 @@ template <class... Types> void TodTraceAndLog(const fmt::format_string<Types...>
     fmt::print("{}", aButter);
     TodLogString(aButter.c_str());
 }
-void TodTraceWithoutSpamming(const char *theFormat, ...);
+
+template <class... Types> void TodTraceWithoutSpamming(const fmt::format_string<Types...> theFormat, Types... theArgs) {
+    static time_t gLastTraceTime = 0;
+    const time_t aTime = time(nullptr);
+    if (aTime < gLastTraceTime) {
+        return;
+    }
+    gLastTraceTime = aTime;
+    fmt::print(theFormat, std::forward<Types>(theArgs)...);
+}
+
 void TodHesitationTrace(...);
-// void				TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage);
 
 template <class... Types>
 void TodAssertFailed(
@@ -62,10 +55,8 @@ void TodAssertFailed(const char *theCondition, const char *theFile, int theLine,
 }
 
 void TodErrorMessageBox(const char *theMessage, const char *theTitle);
-// long __stdcall	TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo);
-
-/*inline*/ void *TodMalloc(int theSize);
-/*inline*/ void TodFree(void *theBlock);
+void *TodMalloc(int theSize);
+void TodFree(void *theBlock);
 void TodAssertInitForApp();
 
 template <class T> inline bool TodAssertContains(std::initializer_list<T> List, T Val) {
@@ -78,6 +69,28 @@ template <class T> inline bool TodAssertContains(std::initializer_list<T> List, 
     }
     return result;
 }
+
+template <int DurationLimit = 100> class TodHesitationBracket {
+public:
+    std::string mMsg;
+    std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
+
+    template <class... Types>
+    explicit TodHesitationBracket(const fmt::format_string<Types...> theFormat, Types... theArgs) {
+        mMsg = fmt::format(theFormat, std::forward<Types>(theArgs)...);
+        mStartTime = std::chrono::high_resolution_clock::now();
+    }
+
+    ~TodHesitationBracket() { EndBracket(); }
+
+    void EndBracket() const {
+        const auto aEndTime = std::chrono::high_resolution_clock::now();
+        const auto aDuration = std::chrono::duration_cast<std::chrono::milliseconds>(aEndTime - mStartTime).count();
+        if (aDuration > DurationLimit) {
+            TodTraceAndLog("{} took {}ms", mMsg, aDuration);
+        }
+    }
+};
 
 #if __has_builtin(__builtin_debugtrap)
 #define DBG_BREAK() __builtin_debugtrap()

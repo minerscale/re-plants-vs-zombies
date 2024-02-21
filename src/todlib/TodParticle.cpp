@@ -123,7 +123,7 @@ ParticleParams gLawnParticleArray[static_cast<int>(ParticleEffect::NUM_PARTICLES
 
 // 0x515640 : (ecx = *theParticleFileName, *theParticleDef)  //esp -= 4
 bool TodParticleLoadADef(TodParticleDefinition *theParticleDef, const char *theParticleFileName) {
-    TodHesitationBracket(_S("Load Particle %s"), theParticleFileName);
+    TodHesitationBracket(_S("Load Particle {}"), theParticleFileName);
     if (!DefinitionLoadXML(theParticleFileName, &gParticleDefMap, theParticleDef)) {
         char aBuf[512];
         sprintf(aBuf, _S("Failed to load particle '%s'"), theParticleFileName);
@@ -304,7 +304,7 @@ void TodParticleSystem::ParticleSystemDie() {
 TodParticle *TodParticleEmitter::SpawnParticle(int theIndex, int theSpawnCount) {
     DataArray<TodParticle> &aDataArray = mParticleSystem->mParticleHolder->mParticles;
     if (aDataArray.mSize == aDataArray.mMaxSize) {
-        TodTraceWithoutSpamming("Too many particles '%s'\n", mEmitterDef->mName);
+        TodTraceWithoutSpamming("Too many particles '{}'", mEmitterDef->mName);
         return nullptr;
     }
 

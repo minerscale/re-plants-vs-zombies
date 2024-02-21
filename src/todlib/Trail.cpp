@@ -28,7 +28,7 @@ TrailPoint::TrailPoint() {}
 
 // 0x51B830
 bool TrailLoadADef(TrailDefinition *theTrailDef, const char *theTrailFileName) {
-    TodHesitationBracket aHesitation("Load Trail '%s'", theTrailFileName);
+    TodHesitationBracket aHesitation("Load Trail '{}'", theTrailFileName);
 
     if (!DefinitionLoadXML(StringToSexyString(theTrailFileName), &gTrailDefMap, theTrailDef)) return false;
 
