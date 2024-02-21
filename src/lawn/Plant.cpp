@@ -2277,10 +2277,6 @@ void Plant::UpdateReanimColor() {
         if (mImitaterType == SeedType::SEED_IMITATER) {
             aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, 92);
         }
-    } else if (mBeghouledFlashCountdown > 0) {
-        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
-        aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, anAlpha);
-        aBodyReanim->mEnableExtraAdditiveDraw = true;
     } else if (mEatenFlashCountdown > 0) {
         const int aGrayness =
             ClampInt(mEatenFlashCountdown * 3, 0, mImitaterType == SeedType::SEED_IMITATER ? 128 : 255);
@@ -2291,7 +2287,7 @@ void Plant::UpdateReanimColor() {
     }
 
     if (mBeghouledFlashCountdown > 0) {
-        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 1, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraOverlayColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraOverlayDraw = true;
     } else {
