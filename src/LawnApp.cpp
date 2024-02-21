@@ -1173,10 +1173,10 @@ bool LawnApp::DebugKeyDown(int theKey) { return SexyAppBase::DebugKeyDown(theKey
 // 0x4522E0
 void LawnApp::HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue) {
     if (theParamName == "-tod") {
-#ifdef _DEBUG
+        // #ifdef _DEBUG
         mTodCheatKeys = true;
         mDebugKeysEnabled = true;
-#endif
+        // #endif
     } else {
         SexyApp::HandleCmdLineParam(theParamName, theParamValue);
     }
