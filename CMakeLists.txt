@@ -89,7 +89,7 @@ else ()
             "-Werror"
     )
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND UNIX)
         set(warn_flags
                 ${warn_flags}
                 "-fsanitize=address,undefined"

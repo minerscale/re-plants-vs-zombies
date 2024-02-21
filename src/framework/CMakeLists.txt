@@ -28,7 +28,6 @@ add_subdirectory(imagelib)
 ################################################################################
 
 set(FETCHCONTENT_QUIET FALSE)
-set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 
 include(FetchContent)
 
@@ -91,10 +90,9 @@ FetchGit_Declare(https://github.com/libsdl-org/SDL_image/tree/release-2.8.x)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(SDL_image)
 
-FetchGit_Declare(https://github.com/libsdl-org/SDL_ttf/tree/release-2.22.x)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(SDL2TTF_HARFBUZZ ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(SDL_ttf)
+# FetchGit_Declare(https://github.com/libsdl-org/SDL_ttf/tree/release-2.22.x)
+# set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+# FetchContent_MakeAvailable(SDL_ttf)
 
 #FetchContent_Declare(https://github.com/libsdl-org/SDL_mixer/tree/release-2.6.3)
 #set(SDL2MIXER_MOD ON CACHE BOOL "" FORCE)
@@ -122,7 +120,7 @@ target_link_libraries(
         PRIVATE
         SDL2::SDL2-static
         SDL2_image::SDL2_image-static
-        SDL2_ttf::SDL2_ttf-static
+        # SDL2_ttf::SDL2_ttf-static
         #SDL2_mixer::SDL2_mixer-static
         zlibstatic
         simdutf::simdutf
@@ -137,8 +135,8 @@ target_include_directories(
         PRIVATE
         ${SDL_SOURCE_DIR}/include
         ${SDL_image_SOURCE_DIR}/include
-        ${SDL_ttf_SOURCE_DIR}/include
-        #${SDL_mixer_SOURCE_DIR}/include
+        # ${SDL_ttf_SOURCE_DIR}/include
+        # ${SDL_mixer_SOURCE_DIR}/include
         ${zlib_SOURCE_DIR}
         ${zlib_BINARY_DIR}
         ${avir_SOURCE_DIR}

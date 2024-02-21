@@ -205,7 +205,7 @@ VkImage::VkImage(const ImageLib::Image &theImage) {
 
     void *data;
     vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-    if (SCALE != 1) {
+    if constexpr (SCALE != 1) {
         if constexpr (SCALE == 2) {
             resizeVars.IsResize2 = true;
         }
@@ -442,20 +442,20 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
     static VkImage *thisCachedImage = nullptr;
 
     bool otherCacheMiss = false;
-    // bool otherLayoutSuboptimal = false;
+    bool otherLayoutSuboptimal = false;
     VkImage *otherImage = nullptr;
 
     otherImage = dynamic_cast<VkImage *>(theImage);
     otherCacheMiss = (otherImage != otherCachedImage);
     otherCachedImage = otherImage;
-    // otherLayoutSuboptimal = (otherImage->layout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    otherLayoutSuboptimal = (otherImage->layout != VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     const bool thisCacheMiss = (this != thisCachedImage);
     const bool drawModeMiss = (theDrawMode != cachedDrawMode);
     cachedDrawMode = theDrawMode;
     thisCachedImage = this;
 
-    // bool thisLayoutSuboptimal =  (layout != VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    bool thisLayoutSuboptimal = (layout != VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
     if (drawModeMiss) {
         if (theDrawMode == 1) {
@@ -469,24 +469,25 @@ void VkImage::BeginDraw(Image *theImage, int theDrawMode) {
 
     if (thisCacheMiss || otherCacheMiss) endRenderPass();
 
-    /*
     if (thisLayoutSuboptimal || otherLayoutSuboptimal) {
-        std::vector<std::pair<VkImage*, VkImageLayout>> transitions;
+        std::vector<std::pair<VkImage *, VkImageLayout>> transitions;
 
         if (thisLayoutSuboptimal) transitions.push_back({this, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL});
         if (otherLayoutSuboptimal) transitions.push_back({otherImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL});
 
         transitionImageLayouts(imageCommandBuffers[imageBufferIdx], transitions);
-    }*/
+    }
 
     if (!inRenderpass) {
         // Memory barriers prevent out of order frames, we always need them.
+        /*
         std::vector<std::pair<VkImage *, VkImageLayout>> transitions;
         transitions.reserve(2);
         transitions.emplace_back(this, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         transitions.emplace_back(otherImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         transitionImageLayouts(imageCommandBuffers[imageBufferIdx], transitions);
+        */
 
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

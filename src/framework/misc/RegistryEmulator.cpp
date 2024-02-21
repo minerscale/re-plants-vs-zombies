@@ -124,23 +124,3 @@ void RegistryEmulator::Write(
         (aKeyIdx != SIZE_MAX) ? (mRegVec.begin() + aKeyIdx) : mRegVec.end(), aNewEntry.begin(), aNewEntry.end()
     );
 }
-
-void RegistryEmulatorTest() {
-    RegistryEmulator aRegHandle("testreg.dat");
-
-    std::vector<uint8_t> aReadTest;
-    uint32_t aType;
-    uint32_t aLength;
-    if (aRegHandle.Read("PENGIS", aType, aReadTest, aLength)) {
-        aReadTest.push_back('\0');
-        fmt::println("{}", reinterpret_cast<char *>(aReadTest.data()));
-        fmt::println("{}", aType);
-        fmt::println("{}", aLength);
-    }
-
-    auto test_string = "TEST STRING"; // static_cast<char*>("I HATE MINORITIES I HATE MINORITIES");
-    aRegHandle.Write("MY_NAME_JEFF", REG_SZ, (uint8_t *)test_string, strlen(test_string));
-    aRegHandle.Write("PENGIS", REG_SZ, (uint8_t *)test_string, strlen(test_string));
-    // aRegHandle.Write("PEEPEEPOOPOO", REG_SZ, (uint8_t *)test_string, strlen(test_string));
-    aRegHandle.Erase("PENGIS");
-}
