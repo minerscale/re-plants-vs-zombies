@@ -53,7 +53,7 @@ DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
 
 namespace Vk {
-constexpr int MAX_FRAMES_IN_FLIGHT = 3;
+constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
@@ -1666,11 +1666,11 @@ void VkInterface::PollEvents() {
         case SDL_KEYDOWN:
         case SDL_KEYUP:     keyCallback(event.key.keysym.sym, event.key.state); break;
         case SDL_TEXTINPUT: charCallback(event.text.text); break;
+        case SDL_QUIT:      windowCloseCallback(); break;
 
         case SDL_WINDOWEVENT:
             switch (event.window.event) {
             case SDL_WINDOWEVENT_RESIZED:      framebufferResizeCallback(); break;
-            case SDL_WINDOWEVENT_CLOSE:        windowCloseCallback(); break;
             case SDL_WINDOWEVENT_FOCUS_GAINED: windowFocusCallback(true); break;
             case SDL_WINDOWEVENT_FOCUS_LOST:   windowFocusCallback(false); break;
             case SDL_WINDOWEVENT_ENTER:        cursorEnterCallback(true); break;

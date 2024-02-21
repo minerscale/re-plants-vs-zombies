@@ -4654,6 +4654,8 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     constexpr auto frame_length =
         std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 100));
 
+    static bool drawFrame = false;
+
     if (updated != nullptr) *updated = false;
 
     if (mExitToTop) return false;
@@ -4663,7 +4665,38 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     if (mUpdateAppState == UPDATESTATE_PROCESS_DONE) {
         mUpdateAppState = UPDATESTATE_PROCESS_1;
 
-        mWindowInterface->PollEvents();
+        drawFrame = false;
+
+        constexpr int maxAvgFps = 120;
+        static auto lastReportTime = std::chrono::high_resolution_clock::now();
+        constexpr auto tpsReportInterval = std::chrono::seconds(5);
+        static int skipAccumulator = 0;
+        const double avgTimeFac = 0.01;
+        static std::chrono::duration<double> movingAvgTime = std::chrono::duration<double>(1.0 / 60.0);
+        static auto avgTimer = std::chrono::high_resolution_clock::now();
+
+        const auto now = std::chrono::high_resolution_clock::now();
+        const auto new_time = now - avgTimer;
+        // Exponential moving average of duration between frames.
+        movingAvgTime = (new_time * avgTimeFac) + (1.0 - avgTimeFac) * movingAvgTime;
+        avgTimer = now;
+
+        const double avgTps = (1.0 / movingAvgTime.count());
+        double skipInterval = avgTps / maxAvgFps;
+
+        ++skipAccumulator;
+        timer += frame_length;
+
+        if (now - lastReportTime > tpsReportInterval) {
+            fmt::println("approx tps: {}", avgTps);
+            lastReportTime = now;
+        }
+
+        if (skipAccumulator > skipInterval) {
+            drawFrame = true;
+            skipAccumulator = 0;
+            mWindowInterface->PollEvents();
+        }
     } else if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
         if (updated != nullptr) *updated = true;
         mUpdateAppState = UPDATESTATE_PROCESS_2;
@@ -4672,23 +4705,27 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
 
         // Make sure we're not paused
         if (!mPaused) {
-            // update as many frames as needed before the next frame is to come
-            double delta_ticks = (std::chrono::high_resolution_clock::now() - timer) / frame_length;
-
             DoUpdateFrames();
-            timer += frame_length;
-            // Are we ahead of drawing?
-            if (delta_ticks < 1) DrawDirtyStuff();
+
+            if (drawFrame) {
+                DrawDirtyStuff();
+            }
         }
     } else if (mUpdateAppState == UPDATESTATE_PROCESS_2) {
         mUpdateAppState = UPDATESTATE_PROCESS_DONE;
         ProcessSafeDeleteList();
 
-        constexpr auto time_offset = std::chrono::duration<double>(0);
+        auto now = std::chrono::high_resolution_clock::now();
+
+        // Are we really behind where we should be?
+        if (timer - now < std::chrono::duration<double>(-0.2)) {
+            timer = now; // Shift the timer to now
+        }
+
         // Are we ahead of where the processing frames should be?
-        if (std::chrono::high_resolution_clock::now() - timer < time_offset) {
+        if (timer - now > std::chrono::duration<double>(0)) {
             mSleepCount += 1;
-            std::this_thread::sleep_until(timer - time_offset);
+            std::this_thread::sleep_until(timer);
         }
     }
 
