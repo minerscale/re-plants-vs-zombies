@@ -4653,6 +4653,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     static auto timer = std::chrono::high_resolution_clock::now();
     constexpr auto frame_length =
         std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 100));
+    const int maxAvgFps = mWindowInterface->GetRefreshRate();
 
     static bool drawFrame = false;
 
@@ -4662,12 +4663,11 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
 
     mUpdateAppDepth++;
 
-    if (mUpdateAppState == UPDATESTATE_PROCESS_DONE) {
+    switch (mUpdateAppState) {
+    case UPDATESTATE_PROCESS_DONE: {
         mUpdateAppState = UPDATESTATE_PROCESS_1;
 
         drawFrame = false;
-
-        constexpr int maxAvgFps = 120;
         static auto lastReportTime = std::chrono::high_resolution_clock::now();
         constexpr auto tpsReportInterval = std::chrono::seconds(5);
         static int skipAccumulator = 0;
@@ -4682,7 +4682,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
         avgTimer = now;
 
         const double avgTps = (1.0 / movingAvgTime.count());
-        double skipInterval = avgTps / maxAvgFps;
+        const double skipInterval = avgTps / maxAvgFps;
 
         ++skipAccumulator;
         timer += frame_length;
@@ -4697,7 +4697,9 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
             skipAccumulator = 0;
             mWindowInterface->PollEvents();
         }
-    } else if (mUpdateAppState == UPDATESTATE_PROCESS_1) {
+        break;
+    }
+    case UPDATESTATE_PROCESS_1: {
         if (updated != nullptr) *updated = true;
         mUpdateAppState = UPDATESTATE_PROCESS_2;
 
@@ -4706,12 +4708,13 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
         // Make sure we're not paused
         if (!mPaused) {
             DoUpdateFrames();
-
             if (drawFrame) {
                 DrawDirtyStuff();
             }
         }
-    } else if (mUpdateAppState == UPDATESTATE_PROCESS_2) {
+        break;
+    }
+    case UPDATESTATE_PROCESS_2: {
         mUpdateAppState = UPDATESTATE_PROCESS_DONE;
         ProcessSafeDeleteList();
 
@@ -4727,6 +4730,9 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
             mSleepCount += 1;
             std::this_thread::sleep_until(timer);
         }
+        break;
+    }
+    default: unreachable();
     }
 
     mUpdateAppDepth--;
