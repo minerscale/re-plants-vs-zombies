@@ -1689,7 +1689,7 @@ bool Vk::VkInterface::IsFocused() { return widgetManager->mApp->mActive; }
 void initSDL(const int width, const int height, const bool fullscreen) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
     if (fullscreen) {
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
