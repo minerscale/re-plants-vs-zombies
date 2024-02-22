@@ -6873,6 +6873,10 @@ void Board::KeyChar(const SexyChar theChar) {
         return;
     }
 
+    if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_PORTAL_COMBAT) {
+        if (theChar == _S('x')) mChallenge->MoveAPortal();
+    }
+
     if (theChar == _S('<')) {
         mApp->DoNewOptions(false);
     } else if (theChar == _S('l')) {

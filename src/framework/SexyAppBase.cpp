@@ -4529,15 +4529,6 @@ void SexyAppBase::Init() {
 
     if (mShutdown) return;
 
-    /*
-    if (gDDrawDLL==NULL || gDSoundDLL==NULL)
-    {
-        MessageBox(NULL,
-                        GetString("APP_REQUIRES_DIRECTX", _S("This application requires DirectX to run.  You can get
-    DirectX at http://www.microsoft.com/directx")).c_str(), GetString("YOU_NEED_DIRECTX", _S("You need
-    DirectX")).c_str(), MB_OK | MB_ICONERROR); DoExit(0);
-    }*/
-
     InitPropertiesHook();
     if (!ChangeDirHook(mChangeDirTo.c_str())) {
         std::filesystem::current_path(mChangeDirTo);

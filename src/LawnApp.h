@@ -325,6 +325,7 @@ public:
     /*inline*/ bool CanDoDaisyMode();
     void SwitchScreenMode(bool wantWindowed, bool is3d, bool force = false) override;
     static /*inline*/ void CenterDialog(Dialog *theDialog, int theWidth, int theHeight);
+    static void HandleError(const std::string& theMsg);
 };
 
 SexyString LawnGetCurrentLevelName();
