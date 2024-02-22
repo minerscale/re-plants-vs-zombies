@@ -27,6 +27,8 @@ int main(const int argc, char *argv[]) {
     SetAppDataFolder(SDL_AndroidGetExternalStoragePath());
 #endif
 
+    TodLogger aTodLogger{};
+
     try {
         gLawnApp = new LawnApp();
         auto shouldChangeDir =

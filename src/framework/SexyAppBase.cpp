@@ -4044,7 +4044,8 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     static auto timer = std::chrono::high_resolution_clock::now();
     constexpr auto frame_length =
         std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::duration<double>(1.0 / 100));
-    const int maxAvgFps = mWindowInterface->GetRefreshRate();
+    int maxAvgFps = mWindowInterface->GetRefreshRate();
+    if (maxAvgFps < 100) maxAvgFps = 100;
 
     static bool drawFrame = false;
 
@@ -4079,7 +4080,7 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
         timer += frame_length;
 
         if (now - lastReportTime > tpsReportInterval) {
-            fmt::println("approx tps: {}", avgTps);
+            TodHesitationTrace("approx tps: {}", avgTps);
             lastReportTime = now;
         }
 
