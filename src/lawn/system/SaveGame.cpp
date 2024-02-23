@@ -296,7 +296,7 @@ template <typename T> inline static void SyncDataArray(SaveGameContext &theConte
     theContext.SyncSizeT(theDataArray.mFreeListHead);
     theContext.SyncSizeT(theDataArray.mMaxUsedCount);
     theContext.SyncSizeT(theDataArray.mSize);
-    theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
+    theContext.SyncBytes(theDataArray.mBlock.data(), theDataArray.mMaxUsedCount * sizeof(DataArrayItem<T>));
 }
 
 // 0x4819D0
