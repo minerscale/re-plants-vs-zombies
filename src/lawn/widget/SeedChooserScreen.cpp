@@ -27,7 +27,7 @@ SeedChooserScreen::SeedChooserScreen() {
     mApp = static_cast<LawnApp *>(gSexyAppBase);
     mBoard = mApp->mBoard;
     mClip = false;
-    // mSeedChooserAge = 0;  ԭ�沢û�г�ʼ�� mSeedChooserAge
+    // mSeedChooserAge = 0;  Ô­°æ²¢Ã»ÓÐ³õÊ¼»¯ mSeedChooserAge
     mSeedsInFlight = 0;
     mSeedsInBank = 0;
     mLastMouseX = -1;
@@ -44,7 +44,7 @@ SeedChooserScreen::SeedChooserScreen() {
     mStartButton->mDownImage = nullptr;
     mStartButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
     mStartButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
-    mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT15);
+    mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT18YELLOW);
     mStartButton->Resize(154, 545, 156, 42);
     mStartButton->mTextOffsetY = -1;
     EnableStartButton(false);
