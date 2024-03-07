@@ -2042,6 +2042,7 @@ void Zombie::UpdateZombieJalapenoHead() {
                 aPlant->Die();
             }
         }
+      mDead = true;
 #endif
     }
 }
