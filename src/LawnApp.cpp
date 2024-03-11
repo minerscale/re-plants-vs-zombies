@@ -54,6 +54,8 @@
 #include "framework/graphics/WindowInterface.h"
 #include "framework/misc/ResourceManager.h"
 
+#include "SDL.h"
+
 bool gIsPartnerBuild = false; // GOTY @Patoke: 0x729659
 bool gSlowMo = false;         // 0x6A9EAA
 bool gFastMo = false;         // 0x6A9EAB
@@ -1698,6 +1700,10 @@ void LawnApp::ButtonDepress(int theId) {
 // GOTY @Patoke: 0x4535CD
 void LawnApp::CenterDialog(Dialog *theDialog, int theWidth, int theHeight) {
     theDialog->Resize((BOARD_WIDTH - theWidth) / 2, (BOARD_HEIGHT - theHeight) / 2, theWidth, theHeight);
+}
+
+void LawnApp::HandleError(const std::string& theMsg) {
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", theMsg.c_str(), nullptr);
 }
 
 // 0x453630

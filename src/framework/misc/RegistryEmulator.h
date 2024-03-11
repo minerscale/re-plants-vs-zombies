@@ -1,6 +1,11 @@
 #ifndef REGISTRY_EMULATOR_H
 #define REGISTRY_EMULATOR_H
 
+#include <map>
+#include <string>
+#include <tuple>
+#include <vector>
+
 /**********************************************************************************************/
 /* Adapted from github.com/Alexpux/mingw-w64/blob/master/mingw-w64-tools/widl/include/winnt.h */
 /**********************************************************************************************/
@@ -28,6 +33,17 @@ enum class SexyReg : uint32_t {
 
 class RegistryEmulator {
 public:
+    struct RegistryHeader {
+        uint64_t mMagic;
+        uint64_t mNumEntries;
+    };
+
+    struct RegistryEntry {
+        uint64_t mValueNameLength;
+        uint64_t mValueType;
+        uint64_t mValueLength;
+    };
+
     explicit RegistryEmulator(const std::string &theFileName);
 
     RegistryEmulator() : RegistryEmulator("registry.dat") {}
@@ -38,13 +54,11 @@ public:
     bool Erase(const std::string &theValueName);
     size_t Flush() const;
 
+    static constexpr uint64_t RegistryMagic() { return 0x8101454D; }
+
 private:
     const std::string mREG_FILENAME;
-    std::vector<uint8_t> mRegVec;
-
-    size_t FindKey(const std::string &theValueName);
-    size_t GetNextKey(size_t theKeyIdx);
-    void DeleteKey(size_t theKeyIdx);
+    std::map<std::string, std::tuple<SexyReg, std::vector<uint8_t>>> mRegMap;
 };
 
 #endif // REGISTRY_EMULATOR_H

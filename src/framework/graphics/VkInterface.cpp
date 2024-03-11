@@ -51,6 +51,7 @@ extern "C"
 DECLARE_SHADER(_binary_effects_comp_spv)
 DECLARE_SHADER(_binary_shader_frag_spv)
 DECLARE_SHADER(_binary_shader_vert_spv)
+DECLARE_SHADER(_binary_water_comp_spv)
 
 namespace Vk {
 constexpr int MAX_FRAMES_IN_FLIGHT = 2;
@@ -1516,12 +1517,16 @@ VkInterface::~VkInterface() {
 
 int VkInterface::GetRefreshRate() {
     static std::optional<int> aDisplayIdx = std::nullopt;
+    static int aUpdateCount = 0;
     static SDL_DisplayMode aMode;
     const auto aNewDisplayIdx = SDL_GetWindowDisplayIndex(window);
-    if (!aDisplayIdx.has_value() || aDisplayIdx.value() != aNewDisplayIdx) {
+    if (!aDisplayIdx.has_value() || aDisplayIdx.value() != aNewDisplayIdx || aUpdateCount > aMode.refresh_rate) {
+        aUpdateCount = 0;
         aDisplayIdx = aNewDisplayIdx;
         SDL_GetDesktopDisplayMode(aDisplayIdx.value(), &aMode);
     }
+
+    aUpdateCount++;
     return aMode.refresh_rate;
 }
 
@@ -1684,7 +1689,7 @@ bool Vk::VkInterface::IsFocused() { return widgetManager->mApp->mActive; }
 void initSDL(const int width, const int height, const bool fullscreen) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
     if (fullscreen) {
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }

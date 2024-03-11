@@ -1,0 +1,68 @@
+#version 450
+
+layout(set = 0, binding = 0) buffer readonly CausticGrayscaleImage {
+    uint aBits[];
+};
+
+layout(set = 0, binding = 1) buffer writeonly StagingBuffer {
+    uint data[];
+};
+
+layout(set = 0, binding = 2) buffer PoolCounter {
+    uint mPoolCounter;
+};
+
+layout(set = 0, binding = 3) uniform readonly ScaleBlock {
+    float SCALE;
+};
+
+// local size expected to be (128 * SCALE, 64 * SCALE, 1)
+
+uint BilinearLookupFixedPoint(int u, int v) {
+    const uint timeU = u & 0xFFFF0000;
+    const uint timeV = v & 0xFFFF0000;
+    const uint factorU1 = uint(int(u - timeU) & 0x0000FFFE) + 1;
+    const uint factorV1 = uint(int(v - timeV) & 0x0000FFFE) + 1;
+    const uint factorU0 = 65536 - factorU1;
+    const uint factorV0 = 65536 - factorV1;
+    const uint indexU0 = (timeU >> 16) % 256;
+    const uint indexU1 = ((timeU >> 16) + 1) % 256;
+    const uint indexV0 = (timeV >> 16) % 256;
+    const uint indexV1 = ((timeV >> 16) + 1) % 256;
+
+    return ((((factorU0 * factorV1) >> 16) * (aBits[indexV1 * 256 + indexU0] & 0xFF000000 >> 24)) >> 16) +
+    ((((factorU1 * factorV1) >> 16) * (aBits[indexV1 * 256 + indexU1] & 0xFF000000 >> 24)) >> 16) +
+    ((((factorU0 * factorV0) >> 16) * (aBits[indexV0 * 256 + indexU0] & 0xFF000000 >> 24)) >> 16) +
+    ((((factorU1 * factorV0) >> 16) * (aBits[indexV0 * 256 + indexU1] & 0xFF000000 >> 24)) >> 16);
+}
+
+void main() {
+    int x = int(gl_GlobalInvocationID.x);
+    int y = int(gl_GlobalInvocationID.y);
+    uint idx = uint(x + y * gl_NumWorkGroups.x);
+
+    const float timeU = float(x << 17) / SCALE;
+    const float timeV0 = float(y << 17) / SCALE;
+    const float timeV1 = float(256 << 17) - timeV0;
+
+    const float timePool0 = int(mPoolCounter) << 16;
+    const float timePool1 = ((int(mPoolCounter) & 65535) + 1) << 16;
+
+    const uint a1 = BilinearLookupFixedPoint(
+        int(timeU - timePool1 / 6),
+        int(timeV1 + timePool0 / 8));
+    const uint a0 = BilinearLookupFixedPoint(
+        int(timeU + timePool0 / 10),
+        int(timeV0));
+    const uint a = (a0 + a1) / 2;
+
+    uint alpha = 0;
+    if (a >= 160U) {
+        alpha = 255 - 2 * (a - 160U);
+    } else if (a >= 128U) {
+        alpha = 5 * (a - 128U);
+    }
+
+    const int v = int(alpha / 3);
+    data[idx] = v | (v << 8) | (v << 16) | (v << 24);
+}

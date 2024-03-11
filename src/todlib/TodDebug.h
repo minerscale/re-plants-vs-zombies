@@ -2,8 +2,27 @@
 #define __TODDEBUG_H__
 #include <fmt/core.h>
 #include <initializer_list>
+#include <mutex>
+#include <fstream>
+#include <fmt/chrono.h>
 
-void TodLogString(const char *theMsg);
+struct TodLogger {
+    TodLogger();
+    ~TodLogger();
+
+    bool Init();
+    void LogString(const std::string &theMsg);
+
+    constexpr static size_t kBufferSize = 256 * 1024;
+    constexpr static size_t kMaxDelayCycle = 1000;
+
+    std::ofstream mLogFile;
+    std::atomic<size_t> mBufferOffset{0};
+    std::mutex mFileMutex;
+    std::vector<char> mBuffer;
+};
+
+void TodLogString(const std::string &theMsg);
 
 template <class... Types> void TodLog(const fmt::format_string<Types...> theFormat, Types... theArgs) {
     const std::string aButter = fmt::format(theFormat, std::forward<Types>(theArgs)...);

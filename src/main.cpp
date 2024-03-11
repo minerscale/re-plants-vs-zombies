@@ -27,18 +27,26 @@ int main(const int argc, char *argv[]) {
     SetAppDataFolder(SDL_AndroidGetExternalStoragePath());
 #endif
 
-    gLawnApp = new LawnApp();
-    auto shouldChangeDir =
-        (!Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml")) ||
-        (!Sexy::FileExists("main.pak") && Sexy::FileExists("../main.pak"));
+    TodLogger aTodLogger{};
 
-    gLawnApp->mChangeDirTo = shouldChangeDir ? ".." : ".";
-    gLawnApp->DoParseCmdLine(argc, argv);
-    gLawnApp->Init();
-    gLawnApp->Start();
-    gLawnApp->Shutdown();
+    try {
+        gLawnApp = new LawnApp();
+        auto shouldChangeDir =
+            (!Sexy::FileExists("properties/resources.xml") && Sexy::FileExists("../properties/resources.xml")) ||
+            (!Sexy::FileExists("main.pak") && Sexy::FileExists("../main.pak"));
 
-    delete gLawnApp;
+        gLawnApp->mChangeDirTo = shouldChangeDir ? ".." : ".";
+        gLawnApp->DoParseCmdLine(argc, argv);
+        gLawnApp->Init();
+        gLawnApp->Start();
+        gLawnApp->Shutdown();
+
+        delete gLawnApp;
+    }
+    catch (std::runtime_error& aError)
+    {
+        LawnApp::HandleError(aError.what());
+    }
 
     return 0;
 };
