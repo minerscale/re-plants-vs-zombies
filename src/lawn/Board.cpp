@@ -6708,7 +6708,31 @@ static void TodCrash() { TOD_ASSERT(false, "Crash%s", "!!!!"); }
 
 // 0x41B950（原版中废弃）
 void Board::KeyChar(const SexyChar theChar) {
-    if (!mApp->mDebugKeysEnabled) return;
+    if (!mApp->mDebugKeysEnabled) {
+        {
+            int aPressedDigit = theChar - KEYCODE_ASCIIBEGIN;
+            if (aPressedDigit < 0 || aPressedDigit > 9) goto skipSeedHotkey;
+            if (aPressedDigit == 0) aPressedDigit = 10;
+            if (!mSeedBank) goto skipSeedHotkey;
+            if (aPressedDigit > mSeedBank->mNumPackets) goto skipSeedHotkey;
+
+            bool reselect = true;
+            if (IsPlantInCursor()) {
+                SeedType aSelectedType = GetSeedTypeInCursor();
+                if (mSeedBank->mSeedPackets[aPressedDigit - 1].mPacketType == aSelectedType) {
+                    reselect = false;
+                }
+                MouseDownWithPlant(0, 0, -1);
+            }
+
+            if (reselect) {
+                mSeedBank->mSeedPackets[aPressedDigit - 1].MouseDown(0, 0, 0);
+            }
+        }
+
+        skipSeedHotkey:
+        return;
+    }
 
     TodTraceAndLog("Board cheat key '{}'", theChar);
 

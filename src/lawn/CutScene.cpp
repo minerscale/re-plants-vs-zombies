@@ -1374,7 +1374,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping) {
         const int aNumPackets = mApp->mPlayerInfo->mPurchases[static_cast<int>(StoreItem::STORE_ITEM_PACKET_UPGRADE)];
         const SexyString aBodyString =
             TodReplaceNumberString(_S("[UPGRADE_DIALOG_BODY]"), _S("{SLOTS}"), aNumPackets + 1);
-        const SexyString aAmountString = mApp->GetMoneyString(mApp->mPlayerInfo->mCoins);
+        const SexyString aAmountString = mApp->GetMoneyString(aCost);
         // 创建询问是否升级卡槽格数的对话
         Dialog *aDialog = mApp->DoDialog(
             Dialogs::DIALOG_PURCHASE_PACKET_SLOT, true, aAmountString, aBodyString, _S(""), Dialog::BUTTONS_YES_NO
