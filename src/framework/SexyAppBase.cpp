@@ -4074,13 +4074,13 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
         avgTimer = now;
 
         const double avgTps = (1.0 / movingAvgTime.count());
-        const double skipInterval = avgTps / maxAvgFps;
+        const double skipInterval = maxAvgFps / avgTps;
 
         ++skipAccumulator;
         timer += frame_length;
 
         if (now - lastReportTime > tpsReportInterval) {
-            TodHesitationTrace("approx tps: {}", avgTps);
+            fmt::println("approx tps: {}", avgTps);
             lastReportTime = now;
         }
 

@@ -1,8 +1,10 @@
 #ifndef __DATAARRAY_H__
 #define __DATAARRAY_H__
 
+// #include <new.h>
 #include "TodCommon.h"
 #include "TodDebug.h"
+#include <string.h>
 
 enum {
     DATA_ARRAY_INDEX_MASK = 65535,
@@ -12,55 +14,60 @@ enum {
     DATA_ARRAY_KEY_FIRST = 1
 };
 
-template <typename T>
-struct DataArrayItem {
-    T mItem;
-    size_t mID;
-};
-
 template <typename T> class DataArray {
 public:
-    using DataArrayItem = DataArrayItem<T>;
-
+    class DataArrayItem {
+    public:
+        T mItem;
+        size_t mID;
+    };
 
 public:
-    std::vector<DataArrayItem> mBlock;
+    DataArrayItem *mBlock;
     size_t mMaxUsedCount;
     size_t mMaxSize;
     size_t mFreeListHead;
     size_t mSize;
     size_t mNextKey;
-    std::string mName{};
+    const char *mName;
 
 public:
     DataArray<T>() {
+        mBlock = nullptr;
         mMaxUsedCount = 0U;
         mMaxSize = 0U;
         mFreeListHead = 0U;
         mSize = 0U;
         mNextKey = 1U;
+        mName = nullptr;
     }
 
     ~DataArray<T>() { DataArrayDispose(); }
 
-    void DataArrayInitialize(const size_t theMaxSize, const std::string &theName) {
+    void DataArrayInitialize(unsigned int theMaxSize, const char *theName) {
+        TOD_ASSERT(mBlock == nullptr);
+        mBlock = (DataArrayItem *)operator new(sizeof(DataArrayItem) * theMaxSize);
         mMaxSize = theMaxSize;
-        mBlock.resize(mMaxSize);
         mNextKey = 1001U;
         mName = theName;
     }
 
     void DataArrayDispose() {
-        DataArrayFreeAll();
-        mMaxUsedCount = 0U;
-        mMaxSize = 0U;
-        mFreeListHead = 0U;
-        mSize = 0U;
+        if (mBlock != nullptr) {
+            DataArrayFreeAll();
+            operator delete(mBlock);
+            mBlock = nullptr;
+            mMaxUsedCount = 0U;
+            mMaxSize = 0U;
+            mFreeListHead = 0U;
+            mSize = 0U;
+            mName = nullptr;
+        }
     }
 
     void DataArrayFree(T *theItem) {
         DataArrayItem *aItem = (DataArrayItem *)theItem;
-        TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayFree(0x{0:x}) in {}", theItem, mName);
+        TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayFree(0x%x) in %s", theItem, mName);
         theItem->~T();
         unsigned int anId = aItem->mID & DATA_ARRAY_INDEX_MASK;
         aItem->mID = mFreeListHead;
@@ -79,16 +86,16 @@ public:
 
     inline unsigned int DataArrayGetID(T *theItem) {
         DataArrayItem *aItem = (DataArrayItem *)theItem;
-        TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayGetID(0x{0:x}) for {}", theItem, mName);
+        TOD_ASSERT(DataArrayGet(aItem->mID) == theItem, "Failed: DataArrayGetID(0x%x) for %s", theItem, mName);
         return aItem->mID;
     }
 
     bool IterateNext(T *&theItem) {
-        DataArrayItem *aItem = (DataArray<T>::DataArrayItem *)theItem;
+        DataArray<T>::DataArrayItem *aItem = (DataArray<T>::DataArrayItem *)theItem;
         if (aItem == nullptr) aItem = &mBlock[0];
-        else ++aItem;
+        else aItem++;
 
-        DataArrayItem *aLast = &mBlock[mMaxUsedCount];
+        DataArray<T>::DataArrayItem *aLast = &mBlock[mMaxUsedCount];
         while (aItem < aLast) {
             if (aItem->mID & DATA_ARRAY_KEY_MASK) {
                 theItem = (T *)aItem;
@@ -100,8 +107,8 @@ public:
     }
 
     T *DataArrayAlloc() {
-        TOD_ASSERT(mSize < mMaxSize, "Data array full: {}", mName);
-        TOD_ASSERT(mFreeListHead <= mMaxUsedCount, "DataArrayAlloc error in {}", mName);
+        TOD_ASSERT(mSize < mMaxSize, "Data array full: %s", mName);
+        TOD_ASSERT(mFreeListHead <= mMaxUsedCount, "DataArrayAlloc error in %s", mName);
         unsigned int aNext = mMaxUsedCount;
         if (mFreeListHead == mMaxUsedCount) mFreeListHead = ++mMaxUsedCount;
         else {
@@ -116,7 +123,7 @@ public:
         mSize++;
 
         new (aNewItem) T();
-        return (T*)aNewItem;
+        return (T *)aNewItem;
     }
 
     T *DataArrayTryToGet(unsigned int theId) {
@@ -127,7 +134,7 @@ public:
     }
 
     T *DataArrayGet(unsigned int theId) {
-        TOD_ASSERT(DataArrayTryToGet(theId) != nullptr, "Failed: DataArrayGet(0x{0:x}}) for {}", theId, mName);
+        TOD_ASSERT(DataArrayTryToGet(theId) != nullptr, "Failed: DataArrayGet(0x%x) for %s", theId, mName);
         return &mBlock[(short)theId].mItem;
     }
 };
