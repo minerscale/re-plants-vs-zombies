@@ -4059,35 +4059,41 @@ bool SexyAppBase::UpdateAppStep(bool *updated) {
     case UPDATESTATE_PROCESS_DONE: {
         mUpdateAppState = UPDATESTATE_PROCESS_1;
 
-        drawFrame = false;
-        static auto lastReportTime = std::chrono::high_resolution_clock::now();
-        constexpr auto tpsReportInterval = std::chrono::seconds(5);
         static int skipAccumulator = 0;
-        const double avgTimeFac = 0.01;
+        
         static std::chrono::duration<double> movingAvgTime = std::chrono::duration<double>(1.0 / 60.0);
-        static auto avgTimer = std::chrono::high_resolution_clock::now();
-
+        
+        static auto lastTime = std::chrono::high_resolution_clock::now();
         const auto now = std::chrono::high_resolution_clock::now();
-        const auto new_time = now - avgTimer;
+        
         // Exponential moving average of duration between frames.
-        movingAvgTime = (new_time * avgTimeFac) + (1.0 - avgTimeFac) * movingAvgTime;
-        avgTimer = now;
+        const double avgTimeFac = 0.01; // the amount of smoothing
+        movingAvgTime = ((now - lastTime) * avgTimeFac) + (1.0 - avgTimeFac) * movingAvgTime;
+
+        lastTime = now;
 
         const double avgTps = (1.0 / movingAvgTime.count());
         const double skipInterval = maxAvgFps / avgTps;
 
-        ++skipAccumulator;
-        timer += frame_length;
-
+        // The tps counter:
+        /* 
+        static auto lastReportTime = std::chrono::high_resolution_clock::now();
+        constexpr auto tpsReportInterval = std::chrono::seconds(5);
         if (now - lastReportTime > tpsReportInterval) {
             fmt::println("approx tps: {}", avgTps);
             lastReportTime = now;
         }
+        */
+
+        ++skipAccumulator;
+        timer += frame_length;
 
         if (skipAccumulator > skipInterval) {
             drawFrame = true;
             skipAccumulator = 0;
             mWindowInterface->PollEvents();
+        } else {
+            drawFrame = false;
         }
         break;
     }

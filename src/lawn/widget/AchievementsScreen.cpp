@@ -212,7 +212,12 @@ void ReportAchievement::GiveAchievement(LawnApp *theApp, const int theAchievemen
 void ReportAchievement::AchievementInitForPlayer(LawnApp *theApp) {
     if (!theApp || !theApp->mPlayerInfo) return;
 
-    printf("fixme: ReportAchievement::AchievementInitForPlayer is broken.\n");
+    static bool shownWarning = false;
+    if (!shownWarning) {
+        fmt::println("fixme: ReportAchievement::AchievementInitForPlayer is broken.");
+        shownWarning = true;
+    }
+    
     // TODO: Fix this crashing the game
     if (theApp->HasFinishedAdventure()) {
         GiveAchievement(theApp, AchievementId::HomeSecurity, false);
