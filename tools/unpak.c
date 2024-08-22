@@ -16,13 +16,18 @@ typedef struct PakDef {
 
 void PakDefPrint(PakDef *def) {
     printf(
-        "Flags: %d, Name Width: %d, Name: %s, File Size: %d, Filetime: %ld, Offset: %d\n", def->aFlags, def->aNameWidth,
+        "Flags: %d, Name Width: %d, Name: %s, File Size: %d, Filetime: %ld, Offset: %zu\n", def->aFlags, def->aNameWidth,
         def->aName, def->aSrcSize, def->aFileTime, def->offset
     );
 }
 
 int main() {
-    FILE *fp = fopen("../main.unpak", "rb");
+    FILE *fp = fopen("main.pak", "rb");
+
+    if (fp == NULL) {
+        printf("Failed to open file main.pak\n");
+        return 1;
+    }
 
     fseek(fp, 0, SEEK_END);
     size_t size = ftell(fp);
@@ -32,8 +37,11 @@ int main() {
     fread(b_ptr, 1, size, fp);
     fclose(fp);
 
+    for (int i = 0; i < size; i++)
+        b_ptr[i] = (b_ptr[i]) ^ 0xF7; // 'Decrypt'
+
     char *ptr = b_ptr + 8;
-    int aPos;
+    int aPos = 0;
 
     PakDef defs[4096];
     int idx = 0;

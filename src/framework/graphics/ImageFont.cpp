@@ -1181,6 +1181,7 @@ int ImageFont::RenderStringToCommandPool(
                 .mSrc = fontLayer.mScaledCharImageRects[aChar],
                 .mMode = aBaseFontLayer.mDrawMode,
                 .mColor = aColor,
+                .mUseAlphaCorrection = false,
                 .mNext = nullptr,
             };
 
