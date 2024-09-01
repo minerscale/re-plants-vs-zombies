@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <codecvt>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -25,12 +24,10 @@
 #include <limits>
 #include <map>
 #include <memory>
-#include <numeric>
 #include <optional>
 #include <set>
 #include <stdexcept>
 #include <thread>
-#include <type_traits>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -671,8 +668,15 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     int i = 0;
     for (const auto &queueFamily : queueFamilies) {
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 
+        #if defined(_WIN32)
+            presentSupport = vkGetPhysicalDeviceWin32PresentationSupportKHR(device, i);
+        #else
+            vkGetPhysicalDeviceSurfaceSupportKHR(
+                device, i, surface, &presentSupport
+            );
+        #endif
+        
         if (presentSupport) queueIndices.presentFamily = i;
         if ((queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT))
             queueIndices.graphicsAndComputeFamily = i;

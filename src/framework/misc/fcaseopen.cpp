@@ -1,7 +1,6 @@
 #include "fcaseopen.h"
 
 #if !defined(_WIN32)
-#include <errno.h>
 #include <filesystem>
 #include <stdlib.h>
 #include <string.h>
