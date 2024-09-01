@@ -14,7 +14,6 @@
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>
-#include <vulkan/vulkan_core.h>
 
 #include <avir.h>
 #include <lancir.h>

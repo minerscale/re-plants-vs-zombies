@@ -1,10 +1,10 @@
 #include "VkInterface.h"
+#include "VkCommon.h"
 #include "SDL.h"
 #include "SDL_keycode.h"
 #include "SDL_video.h"
 #include "SDL_vulkan.h"
 #include "SexyAppBase.h"
-#include "VkCommon.h"
 #include "compiler/map.h"
 #include "graphics/Color.h"
 #include "graphics/VkImage.h"
@@ -29,7 +29,6 @@
 #include <stdexcept>
 #include <thread>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #ifdef __cplusplus
 extern "C"

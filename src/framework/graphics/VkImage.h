@@ -3,8 +3,7 @@
 
 #include <cstdio>
 #include <memory>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
+#include "VkCommon.h"
 
 #include "Image.h"
 #include "imagelib/ImageLib.h"

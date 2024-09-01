@@ -5,7 +5,10 @@
 #include "compiler/array.h"
 #include <memory>
 #include <vector>
-#include <vulkan/vulkan_core.h>
+#if defined(_WIN32)
+    #define VK_USE_PLATFORM_WIN32_KHR
+#endif
+#include <vulkan/vulkan.h>
 
 #if defined(NDEBUG)
 #define SCALE 2
