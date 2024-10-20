@@ -462,7 +462,10 @@ bool ResourceManager::ParseResourcesFile(const std::string &theFilename) {
 
     XMLElement aXMLElement;
     while (!mXMLParser->HasFailed()) {
-        if (!mXMLParser->NextElement(&aXMLElement)) Fail(SexyStringToStringFast(mXMLParser->GetErrorText()));
+        if (!mXMLParser->NextElement(&aXMLElement)) {
+            Fail(SexyStringToStringFast(mXMLParser->GetErrorText()));
+            break;
+        }
 
         if (aXMLElement.mType == XMLElement::TYPE_START) {
             if (aXMLElement.mValue != _S("ResourceManifest")) break;
