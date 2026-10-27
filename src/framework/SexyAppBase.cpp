@@ -1432,11 +1432,11 @@ void SexyAppBase::Redraw() {
 
 ///////////////////////////// FPS Stuff
 // static PerfTimer gFPSTimer;
-static int gFrameCount;
+// static int gFrameCount;
 // static int gFPSDisplay;
 // static bool gForceDisplay = false;
 static void CalculateFPS() {
-    gFrameCount++;
+    // gFrameCount++;
 
     unreachable();
     /* TODO

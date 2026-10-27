@@ -117,7 +117,7 @@ public:
         }
 
         DataArray<T>::DataArrayItem *aNewItem = &mBlock[aNext];
-        memset(aNewItem, 0, sizeof(DataArrayItem));
+        memset((void*)aNewItem, 0, sizeof(DataArrayItem));
         aNewItem->mID = (mNextKey++ << DATA_ARRAY_KEY_SHIFT) | aNext;
         if (mNextKey == DATA_ARRAY_MAX_SIZE) mNextKey = 1;
         mSize++;

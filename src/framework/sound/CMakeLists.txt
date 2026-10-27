@@ -10,7 +10,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 if (WIN32)
     set(BASS_SRC https://www.un4seen.com/files/bass24.zip)
     set(BASS_LIB c/x64/bass.lib)
-    set(BASS_INCLUDE c)
 elseif (UNIX)
     if (APPLE)
         set(BASS_SRC https://www.un4seen.com/files/bass24-osx.zip)
@@ -19,8 +18,9 @@ elseif (UNIX)
         set(BASS_SRC https://www.un4seen.com/files/bass24-linux.zip)
         set(BASS_LIB libs/x86_64/libbass.so)
     endif ()
-    set(BASS_INCLUDE "")
 endif ()
+
+set(BASS_INCLUDE c)
 
 FetchContent_Declare(
         bass

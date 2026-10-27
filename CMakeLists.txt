@@ -45,6 +45,7 @@ else ()
     set(universal_compiler_flags
             "-Wno-unused-command-line-argument"
             "-Wno-deprecated-declarations"
+            "-Wno-missing-include-dirs"
             "-fdiagnostics-color=always"
             "-pipe"
             "-pthread"

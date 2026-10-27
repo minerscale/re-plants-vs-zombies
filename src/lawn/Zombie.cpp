@@ -7143,7 +7143,7 @@ void Zombie::ApplyBurn() {
 
 // 0x533000
 void Zombie::AttachShield() {
-    const char *aTrackName;
+    const char *aTrackName = "";
     Reanimation *aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
     if (mShieldType == ShieldType::SHIELDTYPE_DOOR) {
         ShowDoorArms(true);
@@ -7909,7 +7909,7 @@ void Zombie::BossSpawnAttack() {
 
     mTargetRow = mBoard->PickRowForNewZombie(ZombieType::ZOMBIE_NORMAL);
 
-    const char *aTrackName;
+    const char *aTrackName = "";
     switch (mTargetRow) {
     case 0: aTrackName = "anim_spawn_1"; break;
     case 1: aTrackName = "anim_spawn_2"; break;
@@ -7968,7 +7968,7 @@ void Zombie::BossStompAttack() {
 
     mTargetRow = TodPickFromArray(aRowArray, aRowsCount);
 
-    const char *aTrackName;
+    const char *aTrackName = "";
     switch (mTargetRow) {
     case 0:  aTrackName = "anim_stomp_1"; break;
     case 1:  aTrackName = "anim_stomp_2"; break;
@@ -8083,7 +8083,7 @@ void Zombie::BossHeadSpit() {
 #endif
     mIsFireBall = RandRangeInt(0, 1) == 0;
 
-    const char *aTrackName;
+    const char *aTrackName = "";
     switch (mFireballRow) {
     case 0: aTrackName = "anim_head_attack_1"; break;
     case 1: aTrackName = "anim_head_attack_2"; break;

@@ -6,14 +6,11 @@
 #include "graphics/Color.h"
 #include "misc/SexyMatrix.h"
 #include "todlib/FilterEffect.h"
-#include <tuple>
 
 #include <array>
 #include <atomic>
-#include <chrono>
 #include <memory>
 #include <stdexcept>
-#include <unordered_map>
 
 #include <avir.h>
 #include <lancir.h>
